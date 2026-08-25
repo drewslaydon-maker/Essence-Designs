@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>BREW the WORLD — Relationship Chain</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<style>
+  body { background:#12140f; margin:0; padding:24px; font-family:sans-serif; }
+  h1 { color:#e0a020; font-size:18px; margin-bottom:16px; }
+  #graph { background:#1a1c16; border-radius:8px; padding:24px; overflow:auto; }
+</style>
+</head>
+<body>
+<h1>BREW the WORLD — Relationship Chain</h1>
+<div id="graph" class="mermaid">
+graph TD
+    ORCHARD[["THE ORCHARD"]]:::state
+    HEMLOCK[Hemlock]:::state
+    FENNEL((Fennel)):::hub
+    CEDAR[Cedar]:::swing
+    SAGE[Sage]:::resistance
+    MARIGOLD[Marigold]:::crux
+    KIRKWOOD[Kirkwood]:::swing
+    CRICKET[Cricket]:::swing
+    WEASEL[Weasel]:::swing
+    BARLEY[Barley]:::swing
+    STAG[Stag]:::cost
+    OWL[Owl]:::resistance
+    BADGER[Badger]:::resistance
+    SPARROW[Sparrow]:::swing
+    FLINT[Flint]:::resistance
+    FOX[Fox]:::resistance
+    LOAM[Loam]:::resistance
+    BUTTER[Butter]:::foil
+    ROBIN[Robin]:::family
+    CLOVER[Clover]:::family
+    DAISY[Daisy]:::family
+    LEMON[Lemon]:::ally
+    MUGWORT[Mugwort]:::outsider
+    NESSA[Nessa]:::family
+    ASH[Ash]:::swing
+    EMBER[Ember]:::family
+    COAL[Coal]:::family
+    FALCON[Falcon]:::resistance
+    MILLET[Millet]:::family
+    FERRET[Ferret]:::swing
+
+    ORCHARD --> HEMLOCK
+    HEMLOCK -. unknowing shaping .-> FENNEL
+    HEMLOCK -- recruited him at Sage's bedside --> CEDAR
+    HEMLOCK -. patron if state-ward .-> KIRKWOOD
+    HEMLOCK -. reports up .-> BARLEY
+    HEMLOCK -. possible source of wound .-> STAG
+    OWL -. remembers who Pine was, co-founder .-> HEMLOCK
+    MARIGOLD -. remembers him as Pine, co-founder .-> HEMLOCK
+    OWL -. ex-spouses, broke on the same fracture .-> MARIGOLD
+    OWL --> FALCON
+    MARIGOLD --> FALCON
+    LOAM --> MILLET
+    WEASEL --> FERRET
+    FERRET -. doesn't know his father loved her .-> SAGE
+
+    CEDAR --> FENNEL
+    CEDAR --> KIRKWOOD
+    CEDAR --> CLOVER
+    CEDAR --> DAISY
+    CEDAR -. wounded together, healed by Sage, diverged .-> STAG
+    CEDAR -. requisition contracts .-> FLINT
+    CEDAR -. professional respect, rivalry rooted in Sage .-> WEASEL
+
+    SAGE --> FENNEL
+    SAGE --> MARIGOLD
+    MARIGOLD -. trained her as healer's apprentice .-> SAGE
+    SAGE -. treated him for a border wound, where they met .-> CEDAR
+    SAGE -. loved him before Cedar, left the path he still walks .-> WEASEL
+
+    MARIGOLD -. corroborates Hemlock's past .-> OWL
+    MARIGOLD -. hidden compartments .-> FLINT
+    MARIGOLD -. tipped off before sweeps .-> BARLEY
+
+    OWL -. hides banned texts .-> SAGE
+    SPARROW -. smuggled linings .-> SAGE
+    SPARROW -. paperwork intersects .-> WEASEL
+    SPARROW -. love, mark him or choose him .-> ROBIN
+
+    FLINT -. hidden rooms .-> SAGE
+    FLINT -. craft contrast .-> BADGER
+    BADGER -. tool upkeep .-> FOX
+    BADGER -. mirrored risk .-> LOAM
+    FOX -. unknowingly killed what he made .-> BARLEY
+    FOX -. she was his, before the process .-> LEMON
+    BADGER --- NESSA
+    NESSA -. ferries the forged pieces, disguised as catch .-> SAGE
+    NESSA --> ASH
+    NESSA --> EMBER
+    BADGER --> COAL
+    ASH -. mirror, what he could become .-> BARLEY
+    BADGER -. if he learns the secret, that's the swing trigger .-> ASH
+    EMBER -. suspects his lean first .-> ASH
+    EMBER -. not blood, hers to protect anyway .-> COAL
+    COAL -. doesn't know the craft's real use .-> BADGER
+
+    BARLEY -. accept, cleanse, or watch .-> LEMON
+
+    LOAM -. same loss, opposite response, skim vs numb .-> BUTTER
+    BUTTER -. same wound, opposite coping .-> FOX
+    FOX -. friction .-> WEASEL
+
+    KIRKWOOD -. watching him risk it live is the spark .-> CRICKET
+    OWL -. feeds him truth fragments .-> CRICKET
+    OWL -. taught him what to carry in song .-> ROBIN
+
+    MUGWORT -. origin he tried & failed to replicate .-> HEMLOCK
+    MUGWORT -. two registers of real knowledge .-> MARIGOLD
+    OWL -. taught her as a child, she outgrew the book .-> MUGWORT
+    OWL -. taught him young, now a nationwide beacon of it .-> KIRKWOOD
+
+    FENNEL --> ROBIN
+    ROBIN -. what he's protecting .-> DAISY
+    FENNEL --> OWL
+    FENNEL --> BADGER
+    FENNEL --> SPARROW
+    FENNEL --> FLINT
+    FENNEL -. direct contact w/ state violence .-> BARLEY
+    FENNEL --> FOX
+    FENNEL --> LOAM
+    FENNEL --> WEASEL
+    WEASEL -. sees what her ledgers really are .-> FENNEL
+    FENNEL --> BUTTER
+    FENNEL --> STAG
+    FENNEL -. unsaid shared truth, his swing trigger .-> KIRKWOOD
+    FENNEL --> LEMON
+    FENNEL --> COAL
+    FENNEL --> MILLET
+    FENNEL --> FERRET
+    FENNEL -. unsaid .-> FOX
+    FENNEL -.-> FALCON
+    FOX --- MUGWORT
+    FOX --- FALCON
+    MUGWORT --- FALCON
+    FENNEL -. watches, doesn't learn from .-> MUGWORT
+
+    classDef state fill:#3a1f1f,stroke:#a33,color:#eee
+    classDef resistance fill:#1f2e1f,stroke:#4a4,color:#eee
+    classDef swing fill:#332a1a,stroke:#c93,color:#eee
+    classDef family fill:#1f2530,stroke:#68a,color:#eee
+    classDef hub fill:#3a2f1a,stroke:#e0a020,color:#fff
+    classDef crux fill:#2a1f33,stroke:#a4a,color:#eee
+    classDef cost fill:#2a2a2a,stroke:#888,color:#eee
+    classDef foil fill:#33291f,stroke:#aa8,color:#eee
+    classDef ally fill:#1f332e,stroke:#4aa,color:#eee
+    classDef outsider fill:#1a2818,stroke:#e0a020,color:#fff,stroke-dasharray: 5 5
+
+</div>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+</script>
+</body>
+</html>
