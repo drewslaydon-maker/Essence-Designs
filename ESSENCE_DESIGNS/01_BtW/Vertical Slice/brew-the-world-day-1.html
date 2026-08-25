@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BREW the WORLD — Day 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Karla:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1109;
+    --bg-panel: #171911;
+    --bg-card: #1c1f16;
+    --ink: #e9e4d4;
+    --ink-dim: #9c9686;
+    --line: #33362a;
+    --botanical: #6b9b6e;
+    --botanical-dim: #2a3a2a;
+    --food: #d1a13e;
+    --food-dim: #3a3122;
+    --animal: #b0794a;
+    --animal-dim: #362a1e;
+    --elemental: #8a7a72;
+    --elemental-dim: #2e2924;
+    --gold: #e0a020;
+    --swing: #cc7a2e;
+    --ground: #1a1d12;
+    --ground-edge: #0a0c06;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    background-image: radial-gradient(ellipse at top, #1a1d12 0%, #0f1109 60%);
+    color: var(--ink);
+    font-family: 'Karla', sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    overflow: hidden;
+  }
+
+  /* ============ HEADER ============ */
+  header {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 20;
+    padding: 14px 28px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom, rgba(15,17,9,0.95), rgba(15,17,9,0));
+    pointer-events: none;
+  }
+  .h-title {
+    font-family: 'Spectral', serif;
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+    color: var(--gold);
+    margin: 0;
+  }
+  .h-meta {
+    display: flex;
+    gap: 22px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  .h-meta .time { color: var(--gold); }
+
+  /* ============ STAGE (single contiguous space) ============ */
+  #stage {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    overflow: hidden;
+  }
+  .stage-bg {
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, #0d0f08 0%, var(--ground) 40%, var(--ground) 60%, #0a0c06 100%);
+  }
+  /* Three zones in one frame */
+  .zone {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 33.333%;
+  }
+  .zone-shop { left: 0; border-right: 1px dashed rgba(51,54,42,0.5); }
+  .zone-market { left: 33.333%; border-right: 1px dashed rgba(51,54,42,0.5); }
+  .zone-treeline { left: 66.666%; }
+
+  .zone-name {
+    position: absolute;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    opacity: 0.7;
+  }
+
+  /* Zone "back walls" — abstract architectural hints */
+  .back-wall {
+    position: absolute;
+    left: 5%; right: 5%;
+    top: 110px;
+    height: 32%;
+    background: linear-gradient(to bottom, var(--bg-panel) 0%, var(--bg-card) 100%);
+    border: 1px solid var(--line);
+    border-radius: 4px 4px 0 0;
+    opacity: 0.6;
+  }
+  .window-glow {
+    position: absolute;
+    width: 30px; height: 40px;
+    background: var(--gold);
+    border-radius: 50%;
+    filter: blur(12px);
+    opacity: 0.3;
+  }
+  .lantern-glow {
+    position: absolute;
+    width: 24px; height: 24px;
+    background: var(--swing);
+    border-radius: 50%;
+    filter: blur(10px);
+    opacity: 0.4;
+  }
+
+  /* Ground plane elements — placeables */
+  .ground-obj {
+    position: absolute;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 5;
+  }
+  .ground-obj:hover, .ground-obj:focus {
+    transform: scale(1.05);
+    outline: none;
+  }
+  .ground-obj::before {
+    content: attr(data-label);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    white-space: nowrap;
+    padding: 3px 7px;
+    background: rgba(15,17,9,0.85);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    margin-bottom: 6px;
+  }
+  .ground-obj:hover::before, .ground-obj:focus::before { opacity: 1; }
+
+  /* Stall */
+  .stall {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+  }
+  /* Counter */
+  .counter {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--food-dim);
+  }
+  /* Forge */
+  .forge {
+    background: var(--bg-card);
+    border: 1px solid var(--animal-dim);
+  }
+  /* Brew bench */
+  .brew-bench {
+    background: var(--bg-card);
+    border: 1px solid var(--botanical-dim);
+  }
+  /* Forage spot */
+  .forage-spot {
+    background: var(--bg);
+    border: 1px dashed var(--botanical-dim);
+    border-radius: 50%;
+  }
+  /* Ledger */
+  .ledger-obj {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+  }
+  /* Door deeper */
+  .deeper {
+    background: rgba(10,12,6,0.6);
+    border: 1px dashed var(--line);
+    border-radius: 50%;
+  }
+
+  /* Fennel (the player sprite) */
+  .fennel {
+    position: absolute;
+    width: 24px; height: 36px;
+    z-index: 10;
+    transition: left 0.4s ease, top 0.4s ease;
+    pointer-events: none;
+  }
+  .fennel-body {
+    position: absolute;
+    width: 100%; height: 100%;
+    background: var(--botanical);
+    border: 1.5px solid var(--ink);
+    border-radius: 6px 6px 4px 4px;
+    box-shadow: 0 0 14px rgba(107,155,110,0.4);
+  }
+  .fennel-head {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px; height: 14px;
+    background: var(--botanical);
+    border: 1.5px solid var(--ink);
+    border-radius: 50%;
+  }
+  .fennel-shadow {
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 26px; height: 6px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 50%;
+    filter: blur(3px);
+  }
+
+  /* NPC sprites */
+  .npc {
+    position: absolute;
+    width: 20px; height: 30px;
+    z-index: 8;
+    transition: transform 0.2s ease;
+    cursor: pointer;
+  }
+  .npc:hover, .npc:focus { transform: scale(1.08); outline: none; }
+  .npc-body {
+    position: absolute;
+    width: 100%; height: 100%;
+    border: 1.5px solid var(--ink-dim);
+    border-radius: 5px 5px 3px 3px;
+  }
+  .npc-head {
+    position: absolute;
+    top: -8px; left: 50%;
+    transform: translateX(-50%);
+    width: 11px; height: 11px;
+    border: 1.5px solid var(--ink-dim);
+    border-radius: 50%;
+  }
+  .npc-shadow {
+    position: absolute;
+    bottom: -3px; left: 50%;
+    transform: translateX(-50%);
+    width: 20px; height: 5px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 50%;
+    filter: blur(2px);
+  }
+  .npc[data-cat="Botanical"] .npc-body, .npc[data-cat="Botanical"] .npc-head { background: var(--botanical-dim); border-color: var(--botanical); }
+  .npc[data-cat="Animal"] .npc-body, .npc[data-cat="Animal"] .npc-head { background: var(--animal-dim); border-color: var(--animal); }
+  .npc[data-cat="Food"] .npc-body, .npc[data-cat="Food"] .npc-head { background: var(--food-dim); border-color: var(--food); }
+  .npc[data-cat="Elemental"] .npc-body, .npc[data-cat="Elemental"] .npc-head { background: var(--elemental-dim); border-color: var(--elemental); }
+
+  /* Fennel name tag (only shown on hover for player) */
+  .name-tag {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    white-space: nowrap;
+    margin-bottom: 4px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  .npc:hover .name-tag, .npc:focus .name-tag { opacity: 1; }
+
+  /* Path lines between zones (subtle) */
+  .ground-path {
+    position: absolute;
+    bottom: 18%;
+    height: 8px;
+    background: linear-gradient(to right, transparent, rgba(51,54,42,0.4), transparent);
+    z-index: 1;
+  }
+  .path-1 { left: 28%; right: 38%; }
+  .path-2 { left: 60%; right: 12%; }
+
+  /* ============ DIALOGUE (VN style with portrait) ============ */
+  #dialogue {
+    display: none;
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    padding: 20px 24px 24px;
+    background: linear-gradient(to top, rgba(15,17,9,0.97) 70%, rgba(15,17,9,0));
+    z-index: 30;
+  }
+  #dialogue.open { display: block; }
+  .dlg-frame {
+    max-width: 880px;
+    margin: 0 auto;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px 24px 22px;
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  .dlg-portrait {
+    width: 120px; height: 120px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Spectral', serif;
+    font-size: 36px;
+    color: var(--ink-dim);
+    position: relative;
+    overflow: hidden;
+  }
+  .dlg-portrait::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.04) 50%, transparent 60%);
+    pointer-events: none;
+  }
+  .dlg-portrait[data-cat="Botanical"] { color: var(--botanical); border-color: var(--botanical-dim); }
+  .dlg-portrait[data-cat="Animal"] { color: var(--animal); border-color: var(--animal-dim); }
+  .dlg-portrait[data-cat="Food"] { color: var(--food); border-color: var(--food-dim); }
+  .dlg-portrait[data-cat="Elemental"] { color: var(--elemental); border-color: var(--elemental-dim); }
+  .dlg-body { min-height: 120px; display: flex; flex-direction: column; }
+  .dlg-name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .dlg-name .who { font-weight: 500; }
+  .dlg-text {
+    font-family: 'Spectral', serif;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink);
+    margin: 0 0 12px;
+    flex-grow: 1;
+  }
+  .dlg-advance {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+  }
+  .dlg-advance .hint {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-dim);
+  }
+
+  /* ============ INVENTORY (RE pause grid) ============ */
+  #inventory {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(5,6,3,0.92);
+    backdrop-filter: blur(4px);
+    z-index: 40;
+    padding: 40px 24px;
+  }
+  #inventory.open { display: flex; justify-content: center; align-items: flex-start; }
+  .inv-panel {
+    max-width: 720px;
+    width: 100%;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 28px 32px;
+  }
+  .inv-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .inv-title {
+    font-family: 'Spectral', serif;
+    font-size: 22px;
+    color: var(--ink);
+  }
+  .inv-close-hint {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  .inv-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .inv-slot {
+    aspect-ratio: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    padding: 6px;
+  }
+  .inv-slot:hover, .inv-slot:focus {
+    border-color: var(--gold);
+    background: var(--bg);
+    outline: none;
+  }
+  .inv-slot.empty { cursor: default; }
+  .inv-slot .glyph { font-size: 22px; margin-bottom: 2px; }
+  .inv-slot .label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px;
+    color: var(--ink-dim);
+    text-align: center;
+    line-height: 1.1;
+  }
+  .inv-detail {
+    padding: 14px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    min-height: 60px;
+  }
+  .inv-detail .name {
+    font-family: 'Spectral', serif;
+    font-size: 16px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .inv-detail .desc {
+    font-size: 13px;
+    color: var(--ink-dim);
+    font-style: italic;
+  }
+  .inv-detail .empty {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  /* ============ BREWING ============ */
+  #brewing {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(5,6,3,0.92);
+    backdrop-filter: blur(4px);
+    z-index: 40;
+    padding: 40px 24px;
+    overflow-y: auto;
+  }
+  #brewing.open { display: flex; justify-content: center; align-items: flex-start; }
+  .brew-panel {
+    max-width: 760px;
+    width: 100%;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 28px 32px;
+  }
+  .brew-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .brew-title {
+    font-family: 'Spectral', serif;
+    font-size: 22px;
+    color: var(--ink);
+  }
+  .recipe-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .recipe-row:last-child { border-bottom: none; }
+  .recipe-info .name {
+    font-family: 'Spectral', serif;
+    font-size: 16px;
+    color: var(--ink);
+  }
+  .recipe-info .needs {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-top: 2px;
+  }
+
+  /* ============ FORAGE / LEDGER BUY ============ */
+  .modal-veil {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(5,6,3,0.88);
+    backdrop-filter: blur(3px);
+    z-index: 41;
+    padding: 60px 24px;
+  }
+  .modal-veil.open { display: flex; justify-content: center; align-items: flex-start; }
+  .modal-box {
+    max-width: 600px;
+    width: 100%;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 28px 32px;
+  }
+  .modal-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 8px;
+  }
+  .modal-text {
+    font-family: 'Spectral', serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink);
+    margin: 0 0 16px;
+  }
+  .modal-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
+  .ledger-content {
+    font-family: 'Spectral', serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink);
+    margin-top: 14px;
+  }
+  .ledger-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px dotted var(--line);
+  }
+  .ledger-line:last-child { border-bottom: none; }
+  .ledger-empty { font-style: italic; color: var(--ink-dim); }
+  .choice-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .choice-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.15s ease;
+    font-family: 'Karla', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    text-align: left;
+  }
+  .choice-btn:hover, .choice-btn:focus {
+    border-color: var(--botanical);
+    background: var(--bg);
+    outline: none;
+  }
+  .choice-btn .glyph { color: var(--botanical); font-size: 18px; }
+  .sell-grid {
+    display: grid;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .sell-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+  .sell-row .item {
+    font-family: 'Spectral', serif;
+    font-size: 14px;
+    color: var(--ink);
+  }
+
+  /* ============ COMBAT (FF-style turn menu) ============ */
+  #combat {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 45;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(2px);
+  }
+  #combat.open { display: flex; flex-direction: column; }
+  .combat-stage {
+    flex-grow: 1;
+    position: relative;
+    background: linear-gradient(to bottom, #0a0c06 0%, #141810 60%, #0a0c06 100%);
+    overflow: hidden;
+  }
+  .combat-fennel {
+    position: absolute;
+    bottom: 25%;
+    left: 25%;
+    width: 36px; height: 54px;
+  }
+  .combat-fennel .fennel-body { background: var(--botanical); border-color: var(--ink); }
+  .combat-fennel .fennel-head { background: var(--botanical); border-color: var(--ink); width: 20px; height: 20px; top: -14px; }
+  .combat-fennel .fennel-shadow { width: 40px; height: 8px; }
+  .combat-hollow {
+    position: absolute;
+    bottom: 25%;
+    right: 20%;
+    width: 40px; height: 60px;
+    background: linear-gradient(to bottom, #2a2a26 0%, #1a1a16 100%);
+    border: 1.5px solid #444;
+    border-radius: 8px 8px 4px 4px;
+    opacity: 0.85;
+  }
+  .combat-hollow::before {
+    content: '';
+    position: absolute;
+    top: -12px; left: 50%;
+    transform: translateX(-50%);
+    width: 22px; height: 22px;
+    background: #2a2a26;
+    border: 1.5px solid #444;
+    border-radius: 50%;
+  }
+  .combat-hollow::after {
+    content: '';
+    position: absolute;
+    top: 4px; left: 4px; right: 4px; height: 8px;
+    background: #0a0a08;
+    border-radius: 2px;
+    filter: blur(1px);
+  }
+  .combat-hollow-shadow {
+    position: absolute;
+    bottom: -4px; left: 50%;
+    transform: translateX(-50%);
+    width: 44px; height: 8px;
+    background: rgba(0,0,0,0.6);
+    border-radius: 50%;
+    filter: blur(3px);
+  }
+  .combat-hollow-cup {
+    position: absolute;
+    bottom: 35%;
+    right: 18%;
+    width: 10px; height: 10px;
+    background: var(--elemental);
+    border: 1px solid var(--ink-dim);
+    border-radius: 2px;
+    opacity: 0.6;
+  }
+  .combat-hollow-cup::after {
+    content: '';
+    position: absolute;
+    top: 100%; left: 50%;
+    transform: translateX(-50%);
+    width: 6px; height: 2px;
+    background: var(--ink-dim);
+  }
+  .combat-turn-banner {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Spectral', serif;
+    font-style: italic;
+    font-size: 24px;
+    color: var(--gold);
+    text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+  }
+  .combat-log {
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    max-width: 500px;
+    text-align: center;
+    font-family: 'Spectral', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.6;
+    background: rgba(15,17,9,0.6);
+    padding: 8px 14px;
+    border-radius: 8px;
+  }
+  .combat-menu {
+    background: var(--bg-panel);
+    border-top: 1px solid var(--line);
+    padding: 20px 24px;
+  }
+  .combat-menu-grid {
+    max-width: 880px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+  .combat-cmd {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 18px;
+    cursor: pointer;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+    transition: all 0.15s ease;
+    text-align: left;
+  }
+  .combat-cmd:hover, .combat-cmd:focus {
+    border-color: var(--gold);
+    background: var(--bg);
+    color: var(--gold);
+    outline: none;
+  }
+  .combat-cmd .desc {
+    display: block;
+    font-family: 'Karla', sans-serif;
+    font-size: 11px;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--ink-dim);
+    margin-top: 4px;
+  }
+
+  /* ============ MEAL / CLOSING ============ */
+  #meal, #closing {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(5,6,3,0.95);
+    z-index: 50;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  #meal.open, #closing.open { display: flex; }
+  .meal-panel, .closing-box {
+    max-width: 580px;
+    width: 100%;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 32px 36px;
+  }
+  .closing-box { border-color: var(--gold); text-align: center; }
+  .meal-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 8px;
+  }
+  .meal-title {
+    font-family: 'Spectral', serif;
+    font-style: italic;
+    font-size: 26px;
+    color: var(--gold);
+    margin: 0 0 16px;
+  }
+  .meal-text {
+    font-family: 'Spectral', serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink);
+    margin: 0 0 18px;
+  }
+  .meal-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
+  .closing-box h2 {
+    font-family: 'Spectral', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 28px;
+    color: var(--gold);
+    margin: 0 0 12px;
+  }
+  .closing-box p {
+    font-family: 'Spectral', serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink);
+    margin: 0 0 20px;
+  }
+
+  /* ============ BUTTONS ============ */
+  .btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    padding: 9px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--gold);
+    background: transparent;
+    color: var(--gold);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .btn:hover { background: var(--gold); color: #1a1400; }
+  .btn:focus { outline: none; box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--gold); }
+  .btn.ghost { border-color: var(--line); color: var(--ink-dim); }
+  .btn.ghost:hover { border-color: var(--ink-dim); background: transparent; color: var(--ink); }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn:disabled:hover { background: transparent; color: var(--gold); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1 class="h-title">BREW the WORLD</h1>
+  <div class="h-meta">
+    <span>Day 1 · Harvest</span>
+    <span class="time" id="clock">Morning</span>
+  </div>
+</header>
+
+<div id="stage">
+  <div class="stage-bg"></div>
+
+  <!-- ============ ZONE 1: SHOP (left) ============ -->
+  <div class="zone zone-shop">
+    <div class="zone-name">Shop · Brewing</div>
+    <div class="back-wall"></div>
+    <div class="window-glow" style="top: 130px; left: 12%;"></div>
+    <div class="window-glow" style="top: 130px; left: 22%;"></div>
+    <div class="window-glow" style="top: 130px; right: 22%;"></div>
+    <div class="window-glow" style="top: 130px; right: 12%;"></div>
+
+    <!-- Brew bench (left side of shop) -->
+    <div class="ground-obj brew-bench" data-action="open" data-screen="brewing" data-label="Brewing bench"
+         style="bottom: 30%; left: 15%; width: 90px; height: 50px;" tabindex="0" role="button">
+      <div style="font-size: 24px; color: var(--botanical);">⚗</div>
+    </div>
+
+    <!-- Counter / Ledger (right side of shop) -->
+    <div class="ground-obj counter" data-action="open" data-screen="ledger" data-label="Counter & ledger"
+         style="bottom: 30%; right: 12%; width: 110px; height: 40px;" tabindex="0" role="button">
+      <div style="font-size: 16px; color: var(--food);">▥</div>
+    </div>
+
+    <!-- NPCs in shop area (family — home is here per the plan's "shop interior" contiguous space) -->
+    <div class="npc" data-cat="Botanical" data-action="speak" data-with="Cedar"
+         style="bottom: 18%; left: 30%;" tabindex="0" role="button" aria-label="Cedar">
+      <div class="npc-body"></div><div class="npc-head"></div><div class="npc-shadow"></div>
+      <div class="name-tag">Cedar</div>
+    </div>
+    <div class="npc" data-cat="Botanical" data-action="speak" data-with="Sage"
+         style="bottom: 18%; left: 50%;" tabindex="0" role="button" aria-label="Sage">
+      <div class="npc-body"></div><div class="npc-head"></div><div class="npc-shadow"></div>
+      <div class="name-tag">Sage</div>
+    </div>
+    <div class="npc" data-cat="Botanical" data-action="speak" data-with="Kirkwood"
+         style="bottom: 18%; right: 28%;" tabindex="0" role="button" aria-label="Kirkwood">
+      <div class="npc-body"></div><div class="npc-head"></div><div class="npc-shadow"></div>
+      <div class="name-tag">Kirkwood</div>
+    </div>
+  </div>
+
+  <!-- ============ ZONE 2: MARKET (center) ============ -->
+  <div class="zone zone-market">
+    <div class="zone-name">Market Square</div>
+    <div class="back-wall" style="background: linear-gradient(to bottom, #1c1f16 0%, #15170e 100%);"></div>
+    <div class="lantern-glow" style="top: 130px; left: 30%;"></div>
+    <div class="lantern-glow" style="top: 130px; right: 30%;"></div>
+
+    <!-- Loam's stall -->
+    <div class="ground-obj stall" data-action="open" data-screen="loam" data-label="Loam's stall"
+         style="bottom: 32%; left: 18%; width: 130px; height: 60px;" tabindex="0" role="button">
+      <div style="font-size: 22px; color: var(--food);">▦</div>
+    </div>
+
+    <!-- Weasel's counter -->
+    <div class="ground-obj counter" data-action="open" data-screen="weasel" data-label="Weasel's counter"
+         style="bottom: 32%; right: 12%; width: 130px; height: 40px;" tabindex="0" role="button">
+      <div style="font-size: 16px; color: var(--animal);">▤</div>
+    </div>
+
+    <!-- Forge -->
+    <div class="ground-obj forge" data-action="speak" data-with="Badger" data-label="Forge"
+         style="bottom: 16%; right: 35%; width: 90px; height: 50px;" tabindex="0" role="button">
+      <div style="font-size: 20px; color: var(--animal);">▲</div>
+    </div>
+
+    <!-- Peer NPCs -->
+    <div class="npc" data-cat="Food" data-action="speak" data-with="Millet"
+         style="bottom: 50%; left: 25%;" tabindex="0" role="button" aria-label="Millet">
+      <div class="npc-body"></div><div class="npc-head"></div><div class="npc-shadow"></div>
+      <div class="name-tag">Millet</div>
+    </div>
+    <div class="npc" data-cat="Animal" data-action="speak" data-with="Ferret"
+         style="bottom: 50%; right: 30%;" tabindex="0" role="button" aria-label="Ferret">
+      <div class="npc-body"></div><div class="npc-head"></div><div class="npc-shadow"></div>
+      <div class="name-tag">Ferret</div>
+    </div>
+    <div class="npc" data-cat="Botanical" data-action="speak" data-with="Marigold"
+         style="bottom: 16%; left: 25%;" tabindex="0" role="button" aria-label="Marigold">
+      <div class="npc-body"></div><div class="npc-head"></div><div class="npc-shadow"></div>
+      <div class="name-tag">Marigold</div>
+    </div>
+    <div class="npc" data-cat="Food" data-action="speak" data-with="Barley"
+         style="bottom: 16%; left: 45%;" tabindex="0" role="button" aria-label="Barley">
+      <div class="npc-body"></div><div class="npc-head"></div><div class="npc-shadow"></div>
+      <div class="name-tag">Barley</div>
+    </div>
+    <div class="npc" data-cat="Elemental" data-action="speak" data-with="Coal"
+         style="bottom: 16%; right: 20%;" tabindex="0" role="button" aria-label="Coal">
+      <div class="npc-body"></div><div class="npc-head"></div><div class="npc-shadow"></div>
+      <div class="name-tag">Coal</div>
+    </div>
+  </div>
+
+  <!-- ============ ZONE 3: TREELINE (right) ============ -->
+  <div class="zone zone-treeline">
+    <div class="zone-name">Treeline</div>
+    <!-- Back wall here is darker — the treeline -->
+    <div class="back-wall" style="background: linear-gradient(to bottom, #0d0f08 0%, #15170e 100%); opacity: 0.8;"></div>
+
+    <!-- Forage spots (4) -->
+    <div class="ground-obj forage-spot" data-action="open" data-screen="forage" data-label="Forage"
+         style="bottom: 38%; left: 18%; width: 56px; height: 56px;" tabindex="0" role="button">
+      <div style="font-size: 22px; color: var(--botanical);">❀</div>
+    </div>
+    <div class="ground-obj forage-spot" data-action="open" data-screen="forage" data-label="Forage"
+         style="bottom: 25%; left: 30%; width: 56px; height: 56px;" tabindex="0" role="button">
+      <div style="font-size: 22px; color: var(--botanical);">✦</div>
+    </div>
+    <div class="ground-obj forage-spot" data-action="open" data-screen="forage" data-label="Forage"
+         style="bottom: 50%; right: 35%; width: 56px; height: 56px;" tabindex="0" role="button">
+      <div style="font-size: 22px; color: var(--botanical);">◇</div>
+    </div>
+
+    <!-- Hunting party (Fox, Mugwort, Falcon) -->
+    <div class="npc" data-cat="Animal" data-action="speak" data-with="Fox"
+         style="bottom: 18%; left: 18%;" tabindex="0" role="button" aria-label="Fox">
+      <div class="npc-body"></div><div class="npc-head"></div><div class="npc-shadow"></div>
+      <div class="name-tag">Fox</div>
+    </div>
+    <div class="npc" data-cat="Botanical" data-action="speak" data-with="Mugwort"
+         style="bottom: 18%; left: 38%;" tabindex="0" role="button" aria-label="Mugwort">
+      <div class="npc-body"></div><div class="npc-head"></div><div class="npc-shadow"></div>
+      <div class="name-tag">Mugwort</div>
+    </div>
+    <div class="npc" data-cat="Animal" data-action="speak" data-with="Falcon"
+         style="bottom: 18%; right: 35%;" tabindex="0" role="button" aria-label="Falcon">
+      <div class="npc-body"></div><div class="npc-head"></div><div class="npc-shadow"></div>
+      <div class="name-tag">Falcon</div>
+    </div>
+
+    <!-- Deeper path (Hollow encounter trigger) -->
+    <div class="ground-obj deeper" data-action="enter-reasoning" data-label="Deeper path"
+         style="bottom: 18%; right: 10%; width: 70px; height: 70px;" tabindex="0" role="button">
+      <div style="font-size: 26px; color: var(--ink-dim);">▒</div>
+    </div>
+  </div>
+
+  <!-- Ground paths between zones -->
+  <div class="ground-path path-1"></div>
+  <div class="ground-path path-2"></div>
+
+  <!-- Fennel (player) — starts in shop zone, will move between zones -->
+  <div class="fennel" id="fennel" style="bottom: 18%; left: 16%;">
+    <div class="fennel-shadow"></div>
+    <div class="fennel-body"></div>
+    <div class="fennel-head"></div>
+  </div>
+</div>
+
+<!-- ============ DIALOGUE (VN) ============ -->
+<div id="dialogue" role="dialog" aria-live="polite" aria-label="Dialogue">
+  <div class="dlg-frame">
+    <div class="dlg-portrait" id="dlg-portrait" data-cat="Botanical">
+      <span id="dlg-portrait-glyph">·</span>
+    </div>
+    <div class="dlg-body">
+      <div class="dlg-name"><span class="who" id="dlg-who">Speaker</span></div>
+      <p class="dlg-text" id="dlg-text">…</p>
+      <div class="dlg-advance">
+        <span class="hint">Space / Enter to continue</span>
+        <button class="btn" id="dlg-advance">Continue</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ INVENTORY (RE pause) ============ -->
+<div id="inventory" role="dialog" aria-label="Inventory">
+  <div class="inv-panel">
+    <div class="inv-header">
+      <div class="inv-title">Satchel</div>
+      <div class="inv-close-hint">Esc / I to close</div>
+    </div>
+    <div class="inv-grid" id="inv-grid"></div>
+    <div class="inv-detail" id="inv-detail">
+      <div class="empty">Select an item to examine</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ BREWING ============ -->
+<div id="brewing" role="dialog" aria-label="Brewing">
+  <div class="brew-panel">
+    <div class="brew-header">
+      <div class="brew-title">Brewing bench</div>
+      <button class="btn ghost" data-action="close-modal">Close (Esc)</button>
+    </div>
+    <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-dim);margin:0 0 14px;">What you have in hand and what it becomes</p>
+    <div id="recipe-list"></div>
+  </div>
+</div>
+
+<!-- ============ LOAM'S STALL ============ -->
+<div id="loam" class="modal-veil" role="dialog" aria-label="Loam's stall">
+  <div class="modal-box">
+    <div class="modal-eyebrow">Loam's stall</div>
+    <p class="modal-text">"Take what you need. Pay what you can. The rest of it writes itself."</p>
+    <div class="choice-grid" id="loam-grid"></div>
+    <div class="modal-actions" style="margin-top: 18px;">
+      <button class="btn ghost" data-action="close-modal">Step away</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ WEASEL'S COUNTER ============ -->
+<div id="weasel" class="modal-veil" role="dialog" aria-label="Weasel's counter">
+  <div class="modal-box">
+    <div class="modal-eyebrow">Weasel's counter</div>
+    <p class="modal-text" id="weasel-text">He opens the ledger before you say anything. He is waiting to see what you have.</p>
+    <div class="sell-grid" id="weasel-sell"></div>
+    <div class="modal-actions" style="margin-top: 18px;">
+      <button class="btn ghost" data-action="close-modal">Step away</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FORAGE ============ -->
+<div id="forage" class="modal-veil" role="dialog" aria-label="Forage">
+  <div class="modal-box">
+    <div class="modal-eyebrow">Forage</div>
+    <p class="modal-text">What the edge will give today. Take only what you'll use.</p>
+    <div class="choice-grid" id="forage-grid"></div>
+    <div class="modal-actions" style="margin-top: 18px;">
+      <button class="btn ghost" data-action="close-modal">Step away</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LEDGER (read-only diegetic) ============ -->
+<div id="ledger-screen" class="modal-veil" role="dialog" aria-label="Ledger">
+  <div class="modal-box">
+    <div class="modal-eyebrow">Your ledger</div>
+    <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-dim);margin:0 0 8px;">Your own hand. No tags.</p>
+    <div class="ledger-content" id="ledger"></div>
+    <div class="modal-actions" style="margin-top: 18px;">
+      <button class="btn ghost" data-action="close-modal">Close (Esc)</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ REASONING (Hollow) ============ -->
+<div id="reasoning" class="modal-veil" role="dialog" aria-label="Reasoning window">
+  <div class="modal-box">
+    <div class="modal-eyebrow">A reading</div>
+    <div class="modal-text">
+      <p>It is standing at the place where the path bends toward the marsh. It is standing the way people stand when they have forgotten what they were going to do next.</p>
+      <p>Its hands are open. One of them is holding something — a small, dented tin cup, with a chip out of the rim. The cup is the kind a person would keep for a long time. The cup is being held in the way a person holds a thing they have just picked up again and do not yet remember the use of.</p>
+      <p>It is not looking at you. It is looking at the cup. Its shoulders move with its breath, and the breath is the loudest thing.</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" data-action="reasoning-done">I'm ready</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ COMBAT (FF-style) ============ -->
+<div id="combat" role="dialog" aria-label="Encounter">
+  <div class="combat-stage">
+    <div class="combat-turn-banner" id="combat-turn">Fennel's turn</div>
+    <div class="combat-log" id="combat-log"></div>
+    <div class="combat-fennel">
+      <div class="fennel-shadow"></div>
+      <div class="fennel-body"></div>
+      <div class="fennel-head"></div>
+    </div>
+    <div class="combat-hollow-shadow"></div>
+    <div class="combat-hollow"></div>
+    <div class="combat-hollow-cup"></div>
+  </div>
+  <div class="combat-menu">
+    <div class="combat-menu-grid" id="combat-menu-grid">
+      <button class="combat-cmd" data-action="combat-scythe">Scythe<span class="desc">A harvesting stroke. The motion you know.</span></button>
+      <button class="combat-cmd" data-action="combat-sachet">Sachet<span class="desc">A volatile from the satchel. Thrown.</span></button>
+      <button class="combat-cmd" data-action="combat-disengage">Disengage<span class="desc">Set the scythe down. Step back.</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MEAL / CLOSING ============ -->
+<div id="meal" role="dialog" aria-label="Meal">
+  <div class="meal-panel">
+    <div class="meal-eyebrow" id="meal-eyebrow">Morning</div>
+    <h2 class="meal-title" id="meal-title">Breakfast</h2>
+    <p class="meal-text" id="meal-text"></p>
+    <div class="meal-actions" id="meal-actions"></div>
+  </div>
+</div>
+
+<div id="closing" role="dialog" aria-label="Day 1 closing">
+  <div class="closing-box">
+    <h2>Day 1, kept.</h2>
+    <p>The shop is closed. The ledger has its line. The tin cup, somewhere in the deeper path, is still being held.</p>
+    <button class="btn" data-action="close-closing">Close the day</button>
+  </div>
+</div>
+
+<script>
+/* ===========================================================
+   BREW the WORLD — Day 1 (visual novel × classic FF × action)
+   Design rules (DO NOT VIOLATE):
+   - No visible relationship/trust/reputation meters
+   - No HP/combat counters surfaced as numbers
+   - War-supply and local-use recipes: visually identical UI
+   - Dialogue box chrome: identical across all speakers
+   =========================================================== */
+
+/* ---------- DATA ---------- */
+const CHARACTERS = {
+  Cedar:    { category: 'Botanical', glyph: 'C' },
+  Sage:     { category: 'Botanical', glyph: 'S' },
+  Kirkwood: { category: 'Botanical', glyph: 'K' },
+  Clover:   { category: 'Botanical', glyph: 'C' },
+  Daisy:    { category: 'Botanical', glyph: 'D' },
+  Fox:      { category: 'Animal',    glyph: 'F' },
+  Mugwort:  { category: 'Botanical', glyph: 'M' },
+  Falcon:   { category: 'Animal',    glyph: 'F' },
+  Coal:     { category: 'Elemental', glyph: 'C' },
+  Millet:   { category: 'Food',      glyph: 'M' },
+  Ferret:   { category: 'Animal',    glyph: 'F' },
+  Badger:   { category: 'Animal',    glyph: 'B' },
+  Loam:     { category: 'Elemental', glyph: 'L' },
+  Weasel:   { category: 'Animal',    glyph: 'W' },
+  Marigold: { category: 'Botanical', glyph: 'M' },
+  Barley:   { category: 'Food',      glyph: 'B' },
+};
+
+const DIALOGUE = {
+  Cedar:    ["He looks at the folded coat, then at you, then past you. \"Inventory's short. Tell Loam.\""],
+  Sage:     ["She passes you a cup without being asked. \"You were up early. Eat something before the market.\""],
+  Kirkwood: ["\"I'm writing a piece. About the village. The village as it actually is.\" He smiles like someone who is going to learn whether that was a mistake."],
+  Clover:   ["Small noise from upstairs. It means: she's awake, she's fine, she knows where you are."],
+  Daisy:    ["A quieter noise. It means the same thing, softer."],
+  Fox:      ["\"Edge is loud today. Loud in the way that means something is being careful.\""],
+  Mugwort:  ["She doesn't look up. \"It heard you before you heard it. That's the only thing I know right now.\""],
+  Falcon:   ["Eventually: \"My father says some edges aren't edges. I think he means people.\""],
+  Coal:     ["\"Broom's longer than it used to be.\" He grins. \"Means the forge is louder than it used to be.\""],
+  Millet:   ["\"Ma said not to round. I didn't round.\" A pause. \"Today.\""],
+  Ferret:   ["\"I'm running an errand.\" He is carrying a wrapped bundle with the kind of care that says it is more than an errand. He doesn't say more."],
+  Badger:   ["The hammer falls. He doesn't look up. After a beat: \"The blade's ready when you are.\""],
+  Marigold: ["\"Your mother is well, I hope.\" She doesn't wait for an answer. \"I think she is. I think so.\""],
+  Barley:   ["He is at the edge of the square, uniform coat on, not looking at anyone in particular. He has a requisition clipboard. He is not, today, using it. He nods at you, once, the way he nods at everyone."],
+};
+
+const WEASEL_LENIENCY = [
+  { who: "Weasel", text: "He opens the ledger before you say anything. He writes the sale in without looking up." },
+  { who: "Weasel", text: "\"One.\" He says it to the page, not to you. Then, softer: \"Fennel.\" The way he says your name is the way he always says it, and not the way he always says it." },
+  { who: "Weasel", text: "\"Your mother's ledgers are always clean. Yours will be too.\" He closes the book." },
+  { who: "Weasel", text: "\"Go home before the light goes.\" A pause that means more than a pause. \"Sage would want you to.\"" },
+];
+
+/* Recipes. The 'kind' tag is INTERNAL ONLY. */
+const RECIPES = [
+  { name: "Cedar-tincture", needs: ["mugwort", "spring water"], result: "Cedar-tincture", kind: "local", desc: "A bitter tea. Cedar takes it for his back." },
+  { name: "Restorative",    needs: ["mugwort", "spring water"], result: "Restorative",    kind: "local", desc: "A warm drink that helps the body remember being well." },
+  { name: "Ginger cordial", needs: ["ginger root", "spring water"], result: "Ginger cordial", kind: "local", desc: "Loam's recipe. Sharp and bright." },
+  { name: "Field-restore",  needs: ["ginger root", "spring water"], result: "Field-restore",  kind: "supply", desc: "Restorative for the field. Same warmth, wider reach." },
+];
+
+const FORAGE = [
+  { name: "mugwort",      glyph: "❀", desc: "Soft grey-green leaves. Bitter when brewed alone." },
+  { name: "ginger root",  glyph: "✦", desc: "Sharp and warm. Found at the base of the older plants." },
+  { name: "spring water", glyph: "◇", desc: "Cold. The spring at the treeline never runs dry." },
+  { name: "yarrow",       glyph: "△", desc: "White flowers. Stops bleeding when ground and pressed." },
+];
+
+/* ---------- STATE ---------- */
+const state = {
+  time: 'Morning',
+  satchel: [],
+  ledger: [],
+  firstSaleDone: false,
+  morningEaten: false,
+  combatTurn: 0,
+  inDialogue: false,
+  dialogueQueue: [],
+  invOpen: false,
+  selectedItem: null,
+  fennelZone: 'shop', // shop | market | treeline
+};
+
+/* ---------- HELPERS ---------- */
+function categoryClass(cat) {
+  const c = cat.toLowerCase();
+  if (c.includes('food')) return 'food';
+  if (c.includes('animal')) return 'animal';
+  if (c.includes('elemental')) return 'elemental';
+  if (c.includes('botanical')) return 'botanical';
+  return 'elemental';
+}
+function inSatchel(name) { return state.satchel.filter(s => s === name).length; }
+function hasAll(needs) {
+  const c = {};
+  state.satchel.forEach(s => { c[s] = (c[s] || 0) + 1; });
+  return needs.every(n => (c[n] || 0) > 0);
+}
+function addToSatchel(name) { state.satchel.push(name); }
+function removeFromSatchel(name, n = 1) {
+  let r = 0;
+  state.satchel = state.satchel.filter(s => {
+    if (s === name && r < n) { r++; return false; }
+    return true;
+  });
+}
+function consumeNeeds(needs) { needs.forEach(n => removeFromSatchel(n, 1)); }
+function findItem(name) { return FORAGE.find(f => f.name === name) || RECIPES.find(r => r.result === name) || null; }
+function isBrewed(name) { return RECIPES.some(r => r.result === name); }
+
+/* ---------- FENNEL: ZONE-AWARE POSITIONING ---------- */
+const ZONE_BOUNDS = {
+  shop:     { xMin: 0,    xMax: 33.333 },
+  market:   { xMin: 33.333, xMax: 66.666 },
+  treeline: { xMin: 66.666, xMax: 100  },
+};
+
+function fennelAt(zonePct) {
+  // zonePct: 0–1 within the zone
+  const b = ZONE_BOUNDS[state.fennelZone];
+  const x = b.xMin + zonePct * (b.xMax - b.xMin);
+  document.getElementById('fennel').style.left = `${x}%`;
+}
+
+function moveFennel(dx, dy) {
+  if (state.invOpen || state.inDialogue || document.querySelector('.modal-veil.open') || document.getElementById('combat').classList.contains('open') || document.getElementById('meal').classList.contains('open') || document.getElementById('closing').classList.contains('open')) return;
+  const f = document.getElementById('fennel');
+  const cur = parseFloat(f.style.left) || 16;
+  const curB = parseFloat(f.style.bottom) || 18;
+  const next = Math.max(0, Math.min(100, cur + dx));
+  const nextB = Math.max(8, Math.min(85, curB + dy));
+  f.style.left = `${next}%`;
+  f.style.bottom = `${nextB}%`;
+  // Update zone based on x
+  if (next < 33) state.fennelZone = 'shop';
+  else if (next < 66) state.fennelZone = 'market';
+  else state.fennelZone = 'treeline';
+}
+
+document.addEventListener('keydown', (e) => {
+  const k = e.key.toLowerCase();
+  if (state.invOpen || state.inDialogue) {
+    if (e.key === 'Escape') {
+      if (state.inDialogue) closeDialogue();
+      else if (state.invOpen) closeInventory();
+    }
+    return;
+  }
+  if (document.querySelector('.modal-veil.open') || document.getElementById('combat').classList.contains('open') || document.getElementById('meal').classList.contains('open') || document.getElementById('closing').classList.contains('open')) {
+    if (e.key === 'Escape') closeAnyOpen();
+    return;
+  }
+  if (k === 'arrowleft' || k === 'a') { e.preventDefault(); moveFennel(-5, 0); }
+  else if (k === 'arrowright' || k === 'd') { e.preventDefault(); moveFennel(5, 0); }
+  else if (k === 'arrowup' || k === 'w') { e.preventDefault(); moveFennel(0, 5); }
+  else if (k === 'arrowdown' || k === 's') { e.preventDefault(); moveFennel(0, -5); }
+  else if (k === 'i' || k === 'e' || k === 'tab') { e.preventDefault(); toggleInventory(); }
+});
+
+/* ---------- INVENTORY ---------- */
+function toggleInventory() {
+  if (state.invOpen) closeInventory();
+  else openInventory();
+}
+function openInventory() {
+  state.invOpen = true;
+  renderInventory();
+  document.getElementById('inventory').classList.add('open');
+}
+function closeInventory() {
+  state.invOpen = false;
+  document.getElementById('inventory').classList.remove('open');
+}
+function renderInventory() {
+  const grid = document.getElementById('inv-grid');
+  const slots = [];
+  for (let i = 0; i < 12; i++) {
+    const item = state.satchel[i];
+    if (item) {
+      const info = findItem(item);
+      slots.push(`
+        <div class="inv-slot" data-action="examine" data-name="${item}" tabindex="0" role="button" aria-label="${item}">
+          <div class="glyph">${info?.glyph || '·'}</div>
+          <div class="label">${item}</div>
+        </div>
+      `);
+    } else {
+      slots.push(`<div class="inv-slot empty" aria-hidden="true"></div>`);
+    }
+  }
+  grid.innerHTML = slots.join('');
+}
+function examineItem(name) {
+  const info = findItem(name);
+  const el = document.getElementById('inv-detail');
+  if (info) {
+    el.innerHTML = `<div class="name">${info.name || info.result}</div><div class="desc">${info.desc || ''}</div>`;
+  } else {
+    el.innerHTML = `<div class="name">${name}</div><div class="desc">—</div>`;
+  }
+}
+
+/* ---------- BREWING ---------- */
+function openBrewing() {
+  renderRecipes();
+  document.getElementById('brewing').classList.add('open');
+}
+function renderRecipes() {
+  const el = document.getElementById('recipe-list');
+  el.innerHTML = RECIPES.map((r, i) => {
+    const ready = hasAll(r.needs);
+    return `
+      <div class="recipe-row">
+        <div class="recipe-info">
+          <div class="name">${r.name}</div>
+          <div class="needs">${r.needs.join(' · ')}</div>
+        </div>
+        <button class="btn ${ready ? '' : 'ghost'}" data-action="brew" data-recipe="${i}" ${ready ? '' : 'disabled'}>${ready ? 'Brew' : 'Need ingredients'}</button>
+      </div>
+    `;
+  }).join('');
+}
+function brewRecipe(i) {
+  const r = RECIPES[i];
+  if (!hasAll(r.needs)) return;
+  consumeNeeds(r.needs);
+  addToSatchel(r.result);
+  renderRecipes();
+}
+
+/* ---------- LOAM'S STALL (buy) ---------- */
+function openLoam() {
+  const grid = document.getElementById('loam-grid');
+  grid.innerHTML = FORAGE.map(f => `
+    <button class="choice-btn" data-action="buy" data-name="${f.name}">
+      <span class="glyph">${f.glyph}</span>
+      <span>${f.name}</span>
+    </button>
+  `).join('');
+  document.getElementById('loam').classList.add('open');
+}
+function buy(name) {
+  addToSatchel(name);
+  openLoam();
+}
+
+/* ---------- WEASEL'S COUNTER (sell) ---------- */
+function openWeasel() {
+  const grid = document.getElementById('weasel-sell');
+  const brews = [...new Set(state.satchel)].filter(s => isBrewed(s));
+  if (!brews.length) {
+    grid.innerHTML = '<p style="font-family: \'Spectral\', serif; font-style: italic; color: var(--ink-dim); margin: 14px 0;">You have nothing brewed to sell yet.</p>';
+  } else {
+    grid.innerHTML = brews.map(name => `
+      <div class="sell-row">
+        <span class="item">${name}</span>
+        <button class="btn" data-action="sell" data-name="${name}">Sell</button>
+      </div>
+    `).join('');
+  }
+  document.getElementById('weasel').classList.add('open');
+}
+function sell(name) {
+  removeFromSatchel(name, 1);
+  state.ledger.push({ name, time: state.time });
+  if (!state.firstSaleDone) {
+    state.firstSaleDone = true;
+    closeAnyOpen();
+    openDialogue(WEASEL_LENIENCY);
+    state.dialogueQueue.push({ who: '__DINNER__', text: '' });
+  } else {
+    openWeasel();
+  }
+}
+
+/* ---------- FORAGE ---------- */
+function openForage() {
+  const grid = document.getElementById('forage-grid');
+  grid.innerHTML = FORAGE.map(f => `
+    <button class="choice-btn" data-action="forage" data-name="${f.name}">
+      <span class="glyph">${f.glyph}</span>
+      <span>${f.name}</span>
+    </button>
+  `).join('');
+  document.getElementById('forage').classList.add('open');
+}
+function forage(name) {
+  addToSatchel(name);
+  openForage();
+}
+
+/* ---------- LEDGER ---------- */
+function openLedger() {
+  renderLedger();
+  document.getElementById('ledger-screen').classList.add('open');
+}
+function renderLedger() {
+  const el = document.getElementById('ledger');
+  if (!state.ledger.length) {
+    el.innerHTML = '<p class="ledger-empty">No sales yet today.</p>';
+    return;
+  }
+  el.innerHTML = state.ledger.map(line => `
+    <div class="ledger-line"><span>${line.name}</span><span>${line.time}</span></div>
+  `).join('');
+}
+
+/* ---------- DIALOGUE (VN) ---------- */
+function openDialogue(queue) {
+  state.inDialogue = true;
+  state.dialogueQueue = queue.slice();
+  document.getElementById('dialogue').classList.add('open');
+  advanceDialogue();
+}
+function advanceDialogue() {
+  if (state.dialogueQueue.length) {
+    const head = state.dialogueQueue[0];
+    if (head.who === '__DINNER__') {
+      state.dialogueQueue = [];
+      closeDialogue();
+      promptDinner();
+      return;
+    }
+    if (head.who === '__CLOSING__') {
+      state.dialogueQueue = [];
+      closeDialogue();
+      document.getElementById('closing').classList.add('open');
+      return;
+    }
+  }
+  if (!state.dialogueQueue.length) { closeDialogue(); return; }
+  const line = state.dialogueQueue.shift();
+  const who = line.who;
+  const cat = CHARACTERS[who]?.category || 'Botanical';
+  const color = `var(--${categoryClass(cat)})`;
+  const glyph = CHARACTERS[who]?.glyph || '·';
+  document.getElementById('dlg-who').innerHTML = `<span class="who" style="color:${color}">${who}</span>`;
+  document.getElementById('dlg-portrait').setAttribute('data-cat', cat);
+  document.getElementById('dlg-portrait-glyph').textContent = glyph;
+  document.getElementById('dlg-text').textContent = line.text;
+}
+function closeDialogue() {
+  state.inDialogue = false;
+  state.dialogueQueue = [];
+  document.getElementById('dialogue').classList.remove('open');
+}
+function speakWith(name) {
+  const lines = DIALOGUE[name] || [`${name} has nothing to say right now.`];
+  openDialogue(lines.map(text => ({ who: name, text })));
+}
+
+/* ---------- REASONING + COMBAT (FF-style) ---------- */
+function openReasoning() { document.getElementById('reasoning').classList.add('open'); }
+function closeReasoning() { document.getElementById('reasoning').classList.remove('open'); }
+function openCombat() {
+  state.combatTurn = 0;
+  document.getElementById('combat-log').innerHTML = '';
+  document.getElementById('combat-turn').textContent = "Fennel's turn";
+  document.getElementById('combat-menu-grid').innerHTML = `
+    <button class="combat-cmd" data-action="combat-scythe">Scythe<span class="desc">A harvesting stroke. The motion you know.</span></button>
+    <button class="combat-cmd" data-action="combat-sachet">Sachet<span class="desc">A volatile from the satchel. Thrown.</span></button>
+    <button class="combat-cmd" data-action="combat-disengage">Disengage<span class="desc">Set the scythe down. Step back.</span></button>
+  `;
+  document.getElementById('combat').classList.add('open');
+}
+function appendCombatLog(text) {
+  const el = document.getElementById('combat-log');
+  el.innerHTML += `<div>${text}</div>`;
+}
+function endCombat(resolution) {
+  document.getElementById('combat-turn').textContent = resolution;
+  document.getElementById('combat-menu-grid').innerHTML = `
+    <button class="combat-cmd" data-action="combat-close" style="grid-column: 1 / -1; text-align: center;">Step away</button>
+  `;
+}
+function closeCombat() { document.getElementById('combat').classList.remove('open'); }
+
+/* ---------- MEALS ---------- */
+function promptMorningMeal() {
+  document.getElementById('meal-eyebrow').textContent = 'Morning · Day 1';
+  document.getElementById('meal-title').textContent = 'Breakfast';
+  document.getElementById('meal-text').textContent =
+    "The kitchen is already warm. Sage is at the stove. Clover is setting the long table. Cedar's chair is empty — he is already at the requisition window, or he never sat down. Sage sets a bowl in front of you without a word about it.";
+  document.getElementById('meal-actions').innerHTML = `
+    <button class="btn" data-action="meal-morning-eat">Sit down</button>
+    <button class="btn ghost" data-action="meal-morning-skip">Eat later</button>
+  `;
+  document.getElementById('meal').classList.add('open');
+}
+function finishMorningMeal() {
+  state.morningEaten = true;
+  document.getElementById('meal').classList.remove('open');
+  state.time = 'Midday';
+  document.getElementById('clock').textContent = state.time;
+}
+function promptDinner() {
+  document.getElementById('meal-eyebrow').textContent = 'Evening · Day 1';
+  document.getElementById('meal-title').textContent = 'Dinner';
+  document.getElementById('meal-text').textContent =
+    "The shop is closed. The kitchen smells of ginger and something else you don't quite place. Sage is at the stove. Kirkwood is at the window again, notebook closed. Cedar is at the table, coat folded, not looking at it. The chair across from him is yours.";
+  document.getElementById('meal-actions').innerHTML = `
+    <button class="btn" data-action="meal-dinner-eat">Sit down</button>
+    <button class="btn ghost" data-action="meal-dinner-skip">Not yet</button>
+  `;
+  document.getElementById('meal').classList.add('open');
+}
+function finishDinnerMeal() {
+  state.dinnerEaten = true;
+  document.getElementById('meal').classList.remove('open');
+  document.getElementById('closing').classList.add('open');
+}
+
+/* ---------- CLOSE HELPERS ---------- */
+function closeAnyOpen() {
+  document.querySelectorAll('.modal-veil.open').forEach(m => m.classList.remove('open'));
+  document.getElementById('brewing').classList.remove('open');
+  if (state.invOpen) closeInventory();
+  if (state.inDialogue) closeDialogue();
+}
+
+/* ---------- EVENT WIRING ---------- */
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-action]');
+  if (!t) return;
+  const action = t.dataset.action;
+  switch (action) {
+    case 'open':
+      if (t.dataset.screen === 'brewing') openBrewing();
+      else if (t.dataset.screen === 'ledger') openLedger();
+      else if (t.dataset.screen === 'forage') openForage();
+      else if (t.dataset.screen === 'loam') openLoam();
+      else if (t.dataset.screen === 'weasel') openWeasel();
+      break;
+    case 'speak': speakWith(t.dataset.with); break;
+    case 'buy': buy(t.dataset.name); break;
+    case 'sell': sell(t.dataset.name); break;
+    case 'forage': forage(t.dataset.name); break;
+    case 'brew': brewRecipe(parseInt(t.dataset.recipe, 10)); break;
+    case 'examine': examineItem(t.dataset.name); break;
+    case 'enter-reasoning': openReasoning(); break;
+    case 'reasoning-done': closeReasoning(); openCombat(); break;
+    case 'combat-scythe': {
+      state.combatTurn++;
+      appendCombatLog("You swing the scythe. The motion is the same as the one you use cutting yarrow — just faster, just less careful. The Hollow steps back. The tin cup doesn't fall.");
+      if (state.combatTurn >= 3) endCombat("The Hollow is no longer on the path. Whether it left or was driven, the path home is open.");
+      break;
+    }
+    case 'combat-sachet': {
+      state.combatTurn++;
+      appendCombatLog("You throw the sachet. It bursts against the Hollow's shoulder — the same way sachets burst against a stubborn shelf. The Hollow flinches. The cup falls into the grass.");
+      if (state.combatTurn >= 2) endCombat("The Hollow looks at the cup in the grass. It does not pick the cup up. After a long moment, it walks into the trees.");
+      break;
+    }
+    case 'combat-disengage': endCombat("You set the scythe down. The Hollow watches. The path is the path. You step back, and the Hollow does not follow."); break;
+    case 'combat-close': closeCombat(); break;
+    case 'close-modal': closeAnyOpen(); break;
+    case 'close-closing': document.getElementById('closing').classList.remove('open'); break;
+    case 'meal-morning-eat':
+    case 'meal-morning-skip': finishMorningMeal(); break;
+    case 'meal-dinner-eat':
+    case 'meal-dinner-skip': finishDinnerMeal(); break;
+  }
+});
+
+/* Space/Enter advances dialogue; I/Tab opens inventory */
+document.addEventListener('keydown', (e) => {
+  if (state.inDialogue && (e.key === ' ' || e.key === 'Enter')) {
+    e.preventDefault();
+    advanceDialogue();
+  } else if (e.key === 'i' || e.key === 'I') {
+    if (!state.inDialogue && !document.querySelector('.modal-veil.open') && !document.getElementById('brewing').classList.contains('open') && !document.getElementById('combat').classList.contains('open') && !document.getElementById('meal').classList.contains('open') && !document.getElementById('closing').classList.contains('open')) {
+      e.preventDefault();
+      toggleInventory();
+    }
+  }
+});
+
+document.getElementById('dlg-advance').addEventListener('click', advanceDialogue);
+
+/* ---------- BOOT ---------- */
+promptMorningMeal();
+</script>
+</body>
+</html>
