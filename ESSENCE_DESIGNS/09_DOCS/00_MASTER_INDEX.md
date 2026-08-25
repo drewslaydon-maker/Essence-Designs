@@ -27,3 +27,7 @@ Independent developer and content creator running several long-term, interconnec
 ## Naming/notes for new agents
 - Don't treat raw enthusiasm as design lock-in — Drew distinguishes between "explored" and "decided." Where a doc below says "locked," treat it as locked. Where it says "proposed" or "open," ask before building on it.
 - Drew will likely bring updates from the original Claude instance ("the overseer") periodically — treat those as authoritative deltas to these seed docs, not competing sources.
+
+
+
+THIS IS OUTDATED AS OF 8/25 2:05 am. not factual and needs updating

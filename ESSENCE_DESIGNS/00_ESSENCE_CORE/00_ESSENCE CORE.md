@@ -32,7 +32,7 @@ last touched: Drew 8/25 12:20 am
 
 &#x09;
 
-&#x09;Prosis Basis: https://claude.ai/public/artifacts/75ce121e-7948-499e-ae9b-b365f3196d02
+&#x09;Prosis Basis: https://claude.ai/public/artifacts/a5f21807-a0fb-4b86-a3ab-b6c8d1e4f6e6
 
 &#x09;	played by Myself, Julia and Phil/Step-Dad. Viewed by Brother Aaron.
 
