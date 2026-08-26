@@ -80,41 +80,41 @@ Independent developer and content creator running several long-term, interconnec
 
 ---
 
-##  PART 4: CANONICAL FOLDER MAP
+## PART 4: CANONICAL FOLDER MAP
 
 `	ext
 ESSENCE_DESIGNS/
-+-- 00_ESSENCE_CORE/            # Operating philosophy & Master Bible
-¦   +-- 00_ESSENCE_BIBLE.md     # Studio Bible & canonical repository index
-¦   +-- 00_ESSENCE_PAD.md       # Operational engine & active notes
-+-- DOCS/                       # System architecture & documentation
-¦   +-- SYSTEM_ARCH.md
-¦   +-- placeholder.md
-+-- GAME_DEV/                   # Studio game projects
-¦   +-- 01_BtW/                 # Brew the World — narrative shopkeeping game
-¦   ¦   +-- BtW Cast/           # Cast bible, codex, relationship chain, character folders
-¦   ¦   +-- BtW Combat/         # Encounter system
-¦   ¦   +-- BtW Docs/           # Macro structure, seed doc
-¦   ¦   +-- BtW Syle/           # Style bible (typo intentional, matches folder)
-¦   ¦   +-- Vertical Slice/     # VS plan, image suggestions, quickref
-¦   +-- 02_PROSIS/              # The Fracture / Prosis — crew management game (active code)
-¦   +-- 03_SHIPBATTLE/          # PvP naval/space battler manifesto
-¦   +-- 04_COOK_GAME/           # Rhythm cooking sim manifesto
-¦   +-- 05_4500/                # Post-nuclear long-tail manifesto
-¦   +-- 06_JOURNEYS/            # Worldbuilding sandbox & session prep
-¦   ¦   +-- JOURNEYS UNTO/      # Character, moment, & location subfolders
-¦   +-- 07_MY_ZELDA/            # Legend of the Source — Action-RPG design root
-¦   +-- 08_BOARDROOM/           # The Boardroom — 2-8 player party tactics design
-¦   +-- 09_METROID_SOUL_VANIA/  # Ashen & Ink — Dark Metroidvania mechanics folder
-¦   +-- 10_STAGEnSADDLE/        # Stage & Saddle — Psychological Western narrative docs
-¦   +-- 11_MAGIC_HANDS/         # Arcane Trigger — Hand-magic retro FPS engine R&D
-+-- ME/                         # Creator profile, media, & personal plans
-    +-- 00_IRL_PLANS/           # Personal travel & language reference
-    +-- 01_VIDEOS/              # Video essay series & scripts
-    +-- 02_STREAM/              # Stream marathon setup & notes
-    +-- 03_JUJU/                # Shared context & core drive (Drew & Julia)
-    +-- 04_MaMa/                # Mama Jo's Cookbook system plans
-    +-- TEACHING/               # Conceptual sandbox & design theory brain dump
+├── 00_ESSENCE_CORE/            # Operating philosophy & Master Bible
+│   ├── 00_ESSENCE_BIBLE.md     # Studio Bible & canonical repository index
+│   └── 00_ESSENCE_PAD.md       # Operational engine & active notes
+├── DOCS/                       # System architecture & documentation
+│   ├── SYSTEM_ARCH.md
+│   └── placeholder.md
+├── GAME_DEV/                   # Studio game projects
+│   ├── 01_BtW/                 # Brew the World - narrative shopkeeping game
+│   │   ├── BtW Cast/           # Cast bible, codex, relationship chain, character folders
+│   │   ├── BtW Combat/         # Encounter system
+│   │   ├── BtW Docs/           # Macro structure, seed doc
+│   │   ├── BtW Syle/           # Style bible (typo intentional, matches folder)
+│   │   └── Vertical Slice/     # VS plan, image suggestions, quickref
+│   ├── 02_PROSIS/              # The Fracture / Prosis - crew management game (active code)
+│   ├── 03_SHIPBATTLE/          # PvP naval/space battler manifesto
+│   ├── 04_COOK_GAME/           # Rhythm cooking sim manifesto
+│   ├── 05_4500/                # Post-nuclear long-tail manifesto
+│   ├── 06_JOURNEYS/            # Worldbuilding sandbox & session prep
+│   │   └── JOURNEYS UNTO/      # Character, moment, & location subfolders
+│   ├── 07_MY_ZELDA/            # Legend of the Source - Action-RPG design root
+│   ├── 08_BOARDROOM/           # The Boardroom - 2-8 player party tactics design
+│   ├── 09_METROID_SOUL_VANIA/  # Ashen & Ink - Dark Metroidvania mechanics folder
+│   ├── 10_STAGEnSADDLE/        # Stage & Saddle - Psychological Western narrative docs
+│   └── 11_MAGIC_HANDS/         # Arcane Trigger - Hand-magic retro FPS engine R&D
+└── ME/                         # Creator profile, media, & personal plans
+    ├── 00_IRL_PLANS/           # Personal travel & language reference
+    ├── 01_VIDEOS/              # Video essay series & scripts
+    ├── 02_STREAM/              # Stream marathon setup & notes
+    ├── 03_JUJU/                # Shared context & core drive (Drew & Julia)
+    ├── 04_MaMa/                # Mama Jo's Cookbook system plans
+    └── TEACHING/               # Conceptual sandbox & design theory brain dump
 `
 
 ---
