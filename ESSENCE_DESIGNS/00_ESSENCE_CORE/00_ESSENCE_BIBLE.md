@@ -1,13 +1,13 @@
-# ESSENCE DESIGNS — Master Index & Machine Bible
+ï»¿# ESSENCE DESIGNS â€” Master Index & Machine Bible
 
 *Last refreshed: 2026-08-26. Workspace master bible for ESSENCE DESIGNS.*
 
 ---
 
-## ??? PART 1: WHO DREW IS & WORKING DOCTRINE
+##  PART 1: WHO DREW IS & WORKING DOCTRINE
 
 ### The Profile
-Independent developer and content creator running several long-term, interconnected creative/technical projects in parallel. Treats side projects as scoped R&D sprints with explicit learning goals, not distractions. **Prefers direct pushback over validation** — wants AI collaborators to hold positions under pressure, not fold.
+Independent developer and content creator running several long-term, interconnected creative/technical projects in parallel. Treats side projects as scoped R&D sprints with explicit learning goals, not distractions. **Prefers direct pushback over validation** â€” wants AI collaborators to hold positions under pressure, not fold.
 
 ### Core Working Philosophy
 > **"Simple + Creative + Tested = Good."**  
@@ -39,7 +39,7 @@ Independent developer and content creator running several long-term, interconnec
 
 ---
 
-## ??? PART 2: SYSTEM, TOOLING & LOCAL ENVIRONMENT
+##  PART 2: SYSTEM, TOOLING & LOCAL ENVIRONMENT
 
 ### Hardware Profile & Constraints
 - **GPU VRAM:** 8 GB
@@ -58,7 +58,7 @@ Independent developer and content creator running several long-term, interconnec
 
 ---
 
-## ?? PART 3: THE STUDIO MASTER PROJECT INDEX
+##  PART 3: THE STUDIO MASTER PROJECT INDEX
 
 > **Machine Directive:** Projects marked as **[Parked]** must not be altered, refactored, or worked on unless explicitly requested by Drew.
 
@@ -67,9 +67,9 @@ Independent developer and content creator running several long-term, interconnec
 | 1 | **The Fracture / Prosis** | GAME_DEV/02_PROSIS/ | **Most Active** | Live-runtime verification (browser), Monte Carlo harness, number tuning, visible-state UI pass. |
 | 2 | **Brew the World (BtW)** | GAME_DEV/01_BtW/ | **Active Priority** | Build Day 1 vertical slice (shop + market + foraging path, one Hollow, Weasel beat). |
 | 3 | **Legend of the Source** | GAME_DEV/07_MY_ZELDA/ | **Design Draft** | Top-down Zelda-inspired Action-RPG overworld & puzzle dungeons. |
-| 4 | **The Boardroom** | GAME_DEV/08_BOARDROOM/ | **Design Draft** | Asymmetric 2-8 player party tactics (Jackbox × Chess × Balatro). |
+| 4 | **The Boardroom** | GAME_DEV/08_BOARDROOM/ | **Design Draft** | Asymmetric 2-8 player party tactics (Jackbox Ã— Chess Ã— Balatro). |
 | 5 | **Ashen & Ink** | GAME_DEV/09_METROID_SOUL_VANIA/ | **Design Draft** | 2D side-scrolling Metroidvania / Souls-lite with custom velocity movement. |
-| 6 | **Stage & Saddle** | GAME_DEV/10_STAGEnSADDLE/ | **Narrative Draft** | Psychological Western thriller (Kojima × David Lynch surrealism). |
+| 6 | **Stage & Saddle** | GAME_DEV/10_STAGEnSADDLE/ | **Narrative Draft** | Psychological Western thriller (Kojima Ã— David Lynch surrealism). |
 | 7 | **Arcane Trigger** | GAME_DEV/11_MAGIC_HANDS/ | **Engine R&D** | Retro boomer shooter replacing guns with hand-cast kinetic magic. |
 | 8 | **Journeys Unto** | GAME_DEV/06_JOURNEYS/ | **[Parked]** | Worldbuilding sandbox and tabletop campaign prep hub. |
 | 9 | **Ship Battle** | GAME_DEV/03_SHIPBATTLE/ | **[Parked]** | 2D PvP naval/space battler (post-BtW target). |
@@ -80,34 +80,34 @@ Independent developer and content creator running several long-term, interconnec
 
 ---
 
-## ?? PART 4: CANONICAL FOLDER MAP
+##  PART 4: CANONICAL FOLDER MAP
 
 `	ext
 ESSENCE_DESIGNS/
 +-- 00_ESSENCE_CORE/            # Operating philosophy & Master Bible
-¦   +-- 00_ESSENCE_BIBLE.md     # Studio Bible & canonical repository index
-¦   +-- 00_ESSENCE_PAD.md       # Operational engine & active notes
+Â¦   +-- 00_ESSENCE_BIBLE.md     # Studio Bible & canonical repository index
+Â¦   +-- 00_ESSENCE_PAD.md       # Operational engine & active notes
 +-- DOCS/                       # System architecture & documentation
-¦   +-- SYSTEM_ARCH.md
-¦   +-- placeholder.md
+Â¦   +-- SYSTEM_ARCH.md
+Â¦   +-- placeholder.md
 +-- GAME_DEV/                   # Studio game projects
-¦   +-- 01_BtW/                 # Brew the World — narrative shopkeeping game
-¦   ¦   +-- BtW Cast/           # Cast bible, codex, relationship chain, character folders
-¦   ¦   +-- BtW Combat/         # Encounter system
-¦   ¦   +-- BtW Docs/           # Macro structure, seed doc
-¦   ¦   +-- BtW Syle/           # Style bible (typo intentional, matches folder)
-¦   ¦   +-- Vertical Slice/     # VS plan, image suggestions, quickref
-¦   +-- 02_PROSIS/              # The Fracture / Prosis — crew management game (active code)
-¦   +-- 03_SHIPBATTLE/          # PvP naval/space battler manifesto
-¦   +-- 04_COOK_GAME/           # Rhythm cooking sim manifesto
-¦   +-- 05_4500/                # Post-nuclear long-tail manifesto
-¦   +-- 06_JOURNEYS/            # Worldbuilding sandbox & session prep
-¦   ¦   +-- JOURNEYS UNTO/      # Character, moment, & location subfolders
-¦   +-- 07_MY_ZELDA/            # Legend of the Source — Action-RPG design root
-¦   +-- 08_BOARDROOM/           # The Boardroom — 2-8 player party tactics design
-¦   +-- 09_METROID_SOUL_VANIA/  # Ashen & Ink — Dark Metroidvania mechanics folder
-¦   +-- 10_STAGEnSADDLE/        # Stage & Saddle — Psychological Western narrative docs
-¦   +-- 11_MAGIC_HANDS/         # Arcane Trigger — Hand-magic retro FPS engine R&D
+Â¦   +-- 01_BtW/                 # Brew the World â€” narrative shopkeeping game
+Â¦   Â¦   +-- BtW Cast/           # Cast bible, codex, relationship chain, character folders
+Â¦   Â¦   +-- BtW Combat/         # Encounter system
+Â¦   Â¦   +-- BtW Docs/           # Macro structure, seed doc
+Â¦   Â¦   +-- BtW Syle/           # Style bible (typo intentional, matches folder)
+Â¦   Â¦   +-- Vertical Slice/     # VS plan, image suggestions, quickref
+Â¦   +-- 02_PROSIS/              # The Fracture / Prosis â€” crew management game (active code)
+Â¦   +-- 03_SHIPBATTLE/          # PvP naval/space battler manifesto
+Â¦   +-- 04_COOK_GAME/           # Rhythm cooking sim manifesto
+Â¦   +-- 05_4500/                # Post-nuclear long-tail manifesto
+Â¦   +-- 06_JOURNEYS/            # Worldbuilding sandbox & session prep
+Â¦   Â¦   +-- JOURNEYS UNTO/      # Character, moment, & location subfolders
+Â¦   +-- 07_MY_ZELDA/            # Legend of the Source â€” Action-RPG design root
+Â¦   +-- 08_BOARDROOM/           # The Boardroom â€” 2-8 player party tactics design
+Â¦   +-- 09_METROID_SOUL_VANIA/  # Ashen & Ink â€” Dark Metroidvania mechanics folder
+Â¦   +-- 10_STAGEnSADDLE/        # Stage & Saddle â€” Psychological Western narrative docs
+Â¦   +-- 11_MAGIC_HANDS/         # Arcane Trigger â€” Hand-magic retro FPS engine R&D
 +-- ME/                         # Creator profile, media, & personal plans
     +-- 00_IRL_PLANS/           # Personal travel & language reference
     +-- 01_VIDEOS/              # Video essay series & scripts
@@ -119,9 +119,9 @@ ESSENCE_DESIGNS/
 
 ---
 
-## ?? PART 5: ACTIVE PROJECT DEEP-DIVES
+##  PART 5: ACTIVE PROJECT DEEP-DIVES
 
-### 1. The Fracture / Prosis — GAME_DEV/02_PROSIS/
+### 1. The Fracture / Prosis â€” GAME_DEV/02_PROSIS/
 React + TypeScript crew management game. Sisyphus/entropy theme: entropy as inevitability, not a villain to defeat.
 - **Five resource fronts:** Entropy, Systems, Reality Engine (RE), Salvage, Morale.
 - **Three crew roles:** Helm, Gene, Sal.
@@ -136,7 +136,7 @@ React + TypeScript crew management game. Sisyphus/entropy theme: entropy as inev
 3. Belief spend = free heal to player-chosen front.
 4. Personal mitigations stack multiplicatively in the same round.
 
-### 2. Brew the World — GAME_DEV/01_BtW/
+### 2. Brew the World â€” GAME_DEV/01_BtW/
 Narrative shopkeeping game for Steam. Cozy potion-sim surface concealing the protagonist's complicity in a totalitarian war state.
 - **Protagonist:** Fennel | **Setting:** The Fields | **Ruling Faction:** The Orchard | **Resistance:** The Weeds.
 - **Cast:** 33+ named characters with filterable codex (BtW Cast/BtW CAST CODEX.html).
@@ -148,7 +148,7 @@ Narrative shopkeeping game for Steam. Cozy potion-sim surface concealing the pro
 
 ---
 
-## ?? PART 6: KNOWLEDGE BASE HOLLOWS (MACHINE DIRECTIVES)
+##  PART 6: KNOWLEDGE BASE HOLLOWS (MACHINE DIRECTIVES)
 
 - **ME/00_IRL_PLANS/:** Personal travel & language reference (Thailand 2027 ? Japan 2032). Untouched by agents.
 - **ME/TEACHING/:** Conceptual sandbox & design theory brain dump.
@@ -157,7 +157,7 @@ Narrative shopkeeping game for Steam. Cozy potion-sim surface concealing the pro
 
 ---
 
-## ?? WHAT THIS INDEX IS NOT
+##  WHAT THIS INDEX IS NOT
 - Not a transcript or past chat log.
 - Not a todo list (task tracking lives in task tools/Trello).
 - Not a replacement for deep project seed docs.
