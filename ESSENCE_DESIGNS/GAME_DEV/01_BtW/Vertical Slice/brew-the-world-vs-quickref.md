@@ -1,6 +1,6 @@
 # BREW the WORLD — VS Quick-Reference (Day 1 Cast)
 
-*Pulled from the full cast bible + style bible so you're not scrolling all 33 for tomorrow's build. Covers exactly the roster locked in the Vertical Slice Plan: blood family, chosen family, craft-family peers, craft-family faces, and ambient presence. 17 characters.*
+*Pulled from the full cast bible + style bible so you're not scrolling all 33 for tomorrow's build. Covers exactly the roster locked in the Vertical Slice Plan: blood family, chosen family, craft-family peers, craft-family faces, and ambient presence. 16 characters present and interactive, plus Kirkwood bridged as an absent reference.*
 
 ---
 
@@ -27,11 +27,12 @@
 - **Color:** Dusty grey-green (the name already is the color)
 - **Silhouette:** Botanical grammar — flowing, layered, sage-sprig embroidery at collar.
 
-### Kirkwood — Brother, broadcaster · Botanical, sphere-swing (full — The Steam, Judgement)
+### Kirkwood — **Absent Day 1** (deployed, returns ~Act 3) · Brother, broadcaster · Botanical, sphere-swing (full — The Steam, Judgement)
+- **Bridge:** not physically present or in the interactive `CHARACTERS`/`DIALOGUE` data. His absence should register in the Home scene (an empty place at the table, or an acknowledgment line from another family member — who carries that line is still an open call, see the VS plan doc) rather than passing without comment.
 - **Want:** To matter — to tell what actually happened
 - **Fear:** Fading to nobody; that his war supply chain traces to Fennel's shop
 - **Secret:** Owl's protégé, secondhand; carries what service really looked like filtered into what airs
-- **Color:** Not yet individually specified — flag for style-bible follow-up before he needs full sprite treatment (later act, not Day 1-critical)
+- **Color:** Not yet individually specified — flag for style-bible follow-up before he needs full sprite treatment when he actually appears (Act 3, not Day 1)
 - **Silhouette:** Botanical grammar (general) — no individual sprite notes locked yet.
 
 ### Clover — Younger sibling · Botanical
@@ -144,7 +145,7 @@
 
 ## Open flags surfaced by building this sheet
 
-- **Kirkwood, Falcon, Millet, Ferret** have no individually locked color yet — they're currently riding their category's general palette description. Not a blocker for Day 1 (Kirkwood's swing is Act 4, Falcon/Millet/Ferret are peer-tier, lower sprite priority than the front-facing adults), but worth a dedicated color pass before any of them needs a close-up dialogue portrait.
+- **Falcon, Millet, Ferret** have no individually locked color yet — they're currently riding their category's general palette description. Not a blocker for Day 1 (peer-tier, lower sprite priority than the front-facing adults), but worth a dedicated color pass before any of them needs a close-up dialogue portrait. (Kirkwood is also color-unlocked, but that's moot for this pass since he's not on screen Day 1.)
 - **Weasel's color** is genuinely unaddressed even at the category level, since his whole design point is breaking the animal-category naturalism. Might need its own one-off decision rather than inheriting the animal tier's "earthier, muted" logic — flagging for you rather than assuming an answer.
 
 ---

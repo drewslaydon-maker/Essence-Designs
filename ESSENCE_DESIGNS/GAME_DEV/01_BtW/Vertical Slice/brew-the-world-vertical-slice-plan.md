@@ -6,8 +6,8 @@
 
 ## Scope (locked)
 
-- **Zone:** Shop interior + attached market square + a short foraging path at the treeline edge — one contiguous space.
-- **Loop:** Full harvest → brew → sell, no shortcuts.
+- **Locations:** Home, Shop interior, Market square, and a short foraging path at the treeline edge — **four distinct full-screen locations, not one contiguous space.** Presentation is true VN-style: one location on screen at a time, with a scene transition when Fennel moves between them. No persistent multi-zone map/stage view.
+- **Loop:** Full harvest → brew → sell, no shortcuts. **Brewing is order-driven, not an open recipe list:** a specific order (from a named customer or the shop's standing obligations) appears one at a time; the player accepts and fulfills it, then the next order surfaces. The player is never looking at a menu of four available recipes simultaneously — each order is its own beat, which is also what lets a war-supply order and a local order land as genuinely separate moments rather than two rows in the same list.
 - **Monster encounter:** One Hollow, encountered while foraging. Systems/combat demo only — the humanizing reveal is reserved for Barley/Lemon/Fox content much later. Day 1 shows the surface, not the tragedy underneath it.
 - **Relationship beat:** Weasel's leniency toward Fennel — already scripted as Act 1's actual closing beat in the macro structure, so this is real shipped content, not demo-only material.
 - **Day:** Day 1 of the actual game. Nothing built for the slice is throwaway — it's the real opening.
@@ -23,7 +23,9 @@ Fennel's hunting party — Fox, Mugwort, Falcon — needs to read as her chosen 
 ## VS Cast Roster — Day 1
 
 **Blood family (home life):**
-Fennel, Cedar, Sage, Kirkwood, Clover, Daisy — all present and interactive from the start.
+Fennel, Cedar, Sage, Clover, Daisy — present and interactive from the start.
+
+**Kirkwood is absent on Day 1** — deployed, returns roughly Act 3. This corrects an earlier draft of this document, which had him present; the original writing always had him away on military service this early. He's not cut from Day 1 content, though — his absence should register as a bridge (see below), the same way Owl's absence is already handled, rather than as a simple gap in the roster. A place at the breakfast table that isn't set, or one line from Cedar/Sage/Clover/Daisy that acknowledges him without him appearing, keeps his shop-supply-chain tension alive without requiring him on screen.
 
 **Chosen family (hunting party — mirrors blood family):**
 Fox, Mugwort, Falcon — introduced with the same weight and immediacy as the blood family above, not treated as a secondary or later-unlocked group.
@@ -46,6 +48,7 @@ Some characters don't appear physically until much later acts, but the *player* 
 **Confirmed bridges:**
 - **Owl** (physically absent until Act 3) — bridged through **Falcon**, his child. Falcon's relationship to Owl is itself distant (Owl's reclusiveness is the reason, not a plot contrivance), which means the bridge can carry real texture — Falcon talking about a father who's hard to reach is doing double duty, establishing both Owl's eventual arrival and Falcon's own want (to be trusted with something real, including by his own father).
 - **Hemlock/Pine** (full reveal in Act 4) — already bridged two ways: through **Cedar** (recruited by him, chain-of-command implication) and **Kirkwood** (patron pattern, if state-ward). No new work needed here, just worth naming as the same pattern already in place.
+- **Kirkwood** (physically absent until roughly Act 3, deployed) — newly added this pass. Needs its own bridge carrier, not yet assigned: likely Cedar or Sage acknowledging him at breakfast, or Clover/Daisy's quieter version of missing a sibling. Worth deciding deliberately rather than defaulting to whichever character is easiest to write the line for, since who carries Kirkwood's absence shapes how much weight Day 1 puts on him before he's ever on screen.
 
 **Worth auditing before this goes further:** Stag's appearance timing isn't pinned down yet — his tarot position (The Dregs / Hanged Man) reads as mid-to-late game, which would make him a third candidate for this pattern, likely bridged through Cedar given their existing "old comrades, opposite outcomes" connection. Not locked — flagging it as the next open question if this pattern gets extended further.
 
