@@ -259,30 +259,21 @@
       <div>Heaven's Nen Arena <small>· Manifesto V1</small></div>
     </div>
     <div class="nav-links">
-      <a href="#pillars">Pillars</a>
-      <a href="#wdt">Water Divination</a>
-      <a href="#modes">Modes</a>
-      <a href="#hexagon">Hexagon</a>
-      <a href="#architecture">Architecture</a>
-      <a href="#simulator">Live Engine</a>
-      <a href="#hatsu">Hatsu Lab</a>
-      <a href="#roadmap">Roadmap</a>
-      <a href="#files">Files</a>
+      <a href="#dojo" id="nav-dojo">🥋 Master Wing's Dojo</a>
+      <a href="#arena" id="nav-arena" style="display:none">🏟️ Heaven's Arena</a>
+      <a href="#hatsu" id="nav-hatsu" style="display:none">🧪 Hatsu Lab</a>
+      <button class="btn btn-sm" onclick="toggleDocsModal()" style="margin-left:12px; font-size:0.8rem">📜 Studio Rules &amp; Docs</button>
     </div>
   </div>
 </nav>
 
 <header class="hero">
   <div class="wrap">
-    <div class="eyebrow">Design Manifesto · System Architecture</div>
-    <h1>Master the Aura. Name your Oath. Conquer the Tower.</h1>
-    <p class="tagline">A web-based tactical Nen combat simulator and floor-climbing arena inspired by <em>Hunter x Hunter</em>. Verbs over nouns — Ten, Zetsu, Ren, Ko, Gyo, Hatsu — drive every choice on the path from Floor 1 to Floor 200+.</p>
-    <div class="hero-meta">
-      <span class="chip"><strong>Core</strong> · HTML5 / CSS3 / Vanilla JS</span>
-      <span class="chip"><strong>Install</strong> · None</span>
-      <span class="chip"><strong>Engine</strong> · <code>nen-engine.js</code></span>
-      <span class="chip"><strong>Sim</strong> · <code>sim-engine.js</code></span>
-      <span class="chip"><strong>Tests</strong> · <code>test-engine.js</code></span>
+    <div class="eyebrow">🥋 Master Wing's Dojo · Heaven's Arena Gateway</div>
+    <h1 id="hero-title">Awaken Your Aura &amp; Master the Principles</h1>
+    <p class="tagline" id="hero-tagline">Before entering Heaven's Arena, every candidate must undergo the Water Divination Test and prove their mastery of Ten, Zetsu, Ren, and Hatsu under Master Wing's guidance.</p>
+    <div class="hero-meta" id="pass-badge-container" style="display:none">
+      <span class="chip" style="background:rgba(212,175,55,0.2); border:1px solid var(--accent); color:var(--accent-2)">🎫 <strong>Floor 1 Pass Verified</strong> · Heaven's Arena Unlocked</span>
     </div>
   </div>
 </header>
@@ -290,346 +281,218 @@
 <main class="wrap">
 
   <!-- ============ PILLARS ============ -->
-  <section id="pillars">
-    <h2>🏛️ Core Philosophy &amp; Design Pillars</h2>
-    <p>Four beliefs shape every mechanic in the arena. None of them are negotiable.</p>
-
-    <div class="grid grid-2" style="margin-top:14px">
-      <div class="card pillar">
-        <h3><span class="num">1</span>Verbs Over Nouns (Aura Flow as Gameplay)</h3>
-        <p>Nen isn't mana — it's <em>dynamic physical energy distribution</em>. Every turn, the player answers the same question: <strong>where is my aura right now?</strong></p>
-        <ul style="color:var(--text-dim); padding-left:1.1em; margin: 6px 0;">
-          <li><strong>Ten (Enshroud):</strong> Baseline defense, conserves aura.</li>
-          <li><strong>Zetsu (Conceal):</strong> 0 defense, fast aura recovery, hides flow, high vulnerability.</li>
-          <li><strong>Ren (Exert):</strong> Aura surges outward — +Atk, unlocks Hatsu, costs aura per turn.</li>
-          <li><strong>Hatsu (Express):</strong> Personal technique governed by affinity and conditions/oaths.</li>
-          <li><strong>Ko (Concentrate):</strong> 100% aura into offense. Devastating damage, but the rest of the body drops to 0 defense.</li>
-          <li><strong>Gyo (Focus Eye):</strong> Spend aura to reveal enemy aura distribution and hidden objects.</li>
-        </ul>
+  <section id="dojo">
+  <div class="card" style="background:var(--bg-card); border:1px solid var(--accent); padding:28px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+      <div>
+        <span class="badge" style="background:var(--accent); color:#000; font-weight:800;">IN-UNIVERSE TUTORIAL</span>
+        <h2 style="margin:8px 0 4px 0; font-size:2rem;">Master Wing's Dojo &amp; Water Divination</h2>
+        <p style="margin:0; color:var(--text-dim);">Step 1: Discover your Nen affinity · Step 2: Practice the 4 principles with Gon, Killua &amp; Zushi.</p>
       </div>
-
-      <div class="card pillar">
-        <h3><span class="num">2</span>The Point System (Floor 200+ Rules)</h3>
-        <p>Fights aren't HP grinds. Heaven's Arena matches on Floor 200+ are scored:</p>
-        <ul style="color:var(--text-dim); padding-left:1.1em; margin: 6px 0;">
-          <li><strong>Clean Hit</strong> — 1 Point</li>
-          <li><strong>Critical Hit</strong> — 2 Points</li>
-          <li><strong>Down</strong> — 1 Point</li>
-          <li><strong>Knockout (KO)</strong> — Instant Victory</li>
-        </ul>
-        <p style="color:var(--accent-2); font-weight:600; margin-top:14px;">First to 10 Points wins.</p>
-      </div>
-
-      <div class="card pillar">
-        <h3><span class="num">3</span>Oaths &amp; Restrictions (Condition-Based Power)</h3>
-        <p>The stronger the limitation, the higher the multiplier. <em>Risk and reward are the same stat.</em></p>
-        <ul style="color:var(--text-dim); padding-left:1.1em; margin: 6px 0;">
-          <li><em>"Can only activate when HP &lt; 30%"</em> → <strong>+150%</strong> Hatsu damage.</li>
-          <li><em>"Requires 2 turns of Zetsu prep"</em> → <strong>+200%</strong> Hatsu effect.</li>
-          <li><em>"If target dodges, self-stun"</em> → <strong>+180%</strong> Hatsu effect.</li>
-        </ul>
-      </div>
-
-      <div class="card pillar">
-        <h3><span class="num">4</span>Zero-Barrier Web Accessibility</h3>
-        <p>A single standalone web package (HTML5 / CSS3 / TS-JS). Playable in any browser on desktop or mobile. <strong>Zero installation required.</strong></p>
-        <p>The whole game — engine, simulator, lab, and this doc — fits in this folder and runs offline.</p>
+      <div id="dojo-status-chip" style="padding:8px 16px; border-radius:20px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); font-weight:600;">
+        Status: 🔒 Unawakened Candidate
       </div>
     </div>
-  </section>
 
-  <!-- ============ STANCE REFERENCE ============ -->
-  <section id="stances">
-    <h2 style="margin-top:48px">🎯 Stance &amp; Focus Reference</h2>
-    <p>Every combat tick is a stance decision. These are the verbs the engine resolves.</p>
+    <hr style="margin:20px 0;">
 
-    <div class="stance-grid" style="margin-top:14px">
-      <div class="stance ten">
-        <span class="tag">TEN</span>
-        <h4>Enshroud</h4>
-        <p>Baseline aura cloak. <strong>Defense 1.0x</strong>, +5 aura regen, 0 cost. The default state.</p>
-      </div>
-      <div class="stance zetsu">
-        <span class="tag">ZETSU</span>
-        <h4>Conceal / Suppress</h4>
-        <p><strong>Defense 0.0x</strong>, +25 aura regen, hides aura flow. Vulnerability for velocity.</p>
-      </div>
-      <div class="stance ren">
-        <span class="tag">REN</span>
-        <h4>Exert</h4>
-        <p>Surge aura outward. <strong>Atk +50%</strong>, unlocks Hatsu, costs 15 aura/turn.</p>
-      </div>
-      <div class="stance ko">
-        <span class="tag">KO</span>
-        <h4>Concentrate</h4>
-        <p>100% aura into one strike. <strong>+100% damage</strong>, but rest of body at 0 defense.</p>
-      </div>
-      <div class="stance gyo">
-        <span class="tag">GYO</span>
-        <h4>Focus Eye</h4>
-        <p>Spend 10 aura to inspect hidden aura distribution and revealed stats.</p>
-      </div>
-    </div>
-  </section>
+    <!-- STEP 1: WATER DIVINATION -->
+    <div id="dojo-step-wdt">
+      <h3>🥛 Step 1: The Water Divination Test</h3>
+      <p>Fill a glass to the brim, place a floating leaf on top, and focus your Ren into the vessel.</p>
 
-  <!-- ============ WATER DIVINATION TEST ============ -->
-  <section id="wdt">
-    <h2>🥛 Water Divination Test (Nen Awakening)</h2>
-    <p>Perform the sacred ritual passed down through generations of Nen masters to discover your aura affinity.</p>
-
-    <div class="card" style="margin-top:16px; background:var(--bg-soft); border:1px solid rgba(255,255,255,0.1);">
-      <div style="display:flex; flex-wrap:wrap; gap:24px; align-items:center;">
-        
-        <!-- Interactive Glass Visualization -->
-        <div style="flex:1; min-width:260px; text-align:center;">
+      <div style="display:flex; flex-wrap:wrap; gap:24px; align-items:center; margin-top:16px;">
+        <!-- Interactive Glass -->
+        <div style="flex:1; min-width:240px; text-align:center;">
           <div id="wdt-glass" style="position:relative; width:160px; height:200px; margin:0 auto; border:4px solid rgba(255,255,255,0.4); border-top:none; border-radius:0 0 20px 20px; background:rgba(255,255,255,0.03); overflow:hidden; box-shadow:0 0 25px rgba(0,0,0,0.5);">
-            <!-- Water Body -->
             <div id="wdt-water" style="position:absolute; bottom:0; width:100%; height:70%; background:linear-gradient(180deg, rgba(56,189,248,0.4), rgba(14,165,233,0.7)); transition:all 0.8s ease;">
-              <!-- Floating Leaf -->
-              <div id="wdt-leaf" style="position:absolute; top: -10px; left:35%; width:45px; height:20px; background:#22c55e; border-radius:100% 0 100% 0; transform:rotate(-10deg); box-shadow:0 2px 5px rgba(0,0,0,0.4); transition:all 0.8s ease;"></div>
+              <div id="wdt-leaf" style="position:absolute; top:-10px; left:35%; width:45px; height:20px; background:#22c55e; border-radius:100% 0 100% 0; transform:rotate(-10deg); box-shadow:0 2px 5px rgba(0,0,0,0.4); transition:all 0.8s ease;"></div>
             </div>
           </div>
           <div style="margin-top:12px; font-size:0.85rem; color:var(--text-dim);">
-            <em>Glass filled to the brim. Leaf resting on water. Focus your Ren.</em>
+            <em>Master Wing: "Observe the water closely. Your aura will reveal your true affinity."</em>
           </div>
         </div>
 
-        <!-- Controls & Questions -->
+        <!-- Quiz Container -->
         <div style="flex:2; min-width:300px;">
           <div id="wdt-quiz-container">
-            <h3 style="margin-top:0;">Hisoka's Personality Evaluation</h3>
-            <p id="wdt-question-text" style="color:var(--text); font-size:0.95rem; margin-bottom:16px;">Loading evaluation...</p>
-            <div id="wdt-options-container" style="display:flex; flex-direction:column; gap:8px;"></div>
+            <p id="wdt-question-text" style="color:var(--text); font-size:1.05rem; font-weight:600; margin-bottom:16px;">Loading question...</p>
+            <div id="wdt-options-container" style="display:flex; flex-direction:column; gap:10px;"></div>
           </div>
 
-          <div id="wdt-result-container" style="display:none; text-align:left;">
-            <div id="wdt-badge" style="display:inline-block; padding:4px 12px; border-radius:20px; font-weight:700; font-size:0.85rem; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:8px;">Result</div>
-            <h3 id="wdt-result-title" style="margin:0 0 6px 0; color:#fff; font-size:1.4rem;">Category</h3>
-            <p id="wdt-result-reaction" style="color:var(--gold); font-weight:600; margin:0 0 10px 0;"></p>
-            <p id="wdt-result-desc" style="color:var(--text-dim); font-size:0.9rem; line-height:1.5; margin-bottom:12px;"></p>
-            <div style="background:rgba(255,255,255,0.05); padding:10px 14px; border-radius:6px; font-size:0.85rem; margin-bottom:16px;">
+          <div id="wdt-result-container" style="display:none;">
+            <div id="wdt-badge" style="display:inline-block; padding:4px 14px; border-radius:20px; font-weight:800; font-size:0.85rem; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:8px;">Category</div>
+            <h3 id="wdt-result-title" style="margin:0 0 6px 0; color:#fff; font-size:1.5rem;">Category</h3>
+            <p id="wdt-result-reaction" style="color:var(--gold); font-weight:700; font-size:1.1rem; margin:0 0 10px 0;"></p>
+            <p id="wdt-result-desc" style="color:var(--text-dim); font-size:0.95rem; line-height:1.5; margin-bottom:14px;"></p>
+            <div style="background:rgba(255,255,255,0.05); padding:12px 16px; border-radius:8px; font-size:0.9rem; margin-bottom:18px;">
               <strong>Hisoka's Temperament Analysis:</strong> <span id="wdt-hisoka-trait" style="color:var(--text);"></span>
             </div>
             <button class="btn" onclick="initWDTQuiz()">🔁 Retake Test</button>
-            <button class="btn btn-primary" onclick="applyWDTBroadcast()" style="margin-left:8px;">⚡ Apply Category to Simulator</button>
+            <button class="btn btn-primary" onclick="proceedToStancePractice()" style="margin-left:10px; font-weight:700;">🥋 Step 2: Practice Principles with Wing →</button>
           </div>
         </div>
-
       </div>
     </div>
-  </section>
 
-  <hr/>
+    <!-- STEP 2: STANCE PRACTICE -->
+    <div id="dojo-step-stance" style="display:none; margin-top:24px;">
+      <h3>🥋 Step 2: Practice the Principles of Aura Flow</h3>
+      <p>Master Wing stands before you alongside Gon, Killua, and Zushi. Test each principle to feel how aura distribution alters combat effectiveness.</p>
 
-  <!-- ============ MODES ============ -->
-  <section id="modes">
-    <h2 style="margin-top:48px">🎮 Gameplay Modes</h2>
+      <div class="grid grid-3" style="margin-top:16px;">
+        <div class="card" style="border-top:4px solid var(--ten);">
+          <span class="badge" style="background:var(--ten); color:#000;">🛡️ TEN (Enshroud)</span>
+          <h4>Conserve &amp; Defend</h4>
+          <p class="small">Enshroud your body in a calm aura cloak. Keeps defense at 100% and restores +5 aura per turn.</p>
+          <button class="btn btn-sm" onclick="testDojoStance('TEN')">Practice Ten</button>
+        </div>
 
-    <div class="grid grid-3" style="margin-top:14px">
-      <div class="card">
-        <h3>Mode A · Tower Campaign</h3>
-        <p class="small">Heaven's Arena ascent. The flagship single-player path.</p>
-        <ul style="color:var(--text-dim); padding-left:1.1em; font-size:0.9rem;">
-          <li><strong>Floors 1–50:</strong> Physical brawling &amp; martial arts. Onboarding (Stamina, Guard, Strike, Counter).</li>
-          <li><strong>Floors 50–100:</strong> Nen Awakening (Water Divination) &amp; fundamentals (Ten, Zetsu, Ren).</li>
-          <li><strong>Floors 100–199:</strong> Hatsu unlocking, advanced mechanics (Ko, Gyo, Ryu). Facing specialized Nen users.</li>
-          <li><strong>Floor 200+:</strong> Registration &amp; Point Matches against Floor Masters. Permanent consequences.</li>
-        </ul>
+        <div class="card" style="border-top:4px solid var(--zetsu);">
+          <span class="badge" style="background:var(--zetsu); color:#fff;">🔕 ZETSU (Suppress)</span>
+          <h4>Conceal Aura Flow</h4>
+          <p class="small">Shut off all aura nodes. Rapidly restores +25 aura, but drops physical defense to 0.</p>
+          <button class="btn btn-sm" onclick="testDojoStance('ZETSU')">Practice Zetsu</button>
+        </div>
+
+        <div class="card" style="border-top:4px solid var(--ren);">
+          <span class="badge" style="background:var(--ren); color:#fff;">⚡ REN (Exert)</span>
+          <h4>Surge Aura Outward</h4>
+          <p class="small">Exert an overwhelming aura surge. Boosts attack power by +50% and unlocks Hatsu at the cost of 15 aura/turn.</p>
+          <button class="btn btn-sm" onclick="testDojoStance('REN')">Practice Ren</button>
+        </div>
       </div>
 
-      <div class="card">
-        <h3>Mode B · Custom Hatsu Workshop</h3>
-        <p class="small">The Nen Lab — design, tune, and export.</p>
-        <ul style="color:var(--text-dim); padding-left:1.1em; font-size:0.9rem;">
-          <li>Pick your <strong>Nen Category</strong> (Enhancer → Specialist).</li>
-          <li>Allocate base stats and affinity efficiency per the Nen Hexagon.</li>
-          <li>Craft Hatsu by combining <em>Base Effect</em>, <em>Range/Targeting</em>, and <em>Oaths/Restrictions</em>.</li>
-          <li>Export <strong>Nen Code</strong> or <strong>Build JSON</strong> to share with other players.</li>
-        </ul>
-        <p class="small" style="margin-top:8px">→ Try the live builder below in <a href="#hatsu">Hatsu Lab</a>.</p>
+      <div id="dojo-practice-feedback" style="margin-top:16px; padding:14px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.1); font-family:monospace; font-size:0.9rem;">
+        Master Wing: "Select a principle above to begin your training rep."
       </div>
 
-      <div class="card">
-        <h3>Mode C · Duel / VS Mode</h3>
-        <p class="small">Pass-and-play or room-code PvP.</p>
-        <ul style="color:var(--text-dim); padding-left:1.1em; font-size:0.9rem;">
-          <li>Test custom Nen builds against preset Floor Masters or imported opponent builds.</li>
-          <li>Same engine, two pilots. Point Match scoring applies at Floor 200+.</li>
-        </ul>
-        <p class="small" style="margin-top:8px">WebRTC / WebSocket room codes land in V3.</p>
+      <div style="margin-top:20px; text-align:right;">
+        <button class="btn btn-primary" id="graduate-btn" onclick="graduateCandidate()" style="font-size:1.1rem; padding:12px 24px; font-weight:800;" disabled>
+          🎓 Complete Tutorial &amp; Receive Floor 1 Pass →
+        </button>
       </div>
     </div>
-  </section>
 
-  <!-- ============ HEXAGON ============ -->
-  <section id="hexagon">
-    <h2 style="margin-top:48px">🔮 The Nen Hexagon Efficiency Matrix</h2>
-    <p>Each Nen type has 100% affinity in its own category and diminished efficiency in adjacent / distant categories. This is the table the engine loads into <code>AFFINITY_MATRIX</code>.</p>
+  </div>
+</section>
 
-    <div class="card" style="margin-top:14px; overflow-x:auto">
-      <table class="matrix">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Enhancer</th><th>Transmuter</th><th>Emitter</th>
-            <th>Conjurer</th><th>Manipulator</th><th>Specialist</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="row-h">Enhancer</td>
-            <td class="eff-100">100%</td><td class="eff-80">80%</td><td class="eff-80">80%</td>
-            <td class="eff-60">60%</td><td class="eff-60">60%</td><td class="eff-0">0%</td>
-          </tr>
-          <tr>
-            <td class="row-h">Transmuter</td>
-            <td class="eff-80">80%</td><td class="eff-100">100%</td><td class="eff-60">60%</td>
-            <td class="eff-80">80%</td><td class="eff-40">40%</td><td class="eff-0">0%</td>
-          </tr>
-          <tr>
-            <td class="row-h">Emitter</td>
-            <td class="eff-80">80%</td><td class="eff-60">60%</td><td class="eff-100">100%</td>
-            <td class="eff-40">40%</td><td class="eff-80">80%</td><td class="eff-0">0%</td>
-          </tr>
-          <tr>
-            <td class="row-h">Conjurer</td>
-            <td class="eff-60">60%</td><td class="eff-80">80%</td><td class="eff-40">40%</td>
-            <td class="eff-100">100%</td><td class="eff-40">40%</td><td class="eff-60">60%</td>
-          </tr>
-          <tr>
-            <td class="row-h">Manipulator</td>
-            <td class="eff-60">60%</td><td class="eff-40">40%</td><td class="eff-80">80%</td>
-            <td class="eff-40">40%</td><td class="eff-100">100%</td><td class="eff-60">60%</td>
-          </tr>
-          <tr>
-            <td class="row-h">Specialist</td>
-            <td class="eff-40">40%</td><td class="eff-60">60%</td><td class="eff-60">60%</td>
-            <td class="eff-80">80%</td><td class="eff-80">80%</td><td class="eff-100">100%</td>
-          </tr>
-        </tbody>
-      </table>
-      <p class="small" style="margin-top:10px">Read as: <em>"An Enhancer attempting a Transmuter Hatsu lands at 80% efficiency."</em> Numbers map directly to <code>nen-engine.js → AFFINITY_MATRIX</code>.</p>
-    </div>
-  </section>
-
-  <!-- ============ ARCHITECTURE ============ -->
-  <section id="architecture">
-    <h2 style="margin-top:48px">🏗️ System Architecture &amp; State Machine</h2>
-    <p>Two structures run the whole game: the per-fighter <strong>player state</strong> and the <strong>turn cycle</strong> that mutates it.</p>
-
-    <div class="grid grid-2" style="margin-top:14px">
-      <div class="card">
-        <h3>Player State</h3>
-        <pre><code>[Player State]
- ├─ Stats (Max HP, Max Aura, Atk, Def, Nen Efficiency)
- ├─ Aura Flow Stance (Ten / Zetsu / Ren)
- ├─ Active Aura Pool (Current / Max)
- ├─ Nen Category (Enhancer / Transmuter / …)
- └─ Hatsu List (Array of custom / unlocked abilities)</code></pre>
+<hr/>
+<section id="simulator" style="display:none;">
+  <div class="card" style="background:var(--bg-card); border:1px solid var(--line-soft); padding:24px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+      <div>
+        <span class="badge" style="background:var(--aura); color:#fff; font-weight:800;">ARENA FLOOR 200+</span>
+        <h2 style="margin:6px 0 2px 0; font-size:1.8rem;">🏟️ Heaven's Arena Match Court</h2>
+        <p class="small" style="margin:0;">Point Match Rules: First to 10 Points or Knockout wins!</p>
       </div>
-
-      <div class="card">
-        <h3>Combat Turn Cycle</h3>
-        <div class="arch">
-          <div class="lvl"><strong>1.</strong> Stance Selection — Maintain / Ten / Zetsu / Ren</div>
-          <div class="arrow">↓</div>
-          <div class="lvl"><strong>2.</strong> Action Choice — Strike / Guard / Ko Strike / Gyo Inspect / Hatsu / Item</div>
-          <div class="arrow">↓</div>
-          <div class="lvl"><strong>3.</strong> Speed &amp; Priority Calculation</div>
-          <div class="arrow">↓</div>
-          <div class="lvl"><strong>4.</strong> Resolution &amp; Aura Burn</div>
-          <div class="arrow">↓</div>
-          <div class="lvl"><strong>5.</strong> Point Scoring &amp; Win Check (10 Points or KO)</div>
+      <div style="display:flex; gap:12px; align-items:center;">
+        <div>
+          <label style="font-size:0.8rem; color:var(--text-dim); display:block;">Fighter 1 (Red Corner)</label>
+          <select id="roster-select-a" onchange="changeRosterFighter('a', this.value)" style="background:var(--bg-soft); color:var(--text); border:1px solid var(--line); padding:6px 10px; border-radius:6px;">
+            <option value="PLAYER">Your Awoken Fighter</option>
+            <option value="GON">Gon Freecss (Enhancer)</option>
+            <option value="KILLUA">Killua Zoldyck (Transmuter)</option>
+            <option value="ZUSHI">Zushi (Enhancer)</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:0.8rem; color:var(--text-dim); display:block;">Fighter 2 (Blue Corner)</label>
+          <select id="roster-select-b" onchange="changeRosterFighter('b', this.value)" style="background:var(--bg-soft); color:var(--text); border:1px solid var(--line); padding:6px 10px; border-radius:6px;">
+            <option value="HISOKA" selected>Hisoka Morow (Transmuter)</option>
+            <option value="KASTRO">Kastro (Conjurer)</option>
+            <option value="GON">Gon Freecss (Enhancer)</option>
+            <option value="KILLUA">Killua Zoldyck (Transmuter)</option>
+          </select>
         </div>
       </div>
     </div>
-  </section>
 
-  <hr/>
+    <div id="arena-viewport" style="position:relative; margin-top:20px; height:260px; background:radial-gradient(circle, rgba(34,29,51,0.8) 0%, rgba(11,10,20,0.95) 100%); border:2px solid var(--line); border-radius:12px; overflow:hidden; display:flex; align-items:center; justify-content:space-around; padding:20px;">
+      <div id="avatar-a-container" style="text-align:center; transition:all 0.3s ease;">
+        <div id="avatar-a-aura" style="position:relative; width:100px; height:100px; border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.05); box-shadow:0 0 20px rgba(93,220,168,0.3); transition:all 0.5s ease;">
+          <div style="font-size:3rem;">🥋</div>
+          <div id="avatar-a-stance-badge" style="position:absolute; bottom:-8px; background:var(--ten); color:#000; font-size:0.75rem; font-weight:800; padding:2px 8px; border-radius:10px;">🛡️ TEN</div>
+        </div>
+        <h4 id="avatar-a-name" style="margin:10px 0 2px 0; color:#fff;">Gon Freecss</h4>
+        <span id="avatar-a-cat" class="badge ENHANCER">ENHANCER</span>
+      </div>
 
-  <!-- ============ LIVE SIMULATOR ============ -->
-  <section id="simulator">
-    <h2>⚔️ Live Engine — Point Match Simulator</h2>
-    <p>Wired straight to <code>nen-engine.js</code>. Pick stances, focus states, and Hatsu for each fighter, then resolve a turn. <strong>First to 10 points or KO wins.</strong></p>
+      <div style="text-align:center; max-width:240px;">
+        <div id="arena-action-banner" style="font-size:1.1rem; font-weight:800; color:var(--accent-2); margin-bottom:8px;">VS</div>
+        <div id="arena-popup-text" style="font-size:0.9rem; color:var(--text-dim); min-height:40px;">Select stances and press Resolve Turn</div>
+      </div>
 
-    <div class="sim-wrap" style="margin-top:14px">
-      <!-- FIGHTER A -->
+      <div id="avatar-b-container" style="text-align:center; transition:all 0.3s ease;">
+        <div id="avatar-b-aura" style="position:relative; width:100px; height:100px; border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.05); box-shadow:0 0 20px rgba(236,72,153,0.3); transition:all 0.5s ease;">
+          <div style="font-size:3rem;">🃏</div>
+          <div id="avatar-b-stance-badge" style="position:absolute; bottom:-8px; background:var(--ten); color:#000; font-size:0.75rem; font-weight:800; padding:2px 8px; border-radius:10px;">🛡️ TEN</div>
+        </div>
+        <h4 id="avatar-b-name" style="margin:10px 0 2px 0; color:#fff;">Hisoka Morow</h4>
+        <span id="avatar-b-cat" class="badge TRANSMUTER">TRANSMUTER</span>
+      </div>
+    </div>
+
+    <div class="sim-wrap" style="margin-top:20px;">
       <div class="fighter" id="fighter-a">
-        <h4>
-          <span id="name-a">Gon Freecss</span>
-          <span class="badge ENHANCER" id="cat-a">ENHANCER</span>
-        </h4>
         <div class="small">HP</div>
         <div class="meter hp"><i id="hp-a-bar" style="width:100%"></i></div>
         <div class="row"><span><strong id="hp-a">100</strong> / 100</span><span class="small">max HP</span></div>
-
         <div class="small" style="margin-top:6px">Aura</div>
         <div class="meter aura"><i id="aura-a-bar" style="width:100%"></i></div>
         <div class="row"><span><strong id="aura-a">100</strong> / 100</span><span class="small" id="stance-a-label">Stance: TEN</span></div>
-
         <div class="small" style="margin-top:6px">Arena Points</div>
         <div class="meter pts"><i id="pts-a-bar" style="width:0%"></i></div>
         <div class="row"><span><strong id="pts-a">0</strong> / 10</span><span class="small" id="focus-a-label">Focus: NORMAL</span></div>
-
         <div class="controls" id="controls-a">
-          <button class="btn stance-TEN" data-stance="TEN">Ten</button>
-          <button class="btn stance-ZETSU" data-stance="ZETSU">Zetsu</button>
-          <button class="btn stance-REN" data-stance="REN">Ren</button>
-          <button class="btn focus-KO" data-focus="KO">Ko</button>
-          <button class="btn focus-GYO" data-focus="GYO">Gyo</button>
+          <button class="btn stance-TEN" data-stance="TEN">🛡️ Ten</button>
+          <button class="btn stance-ZETSU" data-stance="ZETSU">🔕 Zetsu</button>
+          <button class="btn stance-REN" data-stance="REN">⚡ Ren</button>
+          <button class="btn focus-KO" data-focus="KO">🎯 Ko</button>
+          <button class="btn focus-GYO" data-focus="GYO">👁️ Gyo</button>
         </div>
         <div class="controls" id="controls-a2" style="margin-top:6px">
-          <button class="btn primary" id="strike-a" style="grid-column: span 3">Strike</button>
-          <button class="btn" id="hatsu-a" style="grid-column: span 2">Hatsu</button>
+          <button class="btn primary" id="strike-a" style="grid-column: span 3">💥 Strike</button>
+          <button class="btn" id="hatsu-a" style="grid-column: span 2">🔥 Hatsu</button>
         </div>
       </div>
-
-      <!-- FIGHTER B -->
       <div class="fighter" id="fighter-b">
-        <h4>
-          <span id="name-b">Hisoka Morow</span>
-          <span class="badge TRANSMUTER" id="cat-b">TRANSMUTER</span>
-        </h4>
         <div class="small">HP</div>
         <div class="meter hp"><i id="hp-b-bar" style="width:100%"></i></div>
         <div class="row"><span><strong id="hp-b">100</strong> / 100</span><span class="small">max HP</span></div>
-
         <div class="small" style="margin-top:6px">Aura</div>
         <div class="meter aura"><i id="aura-b-bar" style="width:100%"></i></div>
         <div class="row"><span><strong id="aura-b">100</strong> / 100</span><span class="small" id="stance-b-label">Stance: TEN</span></div>
-
         <div class="small" style="margin-top:6px">Arena Points</div>
         <div class="meter pts"><i id="pts-b-bar" style="width:0%"></i></div>
         <div class="row"><span><strong id="pts-b">0</strong> / 10</span><span class="small" id="focus-b-label">Focus: NORMAL</span></div>
-
         <div class="controls" id="controls-b">
-          <button class="btn stance-TEN" data-stance="TEN">Ten</button>
-          <button class="btn stance-ZETSU" data-stance="ZETSU">Zetsu</button>
-          <button class="btn stance-REN" data-stance="REN">Ren</button>
-          <button class="btn focus-KO" data-focus="KO">Ko</button>
-          <button class="btn focus-GYO" data-focus="GYO">Gyo</button>
+          <button class="btn stance-TEN" data-stance="TEN">🛡️ Ten</button>
+          <button class="btn stance-ZETSU" data-stance="ZETSU">🔕 Zetsu</button>
+          <button class="btn stance-REN" data-stance="REN">⚡ Ren</button>
+          <button class="btn focus-KO" data-focus="KO">🎯 Ko</button>
+          <button class="btn focus-GYO" data-focus="GYO">👁️ Gyo</button>
         </div>
         <div class="controls" id="controls-b2" style="margin-top:6px">
-          <button class="btn primary" id="strike-b" style="grid-column: span 3">Strike</button>
-          <button class="btn" id="hatsu-b" style="grid-column: span 2">Hatsu</button>
+          <button class="btn primary" id="strike-b" style="grid-column: span 3">💥 Strike</button>
+          <button class="btn" id="hatsu-b" style="grid-column: span 2">🔥 Hatsu</button>
         </div>
       </div>
     </div>
 
     <div class="card" style="margin-top:18px">
       <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
-        <button class="btn primary" id="turn-btn">▶ Resolve Turn</button>
+        <button class="btn primary" id="turn-btn" style="font-size:1.1rem; padding:10px 20px; font-weight:800;">⚔️ Resolve Turn</button>
         <button class="btn" id="reset-btn">↻ Reset Match</button>
-        <span class="small" style="margin-left:auto">Engine: <code>window.NenEngine</code> from <code>nen-engine.js</code></span>
       </div>
-
       <div class="verdict" id="verdict"></div>
-
-      <div class="log" id="log" aria-live="polite">
+      <div class="log" id="log" aria-live="polite" style="margin-top:14px; max-height:180px;">
         <div class="line">Match initialized. Pick stances &amp; focus, then press <strong>Resolve Turn</strong>.</div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
   <hr/>
 
@@ -887,6 +750,23 @@ function renderFighters() {
   document.getElementById('pts-b-bar').style.width  = (fighterB.points / 10 * 100) + '%';
   document.getElementById('stance-b-label').textContent = 'Stance: ' + fighterB.stance;
   document.getElementById('focus-b-label').textContent  = 'Focus: '  + (fighterB.focus || 'NORMAL');
+
+  // Avatar Aura Badges & Glows
+  const auraA = document.getElementById('avatar-a-aura');
+  const badgeA = document.getElementById('avatar-a-stance-badge');
+  if (auraA && badgeA) {
+    badgeA.textContent = (fighterA.stance === 'TEN' ? '🛡️ TEN' : fighterA.stance === 'ZETSU' ? '🔕 ZETSU' : '⚡ REN');
+    badgeA.style.background = `var(--${fighterA.stance.toLowerCase()})`;
+    auraA.style.boxShadow = fighterA.stance === 'REN' ? '0 0 35px #ef4444, 0 0 10px #f59e0b' : fighterA.stance === 'ZETSU' ? 'none' : '0 0 20px rgba(93,220,168,0.4)';
+  }
+
+  const auraB = document.getElementById('avatar-b-aura');
+  const badgeB = document.getElementById('avatar-b-stance-badge');
+  if (auraB && badgeB) {
+    badgeB.textContent = (fighterB.stance === 'TEN' ? '🛡️ TEN' : fighterB.stance === 'ZETSU' ? '🔕 ZETSU' : '⚡ REN');
+    badgeB.style.background = `var(--${fighterB.stance.toLowerCase()})`;
+    auraB.style.boxShadow = fighterB.stance === 'REN' ? '0 0 35px #ef4444, 0 0 10px #f59e0b' : fighterB.stance === 'ZETSU' ? 'none' : '0 0 20px rgba(236,72,153,0.4)';
+  }
 }
 
 function appendLog(html, cls) {
@@ -1176,25 +1056,107 @@ function finishWDTQuiz() {
   }
 }
 
-function applyWDTBroadcast() {
-  if (!currentWdtResult) return;
-  // Apply discovered category to Fighter A in simulator
-  f1.category = currentWdtResult.category;
-  if (currentWdtResult.statBonus) {
-    if (currentWdtResult.statBonus.hp) {
-      f1.maxHp += currentWdtResult.statBonus.hp;
-      f1.hp = f1.maxHp;
-    }
-    if (currentWdtResult.statBonus.maxAura) {
-      f1.maxAura += currentWdtResult.statBonus.maxAura;
-      f1.aura = f1.maxAura;
-    }
-    if (currentWdtResult.statBonus.baseAtk) f1.baseAtk += currentWdtResult.statBonus.baseAtk;
-    if (currentWdtResult.statBonus.baseDef) f1.baseDef += currentWdtResult.statBonus.baseDef;
+function proceedToStancePractice() {
+  $('dojo-step-wdt').style.display = 'none';
+  $('dojo-step-stance').style.display = 'block';
+  $('dojo-status-chip').textContent = 'Status: 🥋 Dojo Apprentice';
+  $('dojo-status-chip').style.background = 'rgba(212,175,55,0.15)';
+  $('dojo-status-chip').style.color = 'var(--accent-2)';
+}
+
+let practicedStances = new Set();
+
+function testDojoStance(stanceKey) {
+  practicedStances.add(stanceKey);
+  const feedback = $('dojo-practice-feedback');
+  
+  if (stanceKey === 'TEN') {
+    feedback.innerHTML = `<span style="color:var(--ten)">[TEN PRACTICED]</span> Master Wing: "Good. Ten maintains aura around your body, hardening defense (1.0x) and conserving energy (+5 aura/turn)."`;
+  } else if (stanceKey === 'ZETSU') {
+    feedback.innerHTML = `<span style="color:var(--zetsu)">[ZETSU PRACTICED]</span> Master Wing: "Notice how shutting off aura nodes recovers +25 aura rapidly, but leaves your defense at 0! Use with caution."`;
+  } else if (stanceKey === 'REN') {
+    feedback.innerHTML = `<span style="color:var(--ren)">[REN PRACTICED]</span> Master Wing: "Outstanding surge! Ren boosts attack power (+50%) and unlocks Hatsu, but drains -15 aura per turn."`;
   }
-  updateUI();
-  log(`🥛 Water Divination applied to ${f1.name}: Awoken as ${f1.category}! Stat bonuses applied.`);
-  window.location.hash = '#simulator';
+
+  if (practicedStances.size >= 3) {
+    const gradBtn = $('graduate-btn');
+    gradBtn.disabled = false;
+    gradBtn.style.background = 'var(--accent)';
+    gradBtn.style.color = '#000';
+    gradBtn.innerHTML = '🎓 Complete Tutorial & Receive Floor 1 Pass →';
+  }
+}
+
+function graduateCandidate() {
+  if (!currentWdtResult) return;
+
+  // Update fighter A as player's custom awoken candidate
+  fighterA = NE.createFighter({
+    id: 'a',
+    name: 'Awoken Fighter',
+    category: currentWdtResult.category,
+    maxHp: 100 + (currentWdtResult.statBonus?.hp || 0),
+    maxAura: 100 + (currentWdtResult.statBonus?.maxAura || 0),
+    baseAtk: 18 + (currentWdtResult.statBonus?.baseAtk || 0),
+    baseDef: 12 + (currentWdtResult.statBonus?.baseDef || 0),
+    speed: 12
+  });
+  renderFighters();
+
+  // Unlock UI navigation & features
+  $('nav-arena').style.display = 'inline-block';
+  $('nav-hatsu').style.display = 'inline-block';
+  $('pass-badge-container').style.display = 'block';
+  $('simulator').style.display = 'block';
+
+  $('dojo-status-chip').textContent = 'Status: 🎫 Verified Floor 1 Contender';
+  $('dojo-status-chip').style.background = 'rgba(34,197,94,0.2)';
+  $('dojo-status-chip').style.color = '#4ade80';
+
+  appendLog(`🏆 <strong>Tutorial Completed!</strong> Master Wing grants you passage to Floor 200+ of Heaven's Arena as a <strong>${fighterA.category}</strong>.`, 'ok');
+
+  // Scroll to simulator court
+  document.getElementById('simulator').scrollIntoView({ behavior: 'smooth' });
+}
+
+const PRESET_ROSTER = {
+  PLAYER: () => fighterA,
+  GON: () => NE.createFighter({ id: 'a', name: 'Gon Freecss', category: 'Enhancer', maxHp: 100, maxAura: 100, baseAtk: 18, baseDef: 12, speed: 12 }),
+  KILLUA: () => NE.createFighter({ id: 'a', name: 'Killua Zoldyck', category: 'Transmuter', maxHp: 95, maxAura: 105, baseAtk: 19, baseDef: 11, speed: 15 }),
+  ZUSHI: () => NE.createFighter({ id: 'a', name: 'Zushi', category: 'Enhancer', maxHp: 85, maxAura: 85, baseAtk: 14, baseDef: 14, speed: 10 }),
+  HISOKA: () => NE.createFighter({ id: 'b', name: 'Hisoka Morow', category: 'Transmuter', maxHp: 100, maxAura: 110, baseAtk: 18, baseDef: 12, speed: 13 }),
+  KASTRO: () => NE.createFighter({ id: 'b', name: 'Kastro', category: 'Conjurer', maxHp: 95, maxAura: 95, baseAtk: 17, baseDef: 11, speed: 12 })
+};
+
+function changeRosterFighter(corner, key) {
+  const factory = PRESET_ROSTER[key];
+  if (!factory) return;
+
+  if (corner === 'a') {
+    fighterA = factory();
+    fighterA.id = 'a';
+    $('avatar-a-name').textContent = fighterA.name;
+    $('avatar-a-cat').textContent = fighterA.category;
+    $('avatar-a-cat').className = `badge ${fighterA.category}`;
+    appendLog(`🎭 Red Corner fighter set to <strong>${fighterA.name}</strong> (${fighterA.category}).`, 'ok');
+  } else {
+    fighterB = factory();
+    fighterB.id = 'b';
+    $('avatar-b-name').textContent = fighterB.name;
+    $('avatar-b-cat').textContent = fighterB.category;
+    $('avatar-b-cat').className = `badge ${fighterB.category}`;
+    appendLog(`🎭 Blue Corner fighter set to <strong>${fighterB.name}</strong> (${fighterB.category}).`, 'ok');
+  }
+  renderFighters();
+}
+
+function toggleDocsModal() {
+  const modal = $('docs-modal');
+  modal.style.display = (modal.style.display === 'none' || !modal.style.display) ? 'block' : 'none';
+}
+
+function applyWDTBroadcast() {
+  proceedToStancePractice();
 }
 
 /* ============================================================
@@ -1204,6 +1166,141 @@ initFighters();
 initWDTQuiz();
 buildHatsu();
 </script>
+
+<div id="docs-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:100; backdrop-filter:blur(8px); overflow-y:auto; padding:40px 20px;">
+  <div style="max-width:900px; margin:0 auto; background:var(--bg-card); border:1px solid var(--accent); border-radius:14px; padding:32px; position:relative;">
+    <button onclick="toggleDocsModal()" style="position:absolute; top:20px; right:20px; background:none; border:none; color:var(--text); font-size:1.5rem; cursor:pointer;">✖</button>
+    <h2 style="margin-top:0;">📜 Studio Reference &amp; System Docs</h2>
+<!-- ============ MODES ============ -->
+  <section id="modes">
+    <h2 style="margin-top:48px">🎮 Gameplay Modes</h2>
+
+    <div class="grid grid-3" style="margin-top:14px">
+      <div class="card">
+        <h3>Mode A · Tower Campaign</h3>
+        <p class="small">Heaven's Arena ascent. The flagship single-player path.</p>
+        <ul style="color:var(--text-dim); padding-left:1.1em; font-size:0.9rem;">
+          <li><strong>Floors 1–50:</strong> Physical brawling &amp; martial arts. Onboarding (Stamina, Guard, Strike, Counter).</li>
+          <li><strong>Floors 50–100:</strong> Nen Awakening (Water Divination) &amp; fundamentals (Ten, Zetsu, Ren).</li>
+          <li><strong>Floors 100–199:</strong> Hatsu unlocking, advanced mechanics (Ko, Gyo, Ryu). Facing specialized Nen users.</li>
+          <li><strong>Floor 200+:</strong> Registration &amp; Point Matches against Floor Masters. Permanent consequences.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Mode B · Custom Hatsu Workshop</h3>
+        <p class="small">The Nen Lab — design, tune, and export.</p>
+        <ul style="color:var(--text-dim); padding-left:1.1em; font-size:0.9rem;">
+          <li>Pick your <strong>Nen Category</strong> (Enhancer → Specialist).</li>
+          <li>Allocate base stats and affinity efficiency per the Nen Hexagon.</li>
+          <li>Craft Hatsu by combining <em>Base Effect</em>, <em>Range/Targeting</em>, and <em>Oaths/Restrictions</em>.</li>
+          <li>Export <strong>Nen Code</strong> or <strong>Build JSON</strong> to share with other players.</li>
+        </ul>
+        <p class="small" style="margin-top:8px">→ Try the live builder below in <a href="#hatsu">Hatsu Lab</a>.</p>
+      </div>
+
+      <div class="card">
+        <h3>Mode C · Duel / VS Mode</h3>
+        <p class="small">Pass-and-play or room-code PvP.</p>
+        <ul style="color:var(--text-dim); padding-left:1.1em; font-size:0.9rem;">
+          <li>Test custom Nen builds against preset Floor Masters or imported opponent builds.</li>
+          <li>Same engine, two pilots. Point Match scoring applies at Floor 200+.</li>
+        </ul>
+        <p class="small" style="margin-top:8px">WebRTC / WebSocket room codes land in V3.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HEXAGON ============ -->
+  <section id="hexagon">
+    <h2 style="margin-top:48px">🔮 The Nen Hexagon Efficiency Matrix</h2>
+    <p>Each Nen type has 100% affinity in its own category and diminished efficiency in adjacent / distant categories. This is the table the engine loads into <code>AFFINITY_MATRIX</code>.</p>
+
+    <div class="card" style="margin-top:14px; overflow-x:auto">
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Enhancer</th><th>Transmuter</th><th>Emitter</th>
+            <th>Conjurer</th><th>Manipulator</th><th>Specialist</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-h">Enhancer</td>
+            <td class="eff-100">100%</td><td class="eff-80">80%</td><td class="eff-80">80%</td>
+            <td class="eff-60">60%</td><td class="eff-60">60%</td><td class="eff-0">0%</td>
+          </tr>
+          <tr>
+            <td class="row-h">Transmuter</td>
+            <td class="eff-80">80%</td><td class="eff-100">100%</td><td class="eff-60">60%</td>
+            <td class="eff-80">80%</td><td class="eff-40">40%</td><td class="eff-0">0%</td>
+          </tr>
+          <tr>
+            <td class="row-h">Emitter</td>
+            <td class="eff-80">80%</td><td class="eff-60">60%</td><td class="eff-100">100%</td>
+            <td class="eff-40">40%</td><td class="eff-80">80%</td><td class="eff-0">0%</td>
+          </tr>
+          <tr>
+            <td class="row-h">Conjurer</td>
+            <td class="eff-60">60%</td><td class="eff-80">80%</td><td class="eff-40">40%</td>
+            <td class="eff-100">100%</td><td class="eff-40">40%</td><td class="eff-60">60%</td>
+          </tr>
+          <tr>
+            <td class="row-h">Manipulator</td>
+            <td class="eff-60">60%</td><td class="eff-40">40%</td><td class="eff-80">80%</td>
+            <td class="eff-40">40%</td><td class="eff-100">100%</td><td class="eff-60">60%</td>
+          </tr>
+          <tr>
+            <td class="row-h">Specialist</td>
+            <td class="eff-40">40%</td><td class="eff-60">60%</td><td class="eff-60">60%</td>
+            <td class="eff-80">80%</td><td class="eff-80">80%</td><td class="eff-100">100%</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="small" style="margin-top:10px">Read as: <em>"An Enhancer attempting a Transmuter Hatsu lands at 80% efficiency."</em> Numbers map directly to <code>nen-engine.js → AFFINITY_MATRIX</code>.</p>
+    </div>
+  </section>
+
+  <!-- ============ ARCHITECTURE ============ -->
+  <section id="architecture">
+    <h2 style="margin-top:48px">🏗️ System Architecture &amp; State Machine</h2>
+    <p>Two structures run the whole game: the per-fighter <strong>player state</strong> and the <strong>turn cycle</strong> that mutates it.</p>
+
+    <div class="grid grid-2" style="margin-top:14px">
+      <div class="card">
+        <h3>Player State</h3>
+        <pre><code>[Player State]
+ ├─ Stats (Max HP, Max Aura, Atk, Def, Nen Efficiency)
+ ├─ Aura Flow Stance (Ten / Zetsu / Ren)
+ ├─ Active Aura Pool (Current / Max)
+ ├─ Nen Category (Enhancer / Transmuter / …)
+ └─ Hatsu List (Array of custom / unlocked abilities)</code></pre>
+      </div>
+
+      <div class="card">
+        <h3>Combat Turn Cycle</h3>
+        <div class="arch">
+          <div class="lvl"><strong>1.</strong> Stance Selection — Maintain / Ten / Zetsu / Ren</div>
+          <div class="arrow">↓</div>
+          <div class="lvl"><strong>2.</strong> Action Choice — Strike / Guard / Ko Strike / Gyo Inspect / Hatsu / Item</div>
+          <div class="arrow">↓</div>
+          <div class="lvl"><strong>3.</strong> Speed &amp; Priority Calculation</div>
+          <div class="arrow">↓</div>
+          <div class="lvl"><strong>4.</strong> Resolution &amp; Aura Burn</div>
+          <div class="arrow">↓</div>
+          <div class="lvl"><strong>5.</strong> Point Scoring &amp; Win Check (10 Points or KO)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- ============ LIVE SIMULATOR ============ -->
+  
+  </div>
+</div>
 
 </body>
 </html>
