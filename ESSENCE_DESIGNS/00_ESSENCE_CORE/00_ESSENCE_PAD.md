@@ -114,21 +114,15 @@ last touched: Drew 8/25 12:20 am
 
 ### &#x09;Discoveries:
 
-
-
 ###### &#x09;	Reality has the final vote.
-
-
 
 ###### &#x09;	Templates preserve thinking, not formatting.
 
-
-
 ###### &#x09;	Systems should be organized around verbs, not nouns.
 
-
-
 ###### &#x09;	A console should answer a question, not own a truth.
+
+###### &#x09;	Context reset purges drift. Clearing continued chat history clears out bad data; local repo files are the absolute source of truth.
 
 
 

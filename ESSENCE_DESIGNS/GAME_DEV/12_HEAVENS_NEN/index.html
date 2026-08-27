@@ -1,0 +1,1017 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Heaven's Nen Arena — Design Manifesto & Live Engine</title>
+<meta name="description" content="A web-based tactical Nen combat simulator and floor-climbing arena. Master the aura, name your oath, conquer the tower." />
+<style>
+  /* ===== Theme tokens ===== */
+  :root {
+    --bg: #0b0a14;
+    --bg-soft: #14121f;
+    --bg-card: #1a1727;
+    --bg-card-2: #221d33;
+    --line: #2a2540;
+    --line-soft: #1f1a32;
+    --text: #ece7f8;
+    --text-dim: #b3acc8;
+    --text-mute: #7e7896;
+    --accent: #d4af37;       /* gold */
+    --accent-2: #f0d878;
+    --aura: #9b6dff;         /* Nen purple */
+    --aura-2: #c8a8ff;
+    --danger: #ff5d6c;
+    --ok: #5ddca8;
+    --warn: #ffb84d;
+    --ko: #ff3366;
+    --ren: #ff7a45;
+    --ten: #5ddca8;
+    --zetsu: #6f88ff;
+    --gyo: #c084ff;
+    --shadow: 0 12px 40px rgba(0,0,0,0.45);
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Inter, sans-serif;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(155,109,255,0.18), transparent 60%),
+      radial-gradient(900px 500px at -10% 20%, rgba(212,175,55,0.10), transparent 60%),
+      var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    min-height: 100vh;
+  }
+  a { color: var(--accent-2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, pre, .mono { font-family: ui-monospace, "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace; }
+  pre { background: #0a0913; border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; overflow:auto; font-size: 12.5px; line-height: 1.55; color: #d8d2ee; }
+  code { background: rgba(255,255,255,0.06); padding: 1px 6px; border-radius: 5px; font-size: 0.92em; }
+  pre code { background: transparent; padding: 0; }
+  h1, h2, h3, h4 { letter-spacing: -0.01em; line-height: 1.2; }
+  h2 { font-size: 1.8rem; margin: 0 0 0.4rem; }
+  h3 { font-size: 1.15rem; margin: 1.6rem 0 0.4rem; color: var(--accent-2); }
+  h4 { font-size: 0.98rem; margin: 1.1rem 0 0.3rem; color: var(--text); }
+  p { margin: 0.5rem 0 0.9rem; color: var(--text-dim); }
+  hr { border: none; border-top: 1px solid var(--line); margin: 2.2rem 0; }
+
+  /* ===== Layout ===== */
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+  .nav {
+    position: sticky; top: 0; z-index: 20;
+    backdrop-filter: blur(10px);
+    background: rgba(11,10,20,0.7);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .nav-inner { display: flex; align-items: center; gap: 18px; padding: 12px 24px; max-width: 1180px; margin: 0 auto; flex-wrap: wrap; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight: 700; letter-spacing: 0.02em; }
+  .brand-mark {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: conic-gradient(from 0deg, var(--accent), var(--aura), var(--accent));
+    box-shadow: 0 0 20px rgba(212,175,55,0.4);
+  }
+  .brand small { color: var(--text-mute); font-weight: 500; }
+  .nav-links { display: flex; gap: 14px; flex-wrap: wrap; margin-left: auto; }
+  .nav-links a { color: var(--text-dim); font-size: 0.9rem; }
+  .nav-links a:hover { color: var(--text); text-decoration: none; }
+
+  /* ===== Hero ===== */
+  .hero { padding: 64px 0 32px; }
+  .eyebrow { color: var(--accent); font-size: 0.78rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600; }
+  .hero h1 {
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    margin: 12px 0 8px;
+    background: linear-gradient(90deg, #fff 0%, var(--accent-2) 50%, var(--aura-2) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .tagline { font-size: 1.2rem; color: var(--text-dim); margin-bottom: 18px; }
+  .hero-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .chip { padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; font-size: 0.82rem; color: var(--text-dim); background: rgba(255,255,255,0.02); }
+  .chip strong { color: var(--text); }
+
+  /* ===== Cards & grids ===== */
+  .card {
+    background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-card-2) 100%);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow);
+  }
+  .grid { display: grid; gap: 18px; }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 880px) {
+    .grid-3, .grid-2 { grid-template-columns: 1fr; }
+  }
+
+  .pillar h3 { margin-top: 0; }
+  .pillar .num {
+    display:inline-block; width: 28px; height: 28px; line-height: 28px; text-align:center;
+    background: rgba(212,175,55,0.15); color: var(--accent-2); border-radius: 8px; font-weight: 700; margin-right: 8px;
+  }
+
+  /* ===== Hexagon matrix table ===== */
+  .matrix { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.88rem; }
+  .matrix th, .matrix td { padding: 9px 10px; text-align: center; border-bottom: 1px solid var(--line-soft); }
+  .matrix th { color: var(--text-mute); font-weight: 600; }
+  .matrix td.row-h { text-align: left; color: var(--text); font-weight: 600; }
+  .eff-100 { background: rgba(93,220,168,0.18); color: #b6f5d8; }
+  .eff-80  { background: rgba(93,220,168,0.08); color: #cfeede; }
+  .eff-60  { background: rgba(255,184,77,0.10); color: #ffe0b3; }
+  .eff-40  { background: rgba(255,93,108,0.08); color: #ffc7cc; }
+  .eff-0   { background: rgba(255,93,108,0.18); color: #ffb3bb; }
+
+  /* ===== Architecture diagram ===== */
+  .arch { display: grid; gap: 10px; }
+  .arch .lvl { padding: 10px 14px; border: 1px dashed var(--line); border-radius: 10px; font-family: ui-monospace, monospace; font-size: 0.88rem; color: var(--text-dim); background: rgba(255,255,255,0.02); }
+  .arch .lvl strong { color: var(--text); }
+  .arrow { text-align: center; color: var(--aura); font-size: 0.9rem; }
+
+  /* ===== Stance reference ===== */
+  .stance-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  @media (max-width: 880px) { .stance-grid { grid-template-columns: repeat(2, 1fr); } }
+  .stance {
+    border: 1px solid var(--line); border-radius: 12px; padding: 12px;
+    background: rgba(255,255,255,0.02);
+  }
+  .stance h4 { margin: 0 0 6px; }
+  .stance .tag { display:inline-block; padding: 2px 8px; border-radius: 6px; font-size: 0.72rem; letter-spacing: 0.1em; font-weight: 700; }
+  .stance.ten  { border-top: 3px solid var(--ten); }
+  .stance.zetsu{ border-top: 3px solid var(--zetsu); }
+  .stance.ren  { border-top: 3px solid var(--ren); }
+  .stance.ko   { border-top: 3px solid var(--ko); }
+  .stance.gyo  { border-top: 3px solid var(--gyo); }
+  .stance.ten  .tag { background: rgba(93,220,168,0.18); color: var(--ten); }
+  .stance.zetsu.tag, .stance.zetsu .tag { background: rgba(111,136,255,0.18); color: var(--zetsu); }
+  .stance.ren  .tag { background: rgba(255,122,69,0.18); color: var(--ren); }
+  .stance.ko   .tag { background: rgba(255,51,102,0.20); color: var(--ko); }
+  .stance.gyo  .tag { background: rgba(192,132,255,0.20); color: var(--gyo); }
+  .stance p { margin: 6px 0 0; font-size: 0.85rem; }
+
+  /* ===== Live simulator ===== */
+  .sim-wrap { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 18px; }
+  @media (max-width: 980px) { .sim-wrap { grid-template-columns: 1fr; } }
+  .fighter { padding: 18px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg-card); }
+  .fighter h4 { margin: 0 0 4px; display: flex; align-items: center; gap: 8px; }
+  .fighter .badge { padding: 2px 8px; border-radius: 6px; font-size: 0.7rem; letter-spacing: 0.08em; }
+  .badge.ENHANCER { background: rgba(255,93,108,0.15); color: #ff9aa3; }
+  .badge.TRANSMUTER { background: rgba(155,109,255,0.18); color: #c8a8ff; }
+  .badge.EMITTER { background: rgba(93,220,255,0.18); color: #9beaff; }
+  .badge.CONJURER { background: rgba(255,184,77,0.18); color: #ffd29a; }
+  .badge.MANIPULATOR { background: rgba(93,220,168,0.18); color: #a3f0cf; }
+  .badge.SPECIALIST { background: rgba(212,175,55,0.18); color: var(--accent-2); }
+
+  .meter { height: 10px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden; margin: 6px 0 12px; }
+  .meter > i { display: block; height: 100%; border-radius: 999px; transition: width 0.35s ease; }
+  .meter.hp > i { background: linear-gradient(90deg, #ff5d6c, #ff8a5b); }
+  .meter.aura > i { background: linear-gradient(90deg, var(--aura), var(--aura-2)); }
+  .meter.pts > i { background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+  .row { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-mute); margin-top: 4px; }
+  .row strong { color: var(--text); }
+
+  .controls { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 10px; }
+  @media (max-width: 600px) { .controls { grid-template-columns: repeat(2, 1fr); } }
+  .btn {
+    padding: 9px 8px; border-radius: 9px; border: 1px solid var(--line);
+    background: rgba(255,255,255,0.03); color: var(--text); cursor: pointer;
+    font-size: 0.82rem; transition: all 0.15s; text-align: center;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent-2); }
+  .btn.primary { background: linear-gradient(180deg, rgba(212,175,55,0.25), rgba(212,175,55,0.10)); border-color: var(--accent); color: var(--accent-2); font-weight: 600; }
+  .btn.primary:hover { background: linear-gradient(180deg, rgba(212,175,55,0.40), rgba(212,175,55,0.18)); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn.stance-TEN { border-left: 3px solid var(--ten); }
+  .btn.stance-ZETSU { border-left: 3px solid var(--zetsu); }
+  .btn.stance-REN { border-left: 3px solid var(--ren); }
+  .btn.focus-KO { border-left: 3px solid var(--ko); }
+  .btn.focus-GYO { border-left: 3px solid var(--gyo); }
+
+  .log {
+    margin-top: 16px; max-height: 360px; overflow-y: auto;
+    border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px;
+    background: #0a0913; font-size: 0.82rem; line-height: 1.5;
+  }
+  .log .line { padding: 2px 0; color: var(--text-dim); border-bottom: 1px dashed rgba(255,255,255,0.04); }
+  .log .line:last-child { border-bottom: none; }
+  .log .line.alert { color: var(--warn); }
+  .log .line.kill { color: var(--ko); font-weight: 600; }
+  .log .line.ok { color: var(--ok); }
+  .log .line.aura { color: var(--aura-2); }
+  .log .turn-marker { color: var(--accent); font-weight: 700; margin-top: 6px; display: block; }
+  .verdict {
+    margin-top: 12px; padding: 12px 14px; border-radius: 10px;
+    background: linear-gradient(90deg, rgba(212,175,55,0.18), rgba(155,109,255,0.18));
+    border: 1px solid var(--accent); color: var(--text); font-weight: 600;
+    text-align: center; display: none;
+  }
+  .verdict.show { display: block; }
+
+  /* ===== Hatsu builder ===== */
+  .builder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 880px) { .builder-grid { grid-template-columns: 1fr; } }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 0.82rem; color: var(--text-mute); margin-bottom: 4px; }
+  .field input, .field select {
+    width: 100%; padding: 8px 10px; background: var(--bg); border: 1px solid var(--line);
+    color: var(--text); border-radius: 8px; font-size: 0.9rem;
+  }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--accent); }
+  .oath-row { display: flex; align-items: center; gap: 8px; padding: 8px; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 6px; font-size: 0.85rem; }
+  .oath-row input[type=checkbox] { accent-color: var(--accent); }
+  .hatsu-card { padding: 16px; border-radius: 12px; border: 1px solid var(--accent); background: linear-gradient(180deg, rgba(212,175,55,0.08), transparent); }
+  .hatsu-card .nm { font-size: 1.1rem; font-weight: 700; color: var(--accent-2); }
+  .hatsu-card .meta { font-size: 0.82rem; color: var(--text-mute); margin-top: 4px; }
+  .hatsu-card .stats { display: flex; gap: 14px; margin-top: 10px; flex-wrap: wrap; }
+  .hatsu-card .stat { font-size: 0.8rem; }
+  .hatsu-card .stat strong { color: var(--text); }
+
+  /* ===== File list ===== */
+  .files { display: grid; gap: 8px; }
+  .file {
+    display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+    border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,0.02);
+  }
+  .file .ico { width: 36px; height: 36px; border-radius: 8px; background: rgba(155,109,255,0.18); display: flex; align-items: center; justify-content: center; color: var(--aura-2); font-weight: 700; }
+  .file .ico.md { background: rgba(212,175,55,0.18); color: var(--accent-2); }
+  .file .ico.test { background: rgba(93,220,168,0.18); color: var(--ok); }
+  .file .ico.html { background: rgba(255,93,108,0.18); color: #ff9aa3; }
+  .file .meta { font-size: 0.82rem; color: var(--text-mute); }
+  .file a { margin-left: auto; }
+
+  /* ===== Footer ===== */
+  footer { margin: 60px 0 30px; text-align: center; color: var(--text-mute); font-size: 0.85rem; }
+  footer .sep { color: var(--aura); margin: 0 8px; }
+
+  /* utility */
+  .small { font-size: 0.85rem; color: var(--text-mute); }
+  .right { text-align: right; }
+  .nowrap { white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div>Heaven's Nen Arena <small>· Manifesto V1</small></div>
+    </div>
+    <div class="nav-links">
+      <a href="#pillars">Pillars</a>
+      <a href="#modes">Modes</a>
+      <a href="#hexagon">Hexagon</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#simulator">Live Engine</a>
+      <a href="#hatsu">Hatsu Lab</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#files">Files</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Design Manifesto · System Architecture</div>
+    <h1>Master the Aura. Name your Oath. Conquer the Tower.</h1>
+    <p class="tagline">A web-based tactical Nen combat simulator and floor-climbing arena inspired by <em>Hunter x Hunter</em>. Verbs over nouns — Ten, Zetsu, Ren, Ko, Gyo, Hatsu — drive every choice on the path from Floor 1 to Floor 200+.</p>
+    <div class="hero-meta">
+      <span class="chip"><strong>Core</strong> · HTML5 / CSS3 / Vanilla JS</span>
+      <span class="chip"><strong>Install</strong> · None</span>
+      <span class="chip"><strong>Engine</strong> · <code>nen-engine.js</code></span>
+      <span class="chip"><strong>Sim</strong> · <code>sim-engine.js</code></span>
+      <span class="chip"><strong>Tests</strong> · <code>test-engine.js</code></span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ PILLARS ============ -->
+  <section id="pillars">
+    <h2>🏛️ Core Philosophy &amp; Design Pillars</h2>
+    <p>Four beliefs shape every mechanic in the arena. None of them are negotiable.</p>
+
+    <div class="grid grid-2" style="margin-top:14px">
+      <div class="card pillar">
+        <h3><span class="num">1</span>Verbs Over Nouns (Aura Flow as Gameplay)</h3>
+        <p>Nen isn't mana — it's <em>dynamic physical energy distribution</em>. Every turn, the player answers the same question: <strong>where is my aura right now?</strong></p>
+        <ul style="color:var(--text-dim); padding-left:1.1em; margin: 6px 0;">
+          <li><strong>Ten (Enshroud):</strong> Baseline defense, conserves aura.</li>
+          <li><strong>Zetsu (Conceal):</strong> 0 defense, fast aura recovery, hides flow, high vulnerability.</li>
+          <li><strong>Ren (Exert):</strong> Aura surges outward — +Atk, unlocks Hatsu, costs aura per turn.</li>
+          <li><strong>Hatsu (Express):</strong> Personal technique governed by affinity and conditions/oaths.</li>
+          <li><strong>Ko (Concentrate):</strong> 100% aura into offense. Devastating damage, but the rest of the body drops to 0 defense.</li>
+          <li><strong>Gyo (Focus Eye):</strong> Spend aura to reveal enemy aura distribution and hidden objects.</li>
+        </ul>
+      </div>
+
+      <div class="card pillar">
+        <h3><span class="num">2</span>The Point System (Floor 200+ Rules)</h3>
+        <p>Fights aren't HP grinds. Heaven's Arena matches on Floor 200+ are scored:</p>
+        <ul style="color:var(--text-dim); padding-left:1.1em; margin: 6px 0;">
+          <li><strong>Clean Hit</strong> — 1 Point</li>
+          <li><strong>Critical Hit</strong> — 2 Points</li>
+          <li><strong>Down</strong> — 1 Point</li>
+          <li><strong>Knockout (KO)</strong> — Instant Victory</li>
+        </ul>
+        <p style="color:var(--accent-2); font-weight:600; margin-top:14px;">First to 10 Points wins.</p>
+      </div>
+
+      <div class="card pillar">
+        <h3><span class="num">3</span>Oaths &amp; Restrictions (Condition-Based Power)</h3>
+        <p>The stronger the limitation, the higher the multiplier. <em>Risk and reward are the same stat.</em></p>
+        <ul style="color:var(--text-dim); padding-left:1.1em; margin: 6px 0;">
+          <li><em>"Can only activate when HP &lt; 30%"</em> → <strong>+150%</strong> Hatsu damage.</li>
+          <li><em>"Requires 2 turns of Zetsu prep"</em> → <strong>+200%</strong> Hatsu effect.</li>
+          <li><em>"If target dodges, self-stun"</em> → <strong>+180%</strong> Hatsu effect.</li>
+        </ul>
+      </div>
+
+      <div class="card pillar">
+        <h3><span class="num">4</span>Zero-Barrier Web Accessibility</h3>
+        <p>A single standalone web package (HTML5 / CSS3 / TS-JS). Playable in any browser on desktop or mobile. <strong>Zero installation required.</strong></p>
+        <p>The whole game — engine, simulator, lab, and this doc — fits in this folder and runs offline.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STANCE REFERENCE ============ -->
+  <section id="stances">
+    <h2 style="margin-top:48px">🎯 Stance &amp; Focus Reference</h2>
+    <p>Every combat tick is a stance decision. These are the verbs the engine resolves.</p>
+
+    <div class="stance-grid" style="margin-top:14px">
+      <div class="stance ten">
+        <span class="tag">TEN</span>
+        <h4>Enshroud</h4>
+        <p>Baseline aura cloak. <strong>Defense 1.0x</strong>, +5 aura regen, 0 cost. The default state.</p>
+      </div>
+      <div class="stance zetsu">
+        <span class="tag">ZETSU</span>
+        <h4>Conceal / Suppress</h4>
+        <p><strong>Defense 0.0x</strong>, +25 aura regen, hides aura flow. Vulnerability for velocity.</p>
+      </div>
+      <div class="stance ren">
+        <span class="tag">REN</span>
+        <h4>Exert</h4>
+        <p>Surge aura outward. <strong>Atk +50%</strong>, unlocks Hatsu, costs 15 aura/turn.</p>
+      </div>
+      <div class="stance ko">
+        <span class="tag">KO</span>
+        <h4>Concentrate</h4>
+        <p>100% aura into one strike. <strong>+100% damage</strong>, but rest of body at 0 defense.</p>
+      </div>
+      <div class="stance gyo">
+        <span class="tag">GYO</span>
+        <h4>Focus Eye</h4>
+        <p>Spend 10 aura to inspect hidden aura distribution and revealed stats.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MODES ============ -->
+  <section id="modes">
+    <h2 style="margin-top:48px">🎮 Gameplay Modes</h2>
+
+    <div class="grid grid-3" style="margin-top:14px">
+      <div class="card">
+        <h3>Mode A · Tower Campaign</h3>
+        <p class="small">Heaven's Arena ascent. The flagship single-player path.</p>
+        <ul style="color:var(--text-dim); padding-left:1.1em; font-size:0.9rem;">
+          <li><strong>Floors 1–50:</strong> Physical brawling &amp; martial arts. Onboarding (Stamina, Guard, Strike, Counter).</li>
+          <li><strong>Floors 50–100:</strong> Nen Awakening (Water Divination) &amp; fundamentals (Ten, Zetsu, Ren).</li>
+          <li><strong>Floors 100–199:</strong> Hatsu unlocking, advanced mechanics (Ko, Gyo, Ryu). Facing specialized Nen users.</li>
+          <li><strong>Floor 200+:</strong> Registration &amp; Point Matches against Floor Masters. Permanent consequences.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Mode B · Custom Hatsu Workshop</h3>
+        <p class="small">The Nen Lab — design, tune, and export.</p>
+        <ul style="color:var(--text-dim); padding-left:1.1em; font-size:0.9rem;">
+          <li>Pick your <strong>Nen Category</strong> (Enhancer → Specialist).</li>
+          <li>Allocate base stats and affinity efficiency per the Nen Hexagon.</li>
+          <li>Craft Hatsu by combining <em>Base Effect</em>, <em>Range/Targeting</em>, and <em>Oaths/Restrictions</em>.</li>
+          <li>Export <strong>Nen Code</strong> or <strong>Build JSON</strong> to share with other players.</li>
+        </ul>
+        <p class="small" style="margin-top:8px">→ Try the live builder below in <a href="#hatsu">Hatsu Lab</a>.</p>
+      </div>
+
+      <div class="card">
+        <h3>Mode C · Duel / VS Mode</h3>
+        <p class="small">Pass-and-play or room-code PvP.</p>
+        <ul style="color:var(--text-dim); padding-left:1.1em; font-size:0.9rem;">
+          <li>Test custom Nen builds against preset Floor Masters or imported opponent builds.</li>
+          <li>Same engine, two pilots. Point Match scoring applies at Floor 200+.</li>
+        </ul>
+        <p class="small" style="margin-top:8px">WebRTC / WebSocket room codes land in V3.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HEXAGON ============ -->
+  <section id="hexagon">
+    <h2 style="margin-top:48px">🔮 The Nen Hexagon Efficiency Matrix</h2>
+    <p>Each Nen type has 100% affinity in its own category and diminished efficiency in adjacent / distant categories. This is the table the engine loads into <code>AFFINITY_MATRIX</code>.</p>
+
+    <div class="card" style="margin-top:14px; overflow-x:auto">
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Enhancer</th><th>Transmuter</th><th>Emitter</th>
+            <th>Conjurer</th><th>Manipulator</th><th>Specialist</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-h">Enhancer</td>
+            <td class="eff-100">100%</td><td class="eff-80">80%</td><td class="eff-80">80%</td>
+            <td class="eff-60">60%</td><td class="eff-60">60%</td><td class="eff-0">0%</td>
+          </tr>
+          <tr>
+            <td class="row-h">Transmuter</td>
+            <td class="eff-80">80%</td><td class="eff-100">100%</td><td class="eff-60">60%</td>
+            <td class="eff-80">80%</td><td class="eff-40">40%</td><td class="eff-0">0%</td>
+          </tr>
+          <tr>
+            <td class="row-h">Emitter</td>
+            <td class="eff-80">80%</td><td class="eff-60">60%</td><td class="eff-100">100%</td>
+            <td class="eff-40">40%</td><td class="eff-80">80%</td><td class="eff-0">0%</td>
+          </tr>
+          <tr>
+            <td class="row-h">Conjurer</td>
+            <td class="eff-60">60%</td><td class="eff-80">80%</td><td class="eff-40">40%</td>
+            <td class="eff-100">100%</td><td class="eff-40">40%</td><td class="eff-60">60%</td>
+          </tr>
+          <tr>
+            <td class="row-h">Manipulator</td>
+            <td class="eff-60">60%</td><td class="eff-40">40%</td><td class="eff-80">80%</td>
+            <td class="eff-40">40%</td><td class="eff-100">100%</td><td class="eff-60">60%</td>
+          </tr>
+          <tr>
+            <td class="row-h">Specialist</td>
+            <td class="eff-40">40%</td><td class="eff-60">60%</td><td class="eff-60">60%</td>
+            <td class="eff-80">80%</td><td class="eff-80">80%</td><td class="eff-100">100%</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="small" style="margin-top:10px">Read as: <em>"An Enhancer attempting a Transmuter Hatsu lands at 80% efficiency."</em> Numbers map directly to <code>nen-engine.js → AFFINITY_MATRIX</code>.</p>
+    </div>
+  </section>
+
+  <!-- ============ ARCHITECTURE ============ -->
+  <section id="architecture">
+    <h2 style="margin-top:48px">🏗️ System Architecture &amp; State Machine</h2>
+    <p>Two structures run the whole game: the per-fighter <strong>player state</strong> and the <strong>turn cycle</strong> that mutates it.</p>
+
+    <div class="grid grid-2" style="margin-top:14px">
+      <div class="card">
+        <h3>Player State</h3>
+        <pre><code>[Player State]
+ ├─ Stats (Max HP, Max Aura, Atk, Def, Nen Efficiency)
+ ├─ Aura Flow Stance (Ten / Zetsu / Ren)
+ ├─ Active Aura Pool (Current / Max)
+ ├─ Nen Category (Enhancer / Transmuter / …)
+ └─ Hatsu List (Array of custom / unlocked abilities)</code></pre>
+      </div>
+
+      <div class="card">
+        <h3>Combat Turn Cycle</h3>
+        <div class="arch">
+          <div class="lvl"><strong>1.</strong> Stance Selection — Maintain / Ten / Zetsu / Ren</div>
+          <div class="arrow">↓</div>
+          <div class="lvl"><strong>2.</strong> Action Choice — Strike / Guard / Ko Strike / Gyo Inspect / Hatsu / Item</div>
+          <div class="arrow">↓</div>
+          <div class="lvl"><strong>3.</strong> Speed &amp; Priority Calculation</div>
+          <div class="arrow">↓</div>
+          <div class="lvl"><strong>4.</strong> Resolution &amp; Aura Burn</div>
+          <div class="arrow">↓</div>
+          <div class="lvl"><strong>5.</strong> Point Scoring &amp; Win Check (10 Points or KO)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- ============ LIVE SIMULATOR ============ -->
+  <section id="simulator">
+    <h2>⚔️ Live Engine — Point Match Simulator</h2>
+    <p>Wired straight to <code>nen-engine.js</code>. Pick stances, focus states, and Hatsu for each fighter, then resolve a turn. <strong>First to 10 points or KO wins.</strong></p>
+
+    <div class="sim-wrap" style="margin-top:14px">
+      <!-- FIGHTER A -->
+      <div class="fighter" id="fighter-a">
+        <h4>
+          <span id="name-a">Gon Freecss</span>
+          <span class="badge ENHANCER" id="cat-a">ENHANCER</span>
+        </h4>
+        <div class="small">HP</div>
+        <div class="meter hp"><i id="hp-a-bar" style="width:100%"></i></div>
+        <div class="row"><span><strong id="hp-a">100</strong> / 100</span><span class="small">max HP</span></div>
+
+        <div class="small" style="margin-top:6px">Aura</div>
+        <div class="meter aura"><i id="aura-a-bar" style="width:100%"></i></div>
+        <div class="row"><span><strong id="aura-a">100</strong> / 100</span><span class="small" id="stance-a-label">Stance: TEN</span></div>
+
+        <div class="small" style="margin-top:6px">Arena Points</div>
+        <div class="meter pts"><i id="pts-a-bar" style="width:0%"></i></div>
+        <div class="row"><span><strong id="pts-a">0</strong> / 10</span><span class="small" id="focus-a-label">Focus: NORMAL</span></div>
+
+        <div class="controls" id="controls-a">
+          <button class="btn stance-TEN" data-stance="TEN">Ten</button>
+          <button class="btn stance-ZETSU" data-stance="ZETSU">Zetsu</button>
+          <button class="btn stance-REN" data-stance="REN">Ren</button>
+          <button class="btn focus-KO" data-focus="KO">Ko</button>
+          <button class="btn focus-GYO" data-focus="GYO">Gyo</button>
+        </div>
+        <div class="controls" id="controls-a2" style="margin-top:6px">
+          <button class="btn primary" id="strike-a" style="grid-column: span 3">Strike</button>
+          <button class="btn" id="hatsu-a" style="grid-column: span 2">Hatsu</button>
+        </div>
+      </div>
+
+      <!-- FIGHTER B -->
+      <div class="fighter" id="fighter-b">
+        <h4>
+          <span id="name-b">Hisoka Morow</span>
+          <span class="badge TRANSMUTER" id="cat-b">TRANSMUTER</span>
+        </h4>
+        <div class="small">HP</div>
+        <div class="meter hp"><i id="hp-b-bar" style="width:100%"></i></div>
+        <div class="row"><span><strong id="hp-b">100</strong> / 100</span><span class="small">max HP</span></div>
+
+        <div class="small" style="margin-top:6px">Aura</div>
+        <div class="meter aura"><i id="aura-b-bar" style="width:100%"></i></div>
+        <div class="row"><span><strong id="aura-b">100</strong> / 100</span><span class="small" id="stance-b-label">Stance: TEN</span></div>
+
+        <div class="small" style="margin-top:6px">Arena Points</div>
+        <div class="meter pts"><i id="pts-b-bar" style="width:0%"></i></div>
+        <div class="row"><span><strong id="pts-b">0</strong> / 10</span><span class="small" id="focus-b-label">Focus: NORMAL</span></div>
+
+        <div class="controls" id="controls-b">
+          <button class="btn stance-TEN" data-stance="TEN">Ten</button>
+          <button class="btn stance-ZETSU" data-stance="ZETSU">Zetsu</button>
+          <button class="btn stance-REN" data-stance="REN">Ren</button>
+          <button class="btn focus-KO" data-focus="KO">Ko</button>
+          <button class="btn focus-GYO" data-focus="GYO">Gyo</button>
+        </div>
+        <div class="controls" id="controls-b2" style="margin-top:6px">
+          <button class="btn primary" id="strike-b" style="grid-column: span 3">Strike</button>
+          <button class="btn" id="hatsu-b" style="grid-column: span 2">Hatsu</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
+        <button class="btn primary" id="turn-btn">▶ Resolve Turn</button>
+        <button class="btn" id="reset-btn">↻ Reset Match</button>
+        <span class="small" style="margin-left:auto">Engine: <code>window.NenEngine</code> from <code>nen-engine.js</code></span>
+      </div>
+
+      <div class="verdict" id="verdict"></div>
+
+      <div class="log" id="log" aria-live="polite">
+        <div class="line">Match initialized. Pick stances &amp; focus, then press <strong>Resolve Turn</strong>.</div>
+      </div>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- ============ HATSU LAB ============ -->
+  <section id="hatsu">
+    <h2>🧪 Hatsu Lab — Build a Custom Technique</h2>
+    <p>Mode B, live in the browser. Configure a Hatsu and the engine will quote the final power multiplier. Export the build as JSON.</p>
+
+    <div class="builder-grid" style="margin-top:14px">
+      <div class="card">
+        <h3>Configure</h3>
+
+        <div class="field">
+          <label>Hatsu Name</label>
+          <input id="h-name" type="text" value="Jajanken" />
+        </div>
+
+        <div class="field">
+          <label>User Category (affects efficiency)</label>
+          <select id="h-user-cat">
+            <option value="Enhancer">Enhancer</option>
+            <option value="Transmuter">Transmuter</option>
+            <option value="Emitter">Emitter</option>
+            <option value="Conjurer">Conjurer</option>
+            <option value="Manipulator">Manipulator</option>
+            <option value="Specialist">Specialist</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Target Category</label>
+          <select id="h-target-cat">
+            <option value="Enhancer">Enhancer</option>
+            <option value="Transmuter" selected>Transmuter</option>
+            <option value="Emitter">Emitter</option>
+            <option value="Conjurer">Conjurer</option>
+            <option value="Manipulator">Manipulator</option>
+            <option value="Specialist">Specialist</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Base Damage</label>
+          <input id="h-dmg" type="number" value="30" min="0" />
+        </div>
+
+        <div class="field">
+          <label>Aura Cost</label>
+          <input id="h-cost" type="number" value="20" min="0" />
+        </div>
+
+        <h4 style="margin-top:18px">Oaths &amp; Restrictions</h4>
+
+        <div class="oath-row">
+          <input type="checkbox" id="oath-lhp" />
+          <label for="oath-lhp" style="flex:1; color:var(--text-dim); margin:0">Low-HP Threshold (&lt;30%) — <strong>+0.8x</strong></label>
+        </div>
+        <div class="oath-row">
+          <input type="checkbox" id="oath-zprep" />
+          <label for="oath-zprep" style="flex:1; color:var(--text-dim); margin:0">Requires previous Zetsu turn — <strong>+1.0x</strong></label>
+        </div>
+        <div class="oath-row">
+          <input type="checkbox" id="oath-risk" />
+          <label for="oath-risk" style="flex:1; color:var(--text-dim); margin:0">Self-Stun if dodged (risk) — <strong>+0.5x</strong></label>
+        </div>
+
+        <button class="btn primary" id="build-btn" style="margin-top:12px; width:100%">⚡ Build Hatsu</button>
+      </div>
+
+      <div>
+        <div class="hatsu-card" id="hatsu-card">
+          <div class="nm" id="h-card-name">Jajanken</div>
+          <div class="meta" id="h-card-meta">Enhancer → Transmuter · Cost 20 aura</div>
+          <div class="stats">
+            <div class="stat">Base Damage: <strong id="h-card-dmg">30</strong></div>
+            <div class="stat">Affinity: <strong id="h-card-eff">80%</strong></div>
+            <div class="stat">Oath Mult: <strong id="h-card-oath">1.00x</strong></div>
+            <div class="stat" style="color:var(--accent-2); font-size:1rem; font-weight:700">Final: <span id="h-card-final">24.0</span> dmg</div>
+          </div>
+        </div>
+
+        <h3 style="margin-top:18px">Build JSON</h3>
+        <pre><code id="build-json">// Click "Build Hatsu" to generate</code></pre>
+        <button class="btn" id="copy-btn" style="margin-top:8px">📋 Copy to Clipboard</button>
+      </div>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- ============ ROADMAP ============ -->
+  <section id="roadmap">
+    <h2>🚀 Roadmap &amp; Prototype Steps</h2>
+    <div class="grid grid-3" style="margin-top:14px">
+      <div class="card">
+        <span class="chip" style="background:rgba(93,220,168,0.18); color:var(--ok); border-color:transparent; margin-bottom:8px">CURRENT</span>
+        <h3>V1 · Standalone Web App</h3>
+        <p>What this folder ships:</p>
+        <ul style="color:var(--text-dim); padding-left:1.1em; font-size:0.9rem;">
+          <li>Water Divination Test</li>
+          <li>Tower Floor Climb (1 → 200+)</li>
+          <li>Turn-based Nen tactical combat engine</li>
+          <li>Gyo / Ko risk-reward mechanics</li>
+          <li>Point Match scoring (first to 10)</li>
+          <li>Custom Hatsu builder</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <span class="chip" style="background:rgba(155,109,255,0.18); color:var(--aura-2); border-color:transparent; margin-bottom:8px">NEXT</span>
+        <h3>V2 · Polish &amp; Persistence</h3>
+        <ul style="color:var(--text-dim); padding-left:1.1em; font-size:0.9rem;">
+          <li>Dynamic Hatsu combat animations</li>
+          <li>Tactical visual aura meters</li>
+          <li>Save / load character progression via <code>localStorage</code></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <span class="chip" style="background:rgba(255,184,77,0.18); color:var(--warn); border-color:transparent; margin-bottom:8px">FUTURE</span>
+        <h3>V3 · Multiplayer</h3>
+        <ul style="color:var(--text-dim); padding-left:1.1em; font-size:0.9rem;">
+          <li>WebRTC peer-to-peer or WebSockets</li>
+          <li>Room-code PvP battles</li>
+          <li>Shared build library</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- ============ FILES ============ -->
+  <section id="files">
+    <h2>📁 Files In This Folder</h2>
+    <p>Everything lives in one directory. The HTML is self-contained and pulls the engine via a normal <code>&lt;script&gt;</code> tag.</p>
+
+    <div class="files" style="margin-top:14px">
+      <div class="file">
+        <div class="ico md">MD</div>
+        <div>
+          <div><strong>00_NEN_ARENA_MANIFESTO.md</strong></div>
+          <div class="meta">The source-of-truth design doc. This page renders its content.</div>
+        </div>
+      </div>
+      <div class="file">
+        <div class="ico">JS</div>
+        <div>
+          <div><strong>nen-engine.js</strong></div>
+          <div class="meta">Ground-truth combat &amp; aura engine. Categories, stances, damage, oath multiplier, point scoring. Exposes <code>window.NenEngine</code>.</div>
+        </div>
+      </div>
+      <div class="file">
+        <div class="ico test">JS</div>
+        <div>
+          <div><strong>test-engine.js</strong></div>
+          <div class="meta">Node test suite — affinity, stance costs, Ko / Zetsu interactions, KO &amp; 10-point instant win. Run with <code>node test-engine.js</code>.</div>
+        </div>
+      </div>
+      <div class="file">
+        <div class="ico">JS</div>
+        <div>
+          <div><strong>sim-engine.js</strong></div>
+          <div class="meta">Monte Carlo simulator — 100 randomized matches between two preset Nen users for mechanical balance. Run with <code>node sim-engine.js</code>.</div>
+        </div>
+      </div>
+      <div class="file">
+        <div class="ico html">HT</div>
+        <div>
+          <div><strong>index.html</strong></div>
+          <div class="meta">This file. Doc + live engine demo + Hatsu lab. Open in any browser.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div>Heaven's Nen Arena <span class="sep">·</span> Prototype V1 <span class="sep">·</span> <a href="#pillars">Back to top</a></div>
+  <div class="small" style="margin-top:6px">Built from <code>00_NEN_ARENA_MANIFESTO.md</code>. Engine: <code>nen-engine.js</code>.</div>
+</footer>
+
+<!-- ============================================================ -->
+<!-- ENGINE LOADER                                              -->
+<!-- ============================================================ -->
+<script src="./nen-engine.js"></script>
+
+<script>
+/* ============================================================
+   STATE
+   ============================================================ */
+const NE = window.NenEngine;
+if (!NE) {
+  document.body.insertAdjacentHTML('afterbegin',
+    '<div style="background:#ff3366;color:#fff;padding:14px;text-align:center;font-weight:600">' +
+    'Could not load nen-engine.js. Make sure index.html is opened from this folder.' +
+    '</div>');
+}
+
+let fighterA, fighterB;
+let selectedStanceA = NE.STANCES.TEN,  selectedFocusA = NE.FOCUS_STATES.NORMAL;
+let selectedStanceB = NE.STANCES.TEN,  selectedFocusB = NE.FOCUS_STATES.NORMAL;
+let turnNumber = 0;
+let matchOver = false;
+let lastAction = { a: null, b: null };  // 'STRIKE' | 'HATSU'
+
+const HATSU_LIBRARY = {
+  ENHANCER: { name: 'Jajanken — Rock', category: 'Enhancer',  baseDamage: 30, auraCost: 20 },
+  TRANSMUTER: { name: 'Bungee Gum',    category: 'Transmuter', baseDamage: 28, auraCost: 18 },
+  EMITTER:    { name: 'Lazor Beam',    category: 'Emitter',    baseDamage: 32, auraCost: 22 },
+  CONJURER:   { name: 'Gates of Truth', category: 'Conjurer',  baseDamage: 26, auraCost: 24 },
+  MANIPULATOR:{ name: 'Doppelganger',  category: 'Manipulator', baseDamage: 24, auraCost: 20 },
+  SPECIALIST: { name: 'Paladin’s Lance', category: 'Specialist', baseDamage: 38, auraCost: 30 }
+};
+
+function initFighters() {
+  fighterA = NE.createFighter({
+    id: 'a', name: 'Gon Freecss',
+    category: NE.NEN_CATEGORIES.ENHANCER,
+    maxHp: 100, maxAura: 100, baseAtk: 18, baseDef: 12, speed: 12
+  });
+  fighterB = NE.createFighter({
+    id: 'b', name: 'Hisoka Morow',
+    category: NE.NEN_CATEGORIES.TRANSMUTER,
+    maxHp: 100, maxAura: 110, baseAtk: 18, baseDef: 12, speed: 13
+  });
+  selectedStanceA = NE.STANCES.TEN;   selectedFocusA = NE.FOCUS_STATES.NORMAL;
+  selectedStanceB = NE.STANCES.TEN;   selectedFocusB = NE.FOCUS_STATES.NORMAL;
+  turnNumber = 0;
+  matchOver = false;
+  document.getElementById('verdict').classList.remove('show');
+  document.getElementById('log').innerHTML =
+    '<div class="line">Match initialized. <strong>Gon</strong> (Enhancer) vs <strong>Hisoka</strong> (Transmuter). Pick stances &amp; focus, then press <strong>Resolve Turn</strong>.</div>';
+  renderFighters();
+}
+
+function renderFighters() {
+  // A
+  document.getElementById('hp-a').textContent    = fighterA.hp;
+  document.getElementById('aura-a').textContent  = fighterA.aura;
+  document.getElementById('pts-a').textContent   = fighterA.points;
+  document.getElementById('hp-a-bar').style.width   = (fighterA.hp / fighterA.maxHp * 100) + '%';
+  document.getElementById('aura-a-bar').style.width = (fighterA.aura / fighterA.maxAura * 100) + '%';
+  document.getElementById('pts-a-bar').style.width  = (fighterA.points / 10 * 100) + '%';
+  document.getElementById('stance-a-label').textContent = 'Stance: ' + fighterA.stance;
+  document.getElementById('focus-a-label').textContent  = 'Focus: '  + (fighterA.focus || 'NORMAL');
+
+  // B
+  document.getElementById('hp-b').textContent    = fighterB.hp;
+  document.getElementById('aura-b').textContent  = fighterB.aura;
+  document.getElementById('pts-b').textContent   = fighterB.points;
+  document.getElementById('hp-b-bar').style.width   = (fighterB.hp / fighterB.maxHp * 100) + '%';
+  document.getElementById('aura-b-bar').style.width = (fighterB.aura / fighterB.maxAura * 100) + '%';
+  document.getElementById('pts-b-bar').style.width  = (fighterB.points / 10 * 100) + '%';
+  document.getElementById('stance-b-label').textContent = 'Stance: ' + fighterB.stance;
+  document.getElementById('focus-b-label').textContent  = 'Focus: '  + (fighterB.focus || 'NORMAL');
+}
+
+function appendLog(html, cls) {
+  const log = document.getElementById('log');
+  const div = document.createElement('div');
+  div.className = 'line' + (cls ? ' ' + cls : '');
+  div.innerHTML = html;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+
+function appendTurnMarker(text) {
+  const log = document.getElementById('log');
+  const span = document.createElement('span');
+  span.className = 'turn-marker';
+  span.textContent = text;
+  log.appendChild(span);
+}
+
+/* ============================================================
+   WIRING
+   ============================================================ */
+document.querySelectorAll('#controls-a [data-stance]').forEach(b => {
+  b.addEventListener('click', () => { selectedStanceA = b.dataset.stance; });
+});
+document.querySelectorAll('#controls-a [data-focus]').forEach(b => {
+  b.addEventListener('click', () => { selectedFocusA = b.dataset.focus; });
+});
+document.querySelectorAll('#controls-b [data-stance]').forEach(b => {
+  b.addEventListener('click', () => { selectedStanceB = b.dataset.stance; });
+});
+document.querySelectorAll('#controls-b [data-focus]').forEach(b => {
+  b.addEventListener('click', () => { selectedFocusB = b.dataset.focus; });
+});
+
+document.getElementById('strike-a').addEventListener('click', () => { lastAction.a = 'STRIKE'; appendLog('▶ <strong>Gon</strong> locks in <strong>Strike</strong>.'); });
+document.getElementById('hatsu-a').addEventListener('click',  () => { lastAction.a = 'HATSU';  appendLog('▶ <strong>Gon</strong> locks in <strong>Hatsu</strong>.'); });
+document.getElementById('strike-b').addEventListener('click', () => { lastAction.b = 'STRIKE'; appendLog('▶ <strong>Hisoka</strong> locks in <strong>Strike</strong>.'); });
+document.getElementById('hatsu-b').addEventListener('click',  () => { lastAction.b = 'HATSU';  appendLog('▶ <strong>Hisoka</strong> locks in <strong>Hatsu</strong>.'); });
+
+document.getElementById('reset-btn').addEventListener('click', initFighters);
+
+document.getElementById('turn-btn').addEventListener('click', () => {
+  if (matchOver) return;
+  turnNumber++;
+  appendTurnMarker(`— TURN ${turnNumber} —`);
+
+  // Default to strike if nothing chosen
+  if (!lastAction.a) lastAction.a = 'STRIKE';
+  if (!lastAction.b) lastAction.b = 'STRIKE';
+
+  // Apply start of turn (stance/focus)
+  NE.applyStartOfTurn(fighterA, selectedStanceA, selectedFocusA);
+  NE.applyStartOfTurn(fighterB, selectedStanceB, selectedFocusB);
+
+  // Log aura changes
+  appendLog(`${fighterA.name} → stance <strong>${fighterA.stance}</strong>, focus <strong>${fighterA.focus}</strong> · aura ${fighterA.aura}/${fighterA.maxAura}`, 'aura');
+  appendLog(`${fighterB.name} → stance <strong>${fighterB.stance}</strong>, focus <strong>${fighterB.focus}</strong> · aura ${fighterB.aura}/${fighterB.maxAura}`, 'aura');
+
+  // Speed / initiative
+  const aSpd = fighterA.speed * (fighterA.stance === NE.STANCES.REN ? 1.2 : 1.0);
+  const bSpd = fighterB.speed * (fighterB.stance === NE.STANCES.REN ? 1.2 : 1.0);
+  const first  = aSpd >= bSpd ? fighterA : fighterB;
+  const second = aSpd >= bSpd ? fighterB : fighterA;
+  const firstAction  = aSpd >= bSpd ? lastAction.a : lastAction.b;
+  const secondAction = aSpd >= bSpd ? lastAction.b : lastAction.a;
+
+  resolveOne(first, second, firstAction);
+  if (!matchOver) {
+    resolveOne(second, first, secondAction);
+  }
+
+  // reset action locks for next turn
+  lastAction.a = null;
+  lastAction.b = null;
+
+  renderFighters();
+});
+
+function resolveOne(attacker, defender, actionType) {
+  let payload;
+  if (actionType === 'HATSU') {
+    const tpl = HATSU_LIBRARY[attacker.category];
+    payload = {
+      type: 'HATSU',
+      hatsu: {
+        name: tpl.name,
+        category: tpl.category,
+        baseDamage: tpl.baseDamage,
+        auraCost: tpl.auraCost,
+        oaths: []
+      }
+    };
+  } else {
+    payload = { type: 'STRIKE' };
+  }
+  const res = NE.resolveAttack(attacker, defender, payload);
+
+  res.logs.forEach(l => {
+    let cls = '';
+    if (l.includes('⚠️')) cls = 'alert';
+    else if (l.includes('KNOCKOUT') || l.includes('KO')) cls = 'kill';
+    else if (l.includes('Hatsu') || l.includes('🔥')) cls = 'aura';
+    else if (l.includes('points') || l.includes('Point')) cls = 'ok';
+    appendLog(l, cls);
+  });
+
+  if (res.isMatchOver) {
+    matchOver = true;
+    const v = document.getElementById('verdict');
+    v.classList.add('show');
+    v.textContent = `🏆 ${res.winner} wins the match! ${res.isKO ? '(Knockout — Instant Victory)' : '(10 Points reached)'}`;
+  }
+}
+
+/* ============================================================
+   HATSU LAB
+   ============================================================ */
+const $ = id => document.getElementById(id);
+
+function buildHatsu() {
+  const name = $('h-name').value || 'Unnamed Hatsu';
+  const userCat = $('h-user-cat').value;
+  const tgtCat  = $('h-target-cat').value;
+  const dmg     = parseInt($('h-dmg').value, 10) || 0;
+  const cost    = parseInt($('h-cost').value, 10) || 0;
+
+  const oaths = [];
+  if ($('oath-lhp').checked)   oaths.push({ type: 'LOW_HP_THRESHOLD',   threshold: 0.3, bonusMultiplier: 0.8 });
+  if ($('oath-zprep').checked) oaths.push({ type: 'ZETSU_PREP_TURNS',   bonusMultiplier: 1.0 });
+  if ($('oath-risk').checked)  oaths.push({ type: 'RISK_SELF_STUN',     bonusMultiplier: 0.5 });
+
+  const efficiency = NE.getCategoryEfficiency(userCat, tgtCat);
+  const oathMult   = NE.calculateOathMultiplier(oaths, { hp: 1, maxHp: 1, previousStance: NE.STANCES.ZETSU });
+  const finalDmg   = Math.round(dmg * efficiency * oathMult * 10) / 10;
+
+  $('h-card-name').textContent  = name;
+  $('h-card-meta').textContent  = `${userCat} → ${tgtCat} · Cost ${cost} aura`;
+  $('h-card-dmg').textContent   = dmg;
+  $('h-card-eff').textContent   = Math.round(efficiency * 100) + '%';
+  $('h-card-oath').textContent  = oathMult.toFixed(2) + 'x';
+  $('h-card-final').textContent = finalDmg.toFixed(1);
+
+  const build = {
+    name, userCategory: userCat, targetCategory: tgtCat,
+    baseDamage: dmg, auraCost: cost, oaths,
+    computed: { efficiency, oathMultiplier: oathMult, finalDamage: finalDmg }
+  };
+  $('build-json').textContent = JSON.stringify(build, null, 2);
+  return build;
+}
+
+$('build-btn').addEventListener('click', buildHatsu);
+$('copy-btn').addEventListener('click', () => {
+  const txt = $('build-json').textContent;
+  navigator.clipboard?.writeText(txt).then(() => {
+    $('copy-btn').textContent = '✓ Copied';
+    setTimeout(() => { $('copy-btn').textContent = '📋 Copy to Clipboard'; }, 1400);
+  });
+});
+
+// Live updates as you type
+['h-name','h-user-cat','h-target-cat','h-dmg','h-cost','oath-lhp','oath-zprep','oath-risk']
+  .forEach(id => {
+    const el = $(id);
+    const evt = el.type === 'checkbox' || el.tagName === 'SELECT' ? 'change' : 'input';
+    el.addEventListener(evt, buildHatsu);
+  });
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+initFighters();
+buildHatsu();
+</script>
+
+</body>
+</html>

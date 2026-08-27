@@ -40,6 +40,7 @@ Before any objective or milestone is marked **Complete**, it must satisfy all fi
 
 ## 🔄 PART 4: DECISION LOG & OBJECTIVE SHIFTS
 
+- **2026-08-26 (Context Purge & Local Truth Verification):** Documented core discovery following operational friction: clearing AI context/chat history purges accumulated bad data/drift. The local file tree remains the sole absolute source of truth.
 - **2026-08-26 (Heaven's Nen Arena Active Sprint Launch):** Transitioned primary studio sprint objective from Infrastructure (M0) to **Milestone M5: Heaven's Nen Arena Web Prototype**. System and documentation updated to make M5 active before dev launch.
 - **2026-08-26 (Financial Floor & Burn Rate Baseline Enforced):** Integrated studio burn limit rules (`< $1.00 / hour`) and hybrid local/cloud model tiering into `00_ESSENCE_BIBLE.md`, `MILESTONES.md` (DoD #5), and `AGENT_BOOT_PROMPT.md`.
 - **2026-08-26 (INFRA 1.0 Milestone Completion):** Officially completed **Milestone M0: Ground-Truth INFRA Setup**. Health check script added (`scripts/healthcheck.js`), `.gitignore` hardened, `DOCS/AGENT_BOOT_PROMPT.md` created, Trello board synced, and documentation committed to main. System ready for Milestone M5 post-INFRA target decision.

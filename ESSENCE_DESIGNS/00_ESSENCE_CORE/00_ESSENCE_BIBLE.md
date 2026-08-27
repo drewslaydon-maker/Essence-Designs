@@ -24,6 +24,7 @@ Independent developer and content creator running several long-term, interconnec
 - **Templates preserve thinking, not formatting.**
 - **Systems should be organized around verbs, not nouns.**
 - **A console should answer a question, not own a truth:** Consoles facilitate decisions; they are not sources of truth. Every live datum has exactly one owner.
+- **Context reset purges drift:** Clearing continued chat history clears out accumulated bad data and prompt drift; local repository files are the single absolute truth for direction and state.
 
 ### Framework Pieces (In Progress)
 - **Ways & Whys:** The directions people go and why they pursue them.

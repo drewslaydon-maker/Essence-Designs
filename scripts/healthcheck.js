@@ -49,6 +49,14 @@ function runTests() {
     console.log('[!] Prosis Test Baseline: Failures present');
   }
 
+  // 5. Run Nen Engine Test Suite
+  try {
+    const nenOut = execSync('node ESSENCE_DESIGNS/GAME_DEV/12_HEAVENS_NEN/test-engine.js').toString();
+    console.log('[✔] Nen Combat Engine: Diagnostic suite passing');
+  } catch (e) {
+    console.log('[!] Nen Combat Engine: Tests failing');
+  }
+
   console.log('\n----------------------------------------------------');
   console.log('   INFRA Healthcheck Complete. System Ready.        ');
   console.log('====================================================\n');
