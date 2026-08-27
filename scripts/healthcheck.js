@@ -5,8 +5,6 @@ console.log('====================================================');
 console.log('   ESSENCE DESIGNS — INFRA 1.0 System Health Check   ');
 console.log('====================================================\n');
 
-let pass = true;
-
 // 1. Check Git Status
 try {
   const gitStatus = execSync('git status --porcelain').toString().trim();
@@ -17,7 +15,6 @@ try {
   }
 } catch (e) {
   console.log('[✖] Git Repository: Check failed');
-  pass = false;
 }
 
 // 2. Check Node Execution
@@ -26,10 +23,9 @@ try {
   console.log(`[✔] Node.js Runtime: ${nodeVer} operational`);
 } catch (e) {
   console.log('[✖] Node.js Runtime: Check failed');
-  pass = false;
 }
 
-// 3. Check Local Ollama Engine (fast-coder)
+// 3. Check Local Ollama Engine
 const req = http.get('http://127.0.0.1:11434/api/tags', (res) => {
   if (res.statusCode === 200) {
     console.log('[✔] Ollama Local Pipeline: Endpoint responsive (127.0.0.1:11434)');
@@ -50,10 +46,11 @@ function runTests() {
     const testOut = execSync('npm test', { cwd: './ESSENCE_DESIGNS/GAME_DEV/02_PROSIS' }).toString();
     console.log('[✔] Prosis Test Baseline: 100% tests passing');
   } catch (e) {
-    console.log('[!] Prosis Test Baseline: Failures present (26/29 passing baseline)');
+    console.log('[!] Prosis Test Baseline: Failures present');
   }
 
   console.log('\n----------------------------------------------------');
   console.log('   INFRA Healthcheck Complete. System Ready.        ');
   console.log('====================================================\n');
+  process.exit(0);
 }

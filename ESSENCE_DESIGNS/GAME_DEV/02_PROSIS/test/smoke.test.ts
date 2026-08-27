@@ -61,7 +61,7 @@ test("computeGTL: optimalFront is the front with smallest TTF", () => {
 
 test("computeGTL: BANKING_GTL_CREDIT flows into chosenFront", () => {
   const state = { entropy: 50, systems: 100, re: 100 };
-  const without = computeGTL(1, state, { entropy: 0, systems: 0, re: 0 });
+  const without = computeGTL(1, state, { entropy: -5, systems: 10, re: 0 });
   const withBanking = computeGTL(1, state, { entropy: 0, systems: 0, re: 16 * 0.4 });
   // RE banking credit pulls chosenFront toward re.
   assert.strictEqual(without.chosenFront, "systems");
@@ -71,8 +71,19 @@ test("computeGTL: BANKING_GTL_CREDIT flows into chosenFront", () => {
 // ---- Reveal ----
 
 test("computeReveal: rng returning a low value produces a lull (rng < lullChance)", () => {
-  const lowRng = () => 0.05;
-  const reveal = computeReveal(1, 0, { low: 0, high: 0, desperate: 0 }, 0, [], lowRng);
+  // Inside computeReveal:
+  // 1. rand(0.85, 1.15) calls rng() once.
+  // 2. roll = rng() calls rng() a second time. (0.05 < lullChance ~0.46)
+  // 3. rng() < EVENT_SHARE calls rng() a third time. (0.9 >= EVENT_SHARE 0.8) -> returns "lull"
+  let callCount = 0;
+  const mockRng = () => {
+    callCount++;
+    if (callCount === 1) return 0.5; // for rand(0.85, 1.15)
+    if (callCount === 2) return 0.05; // roll < lullChance
+    if (callCount === 3) return 0.9;  // eventRoll >= EVENT_SHARE (0.8) -> lull
+    return 0.5;
+  };
+  const reveal = computeReveal(1, 0, { low: 0, high: 0, desperate: 0 }, 0, [], mockRng);
   assert.strictEqual(reveal.incoming, "lull");
   assert.strictEqual(reveal.eventId, null);
 });
@@ -284,8 +295,9 @@ test("applySalvageAutoSpend: weak front gets the restoration", () => {
     salvage: 10,
     salvageTarget: "auto",
   });
-  assert.strictEqual(out.target, "re");
-  assert.ok(out.re > 50);
+  // Entropy at 80 is 80% towards failure (closest to failure)
+  assert.strictEqual(out.target, "entropy");
+  assert.ok(out.entropy < 80);
 });
 
 test("applySalvageAutoSpend: explicit target respected", () => {

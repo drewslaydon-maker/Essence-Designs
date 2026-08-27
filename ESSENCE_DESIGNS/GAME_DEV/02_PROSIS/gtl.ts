@@ -169,16 +169,19 @@ export function computeReveal(
   let incoming: IncomingKind;
   let eventId: string | null = null;
 
-  if (rng() > lullChance) {
-    incoming = weightedDraw(axisCounts, totalActions, rng);
-  } else if (rng() < EVENT_SHARE) {
-    incoming = "event";
-    const seen = new Set(usedEventIds);
-    let pool = EVENTS.filter((e) => !seen.has(e.id));
-    if (pool.length === 0) pool = [...EVENTS];
-    eventId = pool[Math.floor(rng() * pool.length)].id;
+  const roll = rng();
+  if (roll < lullChance) {
+    if (rng() < EVENT_SHARE) {
+      incoming = "event";
+      const seen = new Set(usedEventIds);
+      let pool = EVENTS.filter((e) => !seen.has(e.id));
+      if (pool.length === 0) pool = [...EVENTS];
+      eventId = pool[Math.floor(rng() * pool.length)].id;
+    } else {
+      incoming = "lull";
+    }
   } else {
-    incoming = "lull";
+    incoming = weightedDraw(axisCounts, totalActions, rng);
   }
 
   return { entropy: newEntropy, ambient, incoming, eventId };
