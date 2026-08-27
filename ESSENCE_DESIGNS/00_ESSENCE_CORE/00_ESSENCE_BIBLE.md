@@ -67,7 +67,7 @@ Independent developer and content creator running several long-term, interconnec
 
 | # | Project | Local Folder | Status | Next Concrete Step / Core Concept |
 |---|---|---|---|---|
-| 0 | **System Infrastructure (INFRA)** | DOCS/ & 00_ESSENCE_CORE/ | **Most Active** | Complete system architecture alignment, Trello sync, local engine/tooling configuration. Next game dev target decided post-INFRA. |
+| 0 | **System Infrastructure (INFRA)** | DOCS/ & 00_ESSENCE_CORE/ | **Complete (M0)** | System architecture, Trello sync, local engine/tooling configuration baseline established. |
 | 1 | **The Fracture / Prosis** | GAME_DEV/02_PROSIS/ | **[Parked]** | Paused. Engine test baseline verified (26/29 passing). Held until post-INFRA decision. |
 | 2 | **Brew the World (BtW)** | GAME_DEV/01_BtW/ | **[Parked]** | Paused. Day 1 Vertical Slice plan documented and ready. Held until post-INFRA decision. |
 | 3 | **Legend of the Source** | GAME_DEV/07_MY_ZELDA/ | **Design Draft** | Top-down Zelda-inspired Action-RPG overworld & puzzle dungeons. |
@@ -79,8 +79,9 @@ Independent developer and content creator running several long-term, interconnec
 | 9 | **Ship Battle** | GAME_DEV/03_SHIPBATTLE/ | **[Parked]** | 2D PvP naval/space battler (post-BtW target). |
 | 10 | **Video Essay Series** | ME/01_VIDEOS/ | **Active** | Ep. 1 published. AI/prediction markets capstone, ProjectB2E2, and Asmongold pieces queued. |
 | 11 | **Stream Marathon** | ME/02_STREAM/ | **Active Setup** | Minecraft Hardcore with Julia (Sept 2026 launch setup). |
-| 12 | **Cook Game** | GAME_DEV/04_COOK_GAME/ | **[Parked]** | Rhythm-based cooking sim manifesto. |
-| 13 | **4500** | GAME_DEV/05_4500/ | **[Parked]** | Post-nuclear rebuilding game (final studio release vision). |
+| 12 | **Heaven's Nen** | GAME_DEV/12_HEAVENS_NEN/ | **Active Sprint (M5)** | HxH Heaven's Arena Nen combat, floor climbing tower, custom Hatsu workshop, PvP vs mode. |
+| 13 | **Cook Game** | GAME_DEV/04_COOK_GAME/ | **[Parked]** | Rhythm-based cooking sim manifesto. |
+| 14 | **4500** | GAME_DEV/05_4500/ | **[Parked]** | Post-nuclear rebuilding game (final studio release vision). |
 
 ---
 

@@ -350,11 +350,11 @@ last touched: Drew 8/25 12:20 am
 
 
 
-# Current Objective: INFRA Update
+# Current Objective: Heaven's Nen Arena Web Prototype (M5)
 
-BtW and Prosis are currently **[Parked]** as active game builds. The active focus is completing the INFRA (Infrastructure & Studio Operating System) update across documentation, Trello board synchronization, model configuration, and system architecture.
+System infrastructure update is complete. Active studio objective is **Milestone M5: Heaven's Nen Arena Web Prototype** in `GAME_DEV/12_HEAVENS_NEN/`.
 
-Once INFRA update is complete, we decide what to dev next.
+BtW, Prosis, Cook Game, and Ship Battle remain **[Parked]** while M5 is in active development.
 
 
 &#x09;

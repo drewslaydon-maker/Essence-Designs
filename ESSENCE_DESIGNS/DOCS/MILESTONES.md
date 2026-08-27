@@ -6,9 +6,9 @@
 
 ## 🚩 PART 1: CURRENT ACTIVE SPRINT OBJECTIVE
 
-### Active Era: INFRA R&D & Operating System Standardization (Q3 2026)
-- **Primary Objective:** Complete system infrastructure alignment, local LLM/Continue context window setup (`num_ctx 8192`), UV Python 3.12 Aider CLI environment, canonical documentation refresh, and Trello board synchronization.
-- **Exit Condition:** Complete workspace audit, establish milestone tracking framework, and trigger the studio **Decision Milestone** to select the next game/media project for active development.
+### Active Era: Heaven's Nen Arena Prototype Sprint (Q3 2026)
+- **Primary Objective:** Build and verify **Milestone M5: Heaven's Nen Arena Web Prototype** — featuring Water Divination Test, Tower Arena Floor Climb (Floors 1 to 200+), turn-based tactical Nen combat engine, Gyo/Ko risk-reward mechanics, Heaven's Arena Point Match scoring system, and Custom Hatsu Workshop.
+- **Exit Condition:** Playable interactive web application (`GAME_DEV/12_HEAVENS_NEN/`) with verified Nen state machine, combat mechanics, tower floor progression, and custom build export/import capability.
 
 ---
 
@@ -21,7 +21,8 @@
 | **M2** | **BtW Day 1 Vertical Slice** | GAME_DEV/01_BtW/ | ⏸️ **Parked** | Playable Day 1 loop (Shop + Market + Foraging path + Weasel beat). |
 | **M3** | **Video Essay Ep. 1 Production** | ME/01_VIDEOS/ | 🔵 **Queued** | "Synthetic Belief" script recording and editing pass. |
 | **M4** | **Stream Marathon Setup** | ME/02_STREAM/ | 🔵 **Queued** | Minecraft Hardcore stream setup with Julia (Sept 2026 launch window). |
-| **M5** | **Post-INFRA Next Project Decision** | Studio Strategy | ⏳ **Pending** | Formal selection and launch of post-INFRA primary dev target. |
+| **M5** | **Heaven's Nen Arena Web Prototype** | GAME_DEV/12_HEAVENS_NEN/ | 🟡 **Active** | Interactive web prototype with Water Divination, Tower Arena Climb, Custom Hatsu Builder & Combat Engine. |
+| **M6** | **Post-INFRA Next Project Decision** | Studio Strategy | ⏳ **Pending** | Formal selection and launch of post-INFRA primary dev target. |
 
 ---
 
@@ -39,6 +40,7 @@ Before any objective or milestone is marked **Complete**, it must satisfy all fi
 
 ## 🔄 PART 4: DECISION LOG & OBJECTIVE SHIFTS
 
+- **2026-08-26 (Heaven's Nen Arena Active Sprint Launch):** Transitioned primary studio sprint objective from Infrastructure (M0) to **Milestone M5: Heaven's Nen Arena Web Prototype**. System and documentation updated to make M5 active before dev launch.
 - **2026-08-26 (Financial Floor & Burn Rate Baseline Enforced):** Integrated studio burn limit rules (`< $1.00 / hour`) and hybrid local/cloud model tiering into `00_ESSENCE_BIBLE.md`, `MILESTONES.md` (DoD #5), and `AGENT_BOOT_PROMPT.md`.
 - **2026-08-26 (INFRA 1.0 Milestone Completion):** Officially completed **Milestone M0: Ground-Truth INFRA Setup**. Health check script added (`scripts/healthcheck.js`), `.gitignore` hardened, `DOCS/AGENT_BOOT_PROMPT.md` created, Trello board synced, and documentation committed to main. System ready for Milestone M5 post-INFRA target decision.
 - **2026-08-26 (INFRA Objective Pivot):** Paused active development on **Prosis** (M1) and **Brew the World** (M2). Shifted primary studio objective to **System Infrastructure (INFRA)** to standardize local local AI tooling, master documentation, Trello board synchronization, and workspace tracking before selecting the next dev sprint target.
