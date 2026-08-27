@@ -33,7 +33,7 @@ Independent developer and content creator running several long-term, interconnec
 - **Player Psychology:** *"Enable and allow. Do not punish. Restrict within reason. Fun is the greatest truth, and so is math."*
 
 ### People & Core Network
-- **Julia ("JuJu"):** Drew's partner and primary live playtester. In-session reactions carry design weight equivalent to simulation data.
+- **Julia ("JuJu") (@jthimeg):** Drew's partner and primary live playtester. Tag `@jthimeg` on GitHub for major updates to Heaven's Nen Arena (HNA). In-session reactions carry design weight equivalent to simulation data.
 - **Phil / Step-Dad:** Playtested Prosis with Drew and Julia; treated as a live player for session pacing.
 - **Aaron (brother):** Viewer of Prosis sessions.
 
