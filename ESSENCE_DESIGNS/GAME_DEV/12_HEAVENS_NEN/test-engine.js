@@ -29,7 +29,12 @@ console.log('====================================================');
 console.log("   HEAVEN'S NEN ARENA — Core Engine Diagnostic Run   ");
 console.log('====================================================\n');
 
-// Test 1: Category Affinity Calculation
+// Test 1: Category Affinity Calculation & Water Divination
+const { evaluateWaterDivination, WATER_DIVINATION_RESULTS } = require('./nen-engine.js');
+const wdtResult = evaluateWaterDivination([0, 0, 1]); // Enhancer lean
+assert(wdtResult.category === NEN_CATEGORIES.ENHANCER, 'Water Divination evaluation identifies Enhancer affinity');
+assert(WATER_DIVINATION_RESULTS.Enhancer.reaction === 'Water Overflows!', 'Water Divination has correct Enhancer reaction');
+
 const enhancerToTransmuter = getCategoryEfficiency(NEN_CATEGORIES.ENHANCER, NEN_CATEGORIES.TRANSMUTER);
 assert(enhancerToTransmuter === 0.8, 'Enhancer learning Transmutation at 80% efficiency');
 

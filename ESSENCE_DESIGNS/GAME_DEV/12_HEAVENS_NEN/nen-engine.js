@@ -65,6 +65,111 @@ const AFFINITY_MATRIX = {
   }
 };
 
+// --- WATER DIVINATION TEST (WDT) DEFINITIONS ---
+const WATER_DIVINATION_RESULTS = {
+  [NEN_CATEGORIES.ENHANCER]: {
+    category: NEN_CATEGORIES.ENHANCER,
+    reaction: 'Water Overflows!',
+    description: 'The volume of water increases rapidly and spills over the rim of the glass.',
+    auraColor: '#f59e0b', // Golden Amber
+    hisokaTrait: 'Simple, earnest, and determined.',
+    statBonus: { hp: 20, baseAtk: 5, baseDef: 3 },
+    cssClass: 'wdt-overflow'
+  },
+  [NEN_CATEGORIES.TRANSMUTER]: {
+    category: NEN_CATEGORIES.TRANSMUTER,
+    reaction: 'Taste of Water Changes!',
+    description: 'The water changes flavor, becoming distinctly sweet, tart, or metallic.',
+    auraColor: '#ec4899', // Bright Pink / Magenta
+    hisokaTrait: 'Whimsical, deceptive, and prone to trickery.',
+    statBonus: { hp: 10, maxAura: 25, speed: 4 },
+    cssClass: 'wdt-taste'
+  },
+  [NEN_CATEGORIES.EMITTER]: {
+    category: NEN_CATEGORIES.EMITTER,
+    reaction: 'Color of Water Changes!',
+    description: 'The water shifts in hue, glowing with a vibrant radiant energy.',
+    auraColor: '#3b82f6', // Sapphire Blue
+    hisokaTrait: 'Impatience, quick-tempered, but emotionally intense.',
+    statBonus: { maxAura: 30, baseAtk: 4, speed: 2 },
+    cssClass: 'wdt-color'
+  },
+  [NEN_CATEGORIES.CONJURER]: {
+    category: NEN_CATEGORIES.CONJURER,
+    reaction: 'Impurities Appear in Water!',
+    description: 'Crystalline specks and delicate metallic flakes form in the water.',
+    auraColor: '#10b981', // Emerald Green
+    hisokaTrait: 'High-strung, stoic, cautious, and overly observant.',
+    statBonus: { hp: 15, baseDef: 6, maxAura: 15 },
+    cssClass: 'wdt-impurities'
+  },
+  [NEN_CATEGORIES.MANIPULATOR]: {
+    category: NEN_CATEGORIES.MANIPULATOR,
+    reaction: 'The Leaf Moves!',
+    description: 'The leaf resting on top of the water begins to spin and glide smoothly across the surface.',
+    auraColor: '#8b5cf6', // Deep Purple
+    hisokaTrait: 'Logical, argumentative, and hyper-protective of loved ones.',
+    statBonus: { maxAura: 20, speed: 5, baseDef: 3 },
+    cssClass: 'wdt-leaf-move'
+  },
+  [NEN_CATEGORIES.SPECIALIST]: {
+    category: NEN_CATEGORIES.SPECIALIST,
+    reaction: 'Anomalous Reaction Occurs!',
+    description: 'The leaf fractures into glowing fragments as the water defies gravity.',
+    auraColor: '#ef4444', // Crimson Red
+    hisokaTrait: 'Individualistic, charismatic, and enigmatic.',
+    statBonus: { hp: 10, maxAura: 35, baseAtk: 3, baseDef: 3 },
+    cssClass: 'wdt-specialist'
+  }
+};
+
+/**
+ * Conducts Water Divination Test based on player choices or direct category selection.
+ * @param {Array<number>} answers - Array of option indices (0..5) from temperament evaluation
+ */
+function evaluateWaterDivination(answers = []) {
+  if (!answers || answers.length === 0) {
+    const categories = Object.values(NEN_CATEGORIES);
+    const chosen = categories[Math.floor(Math.random() * categories.length)];
+    return WATER_DIVINATION_RESULTS[chosen];
+  }
+
+  const counts = {
+    [NEN_CATEGORIES.ENHANCER]: 0,
+    [NEN_CATEGORIES.TRANSMUTER]: 0,
+    [NEN_CATEGORIES.EMITTER]: 0,
+    [NEN_CATEGORIES.CONJURER]: 0,
+    [NEN_CATEGORIES.MANIPULATOR]: 0,
+    [NEN_CATEGORIES.SPECIALIST]: 0
+  };
+
+  const categoriesOrder = [
+    NEN_CATEGORIES.ENHANCER,
+    NEN_CATEGORIES.TRANSMUTER,
+    NEN_CATEGORIES.EMITTER,
+    NEN_CATEGORIES.CONJURER,
+    NEN_CATEGORIES.MANIPULATOR,
+    NEN_CATEGORIES.SPECIALIST
+  ];
+
+  answers.forEach((ansIndex) => {
+    const cat = categoriesOrder[ansIndex % 6];
+    if (cat) counts[cat]++;
+  });
+
+  let winner = NEN_CATEGORIES.ENHANCER;
+  let maxScore = -1;
+
+  for (const cat of categoriesOrder) {
+    if (counts[cat] > maxScore) {
+      maxScore = counts[cat];
+      winner = cat;
+    }
+  }
+
+  return WATER_DIVINATION_RESULTS[winner];
+}
+
 // --- 2. COMBAT STANCES & FOCUS STATES ---
 const STANCES = {
   TEN: 'TEN',       // Defense 1.0x, Aura regen +5/turn, cost 0
@@ -262,6 +367,8 @@ function resolveAttack(attacker, defender, action) {
 const NenEngine = {
   NEN_CATEGORIES,
   AFFINITY_MATRIX,
+  WATER_DIVINATION_RESULTS,
+  evaluateWaterDivination,
   STANCES,
   FOCUS_STATES,
   createFighter,

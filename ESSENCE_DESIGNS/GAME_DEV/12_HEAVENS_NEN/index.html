@@ -260,6 +260,7 @@
     </div>
     <div class="nav-links">
       <a href="#pillars">Pillars</a>
+      <a href="#wdt">Water Divination</a>
       <a href="#modes">Modes</a>
       <a href="#hexagon">Hexagon</a>
       <a href="#architecture">Architecture</a>
@@ -370,6 +371,55 @@
       </div>
     </div>
   </section>
+
+  <!-- ============ WATER DIVINATION TEST ============ -->
+  <section id="wdt">
+    <h2>🥛 Water Divination Test (Nen Awakening)</h2>
+    <p>Perform the sacred ritual passed down through generations of Nen masters to discover your aura affinity.</p>
+
+    <div class="card" style="margin-top:16px; background:var(--bg-soft); border:1px solid rgba(255,255,255,0.1);">
+      <div style="display:flex; flex-wrap:wrap; gap:24px; align-items:center;">
+        
+        <!-- Interactive Glass Visualization -->
+        <div style="flex:1; min-width:260px; text-align:center;">
+          <div id="wdt-glass" style="position:relative; width:160px; height:200px; margin:0 auto; border:4px solid rgba(255,255,255,0.4); border-top:none; border-radius:0 0 20px 20px; background:rgba(255,255,255,0.03); overflow:hidden; box-shadow:0 0 25px rgba(0,0,0,0.5);">
+            <!-- Water Body -->
+            <div id="wdt-water" style="position:absolute; bottom:0; width:100%; height:70%; background:linear-gradient(180deg, rgba(56,189,248,0.4), rgba(14,165,233,0.7)); transition:all 0.8s ease;">
+              <!-- Floating Leaf -->
+              <div id="wdt-leaf" style="position:absolute; top: -10px; left:35%; width:45px; height:20px; background:#22c55e; border-radius:100% 0 100% 0; transform:rotate(-10deg); box-shadow:0 2px 5px rgba(0,0,0,0.4); transition:all 0.8s ease;"></div>
+            </div>
+          </div>
+          <div style="margin-top:12px; font-size:0.85rem; color:var(--text-dim);">
+            <em>Glass filled to the brim. Leaf resting on water. Focus your Ren.</em>
+          </div>
+        </div>
+
+        <!-- Controls & Questions -->
+        <div style="flex:2; min-width:300px;">
+          <div id="wdt-quiz-container">
+            <h3 style="margin-top:0;">Hisoka's Personality Evaluation</h3>
+            <p id="wdt-question-text" style="color:var(--text); font-size:0.95rem; margin-bottom:16px;">Loading evaluation...</p>
+            <div id="wdt-options-container" style="display:flex; flex-direction:column; gap:8px;"></div>
+          </div>
+
+          <div id="wdt-result-container" style="display:none; text-align:left;">
+            <div id="wdt-badge" style="display:inline-block; padding:4px 12px; border-radius:20px; font-weight:700; font-size:0.85rem; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:8px;">Result</div>
+            <h3 id="wdt-result-title" style="margin:0 0 6px 0; color:#fff; font-size:1.4rem;">Category</h3>
+            <p id="wdt-result-reaction" style="color:var(--gold); font-weight:600; margin:0 0 10px 0;"></p>
+            <p id="wdt-result-desc" style="color:var(--text-dim); font-size:0.9rem; line-height:1.5; margin-bottom:12px;"></p>
+            <div style="background:rgba(255,255,255,0.05); padding:10px 14px; border-radius:6px; font-size:0.85rem; margin-bottom:16px;">
+              <strong>Hisoka's Temperament Analysis:</strong> <span id="wdt-hisoka-trait" style="color:var(--text);"></span>
+            </div>
+            <button class="btn" onclick="initWDTQuiz()">🔁 Retake Test</button>
+            <button class="btn btn-primary" onclick="applyWDTBroadcast()" style="margin-left:8px;">⚡ Apply Category to Simulator</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr/>
 
   <!-- ============ MODES ============ -->
   <section id="modes">
@@ -1007,9 +1057,151 @@ $('copy-btn').addEventListener('click', () => {
   });
 
 /* ============================================================
+   WATER DIVINATION TEST (WDT) LOGIC
+   ============================================================ */
+const wdtQuestions = [
+  {
+    q: "In a high-stakes crisis, what is your immediate instinct?",
+    options: [
+      { text: "Charge straight in and overcome force with force.", cat: "Enhancer" },
+      { text: "Trick the opponent into revealing their hand first.", cat: "Transmuter" },
+      { text: "Project energy and strike from a safe distance.", cat: "Emitter" },
+      { text: "Carefully analyze all variables and prepare specialized tools.", cat: "Conjurer" },
+      { text: "Control key conditions and manipulate the environment.", cat: "Manipulator" },
+      { text: "Observe quietly; unique rules govern every outcome.", cat: "Specialist" }
+    ]
+  },
+  {
+    q: "Which trait best describes your personal philosophy?",
+    options: [
+      { text: "Simple, honest, and direct.", cat: "Enhancer" },
+      { text: "Whimsical, capricious, and unpredictable.", cat: "Transmuter" },
+      { text: "Hot-headed, passionate, and impulsive.", cat: "Emitter" },
+      { text: "High-strung, methodical, and detail-oriented.", cat: "Conjurer" },
+      { text: "Logical, argumentative, and family-protective.", cat: "Manipulator" },
+      { text: "Individualistic, charismatic, and independent.", cat: "Specialist" }
+    ]
+  }
+];
+
+let currentWdtStep = 0;
+let wdtAnswers = [];
+let currentWdtResult = null;
+
+function initWDTQuiz() {
+  currentWdtStep = 0;
+  wdtAnswers = [];
+  currentWdtResult = null;
+  $('wdt-quiz-container').style.display = 'block';
+  $('wdt-result-container').style.display = 'none';
+  resetWDTGlass();
+  renderWDTStep();
+}
+
+function resetWDTGlass() {
+  const water = $('wdt-water');
+  const leaf = $('wdt-leaf');
+  water.style.height = '70%';
+  water.style.background = 'linear-gradient(180deg, rgba(56,189,248,0.4), rgba(14,165,233,0.7))';
+  water.style.transform = 'none';
+  leaf.style.transform = 'rotate(-10deg)';
+  leaf.style.left = '35%';
+  leaf.style.opacity = '1';
+}
+
+function renderWDTStep() {
+  const qData = wdtQuestions[currentWdtStep];
+  $('wdt-question-text').textContent = `Question ${currentWdtStep + 1} of ${wdtQuestions.length}: ${qData.q}`;
+  const optsContainer = $('wdt-options-container');
+  optsContainer.innerHTML = '';
+
+  qData.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.style.textAlign = 'left';
+    btn.style.padding = '10px 14px';
+    btn.style.background = 'rgba(255,255,255,0.03)';
+    btn.style.border = '1px solid rgba(255,255,255,0.1)';
+    btn.innerHTML = `<strong style="color:var(--gold)">${String.fromCharCode(65 + idx)}.</strong> ${opt.text}`;
+    btn.onclick = () => selectWDTOption(idx);
+    optsContainer.appendChild(btn);
+  });
+}
+
+function selectWDTOption(idx) {
+  wdtAnswers.push(idx);
+  currentWdtStep++;
+  if (currentWdtStep < wdtQuestions.length) {
+    renderWDTStep();
+  } else {
+    finishWDTQuiz();
+  }
+}
+
+function finishWDTQuiz() {
+  const res = NenEngine.evaluateWaterDivination(wdtAnswers);
+  currentWdtResult = res;
+
+  $('wdt-quiz-container').style.display = 'none';
+  $('wdt-result-container').style.display = 'block';
+
+  $('wdt-badge').style.background = res.auraColor;
+  $('wdt-badge').style.color = '#000';
+  $('wdt-badge').textContent = res.category;
+  $('wdt-result-title').textContent = res.category + ' Nen User';
+  $('wdt-result-reaction').textContent = 'Reaction: ' + res.reaction;
+  $('wdt-result-desc').textContent = res.description;
+  $('wdt-hisoka-trait').textContent = res.hisokaTrait;
+
+  // Animate Glass Visuals based on result
+  const water = $('wdt-water');
+  const leaf = $('wdt-leaf');
+
+  if (res.category === 'Enhancer') {
+    water.style.height = '100%';
+    water.style.background = 'linear-gradient(180deg, rgba(245,158,11,0.6), rgba(217,119,6,0.9))';
+  } else if (res.category === 'Transmuter') {
+    water.style.background = 'linear-gradient(180deg, rgba(236,72,153,0.6), rgba(190,24,93,0.9))';
+  } else if (res.category === 'Emitter') {
+    water.style.background = 'linear-gradient(180deg, rgba(59,130,246,0.7), rgba(29,78,216,0.9))';
+  } else if (res.category === 'Conjurer') {
+    water.style.background = 'linear-gradient(180deg, rgba(16,185,129,0.6), rgba(4,120,87,0.9))';
+  } else if (res.category === 'Manipulator') {
+    leaf.style.transform = 'rotate(180deg) scale(1.1)';
+    leaf.style.left = '55%';
+    water.style.background = 'linear-gradient(180deg, rgba(139,92,246,0.6), rgba(109,40,217,0.9))';
+  } else if (res.category === 'Specialist') {
+    leaf.style.opacity = '0.3';
+    water.style.background = 'linear-gradient(180deg, rgba(239,68,68,0.7), rgba(185,28,28,0.9))';
+  }
+}
+
+function applyWDTBroadcast() {
+  if (!currentWdtResult) return;
+  // Apply discovered category to Fighter A in simulator
+  f1.category = currentWdtResult.category;
+  if (currentWdtResult.statBonus) {
+    if (currentWdtResult.statBonus.hp) {
+      f1.maxHp += currentWdtResult.statBonus.hp;
+      f1.hp = f1.maxHp;
+    }
+    if (currentWdtResult.statBonus.maxAura) {
+      f1.maxAura += currentWdtResult.statBonus.maxAura;
+      f1.aura = f1.maxAura;
+    }
+    if (currentWdtResult.statBonus.baseAtk) f1.baseAtk += currentWdtResult.statBonus.baseAtk;
+    if (currentWdtResult.statBonus.baseDef) f1.baseDef += currentWdtResult.statBonus.baseDef;
+  }
+  updateUI();
+  log(`🥛 Water Divination applied to ${f1.name}: Awoken as ${f1.category}! Stat bonuses applied.`);
+  window.location.hash = '#simulator';
+}
+
+/* ============================================================
    BOOT
    ============================================================ */
 initFighters();
+initWDTQuiz();
 buildHatsu();
 </script>
 
