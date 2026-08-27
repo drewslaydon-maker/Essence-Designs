@@ -89,6 +89,7 @@ ESSENCE_DESIGNS/
 │   ├── 00_ESSENCE_BIBLE.md     # Studio Bible & canonical repository index
 │   └── 00_ESSENCE_PAD.md       # Operational engine & active notes
 ├── DOCS/                       # System architecture & documentation
+│   ├── MILESTONES.md           # Studio milestones, sprint objectives, & decision log
 │   ├── SYSTEM_ARCH.md
 │   └── placeholder.md
 ├── GAME_DEV/                   # Studio game projects
