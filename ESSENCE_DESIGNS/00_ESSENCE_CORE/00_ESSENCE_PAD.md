@@ -350,9 +350,12 @@ last touched: Drew 8/25 12:20 am
 
 
 
-# The next game to work on
+# Current Objective: INFRA Update
 
-is BtW. VS has been waiting to exist, and it deserves to now that Prosis earned it’s time. BtW VS is the next major goal for ESSENCE DESIGNS as a studio, and we have all the prep documents I think. Excited to give it life.
+BtW and Prosis are currently **[Parked]** as active game builds. The active focus is completing the INFRA (Infrastructure & Studio Operating System) update across documentation, Trello board synchronization, model configuration, and system architecture.
+
+Once INFRA update is complete, we decide what to dev next.
+
 
 &#x09;
 

@@ -1,6 +1,6 @@
 ﻿# ESSENCE DESIGNS — Master Index & Machine Bible
 
-*Last refreshed: 2026-08-26. Workspace master bible for ESSENCE DESIGNS.*
+*Last refreshed: 2026-08-26 (INFRA update). Workspace master bible for ESSENCE DESIGNS.*
 
 ---
 
@@ -64,8 +64,9 @@ Independent developer and content creator running several long-term, interconnec
 
 | # | Project | Local Folder | Status | Next Concrete Step / Core Concept |
 |---|---|---|---|---|
-| 1 | **The Fracture / Prosis** | GAME_DEV/02_PROSIS/ | **Most Active** | Live-runtime verification (browser), Monte Carlo harness, number tuning, visible-state UI pass. |
-| 2 | **Brew the World (BtW)** | GAME_DEV/01_BtW/ | **Active Priority** | Build Day 1 vertical slice (shop + market + foraging path, one Hollow, Weasel beat). |
+| 0 | **System Infrastructure (INFRA)** | DOCS/ & 00_ESSENCE_CORE/ | **Most Active** | Complete system architecture alignment, Trello sync, local engine/tooling configuration. Next game dev target decided post-INFRA. |
+| 1 | **The Fracture / Prosis** | GAME_DEV/02_PROSIS/ | **[Parked]** | Paused. Engine test baseline verified (26/29 passing). Held until post-INFRA decision. |
+| 2 | **Brew the World (BtW)** | GAME_DEV/01_BtW/ | **[Parked]** | Paused. Day 1 Vertical Slice plan documented and ready. Held until post-INFRA decision. |
 | 3 | **Legend of the Source** | GAME_DEV/07_MY_ZELDA/ | **Design Draft** | Top-down Zelda-inspired Action-RPG overworld & puzzle dungeons. |
 | 4 | **The Boardroom** | GAME_DEV/08_BOARDROOM/ | **Design Draft** | Asymmetric 2-8 player party tactics (Jackbox × Chess × Balatro). |
 | 5 | **Ashen & Ink** | GAME_DEV/09_METROID_SOUL_VANIA/ | **Design Draft** | 2D side-scrolling Metroidvania / Souls-lite with custom velocity movement. |
