@@ -15,6 +15,7 @@
 ## 🛠️ ENVIRONMENT & CONSTRAINTS
 - **GPU Pipeline:** 8 GB VRAM limit. Models > 7B must not be loaded directly.
 - **Local Engine:** `qwen2.5-coder:3b` / `fast-coder` (`PARAMETER num_ctx 8192`).
+- **Financial Floor:** Studio burn limit `< $1.00 / hour`. Prefer local offload for single-file/ambient tasks; reserve cloud APIs for high-reasoning refactors.
 - **Primary Tooling:** Claude CLI / Claude Chat, Ollama, Git, VSCode.
 
 ---

@@ -27,17 +27,19 @@
 
 ## ✅ PART 3: STUDIO DEFINITION OF DONE (DoD)
 
-Before any objective or milestone is marked **Complete**, it must satisfy all four conditions:
+Before any objective or milestone is marked **Complete**, it must satisfy all five conditions:
 
 1. **Mechanical Skeleton Verified:** Mechanics, GTL logic, or structural builds are tested and verified via headless scripts, simulations, or unit checks ("Skeleton before flesh").
 2. **Canonical Documents Updated:** `00_ESSENCE_BIBLE.md`, `00_ESSENCE_PAD.md`, and `DOCS/MILESTONES.md` reflect the new ground truth.
 3. **Console Synchronization:** Trello board (`8YMkTEQd`) lists, cards, tags, and checklists match local repository state ("Consoles answer questions, do not own truth").
 4. **VCS Clean State:** Code and documentation changes are committed to Git with clear, structured commit messages (`docs:`, `feat:`, `fix:`, `infra:`).
+5. **Capital Efficiency & Burn Compliance:** Cloud API usage operated within the studio burn limit (`< $1.00 / hour`), maxing out free local model offloading whenever possible.
 
 ---
 
 ## 🔄 PART 4: DECISION LOG & OBJECTIVE SHIFTS
 
+- **2026-08-26 (Financial Floor & Burn Rate Baseline Enforced):** Integrated studio burn limit rules (`< $1.00 / hour`) and hybrid local/cloud model tiering into `00_ESSENCE_BIBLE.md`, `MILESTONES.md` (DoD #5), and `AGENT_BOOT_PROMPT.md`.
 - **2026-08-26 (INFRA 1.0 Milestone Completion):** Officially completed **Milestone M0: Ground-Truth INFRA Setup**. Health check script added (`scripts/healthcheck.js`), `.gitignore` hardened, `DOCS/AGENT_BOOT_PROMPT.md` created, Trello board synced, and documentation committed to main. System ready for Milestone M5 post-INFRA target decision.
 - **2026-08-26 (INFRA Objective Pivot):** Paused active development on **Prosis** (M1) and **Brew the World** (M2). Shifted primary studio objective to **System Infrastructure (INFRA)** to standardize local local AI tooling, master documentation, Trello board synchronization, and workspace tracking before selecting the next dev sprint target.
 - **2026-08-26 (Trello & Milestone Framework Sync):** Standardized Trello board lists (`00 — CORE INFRASTRUCTURE (ACTIVE)` and `01 — PARKED / ON HOLD`), updated card tags/checklists, and created `DOCS/MILESTONES.md` as the local ground-truth milestone console.

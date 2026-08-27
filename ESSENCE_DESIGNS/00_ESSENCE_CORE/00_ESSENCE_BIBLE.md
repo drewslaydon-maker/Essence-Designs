@@ -41,9 +41,12 @@ Independent developer and content creator running several long-term, interconnec
 
 ##  PART 2: SYSTEM, TOOLING & LOCAL ENVIRONMENT
 
-### Hardware Profile & Constraints
+### Hardware Profile & Cost Constraints
 - **GPU VRAM:** 8 GB
 - **System Limitation:** Parameter sizes > 7B overflow into system RAM, causing pipeline bottlenecks and latency. Do not load large cuts/MoEs directly into VRAM.
+- **Financial Floor & Burn Pace:** Maximum target burn rate `< $1.00 / hour` across all cloud API operations.
+- **Hybrid Cost Architecture:** Free local offload (`qwen2.5-coder:3b` / `fast-coder` @ 8k context) for single-file edits, health checks, and ambient tasks; cloud endpoints reserved for deep architectural synthesis and multi-file refactors.
+- **Capital Discipline:** Julia's income supports operations; Drew controls studio burn; zero financial burden on family network (Mom & Phil). Scope must be cut aggressively to preserve runway.
 
 ### Approved Local Engine Specs
 - **Primary Coding Model:** qwen2.5-coder:3b (Active & Verified, 100% GPU offloading).
