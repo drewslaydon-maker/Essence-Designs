@@ -16,7 +16,7 @@
 
 | ID | Milestone | Target System | Status | Key Deliverable / Exit Condition |
 |---|---|---|---|---|
-| **M0** | **Ground-Truth INFRA Setup** | Workspace / Docs | 🟡 **Active** | Model config verified, Trello/git synced, `MILESTONES.md` framework operational. |
+| **M0** | **Ground-Truth INFRA Setup** | Workspace / Docs | 🟢 **Complete** | Model config verified, Trello/git synced, `MILESTONES.md` & INFRA 1.0 established. |
 | **M1** | **Prosis Engine & Verification Baseline** | GAME_DEV/02_PROSIS/ | ⏸️ **Parked** | GTL logic verified, 26/29 unit tests passing, Monte Carlo harness prepped. |
 | **M2** | **BtW Day 1 Vertical Slice** | GAME_DEV/01_BtW/ | ⏸️ **Parked** | Playable Day 1 loop (Shop + Market + Foraging path + Weasel beat). |
 | **M3** | **Video Essay Ep. 1 Production** | ME/01_VIDEOS/ | 🔵 **Queued** | "Synthetic Belief" script recording and editing pass. |
@@ -38,6 +38,7 @@ Before any objective or milestone is marked **Complete**, it must satisfy all fo
 
 ## 🔄 PART 4: DECISION LOG & OBJECTIVE SHIFTS
 
+- **2026-08-26 (INFRA 1.0 Milestone Completion):** Officially completed **Milestone M0: Ground-Truth INFRA Setup**. Health check script added (`scripts/healthcheck.js`), `.gitignore` hardened, `DOCS/AGENT_BOOT_PROMPT.md` created, Trello board synced, and documentation committed to main. System ready for Milestone M5 post-INFRA target decision.
 - **2026-08-26 (INFRA Objective Pivot):** Paused active development on **Prosis** (M1) and **Brew the World** (M2). Shifted primary studio objective to **System Infrastructure (INFRA)** to standardize local local AI tooling, master documentation, Trello board synchronization, and workspace tracking before selecting the next dev sprint target.
 - **2026-08-26 (Trello & Milestone Framework Sync):** Standardized Trello board lists (`00 — CORE INFRASTRUCTURE (ACTIVE)` and `01 — PARKED / ON HOLD`), updated card tags/checklists, and created `DOCS/MILESTONES.md` as the local ground-truth milestone console.
 

@@ -1,1 +1,6 @@
 .aider*
+desktop.ini
+*.tmp
+*.log
+node_modules/
+
