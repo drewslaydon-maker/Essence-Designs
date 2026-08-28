@@ -70,7 +70,7 @@ Independent developer and content creator running several long-term, interconnec
 | # | Project | Local Folder | Status | Next Concrete Step / Core Concept |
 |---|---|---|---|---|
 | 0 | **System Infrastructure (INFRA)** | DOCS/ & 00_ESSENCE_CORE/ | **Complete (M0)** | System architecture, Trello sync, local engine/tooling configuration baseline established. |
-| 1 | **The Fracture / Prosis** | GAME_DEV/02_PROSIS/ | **Playtest Ready (M1)** | Round & Sector progression, local persistence, threat UI, HTML bundle compiled (`index.html`). Phil playtest ready. |
+| 1 | **The Fracture / Prosis** | GAME_DEV/02_PROSIS/ | **V2 Complete (M1)** | Prosis V2 "Captain's Edition" complete (`prOsis` logo, procedural audio, ship manifest, 8 lore signals, 8 achievements, tactical briefing, 33/33 tests passing). Ready for Phil & public launch. |
 | 2 | **Brew the World (BtW)** | GAME_DEV/01_BtW/ | **[Parked]** | Paused. Day 1 Vertical Slice plan documented and ready. Held until post-INFRA decision. |
 | 3 | **Legend of the Source** | GAME_DEV/07_MY_ZELDA/ | **Design Draft** | Top-down Zelda-inspired Action-RPG overworld & puzzle dungeons. |
 | 4 | **The Boardroom** | GAME_DEV/08_BOARDROOM/ | **Design Draft** | Asymmetric 2-8 player party tactics (Jackbox × Chess × Balatro). |

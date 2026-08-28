@@ -11,6 +11,19 @@ import {
   recordRunHistory,
   SAVE_KEY,
   saveRunState,
+  getShipName,
+  setShipName,
+  getCaptainsManifest,
+  recordManifestEntry,
+  clearCaptainsManifest,
+  getUnlockedLoreIds,
+  unlockLoreId,
+  isLoreUnlocked,
+  clearUnlockedLore,
+  getUnlockedAchievementIds,
+  unlockAchievementId,
+  isAchievementUnlocked,
+  clearAchievements,
 } from "../persistence";
 
 test("persistence: SAVE_KEY and HISTORY_KEY export expected values", () => {
@@ -52,3 +65,41 @@ test("persistence: recordRunHistory and getRunHistory append and retrieve record
   clearRunHistory();
   assert.strictEqual(getRunHistory().length, 0);
 });
+
+test("persistence: vessel name, manifest logs, lore unlocks, and achievements", () => {
+  // Ship name
+  setShipName("USSC Voyager");
+  assert.strictEqual(getShipName(), "USSC Voyager");
+
+  // Manifest entry
+  clearCaptainsManifest();
+  assert.strictEqual(getCaptainsManifest().length, 0);
+  const entry = recordManifestEntry({
+    shipName: "USSC Voyager",
+    captainName: "Ricky",
+    sector: 2,
+    round: 8,
+    causeOfLoss: null,
+    victory: true,
+  });
+  assert.ok(entry.id);
+  assert.strictEqual(getCaptainsManifest().length, 1);
+  assert.strictEqual(getCaptainsManifest()[0].shipName, "USSC Voyager");
+
+  // Lore unlocks
+  clearUnlockedLore();
+  assert.ok(isLoreUnlocked("sig_01"));
+  const newlyUnlocked = unlockLoreId("sig_02");
+  assert.strictEqual(newlyUnlocked, true);
+  assert.ok(isLoreUnlocked("sig_02"));
+  const duplicateUnlock = unlockLoreId("sig_02");
+  assert.strictEqual(duplicateUnlock, false);
+
+  // Achievements
+  clearAchievements();
+  assert.strictEqual(getUnlockedAchievementIds().length, 0);
+  const achUnlocked = unlockAchievementId("ach_first_warp");
+  assert.strictEqual(achUnlocked, true);
+  assert.ok(isAchievementUnlocked("ach_first_warp"));
+});
+

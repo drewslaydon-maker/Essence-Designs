@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import ts from "typescript";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -21,6 +22,7 @@ function cleanCode(code) {
   code = code.replace(/import\s+[\s\S]*?from\s+['"][^'"]+['"];?/g, "");
   code = code.replace(/import\s+['"][^'"]+['"];?/g, "");
   code = code.replace(/export\s+default\s+function\s+/g, "function ");
+  code = code.replace(/export\s+default\s+/g, "");
   code = code.replace(/export\s+const\s+/g, "var ");
   code = code.replace(/export\s+let\s+/g, "var ");
   code = code.replace(/export\s+var\s+/g, "var ");
@@ -33,15 +35,88 @@ function cleanCode(code) {
   return code;
 }
 
-let compiledScriptContent = "";
+const iconList = ["Zap","Flame","Sparkles","AlertTriangle","Skull","Eye","EyeOff","RotateCcw","HelpCircle","Trophy","Rocket","Heart","Radar","Compass","ShieldAlert","History","Trash2","Volume2","VolumeX","BookOpen","Award","FileText","Info","Terminal","Anchor","ChevronRight","X","Lock","CheckCircle","Radio","Edit3"];
+const iconDefs = iconList.map(n => `var ${n} = createLucideIcon("${n}");`).join("\n");
+
+const headerCode = `
+var useState = React.useState;
+var useRef = React.useRef;
+var useEffect = React.useEffect;
+var useMemo = React.useMemo;
+var useCallback = React.useCallback;
+
+function toKebabCase(str) {
+  return str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+}
+function toCamelCase(str) {
+  return str.replace(/-([a-z])/g, function(_, c) { return c.toUpperCase(); });
+}
+
+function Icon(props) {
+  var name = props.name;
+  var size = props.size || 16;
+  var color = props.color || "currentColor";
+  var style = props.style;
+  var className = props.className;
+  var icons = window.lucide && window.lucide.icons;
+  var iconData = icons && (icons[name] || icons[name.toLowerCase()] || icons[toKebabCase(name)] || icons[toCamelCase(name)]);
+  if (!iconData) {
+    return React.createElement("span", {
+      style: Object.assign({ display: "inline-block", width: size, height: size, borderRadius: "50%", background: color, verticalAlign: "middle" }, style),
+      className: className
+    });
+  }
+  return React.createElement(
+    "svg",
+    Object.assign(
+      {
+        width: size,
+        height: size,
+        viewBox: "0 0 24 24",
+        fill: "none",
+        stroke: color,
+        strokeWidth: "2",
+        strokeLinecap: "round",
+        strokeLinejoin: "round",
+        style: Object.assign({ display: "inline-block", verticalAlign: "middle" }, style),
+        className: className
+      }
+    ),
+    iconData.map(function(item, i) {
+      var tag = item[0];
+      var attrs = item[1];
+      return React.createElement(tag, Object.assign({ key: i }, attrs));
+    })
+  );
+}
+
+var createLucideIcon = function(name) {
+  return function(props) {
+    return React.createElement(Icon, Object.assign({ name: name }, props));
+  };
+};
+
+${iconDefs}
+`;
+
+let fullSource = headerCode;
 
 for (const file of filesToCompile) {
   const filePath = path.join(__dirname, file);
   if (fs.existsSync(filePath)) {
     const content = fs.readFileSync(filePath, "utf-8");
-    compiledScriptContent += `\n// --- Source: ${file} ---\n` + cleanCode(content) + "\n";
+    fullSource += `\n// --- Source: ${file} ---\n` + cleanCode(content) + "\n";
   }
 }
+
+const transpileResult = ts.transpileModule(fullSource, {
+  compilerOptions: {
+    jsx: ts.JsxEmit.React,
+    target: ts.ScriptTarget.ES2020,
+    module: ts.ModuleKind.None,
+    removeComments: false,
+  },
+});
 
 const styles = `
 :root{--bg-dark:#0b0e14;--bg-panel:#141a24;--border-panel:#212b3a;--text-bone:#f1f5f9;--text-muted:#94a3b8;--color-entropy:#ff4d6d;--color-systems:#6fa8ff;--color-re:#8b5cf6;--color-salvage:#34d399;--color-morale:#fbbf24;--color-danger:#ef4444;--color-event:#38bdf8}
@@ -60,9 +135,6 @@ body{background-color:var(--bg-dark);color:var(--text-bone);font-family:system-u
 .anchor-card:hover{border-color:rgba(255,255,255,.3)!important}
 `;
 
-const iconList = ["Zap","Flame","Sparkles","AlertTriangle","Skull","Eye","EyeOff","RotateCcw","HelpCircle","Trophy","Rocket","Heart","Radar","Compass","ShieldAlert","History","Trash2"];
-const iconDefs = iconList.map(n => `const ${n} = createLucideIcon("${n}");`).join("\n");
-
 const htmlTemplate = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,30 +143,15 @@ const htmlTemplate = `<!DOCTYPE html>
   <title>PROSIS — The Fracture Playtest</title>
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>${styles}</style>
 </head>
 <body>
   <div id="root" style="width: 100%; max-width: 900px;"></div>
-  <script type="text/babel">
-    function Icon({ name, size = 16, color = "currentColor", style, className }) {
-      const iconData = window.lucide && window.lucide.icons && window.lucide.icons[name];
-      if (!iconData) {
-        return <span style={{ display: "inline-block", width: size, height: size, borderRadius: "50%", background: color, verticalAlign: "middle", ...style }} />;
-      }
-      return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: "inline-block", verticalAlign: "middle", ...style }} className={className}>
-          {iconData.map(([tag, attrs], i) => React.createElement(tag, { key: i, ...attrs }))}
-        </svg>
-      );
-    }
-    const createLucideIcon = (name) => (props) => <Icon name={name} {...props} />;
-    ${iconDefs}
+  <script>
+    ${transpileResult.outputText}
 
-    ${compiledScriptContent}
-
-    ReactDOM.createRoot(document.getElementById('root')).render(<TheFracturePlaytest />);
+    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(TheFracturePlaytest, null));
   </script>
 </body>
 </html>
@@ -103,3 +160,4 @@ const htmlTemplate = `<!DOCTYPE html>
 const outputPath = path.join(__dirname, "index.html");
 fs.writeFileSync(outputPath, htmlTemplate, "utf-8");
 console.log(`Successfully generated standalone HTML at: ${outputPath}`);
+

@@ -1,5 +1,37 @@
 import { useState, useRef, useEffect } from "react";
-import { Zap, Flame, Sparkles, AlertTriangle, Skull, Eye, EyeOff, RotateCcw, HelpCircle, Trophy, Rocket, Heart, Radar, Compass, ShieldAlert, History, Trash2 } from "lucide-react";
+import {
+  Zap,
+  Flame,
+  Sparkles,
+  AlertTriangle,
+  Skull,
+  Eye,
+  EyeOff,
+  RotateCcw,
+  HelpCircle,
+  Trophy,
+  Rocket,
+  Heart,
+  Radar,
+  Compass,
+  ShieldAlert,
+  History,
+  Trash2,
+  Volume2,
+  VolumeX,
+  BookOpen,
+  Award,
+  FileText,
+  Info,
+  Terminal,
+  Anchor,
+  ChevronRight,
+  X,
+  Lock,
+  CheckCircle,
+  Radio,
+  Edit3,
+} from "lucide-react";
 import {
   saveRunState,
   loadRunState,
@@ -7,11 +39,342 @@ import {
   getRunHistory,
   recordRunHistory,
   clearRunHistory,
+  getShipName,
+  setShipName,
+  getCaptainsManifest,
+  recordManifestEntry,
+  clearCaptainsManifest,
+  getUnlockedLoreIds,
+  unlockLoreId,
+  isLoreUnlocked,
+  getUnlockedAchievementIds,
+  unlockAchievementId,
+  isAchievementUnlocked,
   RunHistorySummary,
+  ShipLogEntry,
 } from "./persistence";
 import type { LogicState } from "./types";
 
 // ============================================================
+// WEB AUDIO API SOUND SYNTHESIZER
+// ============================================================
+class SoundSynth {
+  ctx: AudioContext | null = null;
+  muted: boolean = false;
+  droneOsc1: OscillatorNode | null = null;
+  droneOsc2: OscillatorNode | null = null;
+  droneGain: GainNode | null = null;
+
+  init() {
+    if (!this.ctx && typeof window !== "undefined") {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (AudioCtx) this.ctx = new AudioCtx();
+    }
+    if (this.ctx && this.ctx.state === "suspended") {
+      this.ctx.resume().catch(() => {});
+    }
+  }
+
+  setMuted(muted: boolean) {
+    this.muted = muted;
+    if (this.droneGain && this.ctx) {
+      this.droneGain.gain.setValueAtTime(muted ? 0 : 0.04, this.ctx.currentTime);
+    }
+  }
+
+  startDrone() {
+    if (this.muted || this.droneOsc1) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      const g = this.ctx.createGain();
+      g.gain.setValueAtTime(0.04, now);
+
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(160, now);
+
+      const osc1 = this.ctx.createOscillator();
+      osc1.type = "sawtooth";
+      osc1.frequency.setValueAtTime(55, now);
+
+      const osc2 = this.ctx.createOscillator();
+      osc2.type = "sine";
+      osc2.frequency.setValueAtTime(110, now);
+
+      osc1.connect(filter);
+      osc2.connect(filter);
+      filter.connect(g);
+      g.connect(this.ctx.destination);
+
+      osc1.start(now);
+      osc2.start(now);
+
+      this.droneOsc1 = osc1;
+      this.droneOsc2 = osc2;
+      this.droneGain = g;
+    } catch {
+      // Audio fallback
+    }
+  }
+
+  stopDrone() {
+    if (this.droneOsc1) {
+      try {
+        this.droneOsc1.stop();
+        this.droneOsc2?.stop();
+      } catch {
+        // Audio fallback
+      }
+      this.droneOsc1 = null;
+      this.droneOsc2 = null;
+      this.droneGain = null;
+    }
+  }
+
+  playSfx(type: "click" | "alarm" | "warp" | "achievement" | "damage" | "event" | "victory") {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      if (type === "click") {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.frequency.setValueAtTime(600, now);
+        osc.frequency.exponentialRampToValueAtTime(1200, now + 0.04);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.04);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.04);
+      } else if (type === "alarm") {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "square";
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.setValueAtTime(440, now + 0.08);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.18);
+      } else if (type === "warp") {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(900, now);
+        osc.frequency.exponentialRampToValueAtTime(110, now + 0.55);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.55);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.55);
+      } else if (type === "achievement") {
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx!.createOscillator();
+          const gain = this.ctx!.createGain();
+          const t = now + idx * 0.08;
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(freq, t);
+          gain.gain.setValueAtTime(0.15, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
+          osc.connect(gain);
+          gain.connect(this.ctx!.destination);
+          osc.start(t);
+          osc.stop(t + 0.3);
+        });
+      } else if (type === "damage") {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.exponentialRampToValueAtTime(35, now + 0.28);
+        gain.gain.setValueAtTime(0.22, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.28);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.28);
+      } else if (type === "victory") {
+        const notes = [392.0, 493.88, 587.33, 783.99];
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx!.createOscillator();
+          const gain = this.ctx!.createGain();
+          const t = now + idx * 0.12;
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(freq, t);
+          gain.gain.setValueAtTime(0.18, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.45);
+          osc.connect(gain);
+          gain.connect(this.ctx!.destination);
+          osc.start(t);
+          osc.stop(t + 0.45);
+        });
+      }
+    } catch {
+      // Audio fallback
+    }
+  }
+}
+
+const synth = new SoundSynth();
+// ============================================================
+// LORE SIGNALS DATABASE
+// ============================================================
+export interface LoreSignal {
+  id: string;
+  title: string;
+  category: string;
+  sectorRequired: number;
+  conditionDesc: string;
+  content: string;
+}
+
+const LORE_SIGNALS: LoreSignal[] = [
+  {
+    id: "sig_01",
+    title: "CLASSIFIED TRANSCRIPT #01: THE FRACTURE INITIATIVE",
+    category: "Prosis Core History",
+    sectorRequired: 1,
+    conditionDesc: "Unlocked by default at launch.",
+    content:
+      "LOG ENTRY 001-A // PROJECT PROSIS\n\nWhen the first space-time tear opened in Sector 12, we called it a mathematical glitch. We were wrong. The Reality Engine isn't just power—it's localized physics binding our ship to this plane. If Entropy spikes, space itself degrades. Helm, Gene, and Sal are all that stand between us and complete atomic dispersion.",
+  },
+  {
+    id: "sig_02",
+    title: "CLASSIFIED TRANSCRIPT #02: ENTROPY SINGULARITY",
+    category: "Anomalous Phenomena",
+    sectorRequired: 1,
+    conditionDesc: "Survive 3 rounds in Sector 1.",
+    content:
+      "SIGNAL DECODED // FREQUENCY 144.9 MHz\n\nEntropy is not merely chaos; it is an active gravitational pressure. As Entropy accumulates beyond 50%, subatomic friction accelerates systems breakdown. Deploy Helm's Force Correction early—waiting until emergency thresholds will exhaust crew morale.",
+  },
+  {
+    id: "sig_03",
+    title: "CLASSIFIED TRANSCRIPT #03: THE BLACK HOLE ENGINE",
+    category: "Propulsion & Spacetime",
+    sectorRequired: 2,
+    conditionDesc: "Advance to Sector 2.",
+    content:
+      "MEMORANDUM // CHIEF ENGINEER GENE\n\nThe prOsis micro-singularity core generates hyper-dense gravitational lensing. That's what allows instantaneous Sector jumping. But every warp generates massive thermal friction across Systems. Ensure Salvage caches are deposited into Systems before engaging warp coordinates.",
+  },
+  {
+    id: "sig_04",
+    title: "CLASSIFIED TRANSCRIPT #04: COMPOUND BARRIER PROTOCOL",
+    category: "Defensive Tactics",
+    sectorRequired: 1,
+    conditionDesc: "Claim a compounding barrier after holding it.",
+    content:
+      "TACTICAL ADVISORY // SALVAGE & AFT\n\nDeferred barriers grow exponentially each round they remain intact. A Level III Reserve Cache left unhit for 2 rounds can absorb an entire cascading collapse. Protect your open barriers from matching hits to maximize payout.",
+  },
+  {
+    id: "sig_05",
+    title: "CLASSIFIED TRANSCRIPT #05: EVENT HORIZON THRESHOLD",
+    category: "Prosis Deep Space",
+    sectorRequired: 3,
+    conditionDesc: "Advance to Sector 3.",
+    content:
+      "DEEP SPACE TELEMETRY // SECTOR 3\n\nWe have reached the outer accretion envelope of the Fracture Singularity. Time Dilation is now 1.4x standard. Threat arrivals are non-linear. The Reality Engine's quantum coherence is the only force preventing temporal collapse.",
+  },
+  {
+    id: "sig_06",
+    title: "CLASSIFIED TRANSCRIPT #06: CREW RESONANCE DISCOVERY",
+    category: "Crew Dynamics",
+    sectorRequired: 1,
+    conditionDesc: "Reach 90% or higher Crew Morale.",
+    content:
+      "PSYCHOLOGIST LOG // CAPTAIN'S MANIFEST\n\nHigh crew morale isn't just emotional—it provides a structural stabilization coefficient. When morale exceeds 85%, the crew handles high-threat mitigation with 15% lower stress friction. Keep morale high through Analyze and balanced choices.",
+  },
+  {
+    id: "sig_07",
+    title: "CLASSIFIED TRANSCRIPT #07: ANCHOR DIRECTIVE",
+    category: "Command Protocol",
+    sectorRequired: 2,
+    conditionDesc: "Survive a high-pressure round under low HP.",
+    content:
+      "DIRECTIVE #902 // ANCHOR PERSONAS\n\nRicky risks it all on high-reward calls. Maude burns herself out covering for others. Dez hesitates until the crew defies him. Master your Anchor Persona's trade-offs—they dictate whether you control the ship or the ship controls you.",
+  },
+  {
+    id: "sig_08",
+    title: "CLASSIFIED TRANSCRIPT #08: THE PROSIS LEGACY",
+    category: "Victory Archives",
+    sectorRequired: 3,
+    conditionDesc: "Complete all 3 sectors and escape the Fracture.",
+    content:
+      "FINAL TRANSMISSION // CAPTAIN'S LOG\n\nWe passed through the singularity core and emerged into clear space. The prOsis engine held. The vessel survived. To all captains who follow in our wake: balance your fronts, hold your barriers, and never lose faith in your crew.",
+  },
+];
+
+
+// ============================================================
+// ============================================================
+// ACHIEVEMENTS / MEDALS DEFINITION
+// ============================================================
+export interface AchievementDef {
+  id: string;
+  title: string;
+  desc: string;
+  iconName: string;
+}
+
+const ACHIEVEMENTS_LIST: AchievementDef[] = [
+  { id: "ach_first_warp", title: "First Warp", desc: "Complete Round 1 in Sector 1.", iconName: "Rocket" },
+  { id: "ach_sector_2", title: "Into the Deep", desc: "Advance to Sector 2.", iconName: "Compass" },
+  { id: "ach_sector_3", title: "Singularity Diver", desc: "Advance to Sector 3.", iconName: "Radar" },
+  { id: "ach_barrier", title: "Fortified", desc: "Claim a compound barrier after holding it 1+ rounds.", iconName: "ShieldAlert" },
+  { id: "ach_entropy_low", title: "Zero Friction", desc: "Finish a round with Entropy below 15%.", iconName: "Zap" },
+  { id: "ach_morale_high", title: "Unshakable Crew", desc: "Reach 90% or higher Morale.", iconName: "Heart" },
+  { id: "ach_lore_hunter", title: "Signal Collector", desc: "Unlock at least 3 Lore Transcripts.", iconName: "BookOpen" },
+  { id: "ach_victory", title: "Captain of Prosis", desc: "Complete all 3 sectors and conquer the fracture!", iconName: "Trophy" },
+];
+
+// ============================================================
+// ANIMATED BLACK HOLE LOGO COMPONENT
+// ============================================================
+function ProsisBlackHoleLogo({ size = 36 }: { size?: number }) {
+  return (
+    <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+      <div style={{ position: "relative", width: size, height: size, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <svg width={size} height={size} viewBox="0 0 100 100" style={{ overflow: "visible" }}>
+          <defs>
+            <radialGradient id="eventHorizonGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#000000" stopOpacity="1" />
+              <stop offset="60%" stopColor="#38bdf8" stopOpacity="0.8" />
+              <stop offset="85%" stopColor="#8b5cf6" stopOpacity="0.5" />
+              <stop offset="100%" stopColor="transparent" stopOpacity="0" />
+            </radialGradient>
+            <filter id="lensingGlow">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+              <feMerge>
+                <feMergeNode in="coloredBlur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <circle cx="50" cy="50" r="46" fill="url(#eventHorizonGlow)" filter="url(#lensingGlow)" />
+          <ellipse cx="50" cy="50" rx="42" ry="14" fill="none" stroke="#6fa8ff" strokeWidth="2.5" strokeDasharray="18 6 9 3" opacity="0.95">
+            <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="8s" repeatCount="indefinite" />
+          </ellipse>
+          <circle cx="50" cy="50" r="22" fill="none" stroke="#f1f5f9" strokeWidth="1.5" opacity="0.85" />
+          <circle cx="50" cy="50" r="18" fill="#05080e" stroke="#38bdf8" strokeWidth="1" />
+        </svg>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <span style={{ fontSize: 20, fontWeight: 900, letterSpacing: 2, fontFamily: "ui-monospace, monospace", color: "#f1f5f9", textShadow: "0 0 12px rgba(111, 168, 255, 0.6)" }}>
+          pr<span style={{ color: "#38bdf8" }}>O</span>sis
+        </span>
+        <span style={{ fontSize: 9, letterSpacing: 1.5, color: "#94a3b8", textTransform: "uppercase", marginTop: -2 }}>Captain's Edition</span>
+      </div>
+    </div>
+  );
+}
+
 // THE FRACTURE — v5: 3 abilities x 3 levels per role, more events
 // ============================================================
 const LEVELS = { I: { cost: 1.0 }, II: { cost: 2.5 }, III: { cost: 5.5 } };
