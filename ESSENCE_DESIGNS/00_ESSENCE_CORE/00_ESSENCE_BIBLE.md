@@ -25,6 +25,7 @@ Independent developer and content creator running several long-term, interconnec
 - **Systems should be organized around verbs, not nouns.**
 - **A console should answer a question, not own a truth:** Consoles facilitate decisions; they are not sources of truth. Every live datum has exactly one owner.
 - **Context reset purges drift:** Clearing continued chat history clears out accumulated bad data and prompt drift; local repository files are the single absolute truth for direction and state.
+- **The Buffer Stream Precaution (The Finger in the Machine):** Typing into an execution agent's chat window during active file edits or terminal runs can cause token leaks directly into code files. Execution agents must operate uninterrupted. Every file edit must be verified by the Planner and diagnostic test suite before proceeding.
 
 ### Framework Pieces (In Progress)
 - **Ways & Whys:** The directions people go and why they pursue them.

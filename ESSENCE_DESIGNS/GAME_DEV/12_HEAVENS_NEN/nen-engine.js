@@ -200,7 +200,10 @@ function createFighter(config) {
     focus: FOCUS_STATES.NORMAL,
     points: 0,
     hatsuList: config.hatsuList || [],
-    isGyoActive: false
+    isGyoActive: false,
+    statusEffects: [],
+    isStunned: false,
+    isForcedZetsu: false
   };
 }
 
@@ -236,10 +239,23 @@ function calculateOathMultiplier(oaths = [], userState = {}) {
 
 // --- 4. TURN STATE PROCESSING & STANCE EFFECTS ---
 function applyStartOfTurn(fighter, chosenStance, chosenFocus) {
+  fighter.isStunned = fighter.statusEffects.some(e => e.type === 'STUN_SHOCK');
+  fighter.isForcedZetsu = fighter.statusEffects.some(e => e.type === 'FORCE_ZETSU');
+
+  if (fighter.isForcedZetsu) {
+    chosenStance = STANCES.ZETSU;
+  }
+
   fighter.previousStance = fighter.stance;
   fighter.stance = chosenStance;
   fighter.focus = chosenFocus;
   fighter.isGyoActive = (chosenFocus === FOCUS_STATES.GYO);
+
+  // Process existing status effects AFTER checking active flags for this turn
+  fighter.statusEffects.forEach(effect => {
+    effect.duration -= 1;
+  });
+  fighter.statusEffects = fighter.statusEffects.filter(effect => effect.duration > 0);
 
   // Aura costs and regeneration
   if (chosenStance === STANCES.ZETSU) {
@@ -268,10 +284,21 @@ function applyStartOfTurn(fighter, chosenStance, chosenFocus) {
 
 // --- 5. DAMAGE & COMBAT RESOLUTION ---
 function resolveAttack(attacker, defender, action) {
+  let logs = [];
+
+  if (attacker.isStunned) {
+    return {
+      success: false,
+      reason: 'Target is stunned!',
+      damageDealt: 0,
+      pointsAwarded: 0,
+      logs: [`${attacker.name} is stunned and cannot act!`]
+    };
+  }
+
   let rawAtk = attacker.baseAtk;
   let rawDef = defender.baseDef;
   let attackType = action.type || 'STRIKE'; // STRIKE, GUARD, HATSU
-  let logs = [];
 
   // Attacker Stance & Focus Modifiers
   if (attacker.stance === STANCES.REN) {
@@ -320,6 +347,17 @@ function resolveAttack(attacker, defender, action) {
     attacker.aura -= hatsu.auraCost;
     rawAtk = hatsu.baseDamage * efficiency * oathMult;
     logs.push(`🔥 ${attacker.name} executes Hatsu: [${hatsu.name}]! (Efficiency: ${(efficiency * 100)}%, Oath Mult: ${oathMult.toFixed(2)}x)`);
+  
+    if (hatsu.effect === 'FORCE_ZETSU') {
+      defender.statusEffects.push({ type: 'FORCE_ZETSU', duration: 1 });
+      logs.push(`⛓️ ${defender.name} is forced into ZETSU!`);
+    } else if (hatsu.effect === 'STUN_SHOCK') {
+      defender.statusEffects.push({ type: 'STUN_SHOCK', duration: 1 });
+      logs.push(`⚡ ${defender.name} is stunned!`);
+    } else if (hatsu.effect === 'SPEED_BUFF') {
+      attacker.statusEffects.push({ type: 'SPEED_BUFF', duration: 2 });
+      logs.push(`💨 ${attacker.name} gained a speed buff!`);
+    }
   }
 
   // Final Damage Calculation
@@ -363,6 +401,206 @@ function resolveAttack(attacker, defender, action) {
   };
 }
 
+// --- CANONICAL SIGNATURE HATSU REGISTRY ---
+const CANONICAL_HATSU = {
+  // GON FREECSS
+  JAJANKEN_ROCK: {
+    id: 'JAJANKEN_ROCK',
+    name: 'Jajanken: Rock',
+    character: 'Gon Freecss',
+    category: NEN_CATEGORIES.ENHANCER,
+    baseDamage: 48,
+    auraCost: 25,
+    description: 'Devastating Enhancer fist strike requiring a chant charge.',
+    effect: 'HEAVY_IMPACT'
+  },
+  JAJANKEN_PAPER: {
+    id: 'JAJANKEN_PAPER',
+    name: 'Jajanken: Paper',
+    character: 'Gon Freecss',
+    category: NEN_CATEGORIES.EMITTER,
+    baseDamage: 36,
+    auraCost: 20,
+    description: 'Ranged Emitter aura blast projected from palm.',
+    effect: 'PROJECTILE'
+  },
+  JAJANKEN_SCISSORS: {
+    id: 'JAJANKEN_SCISSORS',
+    name: 'Jajanken: Scissors',
+    character: 'Gon Freecss',
+    category: NEN_CATEGORIES.TRANSMUTER,
+    baseDamage: 40,
+    auraCost: 22,
+    description: 'Transmuted aura blade extended from fingers for sharp piercing damage.',
+    effect: 'PIERCING'
+  },
+
+  // KILLUA ZOLDYCK
+  GODSPEED: {
+    id: 'GODSPEED',
+    name: 'Godspeed (Whirlwind)',
+    character: 'Killua Zoldyck',
+    category: NEN_CATEGORIES.TRANSMUTER,
+    baseDamage: 30,
+    auraCost: 20,
+    description: 'Transmutes electricity into neural reflexes. Increases speed and deals lightning damage.',
+    effect: 'SPEED_BUFF'
+  },
+  THUNDERBOLT: {
+    id: 'THUNDERBOLT',
+    name: 'Thunderbolt / Lightning Palm',
+    character: 'Killua Zoldyck',
+    category: NEN_CATEGORIES.TRANSMUTER,
+    baseDamage: 42,
+    auraCost: 24,
+    description: 'High-voltage electric discharge that shocks and paralyzes the opponent.',
+    effect: 'STUN_SHOCK'
+  },
+
+  // HISOKA MOROW
+  BUNGEE_GUM: {
+    id: 'BUNGEE_GUM',
+    name: 'Bungee Gum (Elastic Attachment)',
+    character: 'Hisoka Morow',
+    category: NEN_CATEGORIES.TRANSMUTER,
+    baseDamage: 38,
+    auraCost: 22,
+    description: 'Aura possesses properties of both rubber and gum. Traps and pulls opponents for heavy counters.',
+    effect: 'PULL_COUNTER'
+  },
+  TEXTURE_SURPRISE: {
+    id: 'TEXTURE_SURPRISE',
+    name: 'Texture Surprise',
+    character: 'Hisoka Morow',
+    category: NEN_CATEGORIES.TRANSMUTER,
+    baseDamage: 25,
+    auraCost: 15,
+    description: 'Applies texture to aura to deceive eyes and absorb physical impact.',
+    effect: 'DECEPTION_GUARD'
+  },
+
+  // KURAPIKA
+  CHAIN_JAIL: {
+    id: 'CHAIN_JAIL',
+    name: 'Chain Jail',
+    character: 'Kurapika',
+    category: NEN_CATEGORIES.CONJURER,
+    baseDamage: 32,
+    auraCost: 25,
+    oaths: [{ type: 'RISK_SELF_STUN', bonusMultiplier: 0.6 }],
+    description: 'Conjured chain that binds target and forces them into Zetsu state.',
+    effect: 'FORCE_ZETSU'
+  },
+  JUDGEMENT_CHAIN: {
+    id: 'JUDGEMENT_CHAIN',
+    name: 'Judgement Chain',
+    character: 'Kurapika',
+    category: NEN_CATEGORIES.CONJURER,
+    baseDamage: 55,
+    auraCost: 35,
+    oaths: [{ type: 'LOW_HP_THRESHOLD', threshold: 0.5, bonusMultiplier: 0.5 }],
+    description: 'Wraps a blade around the target’s heart with strict conditional rules.',
+    effect: 'LETHAL_OATH'
+  },
+  EMPEROR_TIME: {
+    id: 'EMPEROR_TIME',
+    name: 'Emperor Time',
+    character: 'Kurapika',
+    category: NEN_CATEGORIES.SPECIALIST,
+    baseDamage: 40,
+    auraCost: 30,
+    description: 'Scarlet eyes shift category to Specialist, granting 100% efficiency in all Nen types.',
+    effect: 'PERFECT_AFFINITY'
+  },
+
+  // LEORIO PARADINIGHT
+  REMOTE_PUNCH: {
+    id: 'REMOTE_PUNCH',
+    name: 'Remote Punch (Warp Blast)',
+    character: 'Leorio Paradinight',
+    category: NEN_CATEGORIES.EMITTER,
+    baseDamage: 36,
+    auraCost: 20,
+    description: 'Emits aura through surface terrain to punch opponent from an unpredictable angle.',
+    effect: 'BYPASS_DEFENSE'
+  },
+
+  // GENTHRU (THE BOMBER)
+  COUNTDOWN: {
+    id: 'COUNTDOWN',
+    name: 'Countdown Bomb',
+    character: 'Genthru',
+    category: NEN_CATEGORIES.CONJURER,
+    baseDamage: 52,
+    auraCost: 30,
+    description: 'Plants an invisible aura bomb that detonates for colossal area damage.',
+    effect: 'EXPLOSIVE_BOMB'
+  },
+  LITTLE_FLOWER: {
+    id: 'LITTLE_FLOWER',
+    name: 'Little Flower',
+    character: 'Genthru',
+    category: NEN_CATEGORIES.TRANSMUTER,
+    baseDamage: 42,
+    auraCost: 22,
+    description: 'Wraps hands in explosive aura, blowing up whatever he grabs.',
+    effect: 'CLOSE_EXPLOSION'
+  },
+
+  // KASTRO
+  DOPPELGANGER: {
+    id: 'DOPPELGANGER',
+    name: 'Doppelganger (Tiger Bite Fist)',
+    character: 'Kastro',
+    category: NEN_CATEGORIES.CONJURER,
+    baseDamage: 38,
+    auraCost: 24,
+    description: 'Conjures a duplicate body to execute a synchronous dual strike.',
+    effect: 'DUAL_STRIKE'
+  },
+
+  // ZUSHI
+  REN_PALM: {
+    id: 'REN_PALM',
+    name: 'Ren Palm Strike',
+    character: 'Zushi',
+    category: NEN_CATEGORIES.ENHANCER,
+    baseDamage: 24,
+    auraCost: 12,
+    description: 'Fundamental martial arts palm strike infused with focused Ren.',
+    effect: 'BASIC_REN'
+  }
+};
+
+/**
+ * Returns canonical Hatsu list for a given character or defaults to generic library.
+ */
+function getCharacterHatsu(characterName) {
+  const name = (characterName || '').toLowerCase();
+  const list = [];
+
+  for (const key in CANONICAL_HATSU) {
+    const h = CANONICAL_HATSU[key];
+    if (name.includes(h.character.toLowerCase().split(' ')[0])) {
+      list.push(h);
+    }
+  }
+
+  if (list.length > 0) return list;
+
+  // Fallback defaults
+  return [
+    {
+      id: 'GENERIC_HATSU',
+      name: 'Focused Aura Blast',
+      category: NEN_CATEGORIES.EMITTER,
+      baseDamage: 30,
+      auraCost: 20,
+      description: 'A concentrated release of Nen energy.'
+    }
+  ];
+}
+
 // Export for Node.js or Browser Global
 const NenEngine = {
   NEN_CATEGORIES,
@@ -371,6 +609,8 @@ const NenEngine = {
   evaluateWaterDivination,
   STANCES,
   FOCUS_STATES,
+  CANONICAL_HATSU,
+  getCharacterHatsu,
   createFighter,
   getCategoryEfficiency,
   calculateOathMultiplier,

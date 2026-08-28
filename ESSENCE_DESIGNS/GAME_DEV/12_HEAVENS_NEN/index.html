@@ -8,7 +8,7 @@
 <style>
   /* ===== Theme tokens ===== */
   :root {
-    --bg: #0b0a14;
+    --bg: #0a0914;
     --bg-soft: #14121f;
     --bg-card: #1a1727;
     --bg-card-2: #221d33;
@@ -24,11 +24,11 @@
     --danger: #ff5d6c;
     --ok: #5ddca8;
     --warn: #ffb84d;
-    --ko: #ff3366;
-    --ren: #ff7a45;
-    --ten: #5ddca8;
-    --zetsu: #6f88ff;
-    --gyo: #c084ff;
+    --ko: #ef4444;
+    --ren: #f97316;
+    --ten: #10b981;
+    --zetsu: #3b82f6;
+    --gyo: #a855f7;
     --shadow: 0 12px 40px rgba(0,0,0,0.45);
     --radius: 14px;
   }
@@ -98,6 +98,10 @@
     border-radius: var(--radius);
     padding: 22px;
     box-shadow: var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .card:hover {
+    box-shadow: 0 16px 48px rgba(0,0,0,0.55);
   }
   .grid { display: grid; gap: 18px; }
   .grid-3 { grid-template-columns: repeat(3, 1fr); }
@@ -143,11 +147,11 @@
   .stance.ren  { border-top: 3px solid var(--ren); }
   .stance.ko   { border-top: 3px solid var(--ko); }
   .stance.gyo  { border-top: 3px solid var(--gyo); }
-  .stance.ten  .tag { background: rgba(93,220,168,0.18); color: var(--ten); }
-  .stance.zetsu.tag, .stance.zetsu .tag { background: rgba(111,136,255,0.18); color: var(--zetsu); }
-  .stance.ren  .tag { background: rgba(255,122,69,0.18); color: var(--ren); }
-  .stance.ko   .tag { background: rgba(255,51,102,0.20); color: var(--ko); }
-  .stance.gyo  .tag { background: rgba(192,132,255,0.20); color: var(--gyo); }
+  .stance.ten  .tag { background: rgba(16,185,129,0.18); color: var(--ten); }
+  .stance.zetsu.tag, .stance.zetsu .tag { background: rgba(59,130,246,0.18); color: var(--zetsu); }
+  .stance.ren  .tag { background: rgba(249,115,22,0.18); color: var(--ren); }
+  .stance.ko   .tag { background: rgba(239,68,68,0.20); color: var(--ko); }
+  .stance.gyo  .tag { background: rgba(168,85,247,0.20); color: var(--gyo); }
   .stance p { margin: 6px 0 0; font-size: 0.85rem; }
 
   /* ===== Live simulator ===== */
@@ -182,11 +186,55 @@
   .btn.primary { background: linear-gradient(180deg, rgba(212,175,55,0.25), rgba(212,175,55,0.10)); border-color: var(--accent); color: var(--accent-2); font-weight: 600; }
   .btn.primary:hover { background: linear-gradient(180deg, rgba(212,175,55,0.40), rgba(212,175,55,0.18)); }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .btn.stance-TEN { border-left: 3px solid var(--ten); }
+    .btn.stance-TEN { border-left: 3px solid var(--ten); }
   .btn.stance-ZETSU { border-left: 3px solid var(--zetsu); }
   .btn.stance-REN { border-left: 3px solid var(--ren); }
   .btn.focus-KO { border-left: 3px solid var(--ko); }
   .btn.focus-GYO { border-left: 3px solid var(--gyo); }
+
+  /* Active Button States */
+  .btn.active-ten { background: rgba(16,185,129,0.25) !important; border-color: var(--ten) !important; color: #fff !important; font-weight: 700; box-shadow: 0 0 10px rgba(16,185,129,0.4); }
+  .btn.active-zetsu { background: rgba(59,130,246,0.25) !important; border-color: var(--zetsu) !important; color: #fff !important; font-weight: 700; box-shadow: 0 0 10px rgba(59,130,246,0.4); }
+  .btn.active-ren { background: rgba(249,115,22,0.25) !important; border-color: var(--ren) !important; color: #fff !important; font-weight: 700; box-shadow: 0 0 10px rgba(249,115,22,0.4); }
+  .btn.active-ko { background: rgba(239,68,68,0.25) !important; border-color: var(--ko) !important; color: #fff !important; font-weight: 700; box-shadow: 0 0 10px rgba(239,68,68,0.4); }
+  .btn.active-gyo { background: rgba(168,85,247,0.25) !important; border-color: var(--gyo) !important; color: #fff !important; font-weight: 700; box-shadow: 0 0 10px rgba(168,85,247,0.4); }
+
+  /* Locked / Disabled Button Styles */
+  .btn-locked { opacity: 0.45 !important; cursor: not-allowed !important; position: relative; filter: grayscale(0.5); }
+  .btn-locked::after { content: '🔒'; position: absolute; top: -6px; right: -6px; font-size: 0.7rem; background: rgba(0,0,0,0.8); border-radius: 50%; padding: 1px 3px; }
+
+  /* Avatar Lunge & Recoil Animations */
+  @keyframes lungeRight {
+    0% { transform: translateX(0); }
+    40% { transform: translateX(45px) scale(1.1); }
+    100% { transform: translateX(0); }
+  }
+  @keyframes lungeLeft {
+    0% { transform: translateX(0); }
+    40% { transform: translateX(-45px) scale(1.1); }
+    100% { transform: translateX(0); }
+  }
+  @keyframes recoilRight {
+    0% { transform: translateX(0) rotate(0deg); }
+    25% { transform: translateX(20px) rotate(8deg); }
+    100% { transform: translateX(0) rotate(0deg); }
+  }
+  @keyframes recoilLeft {
+    0% { transform: translateX(0) rotate(0deg); }
+    25% { transform: translateX(-20px) rotate(-8deg); }
+    100% { transform: translateX(0) rotate(0deg); }
+  }
+
+  .anim-lunge-right { animation: lungeRight 0.45s ease-in-out; }
+  .anim-lunge-left { animation: lungeLeft 0.45s ease-in-out; }
+  .anim-recoil-right { animation: recoilRight 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
+  .anim-recoil-left { animation: recoilLeft 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
+
+  /* Enhanced Floating Text Styles */
+  .floating-num.float-aura { color: #00f0ff !important; text-shadow: 0 0 10px #00f0ff, 0 0 20px rgba(0,240,255,0.8); }
+  .floating-num.float-crit { color: #ff3366 !important; text-shadow: 0 0 12px #ff3366, 0 0 24px rgba(255,51,102,0.9); font-size: 2.2rem; }
+  .floating-num.float-ko { color: #ffd700 !important; text-shadow: 0 0 15px #ffd700, 0 0 30px rgba(255,215,0,0.9); font-size: 2.5rem; }
+  .floating-num.float-hatsu { color: #c8a8ff !important; text-shadow: 0 0 12px #9b6dff, 0 0 24px rgba(155,109,255,0.9); }
 
   .log {
     margin-top: 16px; max-height: 360px; overflow-y: auto;
@@ -272,6 +320,15 @@
     <div class="eyebrow">🥋 Master Wing's Dojo · Heaven's Arena Gateway</div>
     <h1 id="hero-title">Awaken Your Aura &amp; Master the Principles</h1>
     <p class="tagline" id="hero-tagline">Before entering Heaven's Arena, every candidate must undergo the Water Divination Test and prove their mastery of Ten, Zetsu, Ren, and Hatsu under Master Wing's guidance.</p>
+    
+    <div style="margin-top:14px; display:flex; justify-content:center; align-items:center; gap:14px; flex-wrap:wrap; background:rgba(0,0,0,0.3); padding:8px 16px; border-radius:20px; border:1px solid rgba(252,211,77,0.2); max-width:480px; margin-left:auto; margin-right:auto;">
+      <button class="btn" id="bgm-toggle-btn" style="font-size:0.85rem; background:rgba(212,175,55,0.2); border-color:var(--gold); color:var(--gold); font-weight:700; padding:4px 12px;">🎵 BGM: ON (Dojo Zen)</button>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <span style="font-size:0.8rem; color:var(--text-dim);">🔊</span>
+        <input type="range" id="bgm-volume-slider" min="0" max="100" value="35" style="width:90px; accent-color:var(--gold); cursor:pointer;" />
+        <span id="bgm-vol-label" style="font-size:0.75rem; color:var(--gold); font-weight:600; min-width:32px;">35%</span>
+      </div>
+    </div>
     <div class="hero-meta" id="pass-badge-container" style="display:none">
       <span class="chip" style="background:rgba(212,175,55,0.2); border:1px solid var(--accent); color:var(--accent-2)">🎫 <strong>Floor 1 Pass Verified</strong> · Heaven's Arena Unlocked</span>
     </div>
@@ -330,7 +387,7 @@
               <strong>Hisoka's Temperament Analysis:</strong> <span id="wdt-hisoka-trait" style="color:var(--text);"></span>
             </div>
             <button class="btn" onclick="initWDTQuiz()">🔁 Retake Test</button>
-            <button class="btn btn-primary" onclick="proceedToStancePractice()" style="margin-left:10px; font-weight:700;">🥋 Step 2: Practice Principles with Wing →</button>
+            <button class="btn btn-primary" onclick="promptCharacterCreation()" style="margin-left:10px; font-weight:700;">✨ Forge Custom Fighter & Equip Hatsu →</button>
           </div>
         </div>
       </div>
@@ -397,7 +454,7 @@
             <option value="ZUSHI">Zushi (Enhancer)</option>
           </select>
         </div>
-        <div>
+                <div>
           <label style="font-size:0.8rem; color:var(--text-dim); display:block;">Fighter 2 (Blue Corner)</label>
           <select id="roster-select-b" onchange="changeRosterFighter('b', this.value)" style="background:var(--bg-soft); color:var(--text); border:1px solid var(--line); padding:6px 10px; border-radius:6px;">
             <option value="HISOKA" selected>Hisoka Morow (Transmuter)</option>
@@ -405,6 +462,10 @@
             <option value="GON">Gon Freecss (Enhancer)</option>
             <option value="KILLUA">Killua Zoldyck (Transmuter)</option>
           </select>
+          <label style="font-size:0.75rem; color:var(--accent-2); display:flex; align-items:center; gap:4px; margin-top:4px; cursor:pointer;">
+            <input type="checkbox" id="cpu-toggle-b" checked style="accent-color:var(--accent);" />
+            🤖 VS CPU Mode
+          </label>
         </div>
       </div>
     </div>
@@ -412,7 +473,7 @@
     <div id="arena-viewport" style="position:relative; margin-top:20px; height:260px; background:radial-gradient(circle, rgba(34,29,51,0.8) 0%, rgba(11,10,20,0.95) 100%); border:2px solid var(--line); border-radius:12px; overflow:hidden; display:flex; align-items:center; justify-content:space-around; padding:20px;">
       <div id="avatar-a-container" style="text-align:center; transition:all 0.3s ease;">
         <div id="avatar-a-aura" style="position:relative; width:100px; height:100px; border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.05); box-shadow:0 0 20px rgba(93,220,168,0.3); transition:all 0.5s ease;">
-          <div style="font-size:3rem;">🥋</div>
+          <div id="avatar-a-emoji" style="font-size:3rem;">🥋</div>
           <div id="avatar-a-stance-badge" style="position:absolute; bottom:-8px; background:var(--ten); color:#000; font-size:0.75rem; font-weight:800; padding:2px 8px; border-radius:10px;">🛡️ TEN</div>
         </div>
         <h4 id="avatar-a-name" style="margin:10px 0 2px 0; color:#fff;">Gon Freecss</h4>
@@ -426,7 +487,7 @@
 
       <div id="avatar-b-container" style="text-align:center; transition:all 0.3s ease;">
         <div id="avatar-b-aura" style="position:relative; width:100px; height:100px; border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.05); box-shadow:0 0 20px rgba(236,72,153,0.3); transition:all 0.5s ease;">
-          <div style="font-size:3rem;">🃏</div>
+          <div id="avatar-b-emoji" style="font-size:3rem;">🃏</div>
           <div id="avatar-b-stance-badge" style="position:absolute; bottom:-8px; background:var(--ten); color:#000; font-size:0.75rem; font-weight:800; padding:2px 8px; border-radius:10px;">🛡️ TEN</div>
         </div>
         <h4 id="avatar-b-name" style="margin:10px 0 2px 0; color:#fff;">Hisoka Morow</h4>
@@ -445,12 +506,12 @@
         <div class="small" style="margin-top:6px">Arena Points</div>
         <div class="meter pts"><i id="pts-a-bar" style="width:0%"></i></div>
         <div class="row"><span><strong id="pts-a">0</strong> / 10</span><span class="small" id="focus-a-label">Focus: NORMAL</span></div>
-        <div class="controls" id="controls-a">
-          <button class="btn stance-TEN" data-stance="TEN">🛡️ Ten</button>
-          <button class="btn stance-ZETSU" data-stance="ZETSU">🔕 Zetsu</button>
-          <button class="btn stance-REN" data-stance="REN">⚡ Ren</button>
-          <button class="btn focus-KO" data-focus="KO">🎯 Ko</button>
-          <button class="btn focus-GYO" data-focus="GYO">👁️ Gyo</button>
+                <div class="controls" id="controls-a">
+          <button class="btn stance-TEN" data-stance="TEN" title="Ten: Defense 1.0x. Conserves aura (+5/turn). Basic defense stance.">🛡️ Ten</button>
+          <button class="btn stance-ZETSU" data-stance="ZETSU" title="Zetsu: Recovers +25 Aura rapidly, but reduces Defense to 0! Highly vulnerable.">🧘 Zetsu</button>
+          <button class="btn stance-REN" data-stance="REN" title="Ren: Attack +50%. Drains -15 Aura/turn. Unlocks Signature Hatsu.">🔥 Ren</button>
+          <button class="btn focus-KO" data-focus="KO" title="Ko: 100% Aura focused into attack (+75% DMG), but 0 Defense! High risk.">🎯 Ko</button>
+          <button class="btn focus-GYO" data-focus="GYO" title="Gyo: Focuses aura in eyes to detect Ko & hidden Nen traps (+30% Def).">👁️ Gyo</button>
         </div>
         <div class="controls" id="controls-a2" style="margin-top:6px">
           <button class="btn primary" id="strike-a" style="grid-column: span 3">💥 Strike</button>
@@ -467,12 +528,12 @@
         <div class="small" style="margin-top:6px">Arena Points</div>
         <div class="meter pts"><i id="pts-b-bar" style="width:0%"></i></div>
         <div class="row"><span><strong id="pts-b">0</strong> / 10</span><span class="small" id="focus-b-label">Focus: NORMAL</span></div>
-        <div class="controls" id="controls-b">
-          <button class="btn stance-TEN" data-stance="TEN">🛡️ Ten</button>
-          <button class="btn stance-ZETSU" data-stance="ZETSU">🔕 Zetsu</button>
-          <button class="btn stance-REN" data-stance="REN">⚡ Ren</button>
-          <button class="btn focus-KO" data-focus="KO">🎯 Ko</button>
-          <button class="btn focus-GYO" data-focus="GYO">👁️ Gyo</button>
+                <div class="controls" id="controls-b">
+          <button class="btn stance-TEN" data-stance="TEN" title="Ten: Defense 1.0x. Conserves aura (+5/turn). Basic defense stance.">🛡️ Ten</button>
+          <button class="btn stance-ZETSU" data-stance="ZETSU" title="Zetsu: Recovers +25 Aura rapidly, but reduces Defense to 0! Highly vulnerable.">🧘 Zetsu</button>
+          <button class="btn stance-REN" data-stance="REN" title="Ren: Attack +50%. Drains -15 Aura/turn. Unlocks Signature Hatsu.">🔥 Ren</button>
+          <button class="btn focus-KO" data-focus="KO" title="Ko: 100% Aura focused into attack (+75% DMG), but 0 Defense! High risk.">🎯 Ko</button>
+          <button class="btn focus-GYO" data-focus="GYO" title="Gyo: Focuses aura in eyes to detect Ko & hidden Nen traps (+30% Def).">👁️ Gyo</button>
         </div>
         <div class="controls" id="controls-b2" style="margin-top:6px">
           <button class="btn primary" id="strike-b" style="grid-column: span 3">💥 Strike</button>
@@ -481,13 +542,16 @@
       </div>
     </div>
 
-    <div class="card" style="margin-top:18px">
-      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
-        <button class="btn primary" id="turn-btn" style="font-size:1.1rem; padding:10px 20px; font-weight:800;">⚔️ Resolve Turn</button>
-        <button class="btn" id="reset-btn">↻ Reset Match</button>
+        <div class="card" style="margin-top:18px">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <button class="btn primary" id="turn-btn" style="font-size:1.1rem; padding:10px 20px; font-weight:800;">⚔️ Resolve Turn</button>
+          <button class="btn" id="reset-btn">↻ Reset Match</button>
+        </div>
+        <button class="btn" id="toggle-log-btn" style="font-size:0.8rem; background:rgba(255,255,255,0.05);">📊 Show Math &amp; Engine Log</button>
       </div>
       <div class="verdict" id="verdict"></div>
-      <div class="log" id="log" aria-live="polite" style="margin-top:14px; max-height:180px;">
+      <div class="log" id="log" aria-live="polite" style="margin-top:14px; max-height:180px; display:none;">
         <div class="line">Match initialized. Pick stances &amp; focus, then press <strong>Resolve Turn</strong>.</div>
       </div>
     </div>
@@ -560,6 +624,7 @@
         </div>
 
         <button class="btn primary" id="build-btn" style="margin-top:12px; width:100%">⚡ Build Hatsu</button>
+        <button class="btn" id="equip-hatsu-a-btn" style="margin-top:8px; width:100%; border-color:var(--aura); color:var(--aura-2);">⚡ Equip Custom Hatsu to Fighter A</button>
       </div>
 
       <div>
@@ -682,6 +747,162 @@
 <script src="./nen-engine.js"></script>
 
 <script>
+
+
+/* ============================================================
+   ENHANCED POLYPHONIC BGM SYNTHESIZER ENGINE WITH VOLUME CONTROL
+   ============================================================ */
+let bgmAudioCtx = null;
+let bgmGainNode = null;
+let currentBgmMode = 'DOJO'; // 'DOJO' | 'ARENA' | 'BATTLE' | 'VICTORY'
+let isBgmMuted = false;
+let masterVolume = 0.35;
+let bgmIntervalId = null;
+let bgmStep = 0;
+
+// Rich Frequencies (Hz)
+const NOTES = {
+  C2: 65.41, E2: 82.41, F2: 87.31, G2: 98.00, A2: 110.00,
+  C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
+  C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
+  C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00, B5: 987.77
+};
+
+// Polyphonic Sequences with Harmonies and Warm Reverb-like envelopes
+const BGM_TRACKS = {
+  DOJO: {
+    tempo: 380, // Meditative Zen
+    bass:    [NOTES.C3, 0, NOTES.G3, 0, NOTES.A3, 0, NOTES.E3, 0],
+    chord:   [NOTES.E4, NOTES.G4, NOTES.C4, NOTES.E4, NOTES.E4, NOTES.A4, NOTES.E4, NOTES.B4],
+    melody:  [NOTES.C5, NOTES.E5, NOTES.G5, NOTES.A5, NOTES.G5, NOTES.E5, NOTES.D5, NOTES.C5]
+  },
+  ARENA: {
+    tempo: 220, // Tense Heaven's Arena Prep
+    bass:    [NOTES.A2, NOTES.A2, NOTES.C3, NOTES.D3, NOTES.A2, NOTES.E3, NOTES.D3, NOTES.C3],
+    chord:   [NOTES.A3, NOTES.C4, NOTES.D4, NOTES.E4, NOTES.A3, NOTES.E4, NOTES.D4, NOTES.C4],
+    melody:  [NOTES.A4, NOTES.C5, NOTES.E5, NOTES.G5, NOTES.A5, NOTES.E5, NOTES.D5, NOTES.C5]
+  },
+  BATTLE: {
+    tempo: 140, // High-Intensity Combat Clash
+    bass:    [NOTES.A2, NOTES.C3, NOTES.D3, NOTES.F3, NOTES.E3, NOTES.D3, NOTES.C3, NOTES.G2],
+    chord:   [NOTES.A3, NOTES.D4, NOTES.E4, NOTES.A4, NOTES.C4, NOTES.D4, NOTES.E4, NOTES.A3],
+    melody:  [NOTES.A5, NOTES.E5, NOTES.G5, NOTES.A5, NOTES.C5, NOTES.D5, NOTES.E5, NOTES.A5]
+  },
+  VICTORY: {
+    tempo: 180, // Triumphant Fanfare
+    bass:    [NOTES.C3, NOTES.E3, NOTES.G3, NOTES.C4, NOTES.G3, NOTES.E3, NOTES.C3, NOTES.G3],
+    chord:   [NOTES.G4, NOTES.C5, NOTES.E5, NOTES.G5, NOTES.E5, NOTES.C5, NOTES.G4, NOTES.E4],
+    melody:  [NOTES.C5, NOTES.E5, NOTES.G5, NOTES.C5, NOTES.D5, NOTES.E5, NOTES.G5, NOTES.C5]
+  }
+};
+
+function initBgmEngine() {
+  if (bgmAudioCtx) return;
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return;
+
+  bgmAudioCtx = new AudioContextClass();
+  bgmGainNode = bgmAudioCtx.createGain();
+  bgmGainNode.gain.setValueAtTime(isBgmMuted ? 0 : masterVolume * 0.25, bgmAudioCtx.currentTime);
+  bgmGainNode.connect(bgmAudioCtx.destination);
+
+  startBgmLoop();
+}
+
+function playPolyNote(freq, type = 'sine', duration = 0.35, gVal = 0.1) {
+  if (!bgmAudioCtx || isBgmMuted || !freq) return;
+  try {
+    const now = bgmAudioCtx.currentTime;
+    const osc = bgmAudioCtx.createOscillator();
+    const gain = bgmAudioCtx.createGain();
+
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, now);
+
+    const adjustedGain = gVal * masterVolume;
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.linearRampToValueAtTime(adjustedGain, now + 0.04);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+    osc.connect(gain);
+    gain.connect(bgmGainNode);
+
+    osc.start(now);
+    osc.stop(now + duration);
+  } catch (e) {}
+}
+
+function stepBgmSequence() {
+  if (!bgmAudioCtx || isBgmMuted) return;
+  if (bgmAudioCtx.state === 'suspended') {
+    bgmAudioCtx.resume();
+  }
+
+  const track = BGM_TRACKS[currentBgmMode] || BGM_TRACKS.DOJO;
+  const stepIdx = bgmStep % track.bass.length;
+
+  const bassFreq  = track.bass[stepIdx];
+  const chordFreq = track.chord[stepIdx];
+  const melFreq   = track.melody[stepIdx];
+
+  if (bassFreq) {
+    const bType = currentBgmMode === 'BATTLE' ? 'sawtooth' : 'triangle';
+    playPolyNote(bassFreq, bType, 0.45, 0.18);
+  }
+  if (chordFreq) {
+    playPolyNote(chordFreq, 'sine', 0.35, 0.10);
+  }
+  if (melFreq) {
+    const mType = currentBgmMode === 'VICTORY' ? 'square' : 'triangle';
+    playPolyNote(melFreq, mType, 0.3, 0.12);
+  }
+
+  bgmStep++;
+}
+
+function startBgmLoop() {
+  if (bgmIntervalId) clearInterval(bgmIntervalId);
+  const track = BGM_TRACKS[currentBgmMode] || BGM_TRACKS.DOJO;
+  bgmIntervalId = setInterval(stepBgmSequence, track.tempo);
+}
+
+function setBgmMode(mode) {
+  if (currentBgmMode === mode) return;
+  currentBgmMode = mode;
+  bgmStep = 0;
+  startBgmLoop();
+  updateBgmBtnLabel();
+}
+
+function setBgmVolume(valPercent) {
+  masterVolume = Math.max(0, Math.min(1, valPercent / 100));
+  if (bgmGainNode && bgmAudioCtx) {
+    bgmGainNode.gain.setValueAtTime(isBgmMuted ? 0 : masterVolume * 0.25, bgmAudioCtx.currentTime);
+  }
+  const label = document.getElementById('bgm-vol-label');
+  if (label) label.textContent = Math.round(valPercent) + '%';
+}
+
+function toggleBgm() {
+  initBgmEngine();
+  isBgmMuted = !isBgmMuted;
+  if (bgmGainNode && bgmAudioCtx) {
+    bgmGainNode.gain.setValueAtTime(isBgmMuted ? 0 : masterVolume * 0.25, bgmAudioCtx.currentTime);
+  }
+  updateBgmBtnLabel();
+}
+
+function updateBgmBtnLabel() {
+  const btn = document.getElementById('bgm-toggle-btn');
+  if (!btn) return;
+  const modeLabel = currentBgmMode === 'DOJO' ? 'Dojo Zen' : currentBgmMode === 'ARENA' ? 'Arena Prep' : currentBgmMode === 'BATTLE' ? 'Battle Clash' : 'Victory';
+  btn.textContent = isBgmMuted ? '🔇 BGM: OFF' : `🎵 BGM: ON (${modeLabel})`;
+}
+
+document.addEventListener('click', () => {
+  initBgmEngine();
+}, { once: true });
+
 /* ============================================================
    STATE
    ============================================================ */
@@ -691,6 +912,127 @@ if (!NE) {
     '<div style="background:#ff3366;color:#fff;padding:14px;text-align:center;font-weight:600">' +
     'Could not load nen-engine.js. Make sure index.html is opened from this folder.' +
     '</div>');
+}
+
+/* ============================================================
+   WEB AUDIO SYNTH SOUND SYSTEM
+   ============================================================ */
+let audioCtx = null;
+
+function getAudioContext() {
+  if (!audioCtx) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) audioCtx = new AudioContextClass();
+  }
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+function playSound(type) {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    if (type === 'STANCE') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.exponentialRampToValueAtTime(440, now + 0.15);
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+      osc.start(now);
+      osc.stop(now + 0.15);
+    } else if (type === 'HIT') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(150, now);
+      osc.frequency.exponentialRampToValueAtTime(40, now + 0.2);
+      gain.gain.setValueAtTime(0.3, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+      osc.start(now);
+      osc.stop(now + 0.2);
+    } else if (type === 'CRITICAL' || type === 'HATSU') {
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(300, now);
+      osc.frequency.setValueAtTime(600, now + 0.1);
+      osc.frequency.exponentialRampToValueAtTime(100, now + 0.35);
+      gain.gain.setValueAtTime(0.35, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+      osc.start(now);
+      osc.stop(now + 0.35);
+    } else if (type === 'KO') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(800, now);
+      osc.frequency.exponentialRampToValueAtTime(60, now + 0.6);
+      gain.gain.setValueAtTime(0.5, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+      osc.start(now);
+      osc.stop(now + 0.6);
+    }
+  } catch (e) {
+    // Audio context fallback if blocked by browser policy
+  }
+}
+
+/* ============================================================
+   VISUAL EFFECTS (SCREEN SHAKE, FLASH & FLOATING DAMAGE)
+   ============================================================ */
+function triggerImpactEffects(targetCorner, damage, isCritical, isHatsu, isKO) {
+  const container = document.getElementById('arena-viewport');
+  if (!container) return;
+
+  // 1. Screen Shake
+  container.classList.remove('shake-screen');
+  void container.offsetWidth; // trigger reflow
+  container.classList.add('shake-screen');
+  setTimeout(() => container.classList.remove('shake-screen'), 400);
+
+  // 2. Visual Flash Overlay
+  const flash = document.createElement('div');
+  flash.className = 'flash-overlay';
+  flash.style.background = isKO
+    ? 'radial-gradient(circle, rgba(255,51,102,0.85) 0%, transparent 90%)'
+    : isHatsu 
+    ? 'radial-gradient(circle, rgba(155,109,255,0.65) 0%, transparent 80%)'
+    : isCritical
+    ? 'radial-gradient(circle, rgba(255,51,102,0.6) 0%, transparent 80%)'
+    : 'radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 80%)';
+  container.appendChild(flash);
+  setTimeout(() => flash.remove(), 400);
+
+  // 3. Floating Damage / Effect Numbers
+  const avatar = document.getElementById(`avatar-${targetCorner}-container`);
+  if (avatar) {
+    const num = document.createElement('div');
+    let extraCls = isKO ? 'float-ko' : isHatsu ? 'float-hatsu' : isCritical ? 'float-crit' : '';
+    num.className = `floating-num ${extraCls}`;
+    num.textContent = isKO ? `💥 K.O. -${damage}` : `-${damage}`;
+    
+    num.style.left = targetCorner === 'a' ? '20%' : '75%';
+    num.style.top = '30%';
+
+    container.appendChild(num);
+    setTimeout(() => num.remove(), 1200);
+  }
+}
+
+function triggerAuraFloat(corner, delta, type) {
+  const container = document.getElementById('arena-viewport');
+  if (!container) return;
+  const num = document.createElement('div');
+  num.className = 'floating-num float-aura';
+  num.textContent = delta > 0 ? `+${delta} Aura` : `${delta} Aura`;
+  num.style.left = corner === 'a' ? '22%' : '73%';
+  num.style.top = '45%';
+  container.appendChild(num);
+  setTimeout(() => num.remove(), 1200);
 }
 
 let fighterA, fighterB;
@@ -730,9 +1072,96 @@ function initFighters() {
   renderFighters();
 }
 
+function updateHatsuDropdowns() {
+  const selectA = document.getElementById('hatsu-select-a');
+  const selectB = document.getElementById('hatsu-select-b');
+  if (!selectA || !selectB) return;
+
+  const listA = fighterA.hatsuList && fighterA.hatsuList.length > 0 ? fighterA.hatsuList : NE.getCharacterHatsu(fighterA.name);
+  selectA.innerHTML = listA.map(h => `<option value="${h.id}">${h.name} (${h.category} · ${h.auraCost} Aura)</option>`).join('');
+
+  const listB = fighterB.hatsuList && fighterB.hatsuList.length > 0 ? fighterB.hatsuList : NE.getCharacterHatsu(fighterB.name);
+  selectB.innerHTML = listB.map(h => `<option value="${h.id}">${h.name} (${h.category} · ${h.auraCost} Aura)</option>`).join('');
+}
+
+function updateControlsUI() {
+  const isCpuMode = document.getElementById('cpu-toggle-b')?.checked;
+  const controlsBContainer = document.getElementById('controls-b');
+  const controlsB2Container = document.getElementById('controls-b2');
+  const selectB = document.getElementById('hatsu-select-b');
+
+  if (isCpuMode) {
+    controlsBContainer.querySelectorAll('button').forEach(b => b.disabled = true);
+    controlsB2Container.querySelectorAll('button').forEach(b => b.disabled = true);
+    if (selectB) selectB.disabled = true;
+  } else {
+    controlsBContainer.querySelectorAll('button').forEach(b => b.disabled = false);
+    controlsB2Container.querySelectorAll('button').forEach(b => b.disabled = false);
+    if (selectB) selectB.disabled = false;
+  }
+
+  // Active stance & focus highlights & lock enforcement
+  ['a', 'b'].forEach(corner => {
+    const stance = corner === 'a' ? selectedStanceA : selectedStanceB;
+    const focus = corner === 'a' ? selectedFocusA : selectedFocusB;
+    const currentFighter = corner === 'a' ? fighterA : fighterB;
+
+    document.querySelectorAll(`#controls-${corner} [data-stance]`).forEach(b => {
+      const st = b.dataset.stance;
+      b.classList.toggle('active-ten', st === 'TEN' && stance === 'TEN');
+      b.classList.toggle('active-zetsu', st === 'ZETSU' && stance === 'ZETSU');
+      b.classList.toggle('active-ren', st === 'REN' && stance === 'REN');
+    });
+
+    document.querySelectorAll(`#controls-${corner} [data-focus]`).forEach(b => {
+      const fc = b.dataset.focus;
+      b.classList.toggle('active-ko', fc === 'KO' && focus === 'KO');
+      b.classList.toggle('active-gyo', fc === 'GYO' && focus === 'GYO');
+    });
+
+    // Lock Hatsu button if stance is not REN or not enough aura
+    const hatsuBtn = document.getElementById(`hatsu-${corner}`);
+    const selectHatsu = document.getElementById(`hatsu-select-${corner}`);
+    if (hatsuBtn) {
+      const selectedHatsuId = selectHatsu?.value;
+      const hatsuObj = (currentFighter.hatsuList || []).find(h => h.id === selectedHatsuId) 
+        || (NE.CANONICAL_HATSU[selectedHatsuId]) 
+        || NE.getCharacterHatsu(currentFighter.name)[0];
+
+      const cost = hatsuObj?.auraCost || 20;
+      const canUseHatsu = stance === 'REN' && currentFighter.aura >= cost;
+
+      if (!canUseHatsu) {
+        hatsuBtn.classList.add('btn-locked');
+        hatsuBtn.title = stance !== 'REN' ? 'Hatsu requires REN Stance!' : `Insufficient Aura! Requires ${cost} Aura.`;
+      } else {
+        hatsuBtn.classList.remove('btn-locked');
+        hatsuBtn.title = `Activate ${hatsuObj.name} (${cost} Aura)`;
+      }
+    }
+  });
+}
+
+
+const CHARACTER_EMOJIS = {
+  'Gon Freecss': '🥋',
+  'Killua Zoldyck': '⚡',
+  'Zushi': '🥋',
+  'Hisoka Morow': '🃏',
+  'Kastro': '🐯',
+  'Custom Hunter': '🌟',
+  'Default': '🥋'
+};
+
 function renderFighters() {
   // A
   document.getElementById('hp-a').textContent    = fighterA.hp;
+  const emojiA = CHARACTER_EMOJIS[fighterA.name] || (fighterA.name.includes('Custom') ? '🌟' : '🥋');
+  const emojiB = CHARACTER_EMOJIS[fighterB.name] || '🃏';
+  const elEmojiA = document.getElementById('avatar-a-emoji');
+  const elEmojiB = document.getElementById('avatar-b-emoji');
+  if (elEmojiA) elEmojiA.textContent = emojiA;
+  if (elEmojiB) elEmojiB.textContent = emojiB;
   document.getElementById('aura-a').textContent  = fighterA.aura;
   document.getElementById('pts-a').textContent   = fighterA.points;
   document.getElementById('hp-a-bar').style.width   = (fighterA.hp / fighterA.maxHp * 100) + '%';
@@ -767,6 +1196,8 @@ function renderFighters() {
     badgeB.style.background = `var(--${fighterB.stance.toLowerCase()})`;
     auraB.style.boxShadow = fighterB.stance === 'REN' ? '0 0 35px #ef4444, 0 0 10px #f59e0b' : fighterB.stance === 'ZETSU' ? 'none' : '0 0 20px rgba(236,72,153,0.4)';
   }
+
+  updateControlsUI();
 }
 
 function appendLog(html, cls) {
@@ -787,46 +1218,115 @@ function appendTurnMarker(text) {
 }
 
 /* ============================================================
-   WIRING
+   WIRING & INTEGRATION
    ============================================================ */
 document.querySelectorAll('#controls-a [data-stance]').forEach(b => {
-  b.addEventListener('click', () => { selectedStanceA = b.dataset.stance; });
+  b.addEventListener('click', () => { selectedStanceA = b.dataset.stance; playSound('STANCE'); updateControlsUI(); });
 });
 document.querySelectorAll('#controls-a [data-focus]').forEach(b => {
-  b.addEventListener('click', () => { selectedFocusA = b.dataset.focus; });
+  b.addEventListener('click', () => { selectedFocusA = b.dataset.focus; playSound('STANCE'); updateControlsUI(); });
 });
 document.querySelectorAll('#controls-b [data-stance]').forEach(b => {
-  b.addEventListener('click', () => { selectedStanceB = b.dataset.stance; });
+  b.addEventListener('click', () => { selectedStanceB = b.dataset.stance; playSound('STANCE'); updateControlsUI(); });
 });
 document.querySelectorAll('#controls-b [data-focus]').forEach(b => {
-  b.addEventListener('click', () => { selectedFocusB = b.dataset.focus; });
+  b.addEventListener('click', () => { selectedFocusB = b.dataset.focus; playSound('STANCE'); updateControlsUI(); });
 });
 
-document.getElementById('strike-a').addEventListener('click', () => { lastAction.a = 'STRIKE'; appendLog('▶ <strong>Gon</strong> locks in <strong>Strike</strong>.'); });
-document.getElementById('hatsu-a').addEventListener('click',  () => { lastAction.a = 'HATSU';  appendLog('▶ <strong>Gon</strong> locks in <strong>Hatsu</strong>.'); });
-document.getElementById('strike-b').addEventListener('click', () => { lastAction.b = 'STRIKE'; appendLog('▶ <strong>Hisoka</strong> locks in <strong>Strike</strong>.'); });
-document.getElementById('hatsu-b').addEventListener('click',  () => { lastAction.b = 'HATSU';  appendLog('▶ <strong>Hisoka</strong> locks in <strong>Hatsu</strong>.'); });
+document.getElementById('hatsu-select-a')?.addEventListener('change', updateControlsUI);
+document.getElementById('hatsu-select-b')?.addEventListener('change', updateControlsUI);
+document.getElementById('cpu-toggle-b')?.addEventListener('change', updateControlsUI);
 
-document.getElementById('reset-btn').addEventListener('click', initFighters);
+document.getElementById('toggle-log-btn').addEventListener('click', () => {
+  const log = document.getElementById('log');
+  const btn = document.getElementById('toggle-log-btn');
+  if (log.style.display === 'none') {
+    log.style.display = 'block';
+    btn.textContent = '📊 Hide Math & Engine Log';
+  } else {
+    log.style.display = 'none';
+    btn.textContent = '📊 Show Math & Detailed Engine Log';
+  }
+});
 
-document.getElementById('turn-btn').addEventListener('click', () => {
+document.getElementById('strike-a').addEventListener('click', () => { lastAction.a = 'STRIKE'; appendLog(`▶ <strong>${fighterA.name}</strong> locks in <strong>Strike</strong>.`); });
+document.getElementById('hatsu-a').addEventListener('click',  () => { 
+  if (selectedStanceA !== 'REN') { appendLog(`⚠️ Hatsu requires REN Stance!`, 'alert'); return; }
+  lastAction.a = 'HATSU';  appendLog(`▶ <strong>${fighterA.name}</strong> locks in <strong>Hatsu</strong>.`); 
+});
+
+document.getElementById('strike-b').addEventListener('click', () => { lastAction.b = 'STRIKE'; appendLog(`▶ <strong>${fighterB.name}</strong> locks in <strong>Strike</strong>.`); });
+document.getElementById('hatsu-b').addEventListener('click',  () => { 
+  if (selectedStanceB !== 'REN') { appendLog(`⚠️ Hatsu requires REN Stance!`, 'alert'); return; }
+  lastAction.b = 'HATSU';  appendLog(`▶ <strong>${fighterB.name}</strong> locks in <strong>Hatsu</strong>.`); 
+});
+
+document.getElementById('bgm-toggle-btn')?.addEventListener('click', toggleBgm);
+document.getElementById('reset-btn').addEventListener('click', () => { initFighters(); setBgmMode('ARENA'); });
+
+// CPU AI DECISION ENGINE
+function chooseCpuAction() {
+  if (fighterB.aura < 20 || Math.random() < 0.25) {
+    selectedStanceB = NE.STANCES.ZETSU;
+  } else if (fighterB.aura >= 30 && (fighterB.hp < 40 || Math.random() < 0.6)) {
+    selectedStanceB = NE.STANCES.REN;
+  } else {
+    selectedStanceB = NE.STANCES.TEN;
+  }
+
+  const randFocus = Math.random();
+  if (randFocus < 0.2) selectedFocusB = NE.FOCUS_STATES.KO;
+  else if (randFocus < 0.4) selectedFocusB = NE.FOCUS_STATES.GYO;
+  else selectedFocusB = NE.FOCUS_STATES.NORMAL;
+
+  const canHatsu = selectedStanceB === NE.STANCES.REN && fighterB.aura >= 20;
+  if (canHatsu && Math.random() < 0.7) {
+    lastAction.b = 'HATSU';
+  } else {
+    lastAction.b = 'STRIKE';
+  }
+}
+
+// VISUAL SEQUENCINGcombat STAGE RESOLUTION
+document.getElementById('turn-btn').addEventListener('click', async () => {
+  setBgmMode('BATTLE');
   if (matchOver) return;
+  const turnBtn = document.getElementById('turn-btn');
+  turnBtn.disabled = true;
+
   turnNumber++;
   appendTurnMarker(`— TURN ${turnNumber} —`);
 
-  // Default to strike if nothing chosen
+  if (document.getElementById('cpu-toggle-b')?.checked) {
+    chooseCpuAction();
+  }
+
   if (!lastAction.a) lastAction.a = 'STRIKE';
   if (!lastAction.b) lastAction.b = 'STRIKE';
 
-  // Apply start of turn (stance/focus)
+  const banner = document.getElementById('arena-action-banner');
+  const popup = document.getElementById('arena-popup-text');
+
+  // PHASE 1: STANCE CHANGES & REGEN/DRAIN
+  const prevAuraA = fighterA.aura;
+  const prevAuraB = fighterB.aura;
+
   NE.applyStartOfTurn(fighterA, selectedStanceA, selectedFocusA);
   NE.applyStartOfTurn(fighterB, selectedStanceB, selectedFocusB);
 
-  // Log aura changes
-  appendLog(`${fighterA.name} → stance <strong>${fighterA.stance}</strong>, focus <strong>${fighterA.focus}</strong> · aura ${fighterA.aura}/${fighterA.maxAura}`, 'aura');
-  appendLog(`${fighterB.name} → stance <strong>${fighterB.stance}</strong>, focus <strong>${fighterB.focus}</strong> · aura ${fighterB.aura}/${fighterB.maxAura}`, 'aura');
+  const diffA = fighterA.aura - prevAuraA;
+  const diffB = fighterB.aura - prevAuraB;
 
-  // Speed / initiative
+  if (diffA !== 0) triggerAuraFloat('a', diffA, 'AURA');
+  if (diffB !== 0) triggerAuraFloat('b', diffB, 'AURA');
+
+  banner.textContent = `TURN ${turnNumber}`;
+  popup.textContent = `${fighterA.name} (${selectedStanceA}) VS ${fighterB.name} (${selectedStanceB})`;
+  renderFighters();
+
+  await new Promise(r => setTimeout(r, 600));
+
+  // PHASE 2 & 3: COMBAT RESOLUTION (INITIATIVE)
   const aSpd = fighterA.speed * (fighterA.stance === NE.STANCES.REN ? 1.2 : 1.0);
   const bSpd = fighterB.speed * (fighterB.stance === NE.STANCES.REN ? 1.2 : 1.0);
   const first  = aSpd >= bSpd ? fighterA : fighterB;
@@ -834,36 +1334,75 @@ document.getElementById('turn-btn').addEventListener('click', () => {
   const firstAction  = aSpd >= bSpd ? lastAction.a : lastAction.b;
   const secondAction = aSpd >= bSpd ? lastAction.b : lastAction.a;
 
-  resolveOne(first, second, firstAction);
+  await executeClashSequence(first, second, firstAction, banner, popup);
+
   if (!matchOver) {
-    resolveOne(second, first, secondAction);
+    await new Promise(r => setTimeout(r, 600));
+    await executeClashSequence(second, first, secondAction, banner, popup);
   }
 
-  // reset action locks for next turn
   lastAction.a = null;
   lastAction.b = null;
 
   renderFighters();
+  turnBtn.disabled = false;
 });
 
-function resolveOne(attacker, defender, actionType) {
+async function executeClashSequence(attacker, defender, actionType, banner, popup) {
+  const isCornerA = attacker.id === 'a';
+  const attackerAvatar = document.getElementById(`avatar-${attacker.id}-container`);
+  const defenderAvatar = document.getElementById(`avatar-${defender.id}-container`);
+
+  // Phase 2: Lunge Animation & Banner
+  attackerAvatar.classList.add(isCornerA ? 'anim-lunge-right' : 'anim-lunge-left');
+  banner.textContent = `${attacker.name.toUpperCase()} ATTACKS!`;
+  popup.textContent = actionType === 'HATSU' ? `Executing Signature Hatsu!` : `Physical Strike!`;
+
+  await new Promise(r => setTimeout(r, 350));
+
+  // Phase 3: Impact Flash & Recoil
+  defenderAvatar.classList.add(isCornerA ? 'anim-recoil-right' : 'anim-recoil-left');
+
   let payload;
   if (actionType === 'HATSU') {
-    const tpl = HATSU_LIBRARY[attacker.category];
+    const selectId = attacker.id === 'a' ? 'hatsu-select-a' : 'hatsu-select-b';
+    const chosenHatsuId = document.getElementById(selectId)?.value;
+    const hatsuObj = (attacker.hatsuList || []).find(h => h.id === chosenHatsuId)
+      || NE.CANONICAL_HATSU[chosenHatsuId] 
+      || NE.getCharacterHatsu(attacker.name)[0];
+
     payload = {
       type: 'HATSU',
       hatsu: {
-        name: tpl.name,
-        category: tpl.category,
-        baseDamage: tpl.baseDamage,
-        auraCost: tpl.auraCost,
-        oaths: []
+        name: hatsuObj.name,
+        category: hatsuObj.category,
+        baseDamage: hatsuObj.baseDamage,
+        auraCost: hatsuObj.auraCost,
+        oaths: hatsuObj.oaths || [],
+        effect: hatsuObj.effect
       }
     };
   } else {
     payload = { type: 'STRIKE' };
   }
+
   const res = NE.resolveAttack(attacker, defender, payload);
+  const targetCorner = defender.id;
+
+  if (res.success && res.damageDealt > 0) {
+    const isCritical = res.pointsAwarded >= 2;
+    const isHatsu = actionType === 'HATSU';
+
+    if (res.isKO) playSound('KO');
+    else if (isCritical) playSound('CRITICAL');
+    else if (isHatsu) playSound('HATSU');
+    else playSound('HIT');
+
+    triggerImpactEffects(targetCorner, res.damageDealt, isCritical, isHatsu, res.isKO);
+    popup.textContent = `💥 ${res.damageDealt} DMG Dealt! (${res.scoreReason})`;
+  } else {
+    popup.textContent = `🛡️ Defense Absorbed / Dodged!`;
+  }
 
   res.logs.forEach(l => {
     let cls = '';
@@ -874,18 +1413,93 @@ function resolveOne(attacker, defender, actionType) {
     appendLog(l, cls);
   });
 
+  renderFighters();
+
   if (res.isMatchOver) {
     matchOver = true;
     const v = document.getElementById('verdict');
     v.classList.add('show');
     v.textContent = `🏆 ${res.winner} wins the match! ${res.isKO ? '(Knockout — Instant Victory)' : '(10 Points reached)'}`;
+    banner.textContent = `VICTORY!`;
+    setBgmMode('VICTORY');
+    popup.textContent = `${res.winner} wins the arena match!`;
   }
+
+  await new Promise(r => setTimeout(r, 450));
+  attackerAvatar.classList.remove('anim-lunge-right', 'anim-lunge-left');
+  defenderAvatar.classList.remove('anim-recoil-right', 'anim-recoil-left');
 }
 
 /* ============================================================
    HATSU LAB
    ============================================================ */
 const $ = id => document.getElementById(id);
+
+
+
+function promptCharacterCreation() {
+  if (!currentWdtResult) return;
+  
+  const userCatSelect = document.getElementById('h-user-cat') || document.getElementById('user-cat');
+  if (userCatSelect) {
+    userCatSelect.value = currentWdtResult.category;
+    if (typeof buildHatsu === 'function') buildHatsu();
+  }
+  
+  fighterA = NE.createFighter({
+    id: 'a',
+    name: 'Custom Hunter (' + currentWdtResult.category + ')',
+    category: currentWdtResult.category,
+    maxHp: 100,
+    maxAura: 100,
+    baseAtk: 18,
+    baseDef: 12,
+    speed: 12
+  });
+
+  PRESET_ROSTER.PLAYER = () => fighterA;
+
+  const rosterA = document.getElementById('roster-select-a');
+  if (rosterA) {
+    let customOpt = rosterA.querySelector('option[value="PLAYER"]');
+    if (!customOpt) {
+      customOpt = document.createElement('option');
+      customOpt.value = 'PLAYER';
+      rosterA.prepend(customOpt);
+    }
+    customOpt.textContent = fighterA.name;
+    customOpt.selected = true;
+  }
+
+  // UNLOCK SECTIONS AND NAVIGATION LINKS
+  const navArena  = document.getElementById('nav-arena');
+  const navHatsu  = document.getElementById('nav-hatsu');
+  const simSec    = document.getElementById('simulator');
+  const passBadge = document.getElementById('pass-badge-container');
+
+  if (navArena) navArena.style.display = 'inline-block';
+  if (navHatsu) navHatsu.style.display = 'inline-block';
+  if (simSec)   simSec.style.display   = 'block';
+  if (passBadge) passBadge.style.display = 'block';
+
+  const dojoStatus = document.getElementById('dojo-status-chip');
+  if (dojoStatus) {
+    dojoStatus.textContent = 'Status: 🎫 Verified Floor 1 Contender';
+    dojoStatus.style.background = 'rgba(34,197,94,0.2)';
+    dojoStatus.style.color = '#4ade80';
+  }
+
+  updateHatsuDropdowns();
+  renderFighters();
+  setBgmMode('ARENA');
+
+  // Smooth scroll to Heaven's Arena Match Court
+  if (simSec) {
+    simSec.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  appendLog(`🌟 <strong>${fighterA.name}</strong> forged and registered! Heaven's Arena Match Court unlocked.`, 'ok');
+}
 
 function buildHatsu() {
   const name = $('h-name').value || 'Unnamed Hatsu';
@@ -910,8 +1524,9 @@ function buildHatsu() {
   $('h-card-oath').textContent  = oathMult.toFixed(2) + 'x';
   $('h-card-final').textContent = finalDmg.toFixed(1);
 
-  const build = {
-    name, userCategory: userCat, targetCategory: tgtCat,
+    const build = {
+    id: 'CUSTOM_' + Date.now(),
+    name, category: userCat, targetCategory: tgtCat,
     baseDamage: dmg, auraCost: cost, oaths,
     computed: { efficiency, oathMultiplier: oathMult, finalDamage: finalDmg }
   };
@@ -920,6 +1535,16 @@ function buildHatsu() {
 }
 
 $('build-btn').addEventListener('click', buildHatsu);
+$('equip-hatsu-a-btn').addEventListener('click', () => {
+  const customBuild = buildHatsu();
+  if (!fighterA.hatsuList) fighterA.hatsuList = NE.getCharacterHatsu(fighterA.name);
+  fighterA.hatsuList.unshift(customBuild);
+  updateHatsuDropdowns();
+  const selectA = $('hatsu-select-a');
+  if (selectA) selectA.value = customBuild.id;
+  updateControlsUI();
+  appendLog(`🧪 Custom technique <strong>"${customBuild.name}"</strong> equipped to ${fighterA.name}!`, 'ok');
+});
 $('copy-btn').addEventListener('click', () => {
   const txt = $('build-json').textContent;
   navigator.clipboard?.writeText(txt).then(() => {
@@ -969,6 +1594,7 @@ let wdtAnswers = [];
 let currentWdtResult = null;
 
 function initWDTQuiz() {
+  setBgmMode("DOJO");
   currentWdtStep = 0;
   wdtAnswers = [];
   currentWdtResult = null;
@@ -1304,3 +1930,4 @@ buildHatsu();
 
 </body>
 </html>
+

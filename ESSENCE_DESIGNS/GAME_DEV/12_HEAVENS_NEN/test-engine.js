@@ -66,6 +66,76 @@ assert(resultKoWin.isKO === true, 'Target KO reached when HP hits 0');
 assert(resultKoWin.pointsAwarded === 10, '10 Points awarded for KO');
 assert(resultKoWin.isMatchOver === true, 'Match triggers Instant Victory on KO');
 
+// Test 6: Status Effects
+function testStatusEffects() {
+  const f1 = createFighter({ name: 'Kurapika', category: NEN_CATEGORIES.CONJURER });
+  const f2 = createFighter({ name: 'Uvogin', category: NEN_CATEGORIES.ENHANCER });
+  
+  f1.stance = STANCES.REN;
+  const payload = {
+    type: 'HATSU',
+    hatsu: {
+      name: 'Chain Jail',
+      category: 'Conjurer',
+      baseDamage: 10,
+      auraCost: 10,
+      effect: 'FORCE_ZETSU'
+    }
+  };
+
+  resolveAttack(f1, f2, payload);
+  assert(f2.statusEffects.some(e => e.type === 'FORCE_ZETSU'), 'FORCE_ZETSU effect applied to defender');
+  
+  applyStartOfTurn(f2, STANCES.TEN, FOCUS_STATES.NORMAL);
+  assert(f2.isForcedZetsu === true, 'isForcedZetsu flag is true');
+  assert(f2.stance === STANCES.ZETSU, 'Fighter forced into ZETSU stance');
+
+  const f3 = createFighter({ name: 'Killua', category: NEN_CATEGORIES.TRANSMUTER });
+  const f4 = createFighter({ name: 'Youpi', category: NEN_CATEGORIES.ENHANCER });
+  f3.stance = STANCES.REN;
+  const stunPayload = {
+    type: 'HATSU',
+    hatsu: {
+      name: 'Thunderbolt',
+      category: 'Transmuter',
+      baseDamage: 10,
+      auraCost: 10,
+      effect: 'STUN_SHOCK'
+    }
+  };
+  resolveAttack(f3, f4, stunPayload);
+  applyStartOfTurn(f4, STANCES.TEN, FOCUS_STATES.NORMAL);
+  assert(f4.isStunned === true, 'isStunned flag is true');
+  
+  const stunRes = resolveAttack(f4, f3, { type: 'STRIKE' });
+  assert(stunRes.success === false, 'Stunned fighter fails to attack');
+
+  const f5 = createFighter({ name: 'Test' });
+  f5.statusEffects.push({ type: 'SPEED_BUFF', duration: 2 });
+  applyStartOfTurn(f5, STANCES.TEN, FOCUS_STATES.NORMAL);
+  assert(f5.statusEffects.find(e => e.type === 'SPEED_BUFF').duration === 1, 'Duration decremented to 1');
+  applyStartOfTurn(f5, STANCES.TEN, FOCUS_STATES.NORMAL);
+  assert(f5.statusEffects.find(e => e.type === 'SPEED_BUFF') === undefined, 'Effect expired and removed from array');
+}
+
+testStatusEffects();
+
+// Test 7: Tower Ascent Logic
+const { getFloorOpponent, createPlayerCampaignState, resolveFloorVictory } = require('./tower-engine.js');
+
+const oppF1 = getFloorOpponent(1);
+assert(oppF1.name === 'Floor 1 Brawler', 'getFloorOpponent(1) returns Floor 1 Brawler');
+
+const oppF220 = getFloorOpponent(220);
+assert(oppF220.name === 'Hisoka Morow', 'getFloorOpponent(220) returns Hisoka Morow');
+
+const mockPlayer = createFighter({ name: 'Player' });
+const campState = createPlayerCampaignState(mockPlayer);
+assert(campState.currentFloor === 1 && campState.trainingPoints === 0, 'Campaign state initializes on Floor 1 with 0 training points');
+
+const winSummary = resolveFloorVictory(campState);
+assert(campState.currentFloor === 2 && campState.trainingPoints === 3, 'Floor victory increments floor to 2 and awards 3 training points');
+
 console.log('\n----------------------------------------------------');
 console.log(`Results: ${passCount} Passed, ${failCount} Failed.`);
 console.log('====================================================\n');
