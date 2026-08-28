@@ -1,4 +1,4 @@
-const NE = require('./nen-engine.js');
+const NE = typeof NenEngine !== 'undefined' ? NenEngine : (typeof require !== 'undefined' ? require('./nen-engine.js') : null);
 
 function getFloorOpponent(floorNumber) {
   if (floorNumber < 50) {
@@ -75,8 +75,16 @@ function resolveFloorVictory(campaignState) {
   };
 }
 
-module.exports = {
+const TowerEngine = {
   getFloorOpponent,
   createPlayerCampaignState,
   resolveFloorVictory
 };
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = TowerEngine;
+}
+if (typeof window !== 'undefined') {
+  window.TowerEngine = TowerEngine;
+}
+

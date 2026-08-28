@@ -308,6 +308,7 @@
     </div>
     <div class="nav-links">
       <a href="#dojo" id="nav-dojo">🥋 Master Wing's Dojo</a>
+      <a href="#tower-ascent" id="nav-tower">🏢 Tower Campaign</a>
       <a href="#arena" id="nav-arena" style="display:none">🏟️ Heaven's Arena</a>
       <a href="#hatsu" id="nav-hatsu" style="display:none">🧪 Hatsu Lab</a>
       <button class="btn btn-sm" onclick="toggleDocsModal()" style="margin-left:12px; font-size:0.8rem">📜 Studio Rules &amp; Docs</button>
@@ -383,6 +384,9 @@
             <h3 id="wdt-result-title" style="margin:0 0 6px 0; color:#fff; font-size:1.5rem;">Category</h3>
             <p id="wdt-result-reaction" style="color:var(--gold); font-weight:700; font-size:1.1rem; margin:0 0 10px 0;"></p>
             <p id="wdt-result-desc" style="color:var(--text-dim); font-size:0.95rem; line-height:1.5; margin-bottom:14px;"></p>
+            <div id="wdt-stat-bonus-card" style="background:rgba(93,220,168,0.1); border:1px solid rgba(93,220,168,0.3); padding:10px 14px; border-radius:8px; font-size:0.9rem; margin-bottom:12px;">
+              <strong>Category Stat Bonus:</strong> <span id="wdt-stat-bonus" style="color:var(--ok); font-weight:700;"></span>
+            </div>
             <div style="background:rgba(255,255,255,0.05); padding:12px 16px; border-radius:8px; font-size:0.9rem; margin-bottom:18px;">
               <strong>Hisoka's Temperament Analysis:</strong> <span id="wdt-hisoka-trait" style="color:var(--text);"></span>
             </div>
@@ -432,6 +436,66 @@
       </div>
     </div>
 
+  </div>
+</section>
+
+<hr/>
+
+<!-- ============ TOWER CAMPAIGN ASCENT ============ -->
+<section id="tower-ascent" style="margin-top:24px;">
+  <div class="card" style="background:var(--bg-card); border:1px solid var(--accent); padding:24px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+      <div>
+        <span class="badge" style="background:var(--accent); color:#000; font-weight:800;">MODE A · HEAVEN'S ARENA ASCENT</span>
+        <h2 style="margin:6px 0 2px 0; font-size:1.8rem;">🏢 Tower Campaign Ascent</h2>
+        <p class="small" style="margin:0;">Challenge floor opponents, earn training points, and climb to Floor 250+.</p>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-sm" onclick="loadTowerCampaignUI()">🔄 Refresh Campaign</button>
+        <button class="btn btn-sm danger" onclick="resetTowerCampaignUI()">🗑️ Reset Campaign</button>
+      </div>
+    </div>
+
+    <div class="grid grid-2" style="margin-top:20px; gap:20px;">
+      <!-- Player Campaign Status Card -->
+      <div class="card" style="background:var(--bg-card-2); border:1px solid var(--line-soft);">
+        <h3>🥋 Fighter Campaign Status</h3>
+        <div style="font-size:1.1rem; margin-bottom:10px;">
+          <strong>Current Floor:</strong> <span id="tc-current-floor" class="mono" style="color:var(--accent-2); font-weight:800; font-size:1.4rem;">Floor 1</span>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:0.9rem; color:var(--text-dim);">
+          <div>Highest Floor: <strong id="tc-unlocked-floor" style="color:var(--text);">1</strong></div>
+          <div>Training Points: <strong id="tc-tp" style="color:var(--ok);">0 TP</strong></div>
+          <div>Wins: <strong id="tc-wins" style="color:var(--ok);">0</strong></div>
+          <div>Losses: <strong id="tc-losses" style="color:var(--danger);">0</strong></div>
+        </div>
+        <div style="margin-top:16px; border-top:1px solid var(--line-soft); padding-top:12px;">
+          <div id="tc-fighter-name" style="font-weight:700; color:#fff;">Awoken Fighter</div>
+          <div id="tc-fighter-cat" class="small" style="color:var(--aura-2);">Enhancer Category</div>
+        </div>
+      </div>
+
+      <!-- Current Floor Opponent Card -->
+      <div class="card" style="background:var(--bg-card-2); border:1px solid var(--line-soft);">
+        <h3>⚔️ Floor Opponent</h3>
+        <div style="font-size:1.2rem; font-weight:800; color:var(--accent-2); margin-bottom:6px;" id="tc-opp-name">
+          Floor 1 Brawler
+        </div>
+        <div id="tc-opp-cat" class="badge ENHANCER" style="margin-bottom:12px;">ENHANCER</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:0.85rem; color:var(--text-dim);">
+          <div>Max HP: <strong id="tc-opp-hp" style="color:var(--text);">81</strong></div>
+          <div>Max Aura: <strong id="tc-opp-aura" style="color:var(--text);">50</strong></div>
+          <div>Base ATK: <strong id="tc-opp-atk" style="color:var(--text);">12</strong></div>
+          <div>Base DEF: <strong id="tc-opp-def" style="color:var(--text);">8</strong></div>
+        </div>
+        <div style="margin-top:20px;">
+          <button class="btn btn-primary" id="tc-fight-btn" onclick="fightTowerFloor()" style="width:100%; font-weight:800; font-size:1rem; padding:10px;">
+            ⚔️ Fight Floor Opponent & Ascend →
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="tc-log" style="margin-top:16px; font-size:0.9rem; color:var(--ok); min-height:24px;"></div>
   </div>
 </section>
 
@@ -608,7 +672,8 @@
           <input id="h-cost" type="number" value="20" min="0" />
         </div>
 
-        <h4 style="margin-top:18px">Oaths &amp; Restrictions</h4>
+        <h4 style="margin-top:18px">Oaths &amp; Restrictions (HatsuWorkshop.OATH_PRESETS)</h4>
+        <div id="hatsu-validation-errors" style="display:none; background:rgba(255,93,108,0.15); border:1px solid var(--danger); color:var(--danger); padding:10px; border-radius:6px; margin-bottom:12px; font-size:0.85rem;"></div>
 
         <div class="oath-row">
           <input type="checkbox" id="oath-lhp" />
@@ -621,6 +686,10 @@
         <div class="oath-row">
           <input type="checkbox" id="oath-risk" />
           <label for="oath-risk" style="flex:1; color:var(--text-dim); margin:0">Self-Stun if dodged (risk) — <strong>+0.5x</strong></label>
+        </div>
+        <div class="oath-row">
+          <input type="checkbox" id="oath-single" />
+          <label for="oath-single" style="flex:1; color:var(--text-dim); margin:0">Single Target Only restriction — <strong>+0.3x</strong></label>
         </div>
 
         <button class="btn primary" id="build-btn" style="margin-top:12px; width:100%">⚡ Build Hatsu</button>
@@ -639,9 +708,16 @@
           </div>
         </div>
 
-        <h3 style="margin-top:18px">Build JSON</h3>
-        <pre><code id="build-json">// Click "Build Hatsu" to generate</code></pre>
-        <button class="btn" id="copy-btn" style="margin-top:8px">📋 Copy to Clipboard</button>
+        <h3 style="margin-top:18px">Serialized Build Code (PersistenceEngine)</h3>
+        <pre><code id="build-json">// Click "Build Hatsu" to generate serialized build code</code></pre>
+        <button class="btn" id="copy-btn" style="margin-top:8px">📋 Copy Build Code</button>
+
+        <h4 style="margin-top:18px">Import Build Code</h4>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="import-build-input" placeholder="Paste NEN-BUILD-v1-... code here" style="flex:1; background:var(--bg-soft); color:var(--text); border:1px solid var(--line); padding:6px 10px; border-radius:6px; font-size:0.85rem;" />
+          <button class="btn" id="import-build-btn" onclick="importBuildCodeUI()">📥 Import</button>
+        </div>
+        <div id="import-status" style="font-size:0.85rem; margin-top:6px;"></div>
       </div>
     </div>
   </section>
@@ -744,7 +820,10 @@
 <!-- ============================================================ -->
 <!-- ENGINE LOADER                                              -->
 <!-- ============================================================ -->
-<script src="./nen-engine.js"></script>
+<script src="nen-engine.js"></script>
+<script src="tower-engine.js"></script>
+<script src="persistence-engine.js"></script>
+<script src="hatsu-workshop.js"></script>
 
 <script>
 
@@ -1505,43 +1584,82 @@ function buildHatsu() {
   const name = $('h-name').value || 'Unnamed Hatsu';
   const userCat = $('h-user-cat').value;
   const tgtCat  = $('h-target-cat').value;
-  const dmg     = parseInt($('h-dmg').value, 10) || 0;
-  const cost    = parseInt($('h-cost').value, 10) || 0;
+  const dmg     = parseFloat($('h-dmg').value) || 0;
+  const cost    = parseFloat($('h-cost').value) || 0;
 
   const oaths = [];
-  if ($('oath-lhp').checked)   oaths.push({ type: 'LOW_HP_THRESHOLD',   threshold: 0.3, bonusMultiplier: 0.8 });
-  if ($('oath-zprep').checked) oaths.push({ type: 'ZETSU_PREP_TURNS',   bonusMultiplier: 1.0 });
-  if ($('oath-risk').checked)  oaths.push({ type: 'RISK_SELF_STUN',     bonusMultiplier: 0.5 });
+  if ($('oath-lhp')?.checked)   oaths.push(HatsuWorkshop.OATH_PRESETS.LOW_HP_THRESHOLD);
+  if ($('oath-zprep')?.checked) oaths.push(HatsuWorkshop.OATH_PRESETS.ZETSU_PREP_TURNS);
+  if ($('oath-risk')?.checked)  oaths.push(HatsuWorkshop.OATH_PRESETS.RISK_SELF_STUN);
+  if ($('oath-single')?.checked) oaths.push(HatsuWorkshop.OATH_PRESETS.SINGLE_TARGET_ONLY);
 
-  const efficiency = NE.getCategoryEfficiency(userCat, tgtCat);
-  const oathMult   = NE.calculateOathMultiplier(oaths, { hp: 1, maxHp: 1, previousStance: NE.STANCES.ZETSU });
-  const finalDmg   = Math.round(dmg * efficiency * oathMult * 10) / 10;
+  const config = { name, category: tgtCat, baseDamage: dmg, auraCost: cost, oaths };
+  const validation = HatsuWorkshop.validateHatsu(config);
 
-  $('h-card-name').textContent  = name;
+  const errEl = $('hatsu-validation-errors');
+  if (!validation.valid) {
+    if (errEl) {
+      errEl.style.display = 'block';
+      errEl.innerHTML = '<strong>Validation Errors:</strong><br/>• ' + validation.errors.join('<br/>• ');
+    }
+    return null;
+  } else if (errEl) {
+    errEl.style.display = 'none';
+  }
+
+  const customHatsu = HatsuWorkshop.createCustomHatsu(config, userCat);
+  const efficiency = customHatsu.powerStats.efficiency;
+  const oathMult   = customHatsu.powerStats.oathMultiplier;
+  const finalDmg   = customHatsu.powerStats.effectiveDamage;
+
+  $('h-card-name').textContent  = customHatsu.name;
   $('h-card-meta').textContent  = `${userCat} → ${tgtCat} · Cost ${cost} aura`;
   $('h-card-dmg').textContent   = dmg;
   $('h-card-eff').textContent   = Math.round(efficiency * 100) + '%';
   $('h-card-oath').textContent  = oathMult.toFixed(2) + 'x';
   $('h-card-final').textContent = finalDmg.toFixed(1);
 
-    const build = {
-    id: 'CUSTOM_' + Date.now(),
-    name, category: userCat, targetCategory: tgtCat,
-    baseDamage: dmg, auraCost: cost, oaths,
-    computed: { efficiency, oathMultiplier: oathMult, finalDamage: finalDmg }
-  };
-  $('build-json').textContent = JSON.stringify(build, null, 2);
-  return build;
+  const buildFighter = NE.createFighter({
+    name: fighterA ? fighterA.name : 'Custom Fighter',
+    category: userCat,
+    hatsuList: [customHatsu]
+  });
+  const serialized = PersistenceEngine.serializeBuild(buildFighter);
+  $('build-json').textContent = serialized;
+
+  return customHatsu;
+}
+
+function importBuildCodeUI() {
+  const inputEl = $('import-build-input');
+  const statusEl = $('import-status');
+  if (!inputEl) return;
+  const code = inputEl.value.trim();
+  const restored = PersistenceEngine.deserializeBuild(code);
+  if (restored) {
+    fighterA = restored;
+    renderFighters();
+    updateHatsuDropdowns();
+    if (statusEl) {
+      statusEl.style.color = 'var(--ok)';
+      statusEl.textContent = `Build imported: ${restored.name} (${restored.category})`;
+    }
+    appendLog(`📥 Imported build code for <strong>${restored.name}</strong> (${restored.category})!`, 'ok');
+  } else if (statusEl) {
+    statusEl.style.color = 'var(--danger)';
+    statusEl.textContent = `Invalid build code format. Expected NEN-BUILD-v1-...`;
+  }
 }
 
 $('build-btn').addEventListener('click', buildHatsu);
 $('equip-hatsu-a-btn').addEventListener('click', () => {
   const customBuild = buildHatsu();
+  if (!customBuild) return;
   if (!fighterA.hatsuList) fighterA.hatsuList = NE.getCharacterHatsu(fighterA.name);
   fighterA.hatsuList.unshift(customBuild);
   updateHatsuDropdowns();
   const selectA = $('hatsu-select-a');
-  if (selectA) selectA.value = customBuild.id;
+  if (selectA) selectA.value = customBuild.id || customBuild.name;
   updateControlsUI();
   appendLog(`🧪 Custom technique <strong>"${customBuild.name}"</strong> equipped to ${fighterA.name}!`, 'ok');
 });
@@ -1549,17 +1667,94 @@ $('copy-btn').addEventListener('click', () => {
   const txt = $('build-json').textContent;
   navigator.clipboard?.writeText(txt).then(() => {
     $('copy-btn').textContent = '✓ Copied';
-    setTimeout(() => { $('copy-btn').textContent = '📋 Copy to Clipboard'; }, 1400);
+    setTimeout(() => { $('copy-btn').textContent = '📋 Copy Build Code'; }, 1500);
   });
 });
 
 // Live updates as you type
-['h-name','h-user-cat','h-target-cat','h-dmg','h-cost','oath-lhp','oath-zprep','oath-risk']
+['h-name','h-user-cat','h-target-cat','h-dmg','h-cost','oath-lhp','oath-zprep','oath-risk','oath-single']
   .forEach(id => {
     const el = $(id);
+    if (!el) return;
     const evt = el.type === 'checkbox' || el.tagName === 'SELECT' ? 'change' : 'input';
     el.addEventListener(evt, buildHatsu);
   });
+
+/* ============================================================
+   TOWER CAMPAIGN ENGINE INTEGRATION (TowerEngine & PersistenceEngine)
+   ============================================================ */
+let playerCampaignState = null;
+
+function initTowerCampaign() {
+  const saved = PersistenceEngine.loadCampaignState();
+  if (saved && saved.currentFloor && saved.fighter) {
+    playerCampaignState = saved;
+    playerCampaignState.fighter = NE.createFighter(saved.fighter);
+  } else {
+    playerCampaignState = TowerEngine.createPlayerCampaignState(fighterA || NE.createFighter({ name: 'Awoken Fighter', category: 'Enhancer' }));
+    PersistenceEngine.saveCampaignState(playerCampaignState);
+  }
+  renderTowerCampaign();
+}
+
+function renderTowerCampaign() {
+  if (!playerCampaignState) return;
+  const floor = playerCampaignState.currentFloor || 1;
+  const opp = TowerEngine.getFloorOpponent(floor);
+
+  if ($('tc-current-floor')) $('tc-current-floor').textContent = `Floor ${floor}`;
+  if ($('tc-unlocked-floor')) $('tc-unlocked-floor').textContent = playerCampaignState.unlockedFloor || floor;
+  if ($('tc-tp')) $('tc-tp').textContent = `${playerCampaignState.trainingPoints || 0} TP`;
+  if ($('tc-wins')) $('tc-wins').textContent = playerCampaignState.wins || 0;
+  if ($('tc-losses')) $('tc-losses').textContent = playerCampaignState.losses || 0;
+
+  if (playerCampaignState.fighter && $('tc-fighter-name')) {
+    $('tc-fighter-name').textContent = playerCampaignState.fighter.name || 'Awoken Fighter';
+    $('tc-fighter-cat').textContent = `${playerCampaignState.fighter.category || 'Enhancer'} Category`;
+  }
+
+  if (opp && $('tc-opp-name')) {
+    $('tc-opp-name').textContent = opp.name;
+    $('tc-opp-cat').textContent = opp.category;
+    $('tc-opp-cat').className = `badge ${opp.category}`;
+    $('tc-opp-hp').textContent = opp.maxHp;
+    $('tc-opp-aura').textContent = opp.maxAura;
+    $('tc-opp-atk').textContent = opp.baseAtk;
+    $('tc-opp-def').textContent = opp.baseDef;
+  }
+}
+
+function fightTowerFloor() {
+  if (!playerCampaignState) initTowerCampaign();
+  const victoryRes = TowerEngine.resolveFloorVictory(playerCampaignState);
+  PersistenceEngine.saveCampaignState(playerCampaignState);
+  renderTowerCampaign();
+
+  const logEl = $('tc-log');
+  if (logEl) {
+    logEl.innerHTML = `🏆 <strong>Floor ${victoryRes.newFloor - 1} Defeated!</strong> Advanced to Floor ${victoryRes.newFloor}. (+3 Training Points earned | Total Wins: ${victoryRes.totalWins})`;
+  }
+  appendLog(`🏢 <strong>Tower Ascent:</strong> Defeated Floor ${victoryRes.newFloor - 1} opponent! Advanced to Floor ${victoryRes.newFloor}. State saved.`, 'ok');
+}
+
+function resetTowerCampaignUI() {
+  PersistenceEngine.clearCampaignState();
+  playerCampaignState = TowerEngine.createPlayerCampaignState(fighterA || NE.createFighter({ name: 'Awoken Fighter', category: 'Enhancer' }));
+  PersistenceEngine.saveCampaignState(playerCampaignState);
+  renderTowerCampaign();
+  const logEl = $('tc-log');
+  if (logEl) {
+    logEl.textContent = '🔄 Campaign reset to Floor 1.';
+  }
+}
+
+function loadTowerCampaignUI() {
+  initTowerCampaign();
+  const logEl = $('tc-log');
+  if (logEl) {
+    logEl.textContent = '🔄 Campaign state reloaded from persistence storage.';
+  }
+}
 
 /* ============================================================
    WATER DIVINATION TEST (WDT) LOGIC
@@ -1658,6 +1853,13 @@ function finishWDTQuiz() {
   $('wdt-result-reaction').textContent = 'Reaction: ' + res.reaction;
   $('wdt-result-desc').textContent = res.description;
   $('wdt-hisoka-trait').textContent = res.hisokaTrait;
+
+  if ($('wdt-stat-bonus')) {
+    const bonusStr = Object.entries(res.statBonus || {})
+      .map(([k, v]) => `${k.toUpperCase()}: +${v}`)
+      .join(' | ');
+    $('wdt-stat-bonus').textContent = bonusStr || 'None';
+  }
 
   // Animate Glass Visuals based on result
   const water = $('wdt-water');
@@ -1790,6 +1992,7 @@ function applyWDTBroadcast() {
    ============================================================ */
 initFighters();
 initWDTQuiz();
+initTowerCampaign();
 buildHatsu();
 </script>
 

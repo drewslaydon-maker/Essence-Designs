@@ -21,7 +21,7 @@
 | **M2** | **BtW Day 1 Vertical Slice** | GAME_DEV/01_BtW/ | ⏸️ **Parked** | Playable Day 1 loop (Shop + Market + Foraging path + Weasel beat). |
 | **M3** | **Video Essay Ep. 1 Production** | ME/01_VIDEOS/ | 🔵 **Queued** | "Synthetic Belief" script recording and editing pass. |
 | **M4** | **Stream Marathon Setup** | ME/02_STREAM/ | 🔵 **Queued** | Minecraft Hardcore stream setup with Julia (Sept 2026 launch window). |
-| **M5** | **Heaven's Nen Arena Web Prototype** | GAME_DEV/12_HEAVENS_NEN/ | 🟡 **Active** | Interactive web prototype with Water Divination, Tower Arena Climb, Custom Hatsu Builder & Combat Engine. |
+| **M5** | **Heaven's Nen Arena Web Prototype** | GAME_DEV/12_HEAVENS_NEN/ | 🟢 **Complete** | Interactive web prototype with Water Divination, Tower Arena Climb, Custom Hatsu Builder & Combat Engine. |
 | **M6** | **Cook Game (Kitchen Symphony) Web Arcade** | GAME_DEV/04_COOK_GAME/ | 🔵 **Queued** | Real-Time Rhythm & Kitchen Chaos web arcade game (Completes Phase 1 Web Trinity). |
 | **M7** | **Post-INFRA Next Project Decision** | Studio Strategy | ⏳ **Pending** | Formal selection and launch of post-INFRA primary dev target. |
 
@@ -41,6 +41,7 @@ Before any objective or milestone is marked **Complete**, it must satisfy all fi
 
 ## 🔄 PART 4: DECISION LOG & OBJECTIVE SHIFTS
 
+- **2026-08-26 (Milestone M5 — Heaven's Nen Arena Completed):** Fully implemented and verified Heaven's Nen Arena Web Prototype (`GAME_DEV/12_HEAVENS_NEN/`). Engine modularized across `nen-engine.js`, `tower-engine.js`, `persistence-engine.js`, and `hatsu-workshop.js` with 33 passing diagnostic tests. Integrated into `index.html` with Water Divination, Tower Campaign Climb, Custom Hatsu Workshop, Base64 build sharing, and Point Match combat console.
 - **2026-08-26 (Phase 1 Web Trinity Finalized — Cook Game Added):** Locked in the Phase 1 Web Ecosystem Trinity: **Heaven's Nen Arena** (Turn-Based Tactical), **Prosis** (Emergent AI Sim), and **Cook Game** (Real-Time Audio & Kitchen Rhythm Chaos). Updated `GAME_DEV/04_COOK_GAME/00_COOKING_GAME_MAINFESTO.md` and added Milestone **M6** to `MILESTONES.md`.
 - **2026-08-26 (Heaven's Nen Arena Active Sprint Launch):** Transitioned primary studio sprint objective from Infrastructure (M0) to **Milestone M5: Heaven's Nen Arena Web Prototype**. System and documentation updated to make M5 active before dev launch.
 - **2026-08-26 (Financial Floor & Burn Rate Baseline Enforced):** Integrated studio burn limit rules (`< $1.00 / hour`) and hybrid local/cloud model tiering into `00_ESSENCE_BIBLE.md`, `MILESTONES.md` (DoD #5), and `AGENT_BOOT_PROMPT.md`.
