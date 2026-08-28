@@ -154,8 +154,8 @@ export function applySalvageAutoSpend(input: {
     re: (100 - re) / 100,
   };
   let target: Front =
- input.salvageTarget === "auto"
-      ? (Object.entries(deficits) as [Front, number][]).sort((a, b) => b[1] - a[1])[0][0]
+    input.salvageTarget === "auto"
+      ? ((Object.entries(deficits) as [Front, number][]).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "entropy")
       : input.salvageTarget;
   const spend = Math.min(salvage, SALVAGE_SPEND_CAP);
   salvage -= spend;

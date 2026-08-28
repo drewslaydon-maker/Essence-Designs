@@ -6,9 +6,9 @@
 
 ## 🚩 PART 1: CURRENT ACTIVE SPRINT OBJECTIVE
 
-### Active Era: Heaven's Nen Arena Prototype Sprint (Q3 2026)
-- **Primary Objective:** Build and verify **Milestone M5: Heaven's Nen Arena Web Prototype** — featuring Water Divination Test, Tower Arena Floor Climb (Floors 1 to 200+), turn-based tactical Nen combat engine, Gyo/Ko risk-reward mechanics, Heaven's Arena Point Match scoring system, and Custom Hatsu Workshop.
-- **Exit Condition:** Playable interactive web application (`GAME_DEV/12_HEAVENS_NEN/`) with verified Nen state machine, combat mechanics, tower floor progression, and custom build export/import capability.
+### Active Era: Prosis Playtest & Dual Launch Sprint (Q3 2026)
+- **Primary Objective:** Playtest and deliver **Milestone M1: Prosis (The Fracture)** for Phil, launch **M1 & M5 (Heaven's Nen Arena)** to public web, deploy online feeders (content/posts) for player acquisition/monetization, and prepare for **M6 (Cook Game)** tonight.
+- **Exit Condition:** Drew completes local playtest of Prosis `index.html`, package sent to Phil; Prosis and HNA deployed live; feeder posts launched; M6 sprint initialized.
 
 ---
 
@@ -17,12 +17,12 @@
 | ID | Milestone | Target System | Status | Key Deliverable / Exit Condition |
 |---|---|---|---|---|
 | **M0** | **Ground-Truth INFRA Setup** | Workspace / Docs | 🟢 **Complete** | Model config verified, Trello/git synced, `MILESTONES.md` & INFRA 1.0 established. |
-| **M1** | **Prosis Engine & Verification Baseline** | GAME_DEV/02_PROSIS/ | ⏸️ **Parked** | GTL logic verified, 26/29 unit tests passing, Monte Carlo harness prepped. |
+| **M1** | **Prosis Engine & Verification Baseline** | GAME_DEV/02_PROSIS/ | 🟢 **Complete** | Playtest package ready (`index.html`), local persistence, auto-save/resume, threat UI, Phil playtest ready. |
 | **M2** | **BtW Day 1 Vertical Slice** | GAME_DEV/01_BtW/ | ⏸️ **Parked** | Playable Day 1 loop (Shop + Market + Foraging path + Weasel beat). |
 | **M3** | **Video Essay Ep. 1 Production** | ME/01_VIDEOS/ | 🔵 **Queued** | "Synthetic Belief" script recording and editing pass. |
 | **M4** | **Stream Marathon Setup** | ME/02_STREAM/ | 🔵 **Queued** | Minecraft Hardcore stream setup with Julia (Sept 2026 launch window). |
-| **M5** | **Heaven's Nen Arena Web Prototype** | GAME_DEV/12_HEAVENS_NEN/ | 🟢 **Complete** | Interactive web prototype with Water Divination, Tower Arena Climb, Custom Hatsu Builder & Combat Engine. |
-| **M6** | **Cook Game (Kitchen Symphony) Web Arcade** | GAME_DEV/04_COOK_GAME/ | 🔵 **Queued** | Real-Time Rhythm & Kitchen Chaos web arcade game (Completes Phase 1 Web Trinity). |
+| **M5** | **Heaven's Nen Arena Web Prototype** | GAME_DEV/12_HEAVENS_NEN/ | 🟢 **Complete** | Interactive web prototype with Water Divination, Tower Arena Climb, Custom Hatsu Builder & Combat Engine. Launch ready. |
+| **M6** | **Cook Game (Kitchen Symphony) Web Arcade** | GAME_DEV/04_COOK_GAME/ | 🔵 **Queued (Tonight Target)** | Real-Time Rhythm & Kitchen Chaos web arcade game (Completes Phase 1 Web Trinity). |
 | **M7** | **Post-INFRA Next Project Decision** | Studio Strategy | ⏳ **Pending** | Formal selection and launch of post-INFRA primary dev target. |
 
 ---
@@ -41,7 +41,7 @@ Before any objective or milestone is marked **Complete**, it must satisfy all fi
 
 ## 🔄 PART 4: DECISION LOG & OBJECTIVE SHIFTS
 
-- **2026-08-26 (Milestone M5 — Heaven's Nen Arena Completed):** Fully implemented and verified Heaven's Nen Arena Web Prototype (`GAME_DEV/12_HEAVENS_NEN/`). Engine modularized across `nen-engine.js`, `tower-engine.js`, `persistence-engine.js`, and `hatsu-workshop.js` with 33 passing diagnostic tests. Integrated into `index.html` with Water Divination, Tower Campaign Climb, Custom Hatsu Workshop, Base64 build sharing, and Point Match combat console.
+- **2026-08-26 (Prosis M1 Complete & Launch Pipeline Strategy):** Upgraded Prosis to interactive playtest readiness with full run persistence (`persistence.ts`), standalone HTML bundler (`build-html.js`), round/sector progress badges, threat warning banners, and run summary post-mortems. Established dual launch pipeline: 1) Drew playtests Prosis & sends package to Phil; 2) Launch Prosis & Heaven's Nen Arena publicly with online feeder posts for player reach/revenue; 3) Execute **Milestone M6 (Cook Game)** tonight.
 - **2026-08-26 (Phase 1 Web Trinity Finalized — Cook Game Added):** Locked in the Phase 1 Web Ecosystem Trinity: **Heaven's Nen Arena** (Turn-Based Tactical), **Prosis** (Emergent AI Sim), and **Cook Game** (Real-Time Audio & Kitchen Rhythm Chaos). Updated `GAME_DEV/04_COOK_GAME/00_COOKING_GAME_MAINFESTO.md` and added Milestone **M6** to `MILESTONES.md`.
 - **2026-08-26 (Heaven's Nen Arena Active Sprint Launch):** Transitioned primary studio sprint objective from Infrastructure (M0) to **Milestone M5: Heaven's Nen Arena Web Prototype**. System and documentation updated to make M5 active before dev launch.
 - **2026-08-26 (Financial Floor & Burn Rate Baseline Enforced):** Integrated studio burn limit rules (`< $1.00 / hour`) and hybrid local/cloud model tiering into `00_ESSENCE_BIBLE.md`, `MILESTONES.md` (DoD #5), and `AGENT_BOOT_PROMPT.md`.

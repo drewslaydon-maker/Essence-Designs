@@ -10,3 +10,4 @@ export * from "./gtl";
 export * from "./personas";
 export * from "./barriers";
 export * from "./mechanics";
+export * from "./persistence";

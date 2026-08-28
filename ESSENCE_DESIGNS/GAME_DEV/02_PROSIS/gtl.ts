@@ -42,7 +42,7 @@ function gtlDecayRate(
         ? { base: SYSTEMS_WEAR_BASE, growth: SYSTEMS_WEAR_GROWTH }
         : { base: RE_WEAR_BASE, growth: RE_WEAR_GROWTH };
   let rate = base.base + base.growth * round;
-  if (activeModifiers[front]) rate += activeModifiers[front];
+  rate += activeModifiers[front] ?? 0;
   return Math.max(rate, 0.0001);
 }
 
@@ -73,7 +73,7 @@ function resolveChosenFront(roundEffects: {
   };
   const entries = Object.entries(helpScore) as [Front, number][];
   entries.sort((a, b) => b[1] - a[1]);
-  return entries[0][0];
+  return entries[0]?.[0] ?? "entropy";
 }
 
 export function computeGTL(
@@ -89,7 +89,8 @@ export function computeGTL(
     re: 0,
   };
   for (const f of fronts) ttf[f] = gtlTTF(f, round, state, activeModifiers);
-  const optimalFront = [...fronts].sort((a, b) => ttf[a] - ttf[b])[0];
+  const sortedFronts = [...fronts].sort((a, b) => ttf[a] - ttf[b]);
+  const optimalFront: Front = sortedFronts[0] ?? "entropy";
   const chosenFront = resolveChosenFront(roundEffects);
   const rankOfChosen = fronts.filter((f) => ttf[f] < ttf[chosenFront]).length;
   const gapMagnitude = rankOfChosen / (fronts.length - 1);
@@ -109,9 +110,10 @@ export function weightedDraw(
   totalActions: number,
   rng: () => number = Math.random,
 ): ThreatCategory {
+  const categoryKeys = Object.keys(CATEGORIES) as ThreatCategory[];
   if (totalActions === 0) {
-    const cats = Object.keys(CATEGORIES) as ThreatCategory[];
-    return cats[Math.floor(rng() * cats.length)];
+    const picked = categoryKeys[Math.floor(rng() * categoryKeys.length)];
+    return picked ?? "targeted";
   }
   const raw: Record<Axis, number> = {
     methodical: axisCounts.low / totalActions,
@@ -128,8 +130,7 @@ export function weightedDraw(
     telegraphed: 0,
     cascading: 0,
   };
-  for (const cat in CATEGORIES) {
-    const c = cat as ThreatCategory;
+  for (const c of categoryKeys) {
     weights[c] = 1 + WEIGHT_DRAW_K * strength[CATEGORIES[c].axis];
   }
   const totalW = Object.values(weights).reduce((a, b) => a + b, 0);
@@ -138,20 +139,19 @@ export function weightedDraw(
     telegraphed: 0,
     cascading: 0,
   };
-  for (const cat in weights) {
-    const c = cat as ThreatCategory;
+  for (const c of categoryKeys) {
     probs[c] = weights[c] / totalW;
   }
-  for (const cat in probs) probs[cat] = Math.max(probs[cat], WEIGHT_DRAW_FLOOR);
+  for (const c of categoryKeys) probs[c] = Math.max(probs[c], WEIGHT_DRAW_FLOOR);
   const totalP = Object.values(probs).reduce((a, b) => a + b, 0);
-  for (const cat in probs) probs[cat] /= totalP;
+  for (const c of categoryKeys) probs[c] /= totalP;
   const r = rng();
   let cum = 0;
-  for (const cat in probs) {
-    cum += probs[cat];
-    if (r <= cum) return cat as ThreatCategory;
+  for (const c of categoryKeys) {
+    cum += probs[c];
+    if (r <= cum) return c;
   }
-  return Object.keys(probs)[Object.keys(probs).length - 1] as ThreatCategory;
+  return categoryKeys[categoryKeys.length - 1] ?? "targeted";
 }
 
 export function computeReveal(
@@ -176,7 +176,8 @@ export function computeReveal(
       const seen = new Set(usedEventIds);
       let pool = EVENTS.filter((e) => !seen.has(e.id));
       if (pool.length === 0) pool = [...EVENTS];
-      eventId = pool[Math.floor(rng() * pool.length)].id;
+      const picked = pool[Math.floor(rng() * pool.length)];
+      eventId = picked ? picked.id : null;
     } else {
       incoming = "lull";
     }

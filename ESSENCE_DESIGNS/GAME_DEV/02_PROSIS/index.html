@@ -1,26 +1,1337 @@
-import { useState, useRef, useEffect } from "react";
-import { Zap, Flame, Sparkles, AlertTriangle, Skull, Eye, EyeOff, RotateCcw, HelpCircle, Trophy, Rocket, Heart, Radar, Compass, ShieldAlert, History, Trash2 } from "lucide-react";
-import {
-  saveRunState,
-  loadRunState,
-  clearRunState,
-  getRunHistory,
-  recordRunHistory,
-  clearRunHistory,
-  RunHistorySummary,
-} from "./persistence";
-import type { LogicState } from "./types";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PROSIS — The Fracture Playtest</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+:root{--bg-dark:#0b0e14;--bg-panel:#141a24;--border-panel:#212b3a;--text-bone:#f1f5f9;--text-muted:#94a3b8;--color-entropy:#ff4d6d;--color-systems:#6fa8ff;--color-re:#8b5cf6;--color-salvage:#34d399;--color-morale:#fbbf24;--color-danger:#ef4444;--color-event:#38bdf8}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background-color:var(--bg-dark);color:var(--text-bone);font-family:system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px 12px;overflow-x:hidden}
+.mono{font-family:ui-monospace,monospace}
+.meter-container{background:#080a0f;border:1px solid var(--border-panel);border-radius:8px;padding:10px;position:relative;overflow:hidden;transition:border-color .3s,box-shadow .3s}
+.meter-track{height:8px;background:#111622;border-radius:4px;overflow:hidden;position:relative;margin-top:6px}
+.meter-bar{height:100%;border-radius:4px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+.action-btn{transition:all .2s;outline:0}
+.action-btn:hover:not(:disabled){filter:brightness(1.2);transform:translateY(-1px)}
+.action-btn:active:not(:disabled){transform:translateY(0)}
+.level-pill{transition:all .15s}
+.level-pill:hover:not(:disabled){filter:brightness(1.25)}
+.anchor-card{transition:all .25s}
+.anchor-card:hover{border-color:rgba(255,255,255,.3)!important}
+</style>
+</head>
+<body>
+  <div id="root" style="width: 100%; max-width: 900px;"></div>
+  <script type="text/babel">
+    function Icon({ name, size = 16, color = "currentColor", style, className }) {
+      const iconData = window.lucide && window.lucide.icons && window.lucide.icons[name];
+      if (!iconData) {
+        return <span style={{ display: "inline-block", width: size, height: size, borderRadius: "50%", background: color, verticalAlign: "middle", ...style }} />;
+      }
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: "inline-block", verticalAlign: "middle", ...style }} className={className}>
+          {iconData.map(([tag, attrs], i) => React.createElement(tag, { key: i, ...attrs }))}
+        </svg>
+      );
+    }
+    const createLucideIcon = (name) => (props) => <Icon name={name} {...props} />;
+    const Zap = createLucideIcon("Zap");
+const Flame = createLucideIcon("Flame");
+const Sparkles = createLucideIcon("Sparkles");
+const AlertTriangle = createLucideIcon("AlertTriangle");
+const Skull = createLucideIcon("Skull");
+const Eye = createLucideIcon("Eye");
+const EyeOff = createLucideIcon("EyeOff");
+const RotateCcw = createLucideIcon("RotateCcw");
+const HelpCircle = createLucideIcon("HelpCircle");
+const Trophy = createLucideIcon("Trophy");
+const Rocket = createLucideIcon("Rocket");
+const Heart = createLucideIcon("Heart");
+const Radar = createLucideIcon("Radar");
+const Compass = createLucideIcon("Compass");
+const ShieldAlert = createLucideIcon("ShieldAlert");
+const History = createLucideIcon("History");
+const Trash2 = createLucideIcon("Trash2");
+
+    
+// --- Source: types.ts ---
+// Shared types for The Fracture / Prosis game logic.
+// All modules import from here so the type graph stays consistent.
+
+type Front = "entropy" | "systems" | "re";
+type Level = "I" | "II" | "III";
+type PersonaId = "ricky" | "maude" | "dez";
+type Axis = "methodical" | "ruthless" | "desperate";
+type Shape =
+  | "different_front_now"
+  | "same_front_later"
+  | "deferred_compounding"
+  | "personal";
+type ThreatCategory = "targeted" | "telegraphed" | "cascading";
+type LossType = "mechanical" | "morale";
+type IncomingKind = ThreatCategory | "event" | "lull";
+
+interface AbilityLevelParams {
+  entropyDelta?: number;
+  systemsDelta?: number;
+  reDelta?: number;
+  salvageDelta?: number;
+  ambientBump?: number;
+  bumpRounds?: number;
+  wearBump?: number;
+  banked?: number;
+  mitigation?: number;
+  morale?: number;
+  extend?: number;
+  shield?: boolean;
+}
+
+interface Ability {
+  id: string;
+  label: string;
+  shape: Shape;
+  desc: string;
+  levels: Record<Level, AbilityLevelParams>;
+  /** Only meaningful for `deferred_compounding` shape. */
+  front?: Front;
+}
+
+interface Role {
+  id: "helm" | "engineer" | "aft";
+  name: string;
+  personalName: string;
+  focus: string;
+  abilities: Ability[];
+}
+
+interface PersonaConfig {
+  id: PersonaId;
+  name: string;
+  direction: string;
+  nativeFront: Front;
+  color: string;
+  tag: string;
+  blurb: string;
+  signature: string;
+  pulseClass: string;
+}
+
+interface AxisCounts {
+  low: number;
+  high: number;
+  desperate: number;
+}
+
+interface ActiveModifier {
+  bump: number;
+  roundsRemaining: number;
+}
+
+interface BankEntry {
+  abilityId: string;
+  front: Front;
+  banked: number;
+  roundsHeld: number;
+}
+
+interface PlayerPick {
+  roleId: "helm" | "engineer" | "aft";
+  ability: string | null;
+  level: Level | null;
+}
+
+interface GtlResult {
+  optimalFront: Front;
+  chosenFront: Front;
+  gapMagnitude: number;
+  levelEfficiency: number;
+}
+
+interface RevealResult {
+  entropy: number;
+  ambient: number;
+  incoming: IncomingKind;
+  eventId: string | null;
+}
+
+interface BeliefStep {
+  belief?: number;
+  trust?: number;
+  ready?: boolean;
+  readyToSpend?: boolean;
+  distrust?: number;
+  defianceChance?: number;
+}
+
+interface DezResult extends BeliefStep {
+  defianceFired: boolean;
+  overrideAbility: string;
+  overrideLevel: Level | null;
+}
+
+interface LogEntry {
+  type:
+    | "intro"
+    | "round"
+    | "lull"
+    | "event"
+    | "threat"
+    | "loss"
+    | "defiance"
+    | "bank_claimed"
+    | "bank_expired"
+    | "belief_spent";
+  round?: number;
+  category?: ThreatCategory;
+  dmg?: string | number;
+  hits?: Front;
+  line?: string;
+  title?: string;
+  choice?: string;
+  result?: string;
+  reason?: string;
+  from?: string;
+  to?: string;
+  level?: Level;
+  front?: Front;
+  payout?: number;
+  moraleGain?: number;
+  banked?: number;
+}
+
+/**
+ * The shape of state values that matter to game logic. The JSX keeps this
+ * wrapped in a `useState` object with extra display-only fields.
+ */
+interface LogicState {
+  started: boolean;
+  round: number;
+  entropy: number;
+  systems: number;
+  re: number;
+  morale: number;
+  salvage: number;
+  axisCounts: AxisCounts;
+  totalActions: number;
+  log: LogEntry[];
+  gameOver: string | null;
+  lossType: LossType | null;
+  lastBreakdown: RoundBreakdown | null;
+  incomingThreat: IncomingKind | null;
+  incomingEventId: string | null;
+  usedEventIds: string[];
+  pendingRelief: number;
+  pendingLullBonus: number;
+  players: PlayerPick[];
+  salvageTarget: "auto" | Front;
+  anchorPersona: PersonaId;
+  beliefOrTrust: number;
+  beliefReady: boolean;
+  distrust: number;
+  defianceChance: number;
+  maudeCoverTarget: Front | null;
+  maudeConsecutiveCoverage: number;
+  activeModifiers: Partial<Record<Front, ActiveModifier>>;
+  openBanks: BankEntry[];
+  lastDefiance: { from: string; to: string; level: Level } | null;
+}
+
+interface RoundBreakdown {
+  threat:
+    | { category: ThreatCategory; dmg: number; hits: Front; mitigated: boolean }
+    | null;
+  actionsCost: number;
+  actionsTaken: Array<{ role: string; label: string }>;
+  salvageGained: number;
+  salvageSpent: number;
+  salvageTarget: Front | "auto";
+  salvageRestored: number;
+  moraleDelta: number;
+  moraleNotes: string[];
+  systemsDecay: number;
+  reDecay: number;
+}
+
+// --- Source: constants.ts ---
+// All numeric / string constants organized by domain.
+// Constants stay as-is (no tuning) until Monte Carlo validates the first-pass numbers.
+
+
+
+// ---- Level costs ----
+var LEVELS: Record<Level, { cost: number }> = {
+  I: { cost: 1.0 },
+  II: { cost: 2.5 },
+  III: { cost: 5.5 },
+};
+
+// Engineer pays Salvage instead of Entropy (Systems is the physical/material front).
+var LEVELS_SALVAGE: Record<Level, number> = {
+  I: 1.5,
+  II: 3.5,
+  III: 6.5,
+};
+
+// ---- Meters / buffers ----
+var METER_CAP = 130;
+var BUFFER_DECAY = 8;
+
+// ---- Morale ----
+var MORALE_START = 100;
+var MORALE_PRESSURE_DRAIN = 2;
+var MORALE_RECKLESS_DRAIN = 3;
+var MORALE_PRESSURE_THRESHOLD = 30;
+
+// ---- Salvage economy ----
+var SALVAGE_PASSIVE = 2.0;
+var SALVAGE_SPEND_CAP = 4.0;
+var SALVAGE_CONVERT_RATIO = 1.3;
+var SALVAGE_EFF: Record<Front, number> = {
+  entropy: 0.85,
+  systems: 0.935,
+  re: 0.935,
+};
+
+// ---- Wear (per-round decay on entropy, systems, re) ----
+var AMBIENT_BASE = 0.2;
+var AMBIENT_GROWTH = 0.06;
+var SYSTEMS_WEAR_BASE = 0.35;
+var SYSTEMS_WEAR_GROWTH = 0.03;
+var RE_WEAR_BASE = 0.35;
+var RE_WEAR_GROWTH = 0.03;
+
+// ---- Reveal (lull / event / threat mix) ----
+var LULL_BASE = 0.46;
+var LULL_DECAY = 0.005;
+var LULL_MIN = 0.05;
+var EVENT_SHARE = 0.8;
+var TELEGRAPH_MITIGATION = 0.5;
+
+// ---- Threat category axis ceilings (used by weightedDraw) ----
+var CEILINGS: Record<Axis, number> = {
+  ruthless: 0.553,
+  methodical: 0.650,
+  desperate: 0.421,
+};
+var WEIGHT_DRAW_K = 8;
+var WEIGHT_DRAW_FLOOR = 0.20;
+
+// ---- GTL ----
+var REFERENCE_TTF = 30;
+
+// ---- Banking credit toward GTL (how much banking helps even before claim) ----
+// FIRST PASS, flag for Monte Carlo tuning.
+var BANKING_GTL_CREDIT = 0.4;
+
+// ---- Deferred-compounding bank tuning ----
+// FIRST PASS, flag for Monte Carlo tuning.
+var BANK_GROWTH_RATE = 0.08;
+var BANK_GROWTH_CAP_ROUNDS = 5;
+var BANK_EXPOSURE_HAIRCUT = 0.30;
+
+// ---- Morale lever: gain on barrier claim ----
+// FIRST PASS — new morale lever.
+var MORALE_ON_CLAIM = 5;
+
+// ---- Belief spend: base heal, before persona multiplier ----
+// PLACEHOLDER, needs Drew's number.
+var BASE_HEAL = 15;
+
+// ---- Belief / Distrust ----
+var BAD_CALL_THRESHOLD = 0.5;
+var RICKY_B = {
+  buildMultiplier: 0.7,
+  threshold: 6,
+  spendPayoutMultiplier: 1.6,
+};
+var MAUDE_B = {
+  buildMultiplier: 1.0,
+  threshold: 10,
+  spendPayoutMultiplier: 1.0,
+  erosionScale: 0.15,
+};
+var DEZ_B = {
+  beliefThreshold: 6,
+  distrustThreshold: -3,
+  spendPayoutMultiplier: 1.0,
+  defianceScale: 0.15,
+  defianceCap: 0.9,
+  partialRepair: 1,
+};
+
+// ---- Maude's friction tax ----
+var MAUDE_GRACE_ROUNDS = 3;
+var MAUDE_BASE_TAX = 0.25;
+var MAUDE_TAX_CAP = 0.70;
+var MAUDE_ACCEL_STEPS: readonly number[] = [0.06, 0.09, 0.13, 0.18];
+
+// ---- Threat category metadata ----
+var CATEGORIES: Record<
+  ThreatCategory,
+  { axis: Axis; dmgRange: readonly [number, number]; hits: Front; label: string; tag: string }
+> = {
+  targeted: {
+    axis: "ruthless",
+    dmgRange: [12, 24],
+    hits: "systems",
+    label: "Targeted",
+    tag: "threatens Systems Health",
+  },
+  telegraphed: {
+    axis: "methodical",
+    dmgRange: [6, 12],
+    hits: "entropy",
+    label: "Telegraphed",
+    tag: "threatens to spike Entropy",
+  },
+  cascading: {
+    axis: "desperate",
+    dmgRange: [15, 30],
+    hits: "re",
+    label: "Cascading",
+    tag: "threatens the Reality Engine",
+  },
+};
+
+// ---- Cost-shape to default persona mapping ----
+var SHAPE_PERSONA: Record<
+  "different_front_now" | "same_front_later" | "deferred_compounding",
+  PersonaId
+> = {
+  different_front_now: "ricky",
+  same_front_later: "maude",
+  deferred_compounding: "dez",
+};
+
+// --- Source: data.ts ---
+
+
+var ROLES: Role[] = [
+  {
+    id: "helm",
+    name: "Helm",
+    personalName: "Helm",
+    focus: "Entropy & Foresight",
+    abilities: [
+      {
+        id: "force_correction",
+        label: "Force the Correction",
+        shape: "different_front_now",
+        desc: "Entropy drops immediately. Systems takes the hit, same round.",
+        levels: {
+          I: { entropyDelta: -1.5, systemsDelta: -3 },
+          II: { entropyDelta: -3.5, systemsDelta: -6 },
+          III: { entropyDelta: -7, systemsDelta: -10 },
+        },
+      },
+      {
+        id: "suppress",
+        label: "Suppress",
+        shape: "same_front_later",
+        desc: "Entropy drops now. Ambient Entropy growth runs hot for the next 2 rounds.",
+        levels: {
+          I: { entropyDelta: -1, ambientBump: 0.02, bumpRounds: 2 },
+          II: { entropyDelta: -2.5, ambientBump: 0.04, bumpRounds: 2 },
+          III: { entropyDelta: -5, ambientBump: 0.07, bumpRounds: 2 },
+        },
+      },
+      {
+        id: "threat_ledger",
+        label: "Threat Ledger",
+        shape: "deferred_compounding",
+        desc: "Raises a barrier against Entropy. The longer it holds, the more it's worth — but an Entropy spike while it's up costs the barrier the same haircut Entropy itself would take.",
+        levels: { I: { banked: 2 }, II: { banked: 5 }, III: { banked: 9 } },
+        front: "entropy",
+      },
+      {
+        id: "analyze",
+        label: "Analyze",
+        shape: "personal",
+        desc: "Reads the incoming threat before it lands. Softens it for the whole crew this round. No front healed — this is foresight, not repair.",
+        levels: {
+          I: { mitigation: 0.35, morale: 2 },
+          II: { mitigation: 0.55, morale: 3 },
+          III: { mitigation: 0.75, morale: 4 },
+        },
+      },
+    ],
+  },
+  {
+    id: "engineer",
+    name: "Engineer",
+    personalName: "Gene",
+    focus: "Systems Health",
+    abilities: [
+      {
+        id: "overload",
+        label: "Overload",
+        shape: "different_front_now",
+        desc: "Big Systems gain. Entropy takes the hit, same round.",
+        levels: {
+          I: { systemsDelta: 7, entropyDelta: 1 },
+          II: { systemsDelta: 15, entropyDelta: 2.5 },
+          III: { systemsDelta: 26, entropyDelta: 5 },
+        },
+      },
+      {
+        id: "overclock",
+        label: "Overclock",
+        shape: "same_front_later",
+        desc: "Systems gain now. Systems' own wear rate runs hot for the next 2 rounds.",
+        levels: {
+          I: { systemsDelta: 6, wearBump: 0.02, bumpRounds: 2 },
+          II: { systemsDelta: 13, wearBump: 0.04, bumpRounds: 2 },
+          III: { systemsDelta: 23, wearBump: 0.07, bumpRounds: 2 },
+        },
+      },
+      {
+        id: "reserve_cache",
+        label: "Reserve Cache",
+        shape: "deferred_compounding",
+        desc: "Raises a barrier around Systems. The longer it holds, the more it's worth — but a hit to Systems while it's up costs the barrier the same haircut Systems itself would take.",
+        levels: { I: { banked: 4 }, II: { banked: 9 }, III: { banked: 16 } },
+        front: "systems",
+      },
+      {
+        id: "dead_reckoning",
+        label: "Dead Reckoning",
+        shape: "personal",
+        desc: "Charts a safer course through the incoming threat, softening it for the whole crew. Also buys any open barrier extra time to grow before exposure risk catches up. No front healed.",
+        levels: {
+          I: { mitigation: 0.2, extend: 1 },
+          II: { mitigation: 0.32, extend: 2 },
+          III: { mitigation: 0.45, extend: 3 },
+        },
+      },
+    ],
+  },
+  {
+    id: "aft",
+    name: "Aft",
+    personalName: "Sal",
+    focus: "Reality Engine & Salvage",
+    abilities: [
+      {
+        id: "force_extraction",
+        label: "Force Extraction",
+        shape: "different_front_now",
+        desc: "Fast Salvage grab. The Reality Engine takes the hit, same round.",
+        levels: {
+          I: { salvageDelta: 5, reDelta: 0 },
+          II: { salvageDelta: 11, reDelta: -1 },
+          III: { salvageDelta: 20, reDelta: -3 },
+        },
+      },
+      {
+        id: "patch_job",
+        label: "Patch Job",
+        shape: "same_front_later",
+        desc: "RE gain now. RE's own wear rate runs hot for the next 2 rounds.",
+        levels: {
+          I: { reDelta: 6, wearBump: 0.02, bumpRounds: 2 },
+          II: { reDelta: 13, wearBump: 0.04, bumpRounds: 2 },
+          III: { reDelta: 23, wearBump: 0.07, bumpRounds: 2 },
+        },
+      },
+      {
+        id: "stockpile",
+        label: "Stockpile",
+        shape: "deferred_compounding",
+        // REDESIGNED 2026-08-20: previously banked Salvage, which left Aft as the
+        // only role with no defensive tool for its own front. Now mirrors Reserve
+        // Cache: banks RE. Salvage generation stays on Force Extraction + passive.
+        desc: "Raises a barrier around the Reality Engine. The longer it holds, the more it's worth — but a hit to the Engine while it's up costs the barrier the same haircut the Engine itself would take.",
+        levels: { I: { banked: 4 }, II: { banked: 9 }, III: { banked: 16 } },
+        front: "re",
+      },
+      {
+        id: "ration_the_take",
+        label: "Ration the Take",
+        shape: "personal",
+        desc: "Rations the crew's exposure to the incoming threat, softening it for everyone. Also shields any open barrier from this round's exposure haircut entirely. No front healed.",
+        levels: {
+          I: { mitigation: 0.2, shield: true },
+          II: { mitigation: 0.32, shield: true },
+          III: { mitigation: 0.45, shield: true },
+        },
+      },
+    ],
+  },
+];
+
+var ANCHORS: Record<"ricky" | "maude" | "dez", PersonaConfig> = {
+  ricky: {
+    id: "ricky",
+    name: "Ricky",
+    direction: "Risky",
+    nativeFront: "entropy",
+    color: "#FF4D6D",
+    tag: "Different front, now — amplified.",
+    blurb:
+      "Proud. Arrogant. Mood-swingy. Makes the call, makes you live with it.",
+    signature: "Kiss the gamble or curse it. Either way, you'll feel it.",
+    pulseClass: "pulse-ricky",
+  },
+  maude: {
+    id: "maude",
+    name: "Maude",
+    direction: "Moderate",
+    nativeFront: "systems",
+    color: "#6FA8FF",
+    tag: "Same front, later — hers to carry.",
+    blurb:
+      "Overworked-manager energy. Holds it together through sheer, burning-out competence.",
+    signature: "Someone has to hold the line. It's always her.",
+    pulseClass: "pulse-maude",
+  },
+  dez: {
+    id: "dez",
+    name: "Dez",
+    direction: "Desperate",
+    nativeFront: "re",
+    color: "#8B5CF6",
+    tag: "Deferred, compounding — on your word.",
+    blurb:
+      "Hedges every order. Begs for authority without saying so. The crew is starting to notice.",
+    signature:
+ "I— I think this is right? If that's okay with everyone.",
+    pulseClass: "pulse-dez",
+  },
+};
+
+
+// --- Source: events.ts ---
+
+
+interface EventChoice {
+  label: string;
+  level: Level;
+  effects: {
+    entropy?: number;
+    systems?: number;
+    re?: number;
+    salvage?: number;
+    morale?: number;
+  };
+  result: string;
+}
+
+interface Event {
+  id: string;
+  title: string;
+  prompt: string;
+  choices: [EventChoice, EventChoice];
+}
+
+var EVENTS: readonly Event[] = [
+  {
+    id: "debris",
+    title: "Drift Debris",
+    prompt:
+      "Wreckage tumbles past — salvageable, if someone's willing to reach for it.",
+    choices: [
+      { label: "Log it and let it pass", level: "I", effects: { salvage: 3 }, result: "The crew notes another loss, quietly." },
+      { label: "Send someone out for it", level: "III", effects: { salvage: 10, systems: -4 }, result: "They got it. The hull didn't love the maneuver." },
+    ],
+  },
+  {
+    id: "signal",
+    title: "A Voice in the Static",
+    prompt:
+      "Comms catch a fragment — another crew, or nothing at all.",
+    choices: [
+      { label: "Investigate carefully", level: "I", effects: { morale: 5, entropy: 2 }, result: "Nothing conclusive. But it felt good to hope." },
+      { label: "Push through, chase it", level: "III", effects: { salvage: 8, re: -5 }, result: "Whatever it was, it cost more to find than it gave back." },
+    ],
+  },
+  {
+    id: "argument",
+    title: "Argument Below Decks",
+    prompt: "Tension boils over between two of the crew.",
+    choices: [
+      { label: "Mediate, hear them out", level: "I", effects: { morale: 6, entropy: 2 }, result: "It took time. It was worth it." },
+      { label: "Pull rank, shut it down", level: "III", effects: { morale: -6 }, result: "Efficient. They won't forget it, though." },
+    ],
+  },
+  {
+    id: "hum",
+    title: "A Working System",
+    prompt: "Something in the machine is humming smoother than it has any right to.",
+    choices: [
+      { label: "Leave it alone", level: "I", effects: {}, result: "For once, nothing needs fixing." },
+      { label: "Push it further", level: "III", effects: { systems: 12, entropy: 6 }, result: "It gave more than it should have. It'll remember the strain." },
+    ],
+  },
+  {
+    id: "rationing",
+    title: "Rationing",
+    prompt: "Supplies read thinner than the log says they should.",
+    choices: [
+      { label: "Ration evenly", level: "I", effects: { salvage: 3, morale: -3 }, result: "Grim, but fair. Nobody complained out loud." },
+      { label: "Break into reserve now", level: "III", effects: { salvage: 9, re: -4 }, result: "The reserve wasn't built to be accessed like that." },
+    ],
+  },
+  {
+    id: "quiet_hour",
+    title: "A Quiet Hour",
+    prompt: "A genuine lull. The crew has real time on their hands.",
+    choices: [
+      { label: "Let them rest", level: "I", effects: { morale: 8 }, result: "Sleep, mostly. It mattered more than it looked." },
+      { label: "Put the time to work", level: "III", effects: { salvage: 6, entropy: 3 }, result: "Productive. Nobody rested." },
+    ],
+  },
+  {
+    id: "stowaway",
+    title: "Something in the Walls",
+    prompt: "A reading that shouldn't exist, somewhere it shouldn't be.",
+    choices: [
+      { label: "Seal it off, ignore it", level: "I", effects: { entropy: 3 }, result: "Out of sight. It doesn't feel out of mind." },
+      { label: "Hunt it down", level: "III", effects: { morale: 6, systems: -6 }, result: "Found it. Cost more to catch than to have left alone." },
+    ],
+  },
+  {
+    id: "old_log",
+    title: "An Old Log Entry",
+    prompt:
+ "A recording surfaces from whoever had this post before.",
+    choices: [
+      { label: "Play it for the crew", level: "I", effects: { morale: 4, entropy: 2 }, result: "Some comfort. Some weight, too." },
+      { label: "Delete it, keep moving", level: "III", effects: { entropy: -3 }, result: "Efficient. Nobody asked what was in it." },
+    ],
+  },
+  {
+    id: "gift",
+    title: "A Working Trade",
+    prompt:
+      "A chance to offload something for something else entirely.",
+    choices: [
+      { label: "Take the fair deal", level: "I", effects: { salvage: 4, morale: 2 }, result: "Simple. Nobody regrets simple." },
+      { label: "Push for more", level: "III", effects: { salvage: 12, morale: -4 }, result: "Got more. It didn't feel like winning." },
+    ],
+  },
+  {
+    id: "malfunction",
+    title: "A False Alarm",
+    prompt: "Every light on the board goes red at once — then, nothing.",
+    choices: [
+      { label: "Stand down slowly", level: "I", effects: { morale: 3 }, result: "Nerves settle. Barely." },
+      { label: "Force a full diagnostic", level: "III", effects: { entropy: -6, morale: -2 }, result: "Confirmed clean. The checking cost something too." },
+    ],
+  },
+];
+
+// --- Source: gtl.ts ---
+// Ground Truth Logic + the per-round reveal pipeline.
+// All randomness is gated behind an injectable `rng` so Monte Carlo can seed.
+
+
+
+
+
+
+
+function gtlDecayRate(
+  front: Front,
+  round: number,
+  activeModifiers: Partial<Record<Front, number>>,
+): number {
+  const base =
+    front === "entropy"
+      ? { base: AMBIENT_BASE, growth: AMBIENT_GROWTH }
+      : front === "systems"
+        ? { base: SYSTEMS_WEAR_BASE, growth: SYSTEMS_WEAR_GROWTH }
+        : { base: RE_WEAR_BASE, growth: RE_WEAR_GROWTH };
+  let rate = base.base + base.growth * round;
+  rate += activeModifiers[front] ?? 0;
+  return Math.max(rate, 0.0001);
+}
+
+function gtlDistance(front: Front, state: { entropy: number; systems: number; re: number }): number {
+  return front === "entropy"
+    ? Math.max(0, 100 - state.entropy)
+    : Math.max(0, state[front]);
+}
+
+function gtlTTF(
+  front: Front,
+  round: number,
+  state: { entropy: number; systems: number; re: number },
+  activeModifiers: Partial<Record<Front, number>>,
+): number {
+  return gtlDistance(front, state) / gtlDecayRate(front, round, activeModifiers);
+}
+
+function resolveChosenFront(roundEffects: {
+  entropy?: number;
+  systems?: number;
+  re?: number;
+}): Front {
+  const helpScore = {
+    entropy: -(roundEffects.entropy ?? 0),
+    systems: roundEffects.systems ?? 0,
+    re: roundEffects.re ?? 0,
+  };
+  const entries = Object.entries(helpScore) as [Front, number][];
+  entries.sort((a, b) => b[1] - a[1]);
+  return entries[0]?.[0] ?? "entropy";
+}
+
+function computeGTL(
+  round: number,
+  state: { entropy: number; systems: number; re: number },
+  roundEffects: { entropy?: number; systems?: number; re?: number },
+  activeModifiers: Partial<Record<Front, number>> = {},
+): GtlResult {
+  const fronts: Front[] = ["entropy", "systems", "re"];
+  const ttf: Record<Front, number> = {
+    entropy: 0,
+    systems: 0,
+    re: 0,
+  };
+  for (const f of fronts) ttf[f] = gtlTTF(f, round, state, activeModifiers);
+  const sortedFronts = [...fronts].sort((a, b) => ttf[a] - ttf[b]);
+  const optimalFront: Front = sortedFronts[0] ?? "entropy";
+  const chosenFront = resolveChosenFront(roundEffects);
+  const rankOfChosen = fronts.filter((f) => ttf[f] < ttf[chosenFront]).length;
+  const gapMagnitude = rankOfChosen / (fronts.length - 1);
+  const severity = Math.max(0, Math.min(1, 1 - ttf[optimalFront] / REFERENCE_TTF));
+  const helpMagnitude = Math.max(0, Math.abs(roundEffects[chosenFront] ?? 0));
+  const levelEfficiency = 1 - Math.abs(severity - Math.min(1, helpMagnitude / 6.5));
+  return {
+    optimalFront,
+    chosenFront,
+    gapMagnitude: Number(gapMagnitude.toFixed(3)),
+    levelEfficiency: Number(levelEfficiency.toFixed(3)),
+  };
+}
+
+function weightedDraw(
+  axisCounts: AxisCounts,
+  totalActions: number,
+  rng: () => number = Math.random,
+): ThreatCategory {
+  const categoryKeys = Object.keys(CATEGORIES) as ThreatCategory[];
+  if (totalActions === 0) {
+    const picked = categoryKeys[Math.floor(rng() * categoryKeys.length)];
+    return picked ?? "targeted";
+  }
+  const raw: Record<Axis, number> = {
+    methodical: axisCounts.low / totalActions,
+    ruthless: axisCounts.high / totalActions,
+    desperate: axisCounts.desperate / totalActions,
+  };
+  const strength: Record<Axis, number> = {
+    methodical: Math.min(1, raw.methodical / CEILINGS.methodical),
+    ruthless: Math.min(1, raw.ruthless / CEILINGS.ruthless),
+    desperate: Math.min(1, raw.desperate / CEILINGS.desperate),
+  };
+  const weights: Record<ThreatCategory, number> = {
+    targeted: 0,
+    telegraphed: 0,
+    cascading: 0,
+  };
+  for (const c of categoryKeys) {
+    weights[c] = 1 + WEIGHT_DRAW_K * strength[CATEGORIES[c].axis];
+  }
+  const totalW = Object.values(weights).reduce((a, b) => a + b, 0);
+  const probs: Record<ThreatCategory, number> = {
+    targeted: 0,
+    telegraphed: 0,
+    cascading: 0,
+  };
+  for (const c of categoryKeys) {
+    probs[c] = weights[c] / totalW;
+  }
+  for (const c of categoryKeys) probs[c] = Math.max(probs[c], WEIGHT_DRAW_FLOOR);
+  const totalP = Object.values(probs).reduce((a, b) => a + b, 0);
+  for (const c of categoryKeys) probs[c] /= totalP;
+  const r = rng();
+  let cum = 0;
+  for (const c of categoryKeys) {
+    cum += probs[c];
+    if (r <= cum) return c;
+  }
+  return categoryKeys[categoryKeys.length - 1] ?? "targeted";
+}
+
+function computeReveal(
+  round: number,
+  entropy: number,
+  axisCounts: AxisCounts,
+  totalActions: number,
+  usedEventIds: string[],
+  rng: () => number = Math.random,
+): RevealResult {
+  const ambient = (AMBIENT_BASE + AMBIENT_GROWTH * round) * rand(0.85, 1.15, rng);
+  const newEntropy = Math.max(0, entropy + ambient);
+  const lullChance = Math.max(LULL_MIN, LULL_BASE - LULL_DECAY * newEntropy);
+
+  let incoming: IncomingKind;
+  let eventId: string | null = null;
+
+  const roll = rng();
+  if (roll < lullChance) {
+    if (rng() < EVENT_SHARE) {
+      incoming = "event";
+      const seen = new Set(usedEventIds);
+      let pool = EVENTS.filter((e) => !seen.has(e.id));
+      if (pool.length === 0) pool = [...EVENTS];
+      const picked = pool[Math.floor(rng() * pool.length)];
+      eventId = picked ? picked.id : null;
+    } else {
+      incoming = "lull";
+    }
+  } else {
+    incoming = weightedDraw(axisCounts, totalActions, rng);
+  }
+
+  return { entropy: newEntropy, ambient, incoming, eventId };
+}
+
+
+// --- Source: personas.ts ---
+// Persona-driven mechanics: Ricky/Maude/Dez belief/trust stepping,
+// Maude's friction tax, Dez's defiance override.
+
+
+
+
+var baseIncrement = (gtl: GtlResult) => (1 - gtl.gapMagnitude) * gtl.levelEfficiency;
+
+var isBadCall = (gtl: GtlResult) => gtl.gapMagnitude > BAD_CALL_THRESHOLD;
+
+function stepRicky(prevBelief: number, gtl: GtlResult): BeliefStep {
+  if (isBadCall(gtl)) return { belief: 0, ready: false };
+  const belief = prevBelief + baseIncrement(gtl) * RICKY_B.buildMultiplier;
+  return { belief, ready: belief >= RICKY_B.threshold };
+}
+
+function stepMaude(
+  prevBelief: number,
+  gtl: GtlResult,
+  currentFrictionTaxPct: number,
+): BeliefStep {
+  if (isBadCall(gtl)) return { belief: 0, ready: false };
+  let belief = prevBelief + baseIncrement(gtl) * MAUDE_B.buildMultiplier;
+  if (currentFrictionTaxPct > 0) belief -= currentFrictionTaxPct * MAUDE_B.erosionScale;
+  belief = Math.max(0, belief);
+  return { belief, ready: belief >= MAUDE_B.threshold };
+}
+
+function stepDez(prevTrust: number, gtl: GtlResult): BeliefStep {
+  const trust = isBadCall(gtl) ? prevTrust - 1 : prevTrust + baseIncrement(gtl);
+  const belief = Math.max(0, trust);
+  const distrust = Math.max(0, -trust);
+  const readyToSpend = trust >= DEZ_B.beliefThreshold;
+  const overThreshold = trust < DEZ_B.distrustThreshold;
+  const defianceChance = overThreshold
+    ? Math.min(DEZ_B.defianceCap, (DEZ_B.distrustThreshold - trust) * DEZ_B.defianceScale)
+    : 0;
+  return { trust, belief, distrust, readyToSpend, defianceChance };
+}
+
+/** Maude's friction tax: scales with consecutive off-front coverage rounds. */
+function maudeTax(n: number): number {
+  if (n <= 0) return 0;
+  if (n <= MAUDE_GRACE_ROUNDS) return MAUDE_BASE_TAX;
+  let tax = MAUDE_BASE_TAX;
+  for (let i = 0; i < n - MAUDE_GRACE_ROUNDS; i++) {
+    tax += MAUDE_ACCEL_STEPS[Math.min(i, MAUDE_ACCEL_STEPS.length - 1)] ?? 0;
+  }
+  return Math.min(MAUDE_TAX_CAP, tax);
+}
+
+/**
+ * Resolve Dez's round: decide if defiance fires, returning the (possibly
+ * overridden) ability/level. Only fires when GTL's optimalFront is "re".
+ */
+function resolveDezRound(
+  prevTrust: number,
+  gtl: GtlResult,
+  dezChoice: { abilityId: string; level: Level },
+  rollFn: () => number = Math.random,
+): DezResult {
+  const step = stepDez(prevTrust, gtl);
+  const canDefy = gtl.optimalFront === "re";
+  const alreadyCorrect = dezChoice.abilityId === "patch_job";
+  const defianceFired = canDefy && !alreadyCorrect && rollFn() < (step.defianceChance ?? 0);
+  if (!defianceFired) {
+    return {
+      ...step,
+      defianceFired: false,
+      overrideAbility: dezChoice.abilityId,
+      overrideLevel: dezChoice.level,
+    };
+  }
+  return {
+    ...step,
+    defianceFired: true,
+    overrideAbility: "patch_job",
+    overrideLevel: dezChoice.level,
+  };
+}
+
+
+// --- Source: barriers.ts ---
+// Deferred-compounding barrier (formerly "bank") logic.
+// Barriers compound while held and take a haircut if their front takes a hit.
+
+
+
+
+/**
+ * Tick barrier growth for one round. Growth locks after `BANK_GROWTH_CAP_ROUNDS`.
+ * Returns a NEW entry — pure, safe to call inside React state updates.
+ */
+function tickBankGrowth(entry: BankEntry): BankEntry {
+  const roundsHeld = entry.roundsHeld + 1;
+  if (roundsHeld > BANK_GROWTH_CAP_ROUNDS) return { ...entry, roundsHeld };
+  return { ...entry, banked: entry.banked * (1 + BANK_GROWTH_RATE), roundsHeld };
+}
+
+/**
+ * If the threat hit the front this barrier protects, apply the exposure haircut.
+ * Otherwise return the entry unchanged.
+ */
+function applyBankExposure(entry: BankEntry, threatHitsFront: Front): BankEntry {
+  if (entry.front !== threatHitsFront) return entry;
+  return { ...entry, banked: entry.banked * (1 - BANK_EXPOSURE_HAIRCUT) };
+}
+
+/**
+ * Claim the barrier: returns the payout value and the morale lever gain.
+ * The caller applies the payout to the appropriate front.
+ */
+function claimBank(entry: BankEntry): {
+  front: Front;
+  payout: number;
+  moraleGain: number;
+} {
+  return { front: entry.front, payout: entry.banked, moraleGain: MORALE_ON_CLAIM };
+}
+
+// --- Source: mechanics.ts ---
+// General mechanics + state factory + small helpers used by orchestration.
+
+
+
+
+/** rand(min, max) — defaults to Math.random; injectable for tests. */
+function rand(min: number, max: number, rng: () => number = Math.random): number {
+  return rng() * (max - min) + min;
+}
+
+function clamp(v: number, lo: number, hi: number): number {
+  return Math.max(lo, Math.min(hi, v));
+}
+
+/**
+ * BUG FIX 2026-08-20: pressure driving morale DRAIN must not include morale
+ * itself, or low morale becomes a closed loop that drains itself regardless of
+ * what the player does. Other fronts being critical still legitimately cost
+ * morale; low morale reads as bad (the UI banner still uses the full check)
+ * but shouldn't bootstrap its own decline.
+ */
+function pressureForMoraleDrain(state: {
+  entropy: number;
+  systems: number;
+  re: number;
+}): boolean {
+  return state.entropy > 55 || state.systems < 40 || state.re < 40;
+}
+
+/** Full "under pressure" check including morale (used by UI banner / Level III framing). */
+function isUnderPressure(state: LogicState): boolean {
+  return (
+    state.entropy > 55 ||
+    state.systems < 40 ||
+    state.re < 40 ||
+    state.morale < MORALE_PRESSURE_THRESHOLD
+  );
+}
+
+/**
+ * Apply level-tax side effects (axis count + unforced morale drain on Level III).
+ * Returns the new axis counts and the morale-delta components for breakdown.
+ */
+function applyLevelTax(input: {
+  level: Level;
+  underPressure: boolean;
+  currentMorale: number;
+  actionLabel: string;
+  prevAxisCounts: AxisCounts;
+}): { axisCounts: AxisCounts; morale: number; moraleDelta: number; moraleNotes: string[] } {
+  const axisCounts: AxisCounts = { ...input.prevAxisCounts };
+  let morale = input.currentMorale;
+  let moraleDelta = 0;
+  const moraleNotes: string[] = [];
+
+  if (input.level === "I") axisCounts.low += 1;
+  if (input.level === "III") {
+    axisCounts.high += 1;
+    if (input.underPressure) {
+      axisCounts.desperate += 1;
+    } else {
+      morale = Math.max(0, morale - MORALE_RECKLESS_DRAIN);
+      moraleDelta -= MORALE_RECKLESS_DRAIN;
+      moraleNotes.push(`-${MORALE_RECKLESS_DRAIN} (${input.actionLabel} III, unforced risk)`);
+ }
+  }
+  // Level II is intentionally neutral.
+
+  return { axisCounts, morale, moraleDelta, moraleNotes };
+}
+
+/**
+ * Apply buffer decay on systems/re if they're above 100, then clamp.
+ * Pure — returns updated values.
+ */
+function applyMeterWear(input: {
+  round: number;
+  systems: number;
+  re: number;
+}): { systems: number; re: number; systemsDecay: number; reDecay: number } {
+  let systems = input.systems;
+  let re = input.re;
+  let systemsDecay = 0;
+  let reDecay = 0;
+  if (systems > 100) {
+    systemsDecay = Math.min(BUFFER_DECAY, systems - 100);
+    systems -= systemsDecay;
+  }
+  if (re > 100) {
+    reDecay = Math.min(BUFFER_DECAY, re - 100);
+    re -= reDecay;
+  }
+  return { systems, re, systemsDecay, reDecay };
+}
+
+/** Clamp the meters to their valid range. */
+function clampMeters(input: {
+  entropy: number;
+  systems: number;
+  re: number;
+  morale: number;
+}): { entropy: number; systems: number; re: number; morale: number } {
+  return {
+    entropy: Math.max(0, input.entropy),
+    systems: clamp(input.systems, 0, METER_CAP),
+    re: clamp(input.re, 0, METER_CAP),
+    morale: clamp(input.morale, 0, 100),
+  };
+}
+
+/**
+ * Apply the passive salvage income, then auto-spend up to cap against the
+ * weakest front. Pure — returns updated values + breakdown fields.
+ */
+function applySalvageAutoSpend(input: {
+  entropy: number;
+  systems: number;
+  re: number;
+  salvage: number;
+  salvageTarget: "auto" | Front;
+}): {
+  entropy: number;
+  systems: number;
+  re: number;
+  salvage: number;
+  target: Front;
+  spend: number;
+  restored: number;
+} {
+  let { entropy, systems, re, salvage } = input;
+  salvage += SALVAGE_PASSIVE;
+  const deficits = {
+    entropy: entropy / 100,
+    systems: (100 - systems) / 100,
+    re: (100 - re) / 100,
+  };
+  let target: Front =
+    input.salvageTarget === "auto"
+      ? ((Object.entries(deficits) as [Front, number][]).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "entropy")
+      : input.salvageTarget;
+  const spend = Math.min(salvage, SALVAGE_SPEND_CAP);
+  salvage -= spend;
+  const usable = spend * SALVAGE_CONVERT_RATIO;
+  let restored = 0;
+  if (target === "entropy") { restored = usable * SALVAGE_EFF.entropy; entropy -= restored; }
+  if (target === "systems") { restored = usable * SALVAGE_EFF.systems; systems += restored; }
+  if (target === "re")      { restored = usable * SALVAGE_EFF.re;      re += restored; }
+  return { entropy, systems, re, salvage, target, spend, restored };
+}
+
+/**
+ * Factory for a fresh run state.
+ * Internal var name `openBanks` is preserved (UI copy says "Barriers" but
+ * renaming the field was deliberately skipped — see handoff 2026-08-20).
+ */
+function initialState(anchorPersona: PersonaId = "ricky"): LogicState {
+  return {
+    started: false,
+    round: 0,
+    entropy: 0,
+    systems: 100,
+    re: 100,
+    morale: MORALE_START,
+    salvage: 5,
+    axisCounts: { low: 0, high: 0, desperate: 0 },
+    totalActions: 0,
+    log: [],
+    gameOver: null,
+    lossType: null,
+    lastBreakdown: null,
+    incomingThreat: null,
+    incomingEventId: null,
+    usedEventIds: [],
+    pendingRelief: 0,
+    pendingLullBonus: 0,
+    players: [
+      { roleId: "helm", ability: null, level: null },
+      { roleId: "engineer", ability: null, level: null },
+      { roleId: "aft", ability: null, level: null },
+    ],
+    salvageTarget: "auto",
+    anchorPersona,
+    beliefOrTrust: 0,
+    beliefReady: false,
+    distrust: 0,
+    defianceChance: 0,
+    maudeCoverTarget: null,
+    maudeConsecutiveCoverage: 0,
+    activeModifiers: {},
+    openBanks: [],
+    lastDefiance: null,
+  };
+}
+
+/** Tick down all active modifiers one round; drop expired ones. */
+function tickActiveModifiers(
+  modifiers: Partial<Record<Front, ActiveModifier>>,
+): Partial<Record<Front, ActiveModifier>> {
+  const next: Partial<Record<Front, ActiveModifier>> = {};
+  for (const frontStr in modifiers) {
+    const front = frontStr as Front;
+    const m = modifiers[front];
+    if (!m) continue;
+    const roundsRemaining = m.roundsRemaining - 1;
+    if (roundsRemaining > 0) next[front] = { bump: m.bump, roundsRemaining };
+  }
+  return next;
+}
+
+// --- Source: persistence.ts ---
+// Run persistence module — localStorage persistence with Node fallback.
+
+
+
+var SAVE_KEY = "PROSIS_RUN_SAVE_v1";
+var HISTORY_KEY = "PROSIS_RUN_HISTORY_v1";
+
+interface RunHistorySummary {
+  round: number;
+  causeOfLoss: string | null;
+  sector: number;
+}
+
+var memoryStore = new Map<string, string>();
+
+function getItem(key: string): string | null {
+  try {
+    if (typeof localStorage !== "undefined" && localStorage !== null) {
+      return localStorage.getItem(key);
+    }
+  } catch {
+    // Fallback on storage errors
+  }
+  return memoryStore.get(key) ?? null;
+}
+
+function setItem(key: string, value: string): void {
+  try {
+    if (typeof localStorage !== "undefined" && localStorage !== null) {
+      localStorage.setItem(key, value);
+      return;
+    }
+  } catch {
+    // Fallback on storage errors
+  }
+  memoryStore.set(key, value);
+}
+
+function removeItem(key: string): void {
+  try {
+    if (typeof localStorage !== "undefined" && localStorage !== null) {
+      localStorage.removeItem(key);
+      return;
+    }
+  } catch {
+    // Fallback on storage errors
+  }
+  memoryStore.delete(key);
+}
+
+function saveRunState(state: LogicState): void {
+  setItem(SAVE_KEY, JSON.stringify(state));
+}
+
+function loadRunState(): LogicState | null {
+  const raw = getItem(SAVE_KEY);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as LogicState;
+  } catch {
+    return null;
+  }
+}
+
+function clearRunState(): void {
+  removeItem(SAVE_KEY);
+}
+
+function getRunHistory(): RunHistorySummary[] {
+  const raw = getItem(HISTORY_KEY);
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function recordRunHistory(summary: RunHistorySummary): void {
+  const history = getRunHistory();
+  history.push(summary);
+  setItem(HISTORY_KEY, JSON.stringify(history));
+}
+
+function clearRunHistory(): void {
+  removeItem(HISTORY_KEY);
+}
+
+
+// --- Source: test/the-fracture-playtest.tsx ---
+
+
+
+
 
 // ============================================================
 // THE FRACTURE — v5: 3 abilities x 3 levels per role, more events
 // ============================================================
-const LEVELS = { I: { cost: 1.0 }, II: { cost: 2.5 }, III: { cost: 5.5 } };
+var LEVELS = { I: { cost: 1.0 }, II: { cost: 2.5 }, III: { cost: 5.5 } };
 
 // Ability redesign — 3 cost-shapes x 3 roles. Every role gets exactly one of:
 // different_front_now / same_front_later / deferred_compounding.
 // Replaces the prior 9 (which mixed "clean free fixes" with costed abilities —
 // the root cause of the "random toolbox" feedback; see 2026-08-19 handoff).
-const ROLES = [
+var ROLES = [
   { id: "helm", name: "Helm", personalName: "Helm", focus: "Entropy & Foresight",
     abilities: [
       { id: "force_correction", label: "Force the Correction", shape: "different_front_now",
@@ -80,7 +1391,7 @@ const ROLES = [
 // ---- ANCHOR persona triad ----
 // design law: every mechanic inherits persona/Fracture flavoring; universality
 // is the exception, not the default (locked 2026-08-19/20).
-const ANCHORS = {
+var ANCHORS = {
   ricky: { id: "ricky", name: "Ricky", direction: "Risky", nativeFront: "entropy", color: "#FF4D6D",
     tag: "Different front, now — amplified.", blurb: "Proud. Arrogant. Mood-swingy. Makes the call, makes you live with it.",
     signature: "Kiss the gamble or curse it. Either way, you'll feel it.", pulseClass: "pulse-ricky" },
@@ -91,8 +1402,8 @@ const ANCHORS = {
     tag: "Deferred, compounding — on your word.", blurb: "Hedges every order. Begs for authority without saying so. The crew is starting to notice.",
     signature: "I— I think this is right? If that's okay with everyone.", pulseClass: "pulse-dez" },
 };
-const SHAPE_PERSONA = { different_front_now: "ricky", same_front_later: "maude", deferred_compounding: "dez" };
-const BASE_HEAL = 15; // Belief-spend base heal, before persona payout multiplier -- PLACEHOLDER, needs Drew's number
+var SHAPE_PERSONA = { different_front_now: "ricky", same_front_later: "maude", deferred_compounding: "dez" };
+var BASE_HEAL = 15; // Belief-spend base heal, before persona payout multiplier -- PLACEHOLDER, needs Drew's number
 
 // ---- Ground Truth Logic (GTL) — bounded live version. Salvage excluded:
 // it only grows/gets spent, doesn't decay toward failure like the other three. ----
@@ -123,12 +1434,12 @@ function computeGTL(round, state, roundEffects, activeModifiers = {}) {
 }
 
 // ---- Belief / Distrust — reads GTL, persona-flavored. Numbers first-pass. ----
-const BAD_CALL_THRESHOLD = 0.5;
-const baseIncrement = (gtl) => (1 - gtl.gapMagnitude) * gtl.levelEfficiency;
-const isBadCall = (gtl) => gtl.gapMagnitude > BAD_CALL_THRESHOLD;
-const RICKY_B = { buildMultiplier: 0.7, threshold: 6, spendPayoutMultiplier: 1.6 };
-const MAUDE_B = { buildMultiplier: 1.0, threshold: 10, spendPayoutMultiplier: 1.0, erosionScale: 0.15 };
-const DEZ_B = { beliefThreshold: 6, distrustThreshold: -3, spendPayoutMultiplier: 1.0, defianceScale: 0.15, defianceCap: 0.9, partialRepair: 1 };
+var BAD_CALL_THRESHOLD = 0.5;
+var baseIncrement = (gtl) => (1 - gtl.gapMagnitude) * gtl.levelEfficiency;
+var isBadCall = (gtl) => gtl.gapMagnitude > BAD_CALL_THRESHOLD;
+var RICKY_B = { buildMultiplier: 0.7, threshold: 6, spendPayoutMultiplier: 1.6 };
+var MAUDE_B = { buildMultiplier: 1.0, threshold: 10, spendPayoutMultiplier: 1.0, erosionScale: 0.15 };
+var DEZ_B = { beliefThreshold: 6, distrustThreshold: -3, spendPayoutMultiplier: 1.0, defianceScale: 0.15, defianceCap: 0.9, partialRepair: 1 };
 function stepRicky(prevBelief, gtl) {
   if (isBadCall(gtl)) return { belief: 0, ready: false };
   const belief = prevBelief + baseIncrement(gtl) * RICKY_B.buildMultiplier;
@@ -151,8 +1462,8 @@ function stepDez(prevTrust, gtl) {
 }
 
 // ---- Maude's friction tax — redirecting off her native front (Systems). ----
-const MAUDE_GRACE_ROUNDS = 3, MAUDE_BASE_TAX = 0.25, MAUDE_TAX_CAP = 0.70;
-const MAUDE_ACCEL_STEPS = [0.06, 0.09, 0.13, 0.18];
+var MAUDE_GRACE_ROUNDS = 3, MAUDE_BASE_TAX = 0.25, MAUDE_TAX_CAP = 0.70;
+var MAUDE_ACCEL_STEPS = [0.06, 0.09, 0.13, 0.18];
 function maudeTax(n) {
   if (n <= 0) return 0;
   if (n <= MAUDE_GRACE_ROUNDS) return MAUDE_BASE_TAX;
@@ -181,10 +1492,10 @@ function resolveDezRound(prevTrust, gtl, dezChoice, rollFn = Math.random) {
 // claim whenever, for whatever the bank is currently worth. Claiming also ties
 // a flat morale gain to patient, premeditated play, since morale otherwise had
 // no active lever after the ability redesign dropped Analyze/Share the Take. ----
-const BANK_GROWTH_RATE = 0.08;    // per round, compounding -- FIRST PASS, flag for Monte Carlo
-const BANK_GROWTH_CAP_ROUNDS = 5; // growth locks after this many rounds held
-const BANK_EXPOSURE_HAIRCUT = 0.30; // FIRST PASS, flag for Monte Carlo
-const MORALE_ON_CLAIM = 5;        // FIRST PASS -- new morale lever
+var BANK_GROWTH_RATE = 0.08;    // per round, compounding -- FIRST PASS, flag for Monte Carlo
+var BANK_GROWTH_CAP_ROUNDS = 5; // growth locks after this many rounds held
+var BANK_EXPOSURE_HAIRCUT = 0.30; // FIRST PASS, flag for Monte Carlo
+var MORALE_ON_CLAIM = 5;        // FIRST PASS -- new morale lever
 
 function tickBankGrowth(entry) {
   const roundsHeld = entry.roundsHeld + 1;
@@ -197,13 +1508,13 @@ function applyBankExposure(entry, threatHitsFront) {
 }
 function claimBank(entry) { return { front: entry.front, payout: entry.banked, moraleGain: MORALE_ON_CLAIM }; }
 
-const CATEGORIES = {
+var CATEGORIES = {
   targeted:    { axis: "ruthless",   dmgRange: [12, 24],  hits: "systems", label: "Targeted",    tag: "threatens Systems Health" },
   telegraphed: { axis: "methodical", dmgRange: [6, 12],  hits: "entropy", label: "Telegraphed",  tag: "threatens to spike Entropy" },
   cascading:   { axis: "desperate",  dmgRange: [15, 30], hits: "re",      label: "Cascading",    tag: "threatens the Reality Engine" },
 };
 
-const EVENTS = [
+var EVENTS = [
   { id: "debris", title: "Drift Debris", prompt: "Wreckage tumbles past — salvageable, if someone's willing to reach for it.",
     choices: [
       { label: "Log it and let it pass", level: "I", effects: { salvage: 3 }, result: "The crew notes another loss, quietly." },
@@ -256,46 +1567,46 @@ const EVENTS = [
     ] },
 ];
 
-const CEILINGS = { ruthless: 0.553, methodical: 0.650, desperate: 0.421 };
-const K = 8, FLOOR = 0.20;
-const AMBIENT_BASE = 0.2, AMBIENT_GROWTH = 0.06;
-const SYSTEMS_WEAR_BASE = 0.35, SYSTEMS_WEAR_GROWTH = 0.03;
-const RE_WEAR_BASE = 0.35, RE_WEAR_GROWTH = 0.03;
-const LULL_BASE = 0.46, LULL_DECAY = 0.005, LULL_MIN = 0.05;
-const EVENT_SHARE = 0.8; // of the "no direct threat" branch, most of it is now an Event
-const TELEGRAPH_MITIGATION = 0.5;
-const SALVAGE_PASSIVE = 2.0, SALVAGE_SPEND_CAP = 4.0, SALVAGE_CONVERT_RATIO = 1.3;
-const SALVAGE_EFF = { entropy: 0.85, systems: 0.935, re: 0.935 };
-const METER_CAP = 130;
-const BUFFER_DECAY = 8;
-const LEVELS_SALVAGE = { I: 1.5, II: 3.5, III: 6.5 }; // Engineer pays Salvage, not Entropy -- Systems is the physical/material front
+var CEILINGS = { ruthless: 0.553, methodical: 0.650, desperate: 0.421 };
+var K = 8, FLOOR = 0.20;
+var AMBIENT_BASE = 0.2, AMBIENT_GROWTH = 0.06;
+var SYSTEMS_WEAR_BASE = 0.35, SYSTEMS_WEAR_GROWTH = 0.03;
+var RE_WEAR_BASE = 0.35, RE_WEAR_GROWTH = 0.03;
+var LULL_BASE = 0.46, LULL_DECAY = 0.005, LULL_MIN = 0.05;
+var EVENT_SHARE = 0.8; // of the "no direct threat" branch, most of it is now an Event
+var TELEGRAPH_MITIGATION = 0.5;
+var SALVAGE_PASSIVE = 2.0, SALVAGE_SPEND_CAP = 4.0, SALVAGE_CONVERT_RATIO = 1.3;
+var SALVAGE_EFF = { entropy: 0.85, systems: 0.935, re: 0.935 };
+var METER_CAP = 130;
+var BUFFER_DECAY = 8;
+var LEVELS_SALVAGE = { I: 1.5, II: 3.5, III: 6.5 }; // Engineer pays Salvage, not Entropy -- Systems is the physical/material front
 
-const MORALE_START = 100;
-const MORALE_PRESSURE_DRAIN = 2;
-const MORALE_RECKLESS_DRAIN = 3;
-const MORALE_PRESSURE_THRESHOLD = 30;
+var MORALE_START = 100;
+var MORALE_PRESSURE_DRAIN = 2;
+var MORALE_RECKLESS_DRAIN = 3;
+var MORALE_PRESSURE_THRESHOLD = 30;
 
-const CREW_LINES = {
+var CREW_LINES = {
   targeted:    ["\"Direct hit. Coordinates confirmed — that wasn't luck.\"", "\"Clean strike. It knew exactly where to aim.\"", "\"Reading the impact now. Precise. Too precise.\""],
   telegraphed: ["\"It's building. We have time — not much.\"", "\"Still growing. If we leave it, it won't stay small.\"", "\"That's not resolved yet. Someone needs to watch it.\""],
   cascading:   ["\"That's not — that's not supposed to fold like that.\"", "\"Multiple signatures, overlapping. I can't isolate it.\"", "\"The Engine's reading itself wrong. I don't — I don't know.\""],
 };
 
-const EPITAPHS = {
+var EPITAPHS = {
   ruthless: (r) => `${r} rounds. You forced every outcome you could reach. It burned bright, and it burned fast.`,
   methodical: (r) => `${r} rounds. You never rushed. The end still came — just later, and on your terms.`,
   desperate: (r) => `${r} rounds. You were always one bad round from this one. Somehow it took this long.`,
 };
-const MORALE_EPITAPH = (r) => `${r} rounds. The ship held. The Engine held. They didn't. Not the ship — them.`;
+var MORALE_EPITAPH = (r) => `${r} rounds. The ship held. The Engine held. They didn't. Not the ship — them.`;
 
-const COLORS = {
+var COLORS = {
   void: "#0A0B10", panel: "#14151C", panel2: "#181A22", panelBorder: "#23252F",
   bone: "#E9E6DC", muted: "#6B6E7A",
   ruthless: "#6FA8FF", methodical: "#E8A33D", desperate1: "#FF4D6D", desperate2: "#8B5CF6",
   salvage: "#35D68A", danger: "#FF4757", morale: "#F0A6C0", event: "#C9A6F0", neutral: "#8B93A8",
 };
-const METER_KEY_COLOR = { systems: COLORS.ruthless, entropy: COLORS.methodical, re: COLORS.desperate1 };
-const LEVEL_COLOR = { I: COLORS.salvage, II: COLORS.neutral, III: COLORS.desperate1 };
+var METER_KEY_COLOR = { systems: COLORS.ruthless, entropy: COLORS.methodical, re: COLORS.desperate1 };
+var LEVEL_COLOR = { I: COLORS.salvage, II: COLORS.neutral, III: COLORS.desperate1 };
 
 function weightedDraw(axisCounts, totalActions) {
   if (totalActions === 0) { const cats = Object.keys(CATEGORIES); return cats[Math.floor(Math.random() * cats.length)]; }
@@ -312,8 +1623,8 @@ function weightedDraw(axisCounts, totalActions) {
   return Object.keys(probs)[Object.keys(probs).length - 1];
 }
 
-const rand = (min, max) => Math.random() * (max - min) + min;
-const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+var rand = (min, max) => Math.random() * (max - min) + min;
+var clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
 function computeReveal(round, entropy, axisCounts, totalActions, usedEventIds, relief = 0, lullBonus = 0, ambientBump = 0) {
   const ambient = (AMBIENT_BASE + AMBIENT_GROWTH * round + ambientBump) * rand(0.85, 1.15);
@@ -333,7 +1644,7 @@ function computeReveal(round, entropy, axisCounts, totalActions, usedEventIds, r
   return { entropy: newEntropy, ambient, incoming, eventId };
 }
 
-const initialState = (anchorPersona = "ricky") => ({
+var initialState = (anchorPersona = "ricky") => ({
   started: false, round: 0,
   entropy: 0, systems: 100, re: 100, morale: MORALE_START,
   salvage: 5,
@@ -352,7 +1663,7 @@ const initialState = (anchorPersona = "ricky") => ({
   lastDefiance: null,
 });
 
-export default function TheFracturePlaytest() {
+function TheFracturePlaytest() {
   const [state, setState] = useState<LogicState>(initialState());
   const [savedRun, setSavedRun] = useState<LogicState | null>(() => loadRunState());
   const [historyList, setHistoryList] = useState<RunHistorySummary[]>(() => getRunHistory());
@@ -1426,3 +2737,10 @@ export default function TheFracturePlaytest() {
     </div>
   );
 }
+
+
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<TheFracturePlaytest />);
+  </script>
+</body>
+</html>

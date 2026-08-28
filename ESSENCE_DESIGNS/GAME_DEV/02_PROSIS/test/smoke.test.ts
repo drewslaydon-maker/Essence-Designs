@@ -23,6 +23,7 @@ import {
   stepRicky,
 } from "../personas";
 import { applyBankExposure, claimBank, tickBankGrowth } from "../barriers";
+import type { BankEntry, Front, GtlResult } from "../types";
 import {
   applyLevelTax,
   applySalvageAutoSpend,
@@ -96,7 +97,7 @@ test("weightedDraw: totalActions === 0 returns any valid category", () => {
 // ---- Belief / Distrust ----
 
 test("stepRicky: zeros belief on bad call (gapMagnitude > BAD_CALL_THRESHOLD)", () => {
-  const forceBad = {
+  const forceBad: GtlResult = {
     optimalFront: "entropy",
     chosenFront: "entropy",
     gapMagnitude: BAD_CALL_THRESHOLD + 0.1,
@@ -108,7 +109,7 @@ test("stepRicky: zeros belief on bad call (gapMagnitude > BAD_CALL_THRESHOLD)", 
 });
 
 test("stepRicky: builds belief on a good call", () => {
-  const good = {
+  const good: GtlResult = {
     optimalFront: "entropy",
     chosenFront: "entropy",
     gapMagnitude: 0,
@@ -119,7 +120,7 @@ test("stepRicky: builds belief on a good call", () => {
 });
 
 test("stepMaude: erosion subtracts belief proportional to tax", () => {
-  const good = {
+  const good: GtlResult = {
     optimalFront: "systems",
     chosenFront: "systems",
     gapMagnitude: 0,
@@ -131,7 +132,7 @@ test("stepMaude: erosion subtracts belief proportional to tax", () => {
 });
 
 test("stepDez: returns defianceChance > 0 when trust < distrustThreshold", () => {
-  const gtl = {
+  const gtl: GtlResult = {
     optimalFront: "entropy",
     chosenFront: "entropy",
     gapMagnitude: 0.3,
@@ -153,7 +154,7 @@ test("maudeTax: 0 → 0, grace rounds → base tax, beyond grace → scales", ()
 // ---- Dez defiance ----
 
 test("resolveDezRound: never fires when optimalFront !== 're'", () => {
-  const gtl = {
+  const gtl: GtlResult = {
     optimalFront: "systems",
     chosenFront: "entropy",
     gapMagnitude: 0.6,
@@ -169,7 +170,7 @@ test("resolveDezRound: never fires when optimalFront !== 're'", () => {
 });
 
 test("resolveDezRound: fires when optimalFront === 're' and roll < defianceChance", () => {
-  const gtl = {
+  const gtl: GtlResult = {
     optimalFront: "re",
     chosenFront: "entropy",
     gapMagnitude: 0.6,
@@ -195,7 +196,7 @@ test("tickBankGrowth: compounds banked value under cap", () => {
 });
 
 test("tickBankGrowth: locks growth after BANK_GROWTH_CAP_ROUNDS", () => {
-  let entry = { abilityId: "x", front: "re" as const, banked: 4, roundsHeld: 0 };
+  let entry: BankEntry = { abilityId: "x", front: "re", banked: 4, roundsHeld: 0 };
   for (let i = 0; i < BANK_GROWTH_CAP_ROUNDS + 2; i++) entry = tickBankGrowth(entry);
   assert.strictEqual(entry.roundsHeld, BANK_GROWTH_CAP_ROUNDS + 2);
   const locked = tickBankGrowth(entry);
@@ -314,9 +315,9 @@ test("applySalvageAutoSpend: explicit target respected", () => {
 // ---- One-of-each-shape integration sanity check ----
 
 test("integration: different-front + same-front-later + banking in one round produces expected state shape", () => {
-  const helmAbility = ROLES[0].abilities.find((a) => a.shape === "different_front_now");
-  const engAbility = ROLES[1].abilities.find((a) => a.shape === "same_front_later");
-  const aftAbility = ROLES[2].abilities.find((a) => a.shape === "deferred_compounding");
+  const helmAbility = ROLES[0]?.abilities.find((a) => a.shape === "different_front_now");
+  const engAbility = ROLES[1]?.abilities.find((a) => a.shape === "same_front_later");
+  const aftAbility = ROLES[2]?.abilities.find((a) => a.shape === "deferred_compounding");
   assert.ok(helmAbility && engAbility && aftAbility);
   assert.strictEqual(helmAbility.levels.I.entropyDelta, -1.5);
   assert.strictEqual(helmAbility.levels.I.systemsDelta, -3);

@@ -53,7 +53,7 @@ export function maudeTax(n: number): number {
   if (n <= MAUDE_GRACE_ROUNDS) return MAUDE_BASE_TAX;
   let tax = MAUDE_BASE_TAX;
   for (let i = 0; i < n - MAUDE_GRACE_ROUNDS; i++) {
-    tax += MAUDE_ACCEL_STEPS[Math.min(i, MAUDE_ACCEL_STEPS.length - 1)];
+    tax += MAUDE_ACCEL_STEPS[Math.min(i, MAUDE_ACCEL_STEPS.length - 1)] ?? 0;
   }
   return Math.min(MAUDE_TAX_CAP, tax);
 }
@@ -71,7 +71,7 @@ export function resolveDezRound(
   const step = stepDez(prevTrust, gtl);
   const canDefy = gtl.optimalFront === "re";
   const alreadyCorrect = dezChoice.abilityId === "patch_job";
-  const defianceFired = canDefy && !alreadyCorrect && rollFn() < step.defianceChance;
+  const defianceFired = canDefy && !alreadyCorrect && rollFn() < (step.defianceChance ?? 0);
   if (!defianceFired) {
     return {
       ...step,
