@@ -1,6 +1,8 @@
 // Shared types for The Fracture / Prosis game logic.
 // All modules import from here so the type graph stays consistent.
 
+import type { Rune } from "./runes";
+
 export type Front = "entropy" | "systems" | "re";
 export type Level = "I" | "II" | "III";
 export type PersonaId = "ricky" | "maude" | "dez";
@@ -13,6 +15,40 @@ export type Shape =
 export type ThreatCategory = "targeted" | "telegraphed" | "cascading";
 export type LossType = "mechanical" | "morale";
 export type IncomingKind = ThreatCategory | "event" | "lull";
+
+export type HullSkin = "titanium" | "chrome" | "gold" | "singularity";
+
+export interface CosmeticsProfile {
+  unlockedHullSkins: HullSkin[];
+  activeHullSkin: HullSkin;
+  unlockedBadges: Record<PersonaId, string[]>;
+  helmName: string;
+  geneName: string;
+  salName: string;
+}
+
+export interface CaptainProfile {
+  captainCallsign: string;
+  helmName: string;
+  geneName: string;
+  salName: string;
+  activeHullSkin: HullSkin;
+}
+
+export interface HighScoreEntry {
+  id: string;
+  shipName: string;
+  captainCallsign: string;
+  score: number;
+  rounds: number;
+  sector: number;
+  morale: number;
+  entropy: number;
+  anchorPersona: PersonaId;
+  hullSkin: HullSkin;
+  equippedRuneIds: string[];
+  timestamp: string;
+}
 
 export interface AbilityLevelParams {
   entropyDelta?: number;
@@ -125,9 +161,10 @@ export interface LogEntry {
     | "bank_expired"
     | "belief_spent";
   round?: number;
-  category?: ThreatCategory;
+    category?: ThreatCategory;
   dmg?: string | number;
   hits?: Front;
+  mitigated?: boolean;
   line?: string;
   title?: string;
   choice?: string;
@@ -177,6 +214,11 @@ export interface LogicState {
   activeModifiers: Partial<Record<Front, ActiveModifier>>;
   openBanks: BankEntry[];
   lastDefiance: { from: string; to: string; level: Level } | null;
+  equippedRunes?: Rune[];
+  helmName?: string;
+  geneName?: string;
+  salName?: string;
+  hullSkin?: HullSkin;
 }
 
 export interface RoundBreakdown {

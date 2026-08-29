@@ -84,7 +84,7 @@ test("persistence: vessel name, manifest logs, lore unlocks, and achievements", 
   });
   assert.ok(entry.id);
   assert.strictEqual(getCaptainsManifest().length, 1);
-  assert.strictEqual(getCaptainsManifest()[0].shipName, "USSC Voyager");
+  assert.strictEqual(getCaptainsManifest()[0]?.shipName, "USSC Voyager");
 
   // Lore unlocks
   clearUnlockedLore();

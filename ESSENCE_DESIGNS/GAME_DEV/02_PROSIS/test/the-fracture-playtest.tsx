@@ -50,10 +50,43 @@ import {
   getUnlockedAchievementIds,
   unlockAchievementId,
   isAchievementUnlocked,
+  getCaptainProfile,
+  saveCaptainProfile,
+  getCosmeticsProfile,
+  unlockHullSkin,
+  unlockScoutBadge,
+  getHighScores,
+  submitHighScore,
+  calculateRunScore,
   RunHistorySummary,
   ShipLogEntry,
 } from "./persistence";
-import type { LogicState } from "./types";
+import {
+  calculateRunAnalytics,
+  processRunCompletion,
+  RunAnalytics,
+} from "./analytics";
+import {
+  WDT_SCENARIOS,
+  evaluateDiagnosticResult,
+  getCalibrationPatch,
+} from "./wdt";
+import {
+  SPAGHETTI_RUNES,
+  canEquipRune,
+  equipRune,
+  unequipRune,
+  calculateCombinedRuneEffects,
+  applyRuneScoreModifiers,
+} from "./runes";
+import {
+  startAmbientPad,
+  stopAmbientPad,
+  toggleMute,
+  isMuted,
+  playSFX,
+} from "./audio";
+import type { LogicState, CaptainProfile, CosmeticsProfile, HighScoreEntry, HullSkin, PersonaId, Front } from "./types";
 
 // ============================================================
 // WEB AUDIO API SOUND SYNTHESIZER
@@ -66,27 +99,37 @@ class SoundSynth {
   droneGain: GainNode | null = null;
 
   init() {
-    if (!this.ctx && typeof window !== "undefined") {
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-      if (AudioCtx) this.ctx = new AudioCtx();
-    }
-    if (this.ctx && this.ctx.state === "suspended") {
-      this.ctx.resume().catch(() => {});
+    try {
+      if (!this.ctx && typeof window !== "undefined") {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioCtx) this.ctx = new AudioCtx();
+      }
+      if (this.ctx && this.ctx.state === "suspended") {
+        this.ctx.resume().catch((e) => {
+          console.warn("[SoundSynth] AudioContext resume failed:", e);
+        });
+      }
+    } catch (e) {
+      console.warn("[SoundSynth] AudioContext init failed:", e);
     }
   }
 
   setMuted(muted: boolean) {
     this.muted = muted;
-    if (this.droneGain && this.ctx) {
-      this.droneGain.gain.setValueAtTime(muted ? 0 : 0.04, this.ctx.currentTime);
+    try {
+      if (this.droneGain && this.ctx) {
+        this.droneGain.gain.setValueAtTime(muted ? 0 : 0.04, this.ctx.currentTime);
+      }
+    } catch (e) {
+      console.warn("[SoundSynth] setMuted failed:", e);
     }
   }
 
   startDrone() {
     if (this.muted || this.droneOsc1) return;
-    this.init();
-    if (!this.ctx) return;
     try {
+      this.init();
+      if (!this.ctx) return;
       const now = this.ctx.currentTime;
       const g = this.ctx.createGain();
       g.gain.setValueAtTime(0.04, now);
@@ -114,8 +157,8 @@ class SoundSynth {
       this.droneOsc1 = osc1;
       this.droneOsc2 = osc2;
       this.droneGain = g;
-    } catch {
-      // Audio fallback
+    } catch (e) {
+      console.warn("[SoundSynth] startDrone failed:", e);
     }
   }
 
@@ -124,8 +167,8 @@ class SoundSynth {
       try {
         this.droneOsc1.stop();
         this.droneOsc2?.stop();
-      } catch {
-        // Audio fallback
+      } catch (e) {
+        console.warn("[SoundSynth] stopDrone failed:", e);
       }
       this.droneOsc1 = null;
       this.droneOsc2 = null;
@@ -133,11 +176,11 @@ class SoundSynth {
     }
   }
 
-  playSfx(type: "click" | "alarm" | "warp" | "achievement" | "damage" | "event" | "victory") {
+  playSfx(type: "click" | "alarm" | "warp" | "achievement" | "damage" | "event" | "victory" | string) {
     if (this.muted) return;
-    this.init();
-    if (!this.ctx) return;
     try {
+      this.init();
+      if (!this.ctx) return;
       const now = this.ctx.currentTime;
       if (type === "click") {
         const osc = this.ctx.createOscillator();
@@ -217,8 +260,8 @@ class SoundSynth {
           osc.stop(t + 0.45);
         });
       }
-    } catch {
-      // Audio fallback
+    } catch (e) {
+      console.warn("[SoundSynth] playSfx failed:", e);
     }
   }
 }
@@ -335,42 +378,286 @@ const ACHIEVEMENTS_LIST: AchievementDef[] = [
 ];
 
 // ============================================================
+// POST-MORTEM ANALYTICS MODAL COMPONENT
+// ============================================================
+function PostMortemModal({
+  gameOver,
+  lossType,
+  round,
+  sector,
+  domFront,
+  postMortemResult,
+  captainProfile,
+  shipName,
+  highScoresList,
+  onLaunchNewVoyage,
+  onOpenLeaderboard,
+  onReturnToBridge,
+}: {
+  gameOver: string;
+  lossType: string | null;
+  round: number;
+  sector: number;
+  domFront: Front;
+  postMortemResult: { analytics: RunAnalytics; highScore: HighScoreEntry; unlockedBadges: string[] } | null;
+  captainProfile: CaptainProfile;
+  shipName: string;
+  highScoresList: HighScoreEntry[];
+  onLaunchNewVoyage: () => void;
+  onOpenLeaderboard: () => void;
+  onReturnToBridge: () => void;
+}) {
+  const globalRank = postMortemResult
+    ? highScoresList.findIndex((h) => h.id === postMortemResult.highScore.id) + 1 || 1
+    : 1;
+
+  return (
+    <div id="gameOverModal" className="modal-overlay" style={{
+      position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+      background: "rgba(5, 8, 14, 0.92)", backdropFilter: "blur(8px)",
+      zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center",
+      padding: 20, overflowY: "auto"
+    }}>
+      <div style={{
+        maxWidth: 720, width: "100%", background: "#12080e",
+        border: `2px solid ${COLORS.danger}aa`, borderRadius: 16, padding: 24,
+        boxShadow: "0 0 40px rgba(239, 68, 68, 0.25)", maxHeight: "90vh", overflowY: "auto"
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 18, borderBottom: `1px solid ${COLORS.danger}44`, paddingBottom: 14 }}>
+          <Skull size={32} color={COLORS.danger} />
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 900, color: COLORS.danger, letterSpacing: 1.5 }}>
+              VOYAGE TERMINATED — POST-MORTEM ANALYTICS
+            </div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: COLORS.bone, marginTop: 2 }}>
+              {gameOver}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ fontSize: 13, color: COLORS.bone, fontStyle: "italic", marginBottom: 20, background: "#00000050", padding: 12, borderRadius: 8, borderLeft: `4px solid ${COLORS.danger}` }}>
+          "{lossType === "morale" ? MORALE_EPITAPH(round) : EPITAPHS[domFront](round)}"
+        </div>
+
+        <div id="postMortemAnalytics" style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 20 }}>
+          {postMortemResult && (
+            <div style={{ background: "#1a1018", border: `1px solid ${COLORS.morale}88`, borderRadius: 12, padding: 16 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                <div style={{ fontSize: 12, fontWeight: 800, color: COLORS.morale, letterSpacing: 1, textTransform: "uppercase", display: "flex", alignItems: "center", gap: 6 }}>
+                  <Trophy size={16} /> FINAL HIGH SCORE
+                </div>
+                <div className="mono" style={{ fontSize: 24, fontWeight: 900, color: COLORS.morale }}>
+                  {postMortemResult.analytics.finalScore.toLocaleString()} PTS
+                </div>
+              </div>
+              <div style={{ fontSize: 11.5, color: COLORS.muted, display: "flex", justifyContent: "space-between" }}>
+                <span>Callsign / Vessel: <strong style={{ color: COLORS.bone }}>{captainProfile.captainCallsign} ({shipName || "USSC FRACTURE"})</strong></span>
+                <span>Global Position: <strong style={{ color: COLORS.event }}>#{globalRank}</strong></span>
+              </div>
+            </div>
+          )}
+          {/* Metrics & Damage Breakdown */}
+          <div style={{ background: "#0d080c", border: `1px solid ${COLORS.panelBorder}`, borderRadius: 12, padding: 16 }}>
+            <div style={{ fontSize: 12, fontWeight: 800, color: COLORS.muted, letterSpacing: 1, marginBottom: 12, textTransform: "uppercase" }}>
+              📊 DAMAGE BREAKDOWN & RUN METRICS
+            </div>
+            
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 14 }}>
+              <div style={{ background: "#00000050", padding: 10, borderRadius: 8 }}>
+                <div style={{ fontSize: 10, color: COLORS.muted }}>SECTOR REACHED</div>
+                <div className="mono" style={{ fontSize: 16, fontWeight: 700, color: COLORS.event }}>Sector {sector}</div>
+              </div>
+              <div style={{ background: "#00000050", padding: 10, borderRadius: 8 }}>
+                <div style={{ fontSize: 10, color: COLORS.muted }}>TOTAL DAMAGE</div>
+                <div className="mono" style={{ fontSize: 16, fontWeight: 700, color: COLORS.danger }}>
+                  {postMortemResult ? postMortemResult.analytics.totalDamageTaken.toFixed(1) : "0.0"}
+                </div>
+              </div>
+              <div style={{ background: "#00000050", padding: 10, borderRadius: 8 }}>
+                <div style={{ fontSize: 10, color: COLORS.muted }}>THREATS MITIGATED</div>
+                <div className="mono" style={{ fontSize: 16, fontWeight: 700, color: COLORS.salvage }}>
+                  {postMortemResult ? postMortemResult.analytics.threatsMitigated : 0}
+                </div>
+              </div>
+              <div style={{ background: "#00000050", padding: 10, borderRadius: 8 }}>
+                <div style={{ fontSize: 10, color: COLORS.muted }}>DEFIANCE EVENTS</div>
+                <div className="mono" style={{ fontSize: 16, fontWeight: 700, color: COLORS.re }}>
+                  {postMortemResult ? postMortemResult.analytics.defianceEventsFired : 0}
+                </div>
+              </div>
+            </div>
+
+            {/* Damage By Front Chart */}
+            <div style={{ background: "#00000040", padding: 12, borderRadius: 8, marginBottom: 12 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.muted, marginBottom: 8 }}>DAMAGE SUSTAINED BY FRONT</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {(["systems", "entropy", "re"] as Front[]).map((front) => {
+                  const dmg = postMortemResult ? postMortemResult.analytics.damageByFront[front] : 0;
+                  const total = postMortemResult ? Math.max(1, postMortemResult.analytics.totalDamageTaken) : 1;
+                  const pct = Math.min(100, Math.round((dmg / total) * 100));
+                  const color = front === "entropy" ? COLORS.entropy : front === "systems" ? COLORS.systems : COLORS.re;
+                  const label = front === "entropy" ? "Entropy" : front === "systems" ? "Systems" : "Reality Engine";
+                  return (
+                    <div key={front}>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: COLORS.bone, marginBottom: 2 }}>
+                        <span>{label}</span>
+                        <span className="mono">{dmg.toFixed(1)} ({pct}%)</span>
+                      </div>
+                      <div style={{ height: 6, background: "#111622", borderRadius: 3, overflow: "hidden" }}>
+                        <div style={{ width: `${pct}%`, height: "100%", background: color, borderRadius: 3 }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Barrier Statistics */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              <div style={{ background: "#00000050", padding: 10, borderRadius: 8 }}>
+                <div style={{ fontSize: 10, color: COLORS.muted }}>BARRIERS CLAIMED</div>
+                <div className="mono" style={{ fontSize: 15, fontWeight: 700, color: COLORS.salvage }}>
+                  {postMortemResult ? postMortemResult.analytics.barriersClaimed : 0}
+                </div>
+              </div>
+              <div style={{ background: "#00000050", padding: 10, borderRadius: 8 }}>
+                <div style={{ fontSize: 10, color: COLORS.muted }}>BARRIER PAYOUT RECOVERED</div>
+                <div className="mono" style={{ fontSize: 15, fontWeight: 700, color: COLORS.salvage }}>
+                  +{postMortemResult ? postMortemResult.analytics.barrierPayoutTotal.toFixed(1) : "0.0"}
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* Captain Card Summary */}
+          <div style={{ background: "#0d080c", border: `1px solid ${COLORS.panelBorder}`, borderRadius: 12, padding: 16 }}>
+            <div style={{ fontSize: 12, fontWeight: 800, color: COLORS.muted, letterSpacing: 1, marginBottom: 10, textTransform: "uppercase", display: "flex", alignItems: "center", gap: 6 }}>
+              <Award size={14} /> CAPTAIN MANIFEST CARD
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+              <div>
+                <div style={{ fontSize: 10, color: COLORS.muted }}>CALLSIGN & SHIP</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: COLORS.bone }}>{captainProfile.captainCallsign}</div>
+                <div style={{ fontSize: 11, color: COLORS.muted }}>{shipName || "USSC FRACTURE"}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 10, color: COLORS.muted }}>ACTIVE VESSEL SKIN</div>
+                <div className="mono" style={{ fontSize: 13, fontWeight: 700, color: COLORS.event, textTransform: "uppercase" }}>{captainProfile.activeHullSkin}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 10, color: COLORS.muted }}>EQUIPPED RUNES</div>
+                <div style={{ fontSize: 11, color: COLORS.bone }}>
+                  {postMortemResult?.highScore.equippedRuneIds.length
+                    ? postMortemResult.highScore.equippedRuneIds.join(", ")
+                    : "None"}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Action Buttons */}
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <button
+            onClick={onLaunchNewVoyage}
+            className="action-btn primary-btn"
+            style={{ flex: 1.5, minWidth: 160, background: COLORS.bone, color: COLORS.void, border: "none", borderRadius: 10, padding: "12px 16px", fontWeight: 800, fontSize: 13, cursor: "pointer", letterSpacing: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+          >
+            <Rocket size={16} /> Launch New Voyage
+          </button>
+          <button
+            onClick={onOpenLeaderboard}
+            className="action-btn"
+            style={{ flex: 1, minWidth: 140, background: `${COLORS.event}22`, color: COLORS.event, border: `1px solid ${COLORS.event}66`, borderRadius: 10, padding: "12px 14px", fontWeight: 700, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+          >
+            <Trophy size={14} /> View Global Leaderboard
+          </button>
+          <button
+            onClick={onReturnToBridge}
+            className="action-btn"
+            style={{ flex: 1, minWidth: 120, background: `${COLORS.panelBorder}`, color: COLORS.bone, border: `1px solid ${COLORS.panelBorder}`, borderRadius: 10, padding: "12px 14px", fontWeight: 700, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+          >
+            <RotateCcw size={14} /> Return to Bridge
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+// ============================================================
 // ANIMATED BLACK HOLE LOGO COMPONENT
 // ============================================================
-function ProsisBlackHoleLogo({ size = 36 }: { size?: number }) {
+function ProsisBlackHoleLogo({ size = 36, isVoyageActive = false }: { size?: number; isVoyageActive?: boolean }) {
+  const activeClass = isVoyageActive ? "orbit-letter-active" : "orbit-letter-frozen";
   return (
-    <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-      <div style={{ position: "relative", width: size, height: size, display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div className="prosis-logo-container" style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+      {/* Orbiting letters p, r */}
+      <span className={`orbit-letter ${activeClass}`} style={{
+        fontSize: Math.round(size * 0.6),
+        fontWeight: 900,
+        fontFamily: "ui-monospace, monospace",
+        color: "#f1f5f9",
+        textShadow: isVoyageActive ? "0 0 12px rgba(111, 168, 255, 0.8)" : "0 0 4px rgba(241, 245, 249, 0.3)",
+        letterSpacing: 1,
+        transition: "all 0.5s ease"
+      }}>
+        pr
+      </span>
+
+      {/* Central Black Hole Singularity O */}
+      <div className="accretion-disk-container" style={{ position: "relative", width: size, height: size, display: "flex", alignItems: "center", justifyContent: "center" }}>
         <svg width={size} height={size} viewBox="0 0 100 100" style={{ overflow: "visible" }}>
           <defs>
             <radialGradient id="eventHorizonGlow" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="#000000" stopOpacity="1" />
-              <stop offset="60%" stopColor="#38bdf8" stopOpacity="0.8" />
-              <stop offset="85%" stopColor="#8b5cf6" stopOpacity="0.5" />
+              <stop offset="50%" stopColor="#38bdf8" stopOpacity="0.9" />
+              <stop offset="80%" stopColor="#8b5cf6" stopOpacity="0.6" />
               <stop offset="100%" stopColor="transparent" stopOpacity="0" />
             </radialGradient>
             <filter id="lensingGlow">
-              <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+              <feGaussianBlur stdDeviation="3.5" result="coloredBlur" />
               <feMerge>
                 <feMergeNode in="coloredBlur" />
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
           </defs>
-          <circle cx="50" cy="50" r="46" fill="url(#eventHorizonGlow)" filter="url(#lensingGlow)" />
-          <ellipse cx="50" cy="50" rx="42" ry="14" fill="none" stroke="#6fa8ff" strokeWidth="2.5" strokeDasharray="18 6 9 3" opacity="0.95">
-            <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="8s" repeatCount="indefinite" />
-          </ellipse>
+          
+          {/* Outer Lensing Halo */}
+          <circle cx="50" cy="50" r="48" fill="url(#eventHorizonGlow)" filter="url(#lensingGlow)" className="accretion-ring" />
+          
+          {/* Accretion Disk Particle Ring */}
+          <g className="accretion-disk">
+            <ellipse cx="50" cy="50" rx="44" ry="15" fill="none" stroke="#6fa8ff" strokeWidth="2.5" strokeDasharray="16 6 8 4" opacity="0.95">
+              <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur={isVoyageActive ? "4s" : "12s"} repeatCount="indefinite" />
+            </ellipse>
+            <ellipse cx="50" cy="50" rx="38" ry="11" fill="none" stroke="#ff4d6d" strokeWidth="1.5" strokeDasharray="12 8" opacity="0.75">
+              <animateTransform attributeName="transform" type="rotate" from="360 50 50" to="0 50 50" dur={isVoyageActive ? "3s" : "9s"} repeatCount="indefinite" />
+            </ellipse>
+            {/* Accretion particles */}
+            <circle cx="12" cy="50" r="2.5" fill="#38bdf8" className="accretion-particle" />
+            <circle cx="88" cy="50" r="2.5" fill="#fbbf24" className="accretion-particle" />
+            <circle cx="50" cy="14" r="2" fill="#ff4d6d" className="accretion-particle" />
+            <circle cx="50" cy="86" r="2" fill="#8b5cf6" className="accretion-particle" />
+          </g>
+
+          {/* Inner Event Horizon Singularity */}
           <circle cx="50" cy="50" r="22" fill="none" stroke="#f1f5f9" strokeWidth="1.5" opacity="0.85" />
-          <circle cx="50" cy="50" r="18" fill="#05080e" stroke="#38bdf8" strokeWidth="1" />
+          <circle cx="50" cy="50" r="18" fill="#05080e" stroke="#38bdf8" strokeWidth="1.5" />
         </svg>
       </div>
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <span style={{ fontSize: 20, fontWeight: 900, letterSpacing: 2, fontFamily: "ui-monospace, monospace", color: "#f1f5f9", textShadow: "0 0 12px rgba(111, 168, 255, 0.6)" }}>
-          pr<span style={{ color: "#38bdf8" }}>O</span>sis
-        </span>
-        <span style={{ fontSize: 9, letterSpacing: 1.5, color: "#94a3b8", textTransform: "uppercase", marginTop: -2 }}>Captain's Edition</span>
-      </div>
+
+      {/* Orbiting letters s, i, s */}
+      <span className={`orbit-letter ${activeClass}`} style={{
+        fontSize: Math.round(size * 0.6),
+        fontWeight: 900,
+        fontFamily: "ui-monospace, monospace",
+        color: "#f1f5f9",
+        textShadow: isVoyageActive ? "0 0 12px rgba(111, 168, 255, 0.8)" : "0 0 4px rgba(241, 245, 249, 0.3)",
+        letterSpacing: 1,
+        transition: "all 0.5s ease"
+      }}>
+        sis
+      </span>
     </div>
   );
 }
@@ -696,24 +983,37 @@ function computeReveal(round, entropy, axisCounts, totalActions, usedEventIds, r
   return { entropy: newEntropy, ambient, incoming, eventId };
 }
 
-const initialState = (anchorPersona = "ricky") => ({
-  started: false, round: 0,
-  entropy: 0, systems: 100, re: 100, morale: MORALE_START,
-  salvage: 5,
-  axisCounts: { low: 0, high: 0, desperate: 0 }, totalActions: 0,
-  log: [], gameOver: null, lossType: null,
-  lastBreakdown: null,
-  incomingThreat: null, incomingEventId: null, usedEventIds: [],
-  pendingRelief: 0, pendingLullBonus: 0,
-  players: [{ roleId: "helm", ability: null, level: null }, { roleId: "engineer", ability: null, level: null }, { roleId: "aft", ability: null, level: null }],
-  salvageTarget: "auto",
-  anchorPersona,
-  beliefOrTrust: 0, beliefReady: false, distrust: 0, defianceChance: 0,
-  maudeCoverTarget: null, maudeConsecutiveCoverage: 0,
-  activeModifiers: {}, // front -> {bump, roundsRemaining}
-  openBanks: [], // {abilityId, front, banked, roundsHeld} -- compounds while held, hairs cut on exposure, never auto-expires
-  lastDefiance: null,
-});
+const initialState = (anchorPersona = "ricky"): LogicState => {
+  let profile;
+  try {
+    profile = getCaptainProfile();
+  } catch {
+    profile = null;
+  }
+  return {
+    started: false, round: 0,
+    entropy: 0, systems: 100, re: 100, morale: MORALE_START,
+    salvage: 5,
+    axisCounts: { low: 0, high: 0, desperate: 0 }, totalActions: 0,
+    log: [], gameOver: null, lossType: null,
+    lastBreakdown: null,
+    incomingThreat: null, incomingEventId: null, usedEventIds: [],
+    pendingRelief: 0, pendingLullBonus: 0,
+    players: [{ roleId: "helm", ability: null, level: null }, { roleId: "engineer", ability: null, level: null }, { roleId: "aft", ability: null, level: null }],
+    salvageTarget: "auto",
+    anchorPersona,
+    beliefOrTrust: 0, beliefReady: false, distrust: 0, defianceChance: 0,
+    maudeCoverTarget: null, maudeConsecutiveCoverage: 0,
+    activeModifiers: {}, // front -> {bump, roundsRemaining}
+    openBanks: [], // {abilityId, front, banked, roundsHeld} -- compounds while held, hairs cut on exposure, never auto-expires
+    lastDefiance: null,
+    equippedRunes: [],
+    helmName: profile?.helmName || "Helm",
+    geneName: profile?.geneName || "Gene",
+    salName: profile?.salName || "Sal",
+    hullSkin: profile?.activeHullSkin || "titanium",
+  };
+};
 
 export default function TheFracturePlaytest() {
   const [state, setState] = useState<LogicState>(initialState());
@@ -729,9 +1029,63 @@ export default function TheFracturePlaytest() {
   const [statsLoaded, setStatsLoaded] = useState(false);
   const [anchorChoice, setAnchorChoice] = useState(null);
   const [claimFront, setClaimFront] = useState(null);
+  const [audioMuted, setAudioMuted] = useState(false);
+  const [briefingOpen, setBriefingOpen] = useState(false);
+  const [manifestOpen, setManifestOpen] = useState(false);
+  const [loreOpen, setLoreOpen] = useState(false);
+  const [achievementsOpen, setAchievementsOpen] = useState(false);
+  const [wdtOpen, setWdtOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [leaderboardOpen, setLeaderboardOpen] = useState(false);
+  const [wdtAnswers, setWdtAnswers] = useState<Record<string, string>>({});
+  const [wdtStep, setWdtStep] = useState(0);
+  const [leaderboardFilter, setLeaderboardFilter] = useState<string>("All");
+
+  const [captainProfile, setCaptainProfile] = useState<CaptainProfile>(() => getCaptainProfile());
+  const [cosmeticsProfile, setCosmeticsProfile] = useState<CosmeticsProfile>(() => getCosmeticsProfile());
+  const [highScoresList, setHighScoresList] = useState<HighScoreEntry[]>(() => getHighScores());
+  const [postMortemResult, setPostMortemResult] = useState<{ analytics: RunAnalytics; highScore: HighScoreEntry; unlockedBadges: string[] } | null>(null);
+
+  const [shipNameInput, setShipNameInput] = useState(() => getShipName());
+  const [editingShipName, setEditingShipName] = useState(false);
+  const [unlockedLoreList, setUnlockedLoreList] = useState<string[]>(() => getUnlockedLoreIds());
+  const [unlockedAchList, setUnlockedAchList] = useState<string[]>(() => getUnlockedAchievementIds());
+  const [manifestEntries, setManifestEntries] = useState<ShipLogEntry[]>(() => getCaptainsManifest());
   const logEndRef = useRef(null);
 
   const sector = Math.max(1, Math.floor((state.round - 1) / 10) + 1);
+
+  // Audio control effect
+  useEffect(() => {
+    synth.setMuted(audioMuted);
+  }, [audioMuted]);
+
+  // Unlock triggers effect
+  useEffect(() => {
+    if (state.started && state.round >= 1) {
+      if (unlockLoreId("sig_01")) setUnlockedLoreList(getUnlockedLoreIds());
+      if (unlockAchievementId("ach_first_warp")) setUnlockedAchList(getUnlockedAchievementIds());
+    }
+    if (sector >= 2) {
+      if (unlockLoreId("sig_03")) setUnlockedLoreList(getUnlockedLoreIds());
+      if (unlockAchievementId("ach_sector_2")) setUnlockedAchList(getUnlockedAchievementIds());
+    }
+    if (sector >= 3) {
+      if (unlockLoreId("sig_05")) setUnlockedLoreList(getUnlockedLoreIds());
+      if (unlockAchievementId("ach_sector_3")) setUnlockedAchList(getUnlockedAchievementIds());
+    }
+    if (state.morale >= 90) {
+      if (unlockLoreId("sig_06")) setUnlockedLoreList(getUnlockedLoreIds());
+      if (unlockAchievementId("ach_morale_high")) setUnlockedAchList(getUnlockedAchievementIds());
+    }
+    if (state.entropy < 15 && state.round > 1) {
+      if (unlockAchievementId("ach_entropy_low")) setUnlockedAchList(getUnlockedAchievementIds());
+    }
+    if (state.gameOver && state.gameOver.includes("VICTORY")) {
+      if (unlockLoreId("sig_08")) setUnlockedLoreList(getUnlockedLoreIds());
+      if (unlockAchievementId("ach_victory")) setUnlockedAchList(getUnlockedAchievementIds());
+    }
+  }, [state.started, state.round, sector, state.morale, state.entropy, state.gameOver]);
 
   // Auto-save active state
   useEffect(() => {
@@ -741,11 +1095,25 @@ export default function TheFracturePlaytest() {
     }
   }, [state]);
 
-  // Record run history & clear saved state on game over
+  // Record run history, process post-mortem analytics & submit high score, clear saved state on game over
   useEffect(() => {
     if (state.gameOver) {
       const runSector = Math.max(1, Math.floor((state.round - 1) / 10) + 1);
       recordRunHistory({ round: state.round, causeOfLoss: state.gameOver, sector: runSector });
+      recordManifestEntry({
+        shipName: shipNameInput || getShipName(),
+        captainName: captainProfile.captainCallsign,
+        round: state.round,
+        sector: runSector,
+        causeOfLoss: state.gameOver,
+        anchorPersona: state.anchorPersona,
+        victory: state.gameOver.includes("VICTORY"),
+      });
+      const completion = processRunCompletion(state, shipNameInput || getShipName(), captainProfile);
+      setPostMortemResult(completion);
+      setManifestEntries(getCaptainsManifest());
+      setHighScoresList(getHighScores());
+      setCosmeticsProfile(getCosmeticsProfile());
       clearRunState();
       setSavedRun(null);
       setHistoryList(getRunHistory());
@@ -791,6 +1159,7 @@ export default function TheFracturePlaytest() {
 
   const setPlayerChoice = (idx, abilityId, level) => {
     if (state.gameOver) return;
+    synth.playSfx("click");
     setState((s) => { const players = [...s.players]; players[idx] = { ...players[idx], ability: abilityId, level }; return { ...s, players }; });
   };
 
@@ -798,6 +1167,7 @@ export default function TheFracturePlaytest() {
 
   const fireImpact = (catKey, hits, dmg) => {
     if (!catKey || catKey === "lull") return;
+    synth.playSfx("damage");
     const color = CATEGORIES[catKey].axis === "ruthless" ? COLORS.ruthless : CATEGORIES[catKey].axis === "methodical" ? COLORS.methodical : COLORS.desperate1;
     setToast({ text: `${CATEGORIES[catKey].label.toUpperCase()} — ${meterLabelStatic[hits]} -${dmg.toFixed(1)}`, color });
     setMeterFlash(hits); setFlashCat(catKey);
@@ -821,11 +1191,18 @@ export default function TheFracturePlaytest() {
     if (!gameOver && entropy >= 100) { gameOver = "Entropy reached maximum. The process completes itself."; lossType = "mechanical"; log = [...log, { type: "loss", reason: gameOver }]; }
     if (!gameOver && morale <= 0) { gameOver = "Crew Morale collapsed. The will to continue is gone."; lossType = "morale"; log = [...log, { type: "loss", reason: gameOver }]; }
 
+    if (!gameOver && round >= 30) {
+      gameOver = "VICTORY! You survived 30 rounds and escaped Sector 3!";
+      synth.playSfx("victory");
+      log = [...log, { type: "loss", reason: gameOver }];
+    }
+
     if (gameOver) setTimeout(() => recordRunEnd(round), 0);
 
     let nextRound = round, nextIncoming = null, nextEventId = null;
     if (!gameOver) {
       nextRound = round + 1;
+      synth.playSfx("warp");
       const ambientBump = (activeModifiers.entropy && activeModifiers.entropy.roundsRemaining > 0) ? activeModifiers.entropy.bump : 0;
       const reveal = computeReveal(nextRound, entropy, axisCounts, totalActions, usedEventIds, pendingRelief, pendingLullBonus, ambientBump);
       entropy = reveal.entropy; nextIncoming = reveal.incoming; nextEventId = reveal.eventId;
@@ -1136,6 +1513,7 @@ export default function TheFracturePlaytest() {
 
   const claimBankAction = (bankIdx) => {
     if (state.gameOver) return;
+    synth.playSfx("click");
     setState((prev) => {
       const entry = prev.openBanks[bankIdx];
       if (!entry) return prev;
@@ -1154,6 +1532,7 @@ export default function TheFracturePlaytest() {
 
   const spendBelief = (front) => {
     if (state.gameOver || !state.beliefReady) return;
+    synth.playSfx("click");
     setState((prev) => {
       const persona = prev.anchorPersona;
       const multiplier = persona === "ricky" ? RICKY_B.spendPayoutMultiplier : persona === "maude" ? MAUDE_B.spendPayoutMultiplier : DEZ_B.spendPayoutMultiplier;
@@ -1170,21 +1549,49 @@ export default function TheFracturePlaytest() {
 
   const launchVoyage = () => {
     if (!anchorChoice) return;
+    synth.playSfx("warp");
     setState(() => {
       const base = initialState(anchorChoice);
       const reveal = computeReveal(1, 0, base.axisCounts, 0, []);
-      return { ...base, started: true, round: 1, entropy: reveal.entropy, incomingThreat: reveal.incoming, incomingEventId: reveal.eventId, log: [{ type: "intro" }] };
+      return {
+        ...base,
+        started: true,
+        round: 1,
+        entropy: reveal.entropy,
+        incomingThreat: reveal.incoming,
+        incomingEventId: reveal.eventId,
+        log: [{ type: "intro" }],
+        equippedRunes: base.equippedRunes || [],
+        helmName: base.helmName || captainProfile?.helmName || "Helm",
+        geneName: base.geneName || captainProfile?.geneName || "Gene",
+        salName: base.salName || captainProfile?.salName || "Sal",
+        hullSkin: base.hullSkin || captainProfile?.activeHullSkin || "titanium",
+      };
     });
   };
   const launchNextVoyage = () => {
+    synth.playSfx("warp");
     setState((prev) => {
       const base = initialState(prev.anchorPersona);
       const reveal = computeReveal(1, 0, base.axisCounts, 0, []);
-      return { ...base, started: true, round: 1, entropy: reveal.entropy, incomingThreat: reveal.incoming, incomingEventId: reveal.eventId, log: [{ type: "intro" }] };
+      return {
+        ...base,
+        started: true,
+        round: 1,
+        entropy: reveal.entropy,
+        incomingThreat: reveal.incoming,
+        incomingEventId: reveal.eventId,
+        log: [{ type: "intro" }],
+        equippedRunes: base.equippedRunes || [],
+        helmName: base.helmName || captainProfile?.helmName || "Helm",
+        geneName: base.geneName || captainProfile?.geneName || "Gene",
+        salName: base.salName || captainProfile?.salName || "Sal",
+        hullSkin: base.hullSkin || captainProfile?.activeHullSkin || "titanium",
+      };
     });
     setFlashCat(null); setToast(null); setMeterFlash(null);
   };
-  const fullReset = () => { setState(initialState()); setAnchorChoice(null); setFlashCat(null); setToast(null); setMeterFlash(null); };
+  const fullReset = () => { synth.playSfx("click"); setState(initialState()); setAnchorChoice(null); setFlashCat(null); setToast(null); setMeterFlash(null); };
 
   const flashColor = flashCat === "targeted" ? COLORS.ruthless : flashCat === "telegraphed" ? COLORS.methodical : flashCat === "cascading" ? COLORS.desperate1 : "transparent";
   const dom = dominantAxis();
@@ -1367,12 +1774,45 @@ export default function TheFracturePlaytest() {
       )}
 
       <div style={{ maxWidth: 900, margin: "0 auto", position: "relative", zIndex: 1 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 18, paddingBottom: 16, borderBottom: `1px solid ${COLORS.panelBorder}` }}>
-          <div>
-            <div style={{ fontSize: 11, letterSpacing: 3, color: COLORS.muted, marginBottom: 4 }}>PROSIS · PLAYTEST BUILD</div>
-            <h1 style={{ fontSize: 26, fontWeight: 700, margin: 0, letterSpacing: -0.5 }}>THE FRACTURE</h1>
-          </div>
-          <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18, paddingBottom: 16, borderBottom: `1px solid ${COLORS.panelBorder}`, flexWrap: "wrap", gap: 12 }}>
+          <ProsisBlackHoleLogo size={36} isVoyageActive={state.started && !state.gameOver} />
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <button
+              onClick={() => {
+                const newMuted = toggleMute();
+                setAudioMuted(newMuted);
+                if (!newMuted) {
+                  startAmbientPad();
+                } else {
+                  stopAmbientPad();
+                }
+              }}
+              className="action-btn"
+              style={iconBtnStyle}
+            >
+              {audioMuted ? <VolumeX size={14} /> : <Volume2 size={14} />} {audioMuted ? "Muted" : "Audio"}
+            </button>
+            <button onClick={() => setBriefingOpen(true)} className="action-btn" style={iconBtnStyle}>
+              <FileText size={14} /> Briefing
+            </button>
+            <button onClick={() => setManifestOpen(true)} className="action-btn" style={iconBtnStyle}>
+              <Terminal size={14} /> Manifest
+            </button>
+            <button onClick={() => setLoreOpen(true)} className="action-btn" style={iconBtnStyle}>
+              <Radio size={14} /> Lore Signals
+            </button>
+            <button onClick={() => setAchievementsOpen(true)} className="action-btn" style={iconBtnStyle}>
+              <Award size={14} /> Achievements
+            </button>
+            <button onClick={() => setWdtOpen(true)} className="action-btn" style={iconBtnStyle}>
+              <Compass size={14} /> WDT Diagnostic
+            </button>
+            <button onClick={() => setProfileOpen(true)} className="action-btn" style={iconBtnStyle}>
+              <Award size={14} /> Profile
+            </button>
+            <button onClick={() => setLeaderboardOpen(true)} className="action-btn" style={iconBtnStyle}>
+              <Trophy size={14} /> Leaderboard
+            </button>
             <button onClick={() => setRulesOpen((v) => !v)} className="action-btn" style={iconBtnStyle}><HelpCircle size={14} /> Rules</button>
             <button onClick={() => setDesignerView((d) => !d)} className="action-btn" style={iconBtnStyle}>{designerView ? <EyeOff size={14} /> : <Eye size={14} />} Designer</button>
             <button onClick={fullReset} className="action-btn" style={iconBtnStyle}><RotateCcw size={14} /> Reset</button>
@@ -1393,6 +1833,68 @@ export default function TheFracturePlaytest() {
           </div>
           <CoreRing size={92} />
         </div>
+        {/* RUNE INVENTORY HUD SLOTS */}
+        <div className="rune-inventory" id="runeInventory" style={{ ...panelStyle, padding: "10px 14px", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Sparkles size={16} color={COLORS.salvage} />
+            <span style={{ fontSize: 11, fontWeight: 700, color: COLORS.bone, letterSpacing: 1 }}>EQUIPPED SPACETIME RUNES:</span>
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            {[0, 1, 2].map((slotIdx) => {
+              const rune = (state.equippedRunes || [])[slotIdx];
+              return (
+                <div
+                  key={slotIdx}
+                  className="rune-slot"
+                  title={rune ? `${rune.name}: ${rune.description}` : "Empty Spacetime Rune Slot"}
+                  style={{
+                    padding: "4px 10px",
+                    borderRadius: 6,
+                    border: `1px solid ${rune ? COLORS.salvage : COLORS.panelBorder}`,
+                    background: rune ? `${COLORS.salvage}22` : COLORS.void,
+                    color: rune ? COLORS.bone : COLORS.muted,
+                    fontSize: 11,
+                    fontWeight: 700,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                  }}
+                >
+                  <span>{rune ? "🔮" : "⬡"}</span>
+                  <span>{rune ? rune.name : "Empty Slot"}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* GTL TTF RADAR GAUGE */}
+        {(() => {
+          const gtl = computeGTL(state.round, { entropy: state.entropy, systems: state.systems, re: state.re }, { entropy: 0, systems: 0, re: 0 }, state.activeModifiers);
+          return (
+            <div className="ttf-radar-gauge" id="ttfRadarGauge" style={{ ...panelStyle, padding: "10px 14px", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <Radar size={16} color={COLORS.event} />
+                <span style={{ fontSize: 11, fontWeight: 700, color: COLORS.bone, letterSpacing: 1 }}>GTL TTF RADAR GAUGE:</span>
+              </div>
+              <div style={{ display: "flex", gap: 12, fontSize: 11, flexWrap: "wrap" }}>
+                {(["entropy", "systems", "re"] as Front[]).map((f) => {
+                  const ttf = gtl.ttf[f];
+                  const isOptimal = gtl.optimalFront === f;
+                  const warningColor = ttf <= 3 ? COLORS.danger : ttf <= 5 ? COLORS.morale : COLORS.salvage;
+                  return (
+                    <div key={f} style={{ background: COLORS.void, border: `1px solid ${isOptimal ? warningColor : COLORS.panelBorder}`, borderRadius: 6, padding: "4px 10px", display: "flex", alignItems: "center", gap: 6 }}>
+                      <span style={{ textTransform: "uppercase", fontWeight: 700, color: isOptimal ? warningColor : COLORS.muted }}>{f}:</span>
+                      <span className="mono" style={{ fontWeight: 900, color: warningColor }}>{ttf === Infinity ? "∞" : `${ttf.toFixed(1)} RNDS`}</span>
+                      {isOptimal && <span style={{ fontSize: 10, color: warningColor }}>⚠️ OPTIMAL</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+
 
         {rulesOpen && (
           <div style={{ ...panelStyle, padding: 16, marginBottom: 18, fontSize: 13, lineHeight: 1.6, color: COLORS.muted }}>
@@ -1586,9 +2088,10 @@ export default function TheFracturePlaytest() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
               {state.players.map((p, idx) => {
                 const role = ROLES.find((r) => r.id === p.roleId);
+                const crewName = p.roleId === "helm" ? captainProfile.helmName : p.roleId === "engineer" ? captainProfile.geneName : captainProfile.salName;
                 return (
                   <div key={idx} style={{ ...panelStyle, padding: 12 }}>
-                    <div style={{ fontSize: 12.5, fontWeight: 600, color: COLORS.bone }}>{role.personalName}</div>
+                    <div style={{ fontSize: 12.5, fontWeight: 600, color: COLORS.bone }}>{crewName || role.personalName} <span style={{ fontSize: 10, color: COLORS.muted }}>({role.name})</span></div>
                     <div style={{ fontSize: 10, color: COLORS.muted, marginBottom: 9 }}>{role.name} · {role.focus}</div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                       {role.abilities.map((ability) => (
@@ -1629,125 +2132,24 @@ export default function TheFracturePlaytest() {
             </button>
           )
         ) : (
-          <div style={{ ...panelStyle, background: "#18080c", borderColor: `${COLORS.danger}88`, padding: 22, marginBottom: 22 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14, borderBottom: `1px solid ${COLORS.danger}44`, paddingBottom: 12 }}>
-              <Skull size={28} color={COLORS.danger} />
-              <div>
-                <div style={{ fontSize: 16, fontWeight: 800, color: COLORS.danger, letterSpacing: 1 }}>
-                  VOYAGE TERMINATED — POST-MORTEM
-                </div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: COLORS.bone, marginTop: 2 }}>
-                  {state.gameOver}
-                </div>
-              </div>
-            </div>
-
-            <div style={{ fontSize: 13, color: COLORS.bone, fontStyle: "italic", marginBottom: 18, background: "#00000040", padding: 12, borderRadius: 8, borderLeft: `3px solid ${COLORS.danger}` }}>
-              "{state.lossType === "morale" ? MORALE_EPITAPH(state.round) : EPITAPHS[dom[0]](state.round)}"
-            </div>
-
-            {/* Performance Summary */}
-            <div style={{ ...panelStyle, background: "#0f080a", borderColor: COLORS.panelBorder, padding: 16, marginBottom: 18 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: COLORS.muted, letterSpacing: 1, marginBottom: 12, textTransform: "uppercase" }}>
-                📊 PERFORMANCE SUMMARY
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 14 }}>
-                <div style={{ background: "#00000040", padding: "10px 12px", borderRadius: 8 }}>
-                  <div style={{ fontSize: 10, color: COLORS.muted }}>SECTOR REACHED</div>
-                  <div className="mono" style={{ fontSize: 16, fontWeight: 700, color: COLORS.event }}>Sector {sector}</div>
-                </div>
-                <div style={{ background: "#00000040", padding: "10px 12px", borderRadius: 8 }}>
-                  <div style={{ fontSize: 10, color: COLORS.muted }}>ROUNDS SURVIVED</div>
-                  <div className="mono" style={{ fontSize: 16, fontWeight: 700, color: COLORS.bone }}>{state.round}</div>
-                </div>
-                <div style={{ background: "#00000040", padding: "10px 12px", borderRadius: 8 }}>
-                  <div style={{ fontSize: 10, color: COLORS.muted }}>ANCHOR PERSONA</div>
-                  <div className="mono" style={{ fontSize: 14, fontWeight: 700, color: persona.color }}>{persona.name}</div>
-                </div>
-              </div>
-
-              <div style={{ borderTop: `1px dashed ${COLORS.panelBorder}`, paddingTop: 10, display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8 }}>
-                <div>
-                  <div style={{ fontSize: 10, color: COLORS.muted }}>ENTROPY</div>
-                  <div className="mono" style={{ fontSize: 12, color: state.entropy >= 75 ? COLORS.danger : COLORS.bone }}>{state.entropy.toFixed(1)}%</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 10, color: COLORS.muted }}>SYSTEMS</div>
-                  <div className="mono" style={{ fontSize: 12, color: state.systems <= 25 ? COLORS.danger : COLORS.bone }}>{state.systems.toFixed(1)}%</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 10, color: COLORS.muted }}>REALITY ENGINE</div>
-                  <div className="mono" style={{ fontSize: 12, color: state.re <= 25 ? COLORS.danger : COLORS.bone }}>{state.re.toFixed(1)}%</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 10, color: COLORS.muted }}>CREW MORALE</div>
-                  <div className="mono" style={{ fontSize: 12, color: state.morale <= 25 ? COLORS.danger : COLORS.bone }}>{state.morale.toFixed(1)}%</div>
-                </div>
-              </div>
-              <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px dashed ${COLORS.panelBorder}`, fontSize: 11.5, color: COLORS.muted }}>
-                <span style={{ color: persona.color, fontWeight: 700 }}>Anchor State ({persona.name}):</span>{" "}
-                {state.anchorPersona === "ricky" && `Final Belief ${state.beliefOrTrust.toFixed(1)} / ${RICKY_B.threshold}`}
-                {state.anchorPersona === "maude" && `Final Belief ${state.beliefOrTrust.toFixed(1)} / ${MAUDE_B.threshold} · Friction Tax: ${(maudeTax(state.maudeConsecutiveCoverage) * 100).toFixed(0)}%`}
-                {state.anchorPersona === "dez" && `Final Trust ${state.beliefOrTrust.toFixed(1)} · Defiance Chance: ${(state.defianceChance * 100).toFixed(0)}%`}
-              </div>
-            </div>
-
-            {/* Past Run History */}
-            <div style={{ ...panelStyle, background: "#0a0608", borderColor: COLORS.panelBorder, padding: 16, marginBottom: 18 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: COLORS.muted, letterSpacing: 1, textTransform: "uppercase", display: "flex", alignItems: "center", gap: 6 }}>
-                  <History size={14} /> PAST RUN HISTORY ({historyList.length})
-                </div>
-                {historyList.length > 0 && (
-                  <button
-                    onClick={() => { clearRunHistory(); setHistoryList([]); }}
-                    className="action-btn"
-                    style={{ padding: "4px 10px", borderRadius: 6, border: `1px solid ${COLORS.danger}66`, background: `${COLORS.danger}18`, color: COLORS.danger, fontSize: 11, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}
-                  >
-                    <Trash2 size={12} /> Clear Run History
-                  </button>
-                )}
-              </div>
-
-              {historyList.length === 0 ? (
-                <div style={{ fontSize: 12, color: COLORS.muted, fontStyle: "italic", padding: "8px 0" }}>No past run records logged yet.</div>
-              ) : (
-                <div style={{ maxHeight: 180, overflowY: "auto", display: "flex", flexDirection: "column", gap: 6 }}>
-                  {historyList.slice().reverse().map((run, idx) => (
-                    <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#00000050", padding: "8px 12px", borderRadius: 6, fontSize: 12 }}>
-                      <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                        <span className="mono" style={{ color: COLORS.event, fontWeight: 700 }}>Run #{historyList.length - idx}</span>
-                        <span className="mono" style={{ color: COLORS.muted }}>Sector {run.sector} · Round {run.round}</span>
-                      </div>
-                      <div style={{ color: COLORS.bone, opacity: 0.9, fontSize: 11.5, textAlign: "right", maxWidth: "55%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                        {run.causeOfLoss || "Completed"}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Action Buttons */}
-            <div style={{ display: "flex", gap: 12 }}>
-              <button
-                onClick={launchNextVoyage}
-                className="action-btn primary-btn"
-                style={{ flex: 1, background: COLORS.bone, color: COLORS.void, border: "none", borderRadius: 10, padding: "13px", fontWeight: 700, fontSize: 13, cursor: "pointer", letterSpacing: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
-              >
-                <Rocket size={16} /> START NEW RUN
-              </button>
-              {historyList.length > 0 && (
-                <button
-                  onClick={() => { clearRunHistory(); setHistoryList([]); }}
-                  className="action-btn"
-                  style={{ padding: "13px 18px", background: `${COLORS.danger}22`, color: COLORS.danger, border: `1px solid ${COLORS.danger}55`, borderRadius: 10, fontWeight: 700, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
-                >
-                  <Trash2 size={14} /> Clear History
-                </button>
-              )}
-            </div>
-          </div>
+          <PostMortemModal
+            gameOver={state.gameOver}
+            lossType={state.lossType}
+            round={state.round}
+            sector={sector}
+            domFront={dom[0]}
+            postMortemResult={postMortemResult}
+            captainProfile={captainProfile}
+            shipName={shipNameInput}
+            highScoresList={highScoresList}
+            onLaunchNewVoyage={launchNextVoyage}
+            onOpenLeaderboard={() => setLeaderboardOpen(true)}
+            onReturnToBridge={() => {
+              setState(initialState());
+              setPostMortemResult(null);
+              clearRunState();
+            }}
+          />
         )}
 
         <div style={{ fontSize: 10.5, color: COLORS.muted, letterSpacing: 1, marginBottom: 8 }}>SESSION LOG</div>
@@ -1785,6 +2187,447 @@ export default function TheFracturePlaytest() {
           })}
           <div ref={logEndRef} />
         </div>
+        {/* TACTICAL BRIEFING MODAL */}
+        {briefingOpen && (
+          <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.88)", backdropFilter: "blur(6px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+            <div style={{ ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "24px 28px", boxShadow: "0 20px 50px rgba(0,0,0,0.8)", border: `1.5px solid ${COLORS.systems}` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, borderBottom: `1px solid ${COLORS.panelBorder}`, paddingBottom: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <FileText size={22} color={COLORS.systems} />
+                  <div>
+                    <div style={{ fontSize: 10, letterSpacing: 2, color: COLORS.muted }}>1-MINUTE PLAYBOOK</div>
+                    <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0, color: COLORS.bone }}>TACTICAL BRIEFING</h2>
+                  </div>
+                </div>
+                <button onClick={() => setBriefingOpen(false)} className="action-btn" style={{ background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer", padding: 6 }}><X size={20} /></button>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 16, fontSize: 13, lineHeight: 1.5, color: COLORS.muted }}>
+                <div style={{ background: `${COLORS.systems}15`, border: `1px solid ${COLORS.systems}44`, borderRadius: 8, padding: 12 }}>
+                  <div style={{ color: COLORS.systems, fontWeight: 700, fontSize: 14, marginBottom: 4, display: "flex", alignItems: "center", gap: 6 }}><Rocket size={15} /> PRIMARY GOAL</div>
+                  <div style={{ color: COLORS.bone }}>Survive <b>3 Sectors (30 Rounds total / 10 rounds per sector)</b> without letting Entropy hit 100%, Systems or RE collapse to 0%, or Morale deplete.</div>
+                </div>
+                <div>
+                  <div style={{ color: COLORS.bone, fontWeight: 700, fontSize: 14, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}><Radar size={15} color={COLORS.event} /> THE 5 FRONTS & METERS</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 8 }}>
+                    <div style={{ background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${COLORS.panelBorder}` }}><span style={{ color: COLORS.systems, fontWeight: 700 }}>1. Systems:</span> Ship hull integrity (0-100%).</div>
+                    <div style={{ background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${COLORS.panelBorder}` }}><span style={{ color: COLORS.re, fontWeight: 700 }}>2. Reality Engine:</span> Quantum engine (0-100%).</div>
+                    <div style={{ background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${COLORS.panelBorder}` }}><span style={{ color: COLORS.morale, fontWeight: 700 }}>3. Morale:</span> Crew fortitude (0-100%).</div>
+                    <div style={{ background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${COLORS.panelBorder}` }}><span style={{ color: COLORS.salvage, fontWeight: 700 }}>4. Salvage:</span> Repairs & barrier banking.</div>
+                    <div style={{ background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${COLORS.panelBorder}` }}><span style={{ color: COLORS.entropy, fontWeight: 700 }}>5. Entropy:</span> Spacetime distortion (0-100%).</div>
+                  </div>
+                </div>
+                <div>
+                  <div style={{ color: COLORS.bone, fontWeight: 700, fontSize: 14, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}><Anchor size={15} color={COLORS.morale} /> 3 ANCHOR PERSONAS</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    <div style={{ background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${ANCHORS.ricky.color}44` }}><b style={{ color: ANCHORS.ricky.color }}>Ricky (Methodical):</b> Steady calls. Builds Belief when matching TTF.</div>
+                    <div style={{ background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${ANCHORS.maude.color}44` }}><b style={{ color: ANCHORS.maude.color }}>Maude (Ruthless):</b> Aggressive coverage across multiple fronts; levies strain tax.</div>
+                    <div style={{ background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${ANCHORS.dez.color}44` }}><b style={{ color: ANCHORS.dez.color }}>Dez (Desperate):</b> Volatile gambits. High Distrust leads to crew overrides.</div>
+                  </div>
+                </div>
+                <div style={{ background: COLORS.void, padding: 10, borderRadius: 8, border: `1px solid ${COLORS.panelBorder}` }}>
+                  <div style={{ color: COLORS.bone, fontWeight: 700, fontSize: 14, marginBottom: 4, display: "flex", alignItems: "center", gap: 6 }}><ShieldAlert size={15} color={COLORS.salvage} /> COMPOUNDING BARRIERS</div>
+                  <div>Allocate actions into <b>Banked Barriers</b>. Unclaimed barriers compound (+15%/rnd). Claiming pays out restoration; threat hits cause haircuts.</div>
+                </div>
+              </div>
+              <div style={{ marginTop: 20, paddingTop: 14, borderTop: `1px solid ${COLORS.panelBorder}`, display: "flex", justifyContent: "flex-end" }}>
+                <button onClick={() => setBriefingOpen(false)} className="action-btn" style={{ background: COLORS.systems, color: COLORS.void, border: "none", borderRadius: 8, padding: "8px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>CLOSE BRIEFING</button>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* CAPTAIN'S MANIFEST MODAL */}
+        {manifestOpen && (
+          <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.88)", backdropFilter: "blur(6px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+            <div style={{ ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "24px 28px", boxShadow: "0 20px 50px rgba(0,0,0,0.8)", border: `1.5px solid ${COLORS.event}` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, borderBottom: `1px solid ${COLORS.panelBorder}`, paddingBottom: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <Terminal size={22} color={COLORS.event} />
+                  <div>
+                    <div style={{ fontSize: 10, letterSpacing: 2, color: COLORS.muted }}>OFFICIAL LOGS</div>
+                    <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0, color: COLORS.bone }}>CAPTAIN'S MANIFEST</h2>
+                  </div>
+                </div>
+                <button onClick={() => setManifestOpen(false)} className="action-btn" style={{ background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer", padding: 6 }}><X size={20} /></button>
+              </div>
+
+              <div style={{ background: COLORS.void, padding: 12, borderRadius: 8, border: `1px solid ${COLORS.panelBorder}`, marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                <div>
+                  <div style={{ fontSize: 10, color: COLORS.muted, letterSpacing: 1 }}>ACTIVE VESSEL NAME</div>
+                  {editingShipName ? (
+                    <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+                      <input type="text" value={shipNameInput} onChange={(e) => setShipNameInput(e.target.value)} style={{ background: COLORS.panel2, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px 8px", borderRadius: 4, fontSize: 13 }} />
+                      <button onClick={() => { setShipName(shipNameInput); setEditingShipName(false); }} className="action-btn" style={{ background: COLORS.event, color: COLORS.void, border: "none", borderRadius: 4, padding: "4px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Save</button>
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: 16, fontWeight: 700, color: COLORS.bone, marginTop: 2 }}>{shipNameInput || "USSC PROSIS"}</div>
+                  )}
+                </div>
+                {!editingShipName && (
+                  <button onClick={() => setEditingShipName(true)} className="action-btn" style={{ background: `${COLORS.event}22`, border: `1px solid ${COLORS.event}55`, color: COLORS.event, padding: "6px 12px", borderRadius: 6, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+                    <Edit3 size={12} /> Rename Vessel
+                  </button>
+                )}
+              </div>
+
+              <div style={{ fontSize: 13, color: COLORS.muted, marginBottom: 8, fontWeight: 600 }}>RECORDED VOYAGE HISTORY ({manifestEntries.length})</div>
+              {manifestEntries.length === 0 ? (
+                <div style={{ background: COLORS.void, padding: 16, borderRadius: 8, color: COLORS.muted, fontSize: 12.5, fontStyle: "italic", textAlign: "center" }}>No manifest entries recorded yet. Complete or conclude a voyage to record history.</div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 260, overflowY: "auto" }}>
+                  {manifestEntries.slice().reverse().map((entry, i) => (
+                    <div key={i} style={{ background: COLORS.void, padding: 10, borderRadius: 8, border: `1px solid ${COLORS.panelBorder}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div>
+                        <div style={{ fontSize: 12.5, fontWeight: 700, color: COLORS.bone }}>Sector {entry.sector} · Round {entry.round}</div>
+                        <div style={{ fontSize: 11, color: COLORS.muted, marginTop: 2 }}>Anchor: <span style={{ color: ANCHORS[entry.anchorPersona]?.color || COLORS.bone }}>{ANCHORS[entry.anchorPersona]?.name || entry.anchorPersona}</span></div>
+                      </div>
+                      <div style={{ fontSize: 11.5, color: entry.causeOfLoss?.includes("VICTORY") ? COLORS.salvage : COLORS.danger, fontWeight: 600, textAlign: "right", maxWidth: "50%" }}>{entry.causeOfLoss}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div style={{ marginTop: 20, paddingTop: 14, borderTop: `1px solid ${COLORS.panelBorder}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                {manifestEntries.length > 0 && (
+                  <button onClick={() => { clearCaptainsManifest(); setManifestEntries([]); }} className="action-btn" style={{ background: `${COLORS.danger}22`, color: COLORS.danger, border: `1px solid ${COLORS.danger}55`, borderRadius: 6, padding: "6px 12px", fontSize: 11, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+                    <Trash2 size={12} /> Clear Manifest
+                  </button>
+                )}
+                <button onClick={() => setManifestOpen(false)} className="action-btn" style={{ background: COLORS.event, color: COLORS.void, border: "none", borderRadius: 8, padding: "8px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer", marginLeft: "auto" }}>CLOSE MANIFEST</button>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* LORE SIGNALS MODAL */}
+        {loreOpen && (
+          <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.88)", backdropFilter: "blur(6px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+            <div style={{ ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "24px 28px", boxShadow: "0 20px 50px rgba(0,0,0,0.8)", border: `1.5px solid ${COLORS.re}` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, borderBottom: `1px solid ${COLORS.panelBorder}`, paddingBottom: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <Radio size={22} color={COLORS.re} />
+                  <div>
+                    <div style={{ fontSize: 10, letterSpacing: 2, color: COLORS.muted }}>TRANSCRIPTS & TELEMETRY</div>
+                    <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0, color: COLORS.bone }}>LORE SIGNALS ({unlockedLoreList.length}/{LORE_SIGNALS.length})</h2>
+                  </div>
+                </div>
+                <button onClick={() => setLoreOpen(false)} className="action-btn" style={{ background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer", padding: 6 }}><X size={20} /></button>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, maxHeight: 380, overflowY: "auto" }}>
+                {LORE_SIGNALS.map((sig) => {
+                  const unlocked = unlockedLoreList.includes(sig.id);
+                  return (
+                    <div key={sig.id} style={{ background: COLORS.void, padding: 12, borderRadius: 8, border: `1px solid ${unlocked ? COLORS.re + "66" : COLORS.panelBorder}`, opacity: unlocked ? 1 : 0.65 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: unlocked ? COLORS.re : COLORS.muted, display: "flex", alignItems: "center", gap: 6 }}>
+                          {unlocked ? <Radio size={14} color={COLORS.re} /> : <Lock size={14} color={COLORS.muted} />} {sig.title}
+                        </div>
+                        <span className="mono" style={{ fontSize: 10, background: unlocked ? `${COLORS.re}22` : `${COLORS.muted}22`, color: unlocked ? COLORS.re : COLORS.muted, padding: "2px 6px", borderRadius: 4 }}>{sig.category}</span>
+                      </div>
+                      {unlocked ? (
+                        <div style={{ fontSize: 11.5, color: COLORS.bone, lineHeight: 1.5, whiteSpace: "pre-wrap", marginTop: 4, fontStyle: "italic" }}>{sig.content}</div>
+                      ) : (
+                        <div style={{ fontSize: 11, color: COLORS.muted, marginTop: 4 }}>🔒 <i>{sig.conditionDesc}</i></div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div style={{ marginTop: 20, paddingTop: 14, borderTop: `1px solid ${COLORS.panelBorder}`, display: "flex", justifyContent: "flex-end" }}>
+                <button onClick={() => setLoreOpen(false)} className="action-btn" style={{ background: COLORS.re, color: COLORS.bone, border: "none", borderRadius: 8, padding: "8px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>CLOSE LORE SIGNALS</button>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* ACHIEVEMENTS MODAL */}
+        {achievementsOpen && (
+          <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.88)", backdropFilter: "blur(6px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+            <div style={{ ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "24px 28px", boxShadow: "0 20px 50px rgba(0,0,0,0.8)", border: `1.5px solid ${COLORS.salvage}` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, borderBottom: `1px solid ${COLORS.panelBorder}`, paddingBottom: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <Award size={22} color={COLORS.salvage} />
+                  <div>
+                    <div style={{ fontSize: 10, letterSpacing: 2, color: COLORS.muted }}>MEDALS & HONORS</div>
+                    <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0, color: COLORS.bone }}>ACHIEVEMENTS ({unlockedAchList.length}/{ACHIEVEMENTS_LIST.length})</h2>
+                  </div>
+                </div>
+                <button onClick={() => setAchievementsOpen(false)} className="action-btn" style={{ background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer", padding: 6 }}><X size={20} /></button>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 10, maxHeight: 380, overflowY: "auto" }}>
+                {ACHIEVEMENTS_LIST.map((ach) => {
+                  const unlocked = unlockedAchList.includes(ach.id);
+                  return (
+                    <div key={ach.id} style={{ background: COLORS.void, padding: 10, borderRadius: 8, border: `1px solid ${unlocked ? COLORS.salvage + "66" : COLORS.panelBorder}`, display: "flex", gap: 10, alignItems: "center", opacity: unlocked ? 1 : 0.5 }}>
+                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: unlocked ? `${COLORS.salvage}22` : `${COLORS.muted}11`, border: `1px solid ${unlocked ? COLORS.salvage : COLORS.muted}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        {unlocked ? <CheckCircle size={16} color={COLORS.salvage} /> : <Lock size={14} color={COLORS.muted} />}
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 12.5, fontWeight: 700, color: unlocked ? COLORS.bone : COLORS.muted }}>{ach.title}</div>
+                        <div style={{ fontSize: 11, color: COLORS.muted, marginTop: 2 }}>{ach.desc}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div style={{ marginTop: 20, paddingTop: 14, borderTop: `1px solid ${COLORS.panelBorder}`, display: "flex", justifyContent: "flex-end" }}>
+                <button onClick={() => setAchievementsOpen(false)} className="action-btn" style={{ background: COLORS.salvage, color: COLORS.void, border: "none", borderRadius: 8, padding: "8px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>CLOSE ACHIEVEMENTS</button>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* WDT ONBOARDING DIAGNOSTIC MODAL */}
+        {wdtOpen && (
+          <div id="wdtModal" style={{ position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.92)", backdropFilter: "blur(6px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+            <div style={{ ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "24px 28px", boxShadow: "0 20px 50px rgba(0,0,0,0.8)", border: `1.5px solid ${COLORS.event}` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, borderBottom: `1px solid ${COLORS.panelBorder}`, paddingBottom: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <Compass size={22} color={COLORS.event} />
+                  <div>
+                    <div style={{ fontSize: 10, letterSpacing: 2, color: COLORS.muted }}>ONBOARDING DIAGNOSTIC</div>
+                    <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0, color: COLORS.bone }}>QUANTUM CALIBRATION</h2>
+                  </div>
+                </div>
+                <button onClick={() => setWdtOpen(false)} className="action-btn" style={{ background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer", padding: 6 }}><X size={20} /></button>
+              </div>
+
+              {wdtStep < WDT_SCENARIOS.length ? (
+                <div>
+                  <div style={{ fontSize: 11, letterSpacing: 1.5, color: COLORS.event, fontWeight: 700, marginBottom: 4 }}>
+                    SCENARIO {wdtStep + 1} OF {WDT_SCENARIOS.length} — {WDT_SCENARIOS[wdtStep].title}
+                  </div>
+                  <div style={{ fontSize: 14, color: COLORS.bone, marginBottom: 16, lineHeight: 1.5 }}>
+                    {WDT_SCENARIOS[wdtStep].question}
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    {WDT_SCENARIOS[wdtStep].options.map((opt) => {
+                      const selected = wdtAnswers[WDT_SCENARIOS[wdtStep].id] === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          onClick={() => {
+                            setWdtAnswers({ ...wdtAnswers, [WDT_SCENARIOS[wdtStep].id]: opt.id });
+                            if (wdtStep + 1 <= WDT_SCENARIOS.length) {
+                              setWdtStep(wdtStep + 1);
+                            }
+                          }}
+                          className="action-btn"
+                          style={{
+                            textAlign: "left",
+                            padding: "12px 16px",
+                            borderRadius: 8,
+                            border: `1px solid ${selected ? COLORS.event : COLORS.panelBorder}`,
+                            background: selected ? `${COLORS.event}22` : COLORS.void,
+                            color: COLORS.bone,
+                            cursor: "pointer",
+                            fontSize: 13,
+                          }}
+                        >
+                          {opt.text}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
+                (() => {
+                  const recPersona = evaluateDiagnosticResult(wdtAnswers);
+                  const patch = getCalibrationPatch(recPersona);
+                  return (
+                    <div>
+                      <div style={{ fontSize: 12, letterSpacing: 1.5, color: COLORS.salvage, fontWeight: 700, marginBottom: 8 }}>
+                        CALIBRATION COMPLETE — RECOMMENDED ANCHOR AI
+                      </div>
+                      <div style={{ background: COLORS.void, borderRadius: 12, border: `1.5px solid ${patch.color}`, padding: 16, marginBottom: 16 }}>
+                        <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 8 }}>
+                          <div dangerouslySetInnerHTML={{ __html: patch.svg }} />
+                          <div>
+                            <h3 style={{ fontSize: 16, fontWeight: 700, color: patch.color, margin: 0 }}>{patch.title}</h3>
+                            <div style={{ fontSize: 11, color: COLORS.muted }}>{patch.tagline}</div>
+                          </div>
+                        </div>
+                        <div style={{ fontSize: 12, color: COLORS.bone, marginBottom: 8 }}>{patch.description}</div>
+                      </div>
+
+                      <div style={{ display: "flex", gap: 10, justifyContent: "space-between" }}>
+                        <button onClick={() => { setWdtAnswers({}); setWdtStep(0); }} className="action-btn" style={{ background: COLORS.panel, color: COLORS.muted, border: `1px solid ${COLORS.panelBorder}`, borderRadius: 8, padding: "8px 16px", fontSize: 12, cursor: "pointer" }}>
+                          Retake
+                        </button>
+                        <button onClick={() => { setAnchorChoice(recPersona); setWdtOpen(false); }} className="action-btn" style={{ background: patch.color, color: COLORS.void, border: "none", borderRadius: 8, padding: "8px 20px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+                          Confirm & Select {ANCHORS[recPersona].name}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()
+              )}
+            </div>
+          </div>
+        )}
+        {/* CAPTAIN PROFILE & COSMETICS MODAL */}
+        {profileOpen && (
+          <div id="profileModal" style={{ position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.92)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+            <div style={{ ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "20px 24px", border: `1.5px solid ${COLORS.morale}` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, color: COLORS.bone }}>CAPTAIN PROFILE</h2>
+                <button onClick={() => setProfileOpen(false)} className="action-btn" style={{ background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer" }}><X size={18} /></button>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <div style={{ background: COLORS.void, padding: 10, borderRadius: 8 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.morale, marginBottom: 4 }}>VESSEL & COMMANDER</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                    <div>
+                      <label style={{ fontSize: 10, color: COLORS.muted }}>Vessel Name</label>
+                      <input type="text" value={shipNameInput} onChange={(e) => setShipNameInput(e.target.value)} style={{ width: "100%", background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px 8px", borderRadius: 4, fontSize: 12 }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 10, color: COLORS.muted }}>Captain Call-Sign</label>
+                      <input type="text" value={captainProfile.captainCallsign} onChange={(e) => setCaptainProfile({ ...captainProfile, captainCallsign: e.target.value })} style={{ width: "100%", background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px 8px", borderRadius: 4, fontSize: 12 }} />
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ background: COLORS.void, padding: 10, borderRadius: 8 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.systems, marginBottom: 4 }}>CREW ROSTER</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6 }}>
+                    <input type="text" value={captainProfile.helmName} onChange={(e) => setCaptainProfile({ ...captainProfile, helmName: e.target.value })} style={{ background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px", borderRadius: 4, fontSize: 11 }} />
+                    <input type="text" value={captainProfile.geneName} onChange={(e) => setCaptainProfile({ ...captainProfile, geneName: e.target.value })} style={{ background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px", borderRadius: 4, fontSize: 11 }} />
+                    <input type="text" value={captainProfile.salName} onChange={(e) => setCaptainProfile({ ...captainProfile, salName: e.target.value })} style={{ background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px", borderRadius: 4, fontSize: 11 }} />
+                  </div>
+                </div>
+
+                <div style={{ background: COLORS.void, padding: 10, borderRadius: 8 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.salvage, marginBottom: 4 }}>HULL SKIN</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6 }}>
+                    {(["titanium", "chrome", "gold", "singularity"] as HullSkin[]).map((skin) => {
+                      const isUnlocked = cosmeticsProfile.unlockedHullSkins.includes(skin);
+                      const isActive = captainProfile.activeHullSkin === skin;
+                      return (
+                        <button key={skin} disabled={!isUnlocked} onClick={() => { if (isUnlocked) setCaptainProfile({ ...captainProfile, activeHullSkin: skin }); }} className="action-btn" style={{ padding: "4px", borderRadius: 4, border: `1px solid ${isActive ? COLORS.salvage : COLORS.panelBorder}`, background: isActive ? `${COLORS.salvage}22` : COLORS.panel, color: isUnlocked ? COLORS.bone : COLORS.muted, fontSize: 11 }}>
+                          {skin} {isActive ? "✓" : ""}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div style={{ background: COLORS.void, padding: 10, borderRadius: 8 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.event }}>UNLOCKED SCOUT BADGES</div>
+                  <div style={{ display: "flex", gap: 8, fontSize: 11, color: COLORS.muted, marginTop: 2 }}>
+                    {(["ricky", "maude", "dez"] as PersonaId[]).map((p) => (
+                      <div key={p}><span style={{ color: ANCHORS[p].color }}>{p}:</span> {(cosmeticsProfile.unlockedBadges[p] || []).length}</div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ marginTop: 12, display: "flex", justifyContent: "flex-end" }}>
+                <button onClick={() => { setShipName(shipNameInput); saveCaptainProfile(captainProfile); setProfileOpen(false); }} className="action-btn" style={{ background: COLORS.morale, color: COLORS.void, border: "none", borderRadius: 6, padding: "6px 14px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
+                  SAVE PROFILE
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* GLOBAL ARCADE LEADERBOARD CABINET MODAL */}
+        {leaderboardOpen && (
+          <div id="leaderboardModal" style={{ position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.92)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+            <div style={{ ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "20px 24px", border: `2px solid ${COLORS.morale}` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, color: COLORS.bone }}>ARCADE LEADERBOARD</h2>
+                <button onClick={() => setLeaderboardOpen(false)} className="action-btn" style={{ background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer" }}><X size={18} /></button>
+              </div>
+
+              {/* Filter Tabs */}
+              <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+                {["All", "ricky", "maude", "dez"].map((tab) => {
+                  const isActive = leaderboardFilter === tab;
+                  return (
+                    <button
+                      key={tab}
+                      onClick={() => setLeaderboardFilter(tab)}
+                      className="action-btn"
+                      style={{
+                        padding: "4px 10px",
+                        borderRadius: 4,
+                        border: `1px solid ${isActive ? COLORS.morale : COLORS.panelBorder}`,
+                        background: isActive ? `${COLORS.morale}22` : COLORS.void,
+                        color: isActive ? COLORS.morale : COLORS.muted,
+                        fontWeight: 700,
+                        fontSize: 11,
+                        cursor: "pointer",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {tab}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Leaderboard List */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 360, overflowY: "auto" }}>
+                {(() => {
+                  const filtered = highScoresList.filter((entry) => {
+                    if (leaderboardFilter === "All") return true;
+                    return entry.anchorPersona === leaderboardFilter;
+                  }).slice(0, 10);
+
+                  if (filtered.length === 0) {
+                    return (
+                      <div style={{ textAlign: "center", padding: 20, color: COLORS.muted, fontSize: 12 }}>
+                        No high scores recorded yet.
+                      </div>
+                    );
+                  }
+
+                  return filtered.map((entry, idx) => (
+                    <div
+                      key={entry.id || idx}
+                      style={{
+                        background: COLORS.void,
+                        border: `1px solid ${idx === 0 ? COLORS.morale : COLORS.panelBorder}`,
+                        borderRadius: 6,
+                        padding: "8px 12px",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: COLORS.bone }}>
+                          #{idx + 1} {entry.shipName} <span style={{ fontSize: 10, color: COLORS.muted }}>({entry.captainCallsign || "CAPTAIN"})</span>
+                        </div>
+                        <div style={{ fontSize: 10, color: COLORS.muted, marginTop: 2 }}>
+                          Sector {entry.sector} · Round {entry.rounds} · Hull: {entry.hullSkin || "titanium"}
+                        </div>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        <div className="mono" style={{ fontSize: 14, fontWeight: 900, color: COLORS.salvage }}>
+                          {entry.score.toLocaleString()} PTS
+                        </div>
+                        <div style={{ fontSize: 10, color: ANCHORS[entry.anchorPersona]?.color || COLORS.muted, fontWeight: 700, textTransform: "capitalize" }}>
+                          {entry.anchorPersona}
+                        </div>
+                      </div>
+                    </div>
+                  ));
+                })()}
+              </div>
+
+              <div style={{ marginTop: 12, display: "flex", justifyContent: "flex-end" }}>
+                <button onClick={() => setLeaderboardOpen(false)} className="action-btn" style={{ background: COLORS.morale, color: COLORS.void, border: "none", borderRadius: 6, padding: "6px 14px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
+                  CLOSE LEADERBOARD
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+
+
       </div>
     </div>
   );

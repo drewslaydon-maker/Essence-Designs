@@ -11,3 +11,4 @@ export * from "./personas";
 export * from "./barriers";
 export * from "./mechanics";
 export * from "./persistence";
+export * from "./analytics";

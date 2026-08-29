@@ -6,6 +6,9 @@ import ts from "typescript";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const filesToCompile = [
+  "audio.ts",
+  "runes.ts",
+  "wdt.ts",
   "types.ts",
   "constants.ts",
   "data.ts",
@@ -15,6 +18,7 @@ const filesToCompile = [
   "barriers.ts",
   "mechanics.ts",
   "persistence.ts",
+  "analytics.ts",
   "test/the-fracture-playtest.tsx",
 ];
 
@@ -60,9 +64,9 @@ function Icon(props) {
   var className = props.className;
   var icons = window.lucide && window.lucide.icons;
   var iconData = icons && (icons[name] || icons[name.toLowerCase()] || icons[toKebabCase(name)] || icons[toCamelCase(name)]);
-  if (!iconData) {
+  if (!iconData || !Array.isArray(iconData)) {
     return React.createElement("span", {
-      style: Object.assign({ display: "inline-block", width: size, height: size, borderRadius: "50%", background: color, verticalAlign: "middle" }, style),
+      style: Object.assign({ display: "inline-block", width: size, height: size, borderRadius: "50%", background: color, opacity: 0.3, verticalAlign: "middle" }, style),
       className: className
     });
   }
@@ -133,6 +137,16 @@ body{background-color:var(--bg-dark);color:var(--text-bone);font-family:system-u
 .level-pill:hover:not(:disabled){filter:brightness(1.25)}
 .anchor-card{transition:all .25s}
 .anchor-card:hover{border-color:rgba(255,255,255,.3)!important}
+
+@keyframes accretion-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes accretion-pulse { 0%, 100% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
+@keyframes orbit-letter-active { 0% { transform: translateY(0px) rotate(0deg); filter: drop-shadow(0 0 2px #38bdf8); } 25% { transform: translateY(-3px) rotate(-3deg); filter: drop-shadow(0 0 6px #6fa8ff); } 50% { transform: translateY(0px) rotate(0deg); filter: drop-shadow(0 0 8px #8b5cf6); } 75% { transform: translateY(3px) rotate(3deg); filter: drop-shadow(0 0 6px #38bdf8); } 100% { transform: translateY(0px) rotate(0deg); filter: drop-shadow(0 0 2px #38bdf8); } }
+@keyframes particle-glow { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.9; } }
+.accretion-disk { transform-origin: center; animation: accretion-spin 12s linear infinite; }
+.accretion-ring { transform-origin: center; animation: accretion-pulse 3s ease-in-out infinite; }
+.orbit-letter-frozen { animation: accretion-pulse 4s ease-in-out infinite; display: inline-block; }
+.orbit-letter-active { animation: orbit-letter-active 3s ease-in-out infinite; display: inline-block; }
+.accretion-particle { animation: particle-glow 2s ease-in-out infinite; }
 `;
 
 const htmlTemplate = `<!DOCTYPE html>
@@ -160,4 +174,8 @@ const htmlTemplate = `<!DOCTYPE html>
 const outputPath = path.join(__dirname, "index.html");
 fs.writeFileSync(outputPath, htmlTemplate, "utf-8");
 console.log(`Successfully generated standalone HTML at: ${outputPath}`);
+
+const rootOutputPath = path.join(__dirname, "../../../index.html");
+fs.writeFileSync(rootOutputPath, htmlTemplate, "utf-8");
+console.log(`Successfully synced root HTML at: ${rootOutputPath}`);
 

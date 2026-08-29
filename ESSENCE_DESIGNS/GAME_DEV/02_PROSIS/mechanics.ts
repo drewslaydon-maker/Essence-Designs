@@ -21,6 +21,7 @@ import {
   SALVAGE_PASSIVE,
   SALVAGE_SPEND_CAP,
 } from "./constants";
+import { getCaptainProfile } from "./persistence";
 
 /** rand(min, max) — defaults to Math.random; injectable for tests. */
 export function rand(min: number, max: number, rng: () => number = Math.random): number {
@@ -173,6 +174,7 @@ export function applySalvageAutoSpend(input: {
  * renaming the field was deliberately skipped — see handoff 2026-08-20).
  */
 export function initialState(anchorPersona: PersonaId = "ricky"): LogicState {
+  const profile = getCaptainProfile();
   return {
     started: false,
     round: 0,
@@ -208,6 +210,11 @@ export function initialState(anchorPersona: PersonaId = "ricky"): LogicState {
     activeModifiers: {},
     openBanks: [],
     lastDefiance: null,
+    equippedRunes: [],
+    helmName: profile?.helmName || "Helm",
+    geneName: profile?.geneName || "Gene",
+    salName: profile?.salName || "Sal",
+    hullSkin: profile?.activeHullSkin || "titanium",
   };
 }
 
