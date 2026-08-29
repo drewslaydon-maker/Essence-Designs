@@ -46,17 +46,18 @@ function gtlDecayRate(
   return Math.max(rate, 0.0001);
 }
 
-function gtlDistance(front: Front, state: { entropy: number; systems: number; re: number }): number {
+function gtlDistance(front: Front, state?: { entropy?: number; systems?: number; re?: number }): number {
+  const ent = state?.entropy ?? 0;
   return front === "entropy"
-    ? Math.max(0, 100 - state.entropy)
-    : Math.max(0, state[front]);
+    ? Math.max(0, 100 - ent)
+    : Math.max(0, state?.[front] ?? 0);
 }
 
 function gtlTTF(
   front: Front,
   round: number,
-  state: { entropy: number; systems: number; re: number },
-  activeModifiers: Partial<Record<Front, number>>,
+  state?: { entropy?: number; systems?: number; re?: number },
+  activeModifiers: Partial<Record<Front, number>> = {},
 ): number {
   return gtlDistance(front, state) / gtlDecayRate(front, round, activeModifiers);
 }
@@ -67,9 +68,9 @@ function resolveChosenFront(roundEffects: {
   re?: number;
 }): Front {
   const helpScore = {
-    entropy: -(roundEffects.entropy ?? 0),
-    systems: roundEffects.systems ?? 0,
-    re: roundEffects.re ?? 0,
+    entropy: -(roundEffects?.entropy ?? 0),
+    systems: roundEffects?.systems ?? 0,
+    re: roundEffects?.re ?? 0,
   };
   const entries = Object.entries(helpScore) as [Front, number][];
   entries.sort((a, b) => b[1] - a[1]);
@@ -78,8 +79,8 @@ function resolveChosenFront(roundEffects: {
 
 export function computeGTL(
   round: number,
-  state: { entropy: number; systems: number; re: number },
-  roundEffects: { entropy?: number; systems?: number; re?: number },
+  state?: { entropy?: number; systems?: number; re?: number },
+  roundEffects?: { entropy?: number; systems?: number; re?: number },
   activeModifiers: Partial<Record<Front, number>> = {},
 ): GtlResult {
   const fronts: Front[] = ["entropy", "systems", "re"];
@@ -91,11 +92,11 @@ export function computeGTL(
   for (const f of fronts) ttf[f] = gtlTTF(f, round, state, activeModifiers);
   const sortedFronts = [...fronts].sort((a, b) => ttf[a] - ttf[b]);
   const optimalFront: Front = sortedFronts[0] ?? "entropy";
-  const chosenFront = resolveChosenFront(roundEffects);
+  const chosenFront = resolveChosenFront(roundEffects ?? {});
   const rankOfChosen = fronts.filter((f) => ttf[f] < ttf[chosenFront]).length;
   const gapMagnitude = rankOfChosen / (fronts.length - 1);
   const severity = Math.max(0, Math.min(1, 1 - ttf[optimalFront] / REFERENCE_TTF));
-  const helpMagnitude = Math.max(0, Math.abs(roundEffects[chosenFront] ?? 0));
+  const helpMagnitude = Math.max(0, Math.abs(roundEffects?.[chosenFront] ?? 0));
   const levelEfficiency = 1 - Math.abs(severity - Math.min(1, helpMagnitude / 6.5));
   return {
     optimalFront,

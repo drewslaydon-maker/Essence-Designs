@@ -87,6 +87,12 @@ import {
   playSFX,
 } from "./audio";
 import type { LogicState, CaptainProfile, CosmeticsProfile, HighScoreEntry, HullSkin, PersonaId, Front } from "./types";
+import { BriefingModal } from "../components/BriefingModal";
+import { AchievementsModal } from "../components/AchievementsModal";
+import { WdtModal } from "../components/WdtModal";
+import { ProfileModal } from "../components/ProfileModal";
+import { LeaderboardModal } from "../components/LeaderboardModal";
+
 
 // ============================================================
 // WEB AUDIO API SOUND SYNTHESIZER
@@ -492,8 +498,8 @@ function PostMortemModal({
               <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.muted, marginBottom: 8 }}>DAMAGE SUSTAINED BY FRONT</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {(["systems", "entropy", "re"] as Front[]).map((front) => {
-                  const dmg = postMortemResult ? postMortemResult.analytics.damageByFront[front] : 0;
-                  const total = postMortemResult ? Math.max(1, postMortemResult.analytics.totalDamageTaken) : 1;
+                  const dmg = postMortemResult?.analytics?.damageByFront?.[front] ?? 0;
+                  const total = postMortemResult?.analytics?.totalDamageTaken ? Math.max(1, postMortemResult.analytics.totalDamageTaken) : 1;
                   const pct = Math.min(100, Math.round((dmg / total) * 100));
                   const color = front === "entropy" ? COLORS.entropy : front === "systems" ? COLORS.systems : COLORS.re;
                   const label = front === "entropy" ? "Entropy" : front === "systems" ? "Systems" : "Reality Engine";
@@ -752,7 +758,7 @@ function gtlDecayRate(front, round, activeModifiers) {
   if (activeModifiers[front]) rate += activeModifiers[front];
   return Math.max(rate, 0.0001);
 }
-function gtlDistance(front, state) { return front === "entropy" ? Math.max(0, 100 - state.entropy) : Math.max(0, state[front]); }
+function gtlDistance(front, state) { const ent = (state && state.entropy !== undefined) ? state.entropy : 0; return front === "entropy" ? Math.max(0, 100 - ent) : Math.max(0, (state && state[front] !== undefined) ? state[front] : 0); }
 function gtlTTF(front, round, state, activeModifiers) { return gtlDistance(front, state) / gtlDecayRate(front, round, activeModifiers); }
 function resolveChosenFront(roundEffects) {
   const helpScore = { entropy: -(roundEffects.entropy || 0), systems: roundEffects.systems || 0, re: roundEffects.re || 0 };
@@ -1870,7 +1876,7 @@ export default function TheFracturePlaytest() {
 
         {/* GTL TTF RADAR GAUGE */}
         {(() => {
-          const gtl = computeGTL(state.round, { entropy: state.entropy, systems: state.systems, re: state.re }, { entropy: 0, systems: 0, re: 0 }, state.activeModifiers);
+          const gtl = computeGTL(state?.round || 1, { entropy: state?.entropy || 0, systems: state?.systems || 100, re: state?.re || 100 }, { entropy: 0, systems: 0, re: 0 }, state?.activeModifiers || {});
           return (
             <div className="ttf-radar-gauge" id="ttfRadarGauge" style={{ ...panelStyle, padding: "10px 14px", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -1879,8 +1885,8 @@ export default function TheFracturePlaytest() {
               </div>
               <div style={{ display: "flex", gap: 12, fontSize: 11, flexWrap: "wrap" }}>
                 {(["entropy", "systems", "re"] as Front[]).map((f) => {
-                  const ttf = gtl.ttf[f];
-                  const isOptimal = gtl.optimalFront === f;
+                  const ttf = gtl?.ttf?.[f] ?? 0;
+                  const isOptimal = gtl?.optimalFront === f;
                   const warningColor = ttf <= 3 ? COLORS.danger : ttf <= 5 ? COLORS.morale : COLORS.salvage;
                   return (
                     <div key={f} style={{ background: COLORS.void, border: `1px solid ${isOptimal ? warningColor : COLORS.panelBorder}`, borderRadius: 6, padding: "4px 10px", display: "flex", alignItems: "center", gap: 6 }}>
@@ -1971,7 +1977,7 @@ export default function TheFracturePlaytest() {
         )}
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
-          {[{ key: "entropy", label: "Entropy", val: state.entropy, invert: false, buffer: false }, { key: "systems", label: "Systems Health", val: state.systems, invert: true, buffer: true }, { key: "re", label: "Reality Engine", val: state.re, invert: true, buffer: true }].map((m) => (
+          {[{ key: "entropy", label: "Entropy", val: (state && state.entropy !== undefined) ? state.entropy : 0, invert: false, buffer: false }, { key: "systems", label: "Systems Health", val: state.systems, invert: true, buffer: true }, { key: "re", label: "Reality Engine", val: state.re, invert: true, buffer: true }].map((m) => (
             <div key={m.label} className={meterFlash === m.key ? "meter-hit" : ""} style={{ ...panelStyle, padding: 13, border: meterFlash === m.key ? `1.5px solid ${METER_KEY_COLOR[m.key]}` : panelStyle.border, boxShadow: meterFlash === m.key ? `0 0 16px ${METER_KEY_COLOR[m.key]}66` : "none" }}>
               <div style={{ fontSize: 10.5, color: COLORS.muted, marginBottom: 6, letterSpacing: 1 }}>{m.label.toUpperCase()}</div>
               <div className="mono" style={{ fontSize: 19, fontWeight: 700, color: meterColor(m.val, m.invert), marginBottom: 3 }}>{m.val.toFixed(1)}</div>
@@ -2188,53 +2194,7 @@ export default function TheFracturePlaytest() {
           <div ref={logEndRef} />
         </div>
         {/* TACTICAL BRIEFING MODAL */}
-        {briefingOpen && (
-          <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.88)", backdropFilter: "blur(6px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-            <div style={{ ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "24px 28px", boxShadow: "0 20px 50px rgba(0,0,0,0.8)", border: `1.5px solid ${COLORS.systems}` }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, borderBottom: `1px solid ${COLORS.panelBorder}`, paddingBottom: 14 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <FileText size={22} color={COLORS.systems} />
-                  <div>
-                    <div style={{ fontSize: 10, letterSpacing: 2, color: COLORS.muted }}>1-MINUTE PLAYBOOK</div>
-                    <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0, color: COLORS.bone }}>TACTICAL BRIEFING</h2>
-                  </div>
-                </div>
-                <button onClick={() => setBriefingOpen(false)} className="action-btn" style={{ background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer", padding: 6 }}><X size={20} /></button>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 16, fontSize: 13, lineHeight: 1.5, color: COLORS.muted }}>
-                <div style={{ background: `${COLORS.systems}15`, border: `1px solid ${COLORS.systems}44`, borderRadius: 8, padding: 12 }}>
-                  <div style={{ color: COLORS.systems, fontWeight: 700, fontSize: 14, marginBottom: 4, display: "flex", alignItems: "center", gap: 6 }}><Rocket size={15} /> PRIMARY GOAL</div>
-                  <div style={{ color: COLORS.bone }}>Survive <b>3 Sectors (30 Rounds total / 10 rounds per sector)</b> without letting Entropy hit 100%, Systems or RE collapse to 0%, or Morale deplete.</div>
-                </div>
-                <div>
-                  <div style={{ color: COLORS.bone, fontWeight: 700, fontSize: 14, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}><Radar size={15} color={COLORS.event} /> THE 5 FRONTS & METERS</div>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 8 }}>
-                    <div style={{ background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${COLORS.panelBorder}` }}><span style={{ color: COLORS.systems, fontWeight: 700 }}>1. Systems:</span> Ship hull integrity (0-100%).</div>
-                    <div style={{ background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${COLORS.panelBorder}` }}><span style={{ color: COLORS.re, fontWeight: 700 }}>2. Reality Engine:</span> Quantum engine (0-100%).</div>
-                    <div style={{ background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${COLORS.panelBorder}` }}><span style={{ color: COLORS.morale, fontWeight: 700 }}>3. Morale:</span> Crew fortitude (0-100%).</div>
-                    <div style={{ background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${COLORS.panelBorder}` }}><span style={{ color: COLORS.salvage, fontWeight: 700 }}>4. Salvage:</span> Repairs & barrier banking.</div>
-                    <div style={{ background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${COLORS.panelBorder}` }}><span style={{ color: COLORS.entropy, fontWeight: 700 }}>5. Entropy:</span> Spacetime distortion (0-100%).</div>
-                  </div>
-                </div>
-                <div>
-                  <div style={{ color: COLORS.bone, fontWeight: 700, fontSize: 14, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}><Anchor size={15} color={COLORS.morale} /> 3 ANCHOR PERSONAS</div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                    <div style={{ background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${ANCHORS.ricky.color}44` }}><b style={{ color: ANCHORS.ricky.color }}>Ricky (Methodical):</b> Steady calls. Builds Belief when matching TTF.</div>
-                    <div style={{ background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${ANCHORS.maude.color}44` }}><b style={{ color: ANCHORS.maude.color }}>Maude (Ruthless):</b> Aggressive coverage across multiple fronts; levies strain tax.</div>
-                    <div style={{ background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${ANCHORS.dez.color}44` }}><b style={{ color: ANCHORS.dez.color }}>Dez (Desperate):</b> Volatile gambits. High Distrust leads to crew overrides.</div>
-                  </div>
-                </div>
-                <div style={{ background: COLORS.void, padding: 10, borderRadius: 8, border: `1px solid ${COLORS.panelBorder}` }}>
-                  <div style={{ color: COLORS.bone, fontWeight: 700, fontSize: 14, marginBottom: 4, display: "flex", alignItems: "center", gap: 6 }}><ShieldAlert size={15} color={COLORS.salvage} /> COMPOUNDING BARRIERS</div>
-                  <div>Allocate actions into <b>Banked Barriers</b>. Unclaimed barriers compound (+15%/rnd). Claiming pays out restoration; threat hits cause haircuts.</div>
-                </div>
-              </div>
-              <div style={{ marginTop: 20, paddingTop: 14, borderTop: `1px solid ${COLORS.panelBorder}`, display: "flex", justifyContent: "flex-end" }}>
-                <button onClick={() => setBriefingOpen(false)} className="action-btn" style={{ background: COLORS.systems, color: COLORS.void, border: "none", borderRadius: 8, padding: "8px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>CLOSE BRIEFING</button>
-              </div>
-            </div>
-          </div>
-        )}
+        {briefingOpen && <BriefingModal setBriefingOpen={setBriefingOpen} COLORS={COLORS} panelStyle={panelStyle} />}
         {/* CAPTAIN'S MANIFEST MODAL */}
         {manifestOpen && (
           <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.88)", backdropFilter: "blur(6px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
@@ -2340,291 +2300,13 @@ export default function TheFracturePlaytest() {
           </div>
         )}
         {/* ACHIEVEMENTS MODAL */}
-        {achievementsOpen && (
-          <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.88)", backdropFilter: "blur(6px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-            <div style={{ ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "24px 28px", boxShadow: "0 20px 50px rgba(0,0,0,0.8)", border: `1.5px solid ${COLORS.salvage}` }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, borderBottom: `1px solid ${COLORS.panelBorder}`, paddingBottom: 14 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <Award size={22} color={COLORS.salvage} />
-                  <div>
-                    <div style={{ fontSize: 10, letterSpacing: 2, color: COLORS.muted }}>MEDALS & HONORS</div>
-                    <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0, color: COLORS.bone }}>ACHIEVEMENTS ({unlockedAchList.length}/{ACHIEVEMENTS_LIST.length})</h2>
-                  </div>
-                </div>
-                <button onClick={() => setAchievementsOpen(false)} className="action-btn" style={{ background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer", padding: 6 }}><X size={20} /></button>
-              </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 10, maxHeight: 380, overflowY: "auto" }}>
-                {ACHIEVEMENTS_LIST.map((ach) => {
-                  const unlocked = unlockedAchList.includes(ach.id);
-                  return (
-                    <div key={ach.id} style={{ background: COLORS.void, padding: 10, borderRadius: 8, border: `1px solid ${unlocked ? COLORS.salvage + "66" : COLORS.panelBorder}`, display: "flex", gap: 10, alignItems: "center", opacity: unlocked ? 1 : 0.5 }}>
-                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: unlocked ? `${COLORS.salvage}22` : `${COLORS.muted}11`, border: `1px solid ${unlocked ? COLORS.salvage : COLORS.muted}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        {unlocked ? <CheckCircle size={16} color={COLORS.salvage} /> : <Lock size={14} color={COLORS.muted} />}
-                      </div>
-                      <div>
-                        <div style={{ fontSize: 12.5, fontWeight: 700, color: unlocked ? COLORS.bone : COLORS.muted }}>{ach.title}</div>
-                        <div style={{ fontSize: 11, color: COLORS.muted, marginTop: 2 }}>{ach.desc}</div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div style={{ marginTop: 20, paddingTop: 14, borderTop: `1px solid ${COLORS.panelBorder}`, display: "flex", justifyContent: "flex-end" }}>
-                <button onClick={() => setAchievementsOpen(false)} className="action-btn" style={{ background: COLORS.salvage, color: COLORS.void, border: "none", borderRadius: 8, padding: "8px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>CLOSE ACHIEVEMENTS</button>
-              </div>
-            </div>
-          </div>
-        )}
+        {achievementsOpen && <AchievementsModal setAchievementsOpen={setAchievementsOpen} ACHIEVEMENTS_LIST={ACHIEVEMENTS_LIST} unlockedAchList={unlockedAchList} COLORS={COLORS} panelStyle={panelStyle} />}
         {/* WDT ONBOARDING DIAGNOSTIC MODAL */}
-        {wdtOpen && (
-          <div id="wdtModal" style={{ position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.92)", backdropFilter: "blur(6px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-            <div style={{ ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "24px 28px", boxShadow: "0 20px 50px rgba(0,0,0,0.8)", border: `1.5px solid ${COLORS.event}` }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, borderBottom: `1px solid ${COLORS.panelBorder}`, paddingBottom: 14 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <Compass size={22} color={COLORS.event} />
-                  <div>
-                    <div style={{ fontSize: 10, letterSpacing: 2, color: COLORS.muted }}>ONBOARDING DIAGNOSTIC</div>
-                    <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0, color: COLORS.bone }}>QUANTUM CALIBRATION</h2>
-                  </div>
-                </div>
-                <button onClick={() => setWdtOpen(false)} className="action-btn" style={{ background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer", padding: 6 }}><X size={20} /></button>
-              </div>
-
-              {wdtStep < WDT_SCENARIOS.length ? (
-                <div>
-                  <div style={{ fontSize: 11, letterSpacing: 1.5, color: COLORS.event, fontWeight: 700, marginBottom: 4 }}>
-                    SCENARIO {wdtStep + 1} OF {WDT_SCENARIOS.length} — {WDT_SCENARIOS[wdtStep].title}
-                  </div>
-                  <div style={{ fontSize: 14, color: COLORS.bone, marginBottom: 16, lineHeight: 1.5 }}>
-                    {WDT_SCENARIOS[wdtStep].question}
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    {WDT_SCENARIOS[wdtStep].options.map((opt) => {
-                      const selected = wdtAnswers[WDT_SCENARIOS[wdtStep].id] === opt.id;
-                      return (
-                        <button
-                          key={opt.id}
-                          onClick={() => {
-                            setWdtAnswers({ ...wdtAnswers, [WDT_SCENARIOS[wdtStep].id]: opt.id });
-                            if (wdtStep + 1 <= WDT_SCENARIOS.length) {
-                              setWdtStep(wdtStep + 1);
-                            }
-                          }}
-                          className="action-btn"
-                          style={{
-                            textAlign: "left",
-                            padding: "12px 16px",
-                            borderRadius: 8,
-                            border: `1px solid ${selected ? COLORS.event : COLORS.panelBorder}`,
-                            background: selected ? `${COLORS.event}22` : COLORS.void,
-                            color: COLORS.bone,
-                            cursor: "pointer",
-                            fontSize: 13,
-                          }}
-                        >
-                          {opt.text}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ) : (
-                (() => {
-                  const recPersona = evaluateDiagnosticResult(wdtAnswers);
-                  const patch = getCalibrationPatch(recPersona);
-                  return (
-                    <div>
-                      <div style={{ fontSize: 12, letterSpacing: 1.5, color: COLORS.salvage, fontWeight: 700, marginBottom: 8 }}>
-                        CALIBRATION COMPLETE — RECOMMENDED ANCHOR AI
-                      </div>
-                      <div style={{ background: COLORS.void, borderRadius: 12, border: `1.5px solid ${patch.color}`, padding: 16, marginBottom: 16 }}>
-                        <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 8 }}>
-                          <div dangerouslySetInnerHTML={{ __html: patch.svg }} />
-                          <div>
-                            <h3 style={{ fontSize: 16, fontWeight: 700, color: patch.color, margin: 0 }}>{patch.title}</h3>
-                            <div style={{ fontSize: 11, color: COLORS.muted }}>{patch.tagline}</div>
-                          </div>
-                        </div>
-                        <div style={{ fontSize: 12, color: COLORS.bone, marginBottom: 8 }}>{patch.description}</div>
-                      </div>
-
-                      <div style={{ display: "flex", gap: 10, justifyContent: "space-between" }}>
-                        <button onClick={() => { setWdtAnswers({}); setWdtStep(0); }} className="action-btn" style={{ background: COLORS.panel, color: COLORS.muted, border: `1px solid ${COLORS.panelBorder}`, borderRadius: 8, padding: "8px 16px", fontSize: 12, cursor: "pointer" }}>
-                          Retake
-                        </button>
-                        <button onClick={() => { setAnchorChoice(recPersona); setWdtOpen(false); }} className="action-btn" style={{ background: patch.color, color: COLORS.void, border: "none", borderRadius: 8, padding: "8px 20px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
-                          Confirm & Select {ANCHORS[recPersona].name}
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })()
-              )}
-            </div>
-          </div>
-        )}
+        {wdtOpen && <WdtModal setWdtOpen={setWdtOpen} wdtStep={wdtStep} setWdtStep={setWdtStep} wdtAnswers={wdtAnswers} setWdtAnswers={setWdtAnswers} COLORS={COLORS} panelStyle={panelStyle} ANCHORS={ANCHORS} setAnchorChoice={setAnchorChoice} />}
         {/* CAPTAIN PROFILE & COSMETICS MODAL */}
-        {profileOpen && (
-          <div id="profileModal" style={{ position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.92)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-            <div style={{ ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "20px 24px", border: `1.5px solid ${COLORS.morale}` }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, color: COLORS.bone }}>CAPTAIN PROFILE</h2>
-                <button onClick={() => setProfileOpen(false)} className="action-btn" style={{ background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer" }}><X size={18} /></button>
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                <div style={{ background: COLORS.void, padding: 10, borderRadius: 8 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.morale, marginBottom: 4 }}>VESSEL & COMMANDER</div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                    <div>
-                      <label style={{ fontSize: 10, color: COLORS.muted }}>Vessel Name</label>
-                      <input type="text" value={shipNameInput} onChange={(e) => setShipNameInput(e.target.value)} style={{ width: "100%", background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px 8px", borderRadius: 4, fontSize: 12 }} />
-                    </div>
-                    <div>
-                      <label style={{ fontSize: 10, color: COLORS.muted }}>Captain Call-Sign</label>
-                      <input type="text" value={captainProfile.captainCallsign} onChange={(e) => setCaptainProfile({ ...captainProfile, captainCallsign: e.target.value })} style={{ width: "100%", background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px 8px", borderRadius: 4, fontSize: 12 }} />
-                    </div>
-                  </div>
-                </div>
-
-                <div style={{ background: COLORS.void, padding: 10, borderRadius: 8 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.systems, marginBottom: 4 }}>CREW ROSTER</div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6 }}>
-                    <input type="text" value={captainProfile.helmName} onChange={(e) => setCaptainProfile({ ...captainProfile, helmName: e.target.value })} style={{ background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px", borderRadius: 4, fontSize: 11 }} />
-                    <input type="text" value={captainProfile.geneName} onChange={(e) => setCaptainProfile({ ...captainProfile, geneName: e.target.value })} style={{ background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px", borderRadius: 4, fontSize: 11 }} />
-                    <input type="text" value={captainProfile.salName} onChange={(e) => setCaptainProfile({ ...captainProfile, salName: e.target.value })} style={{ background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px", borderRadius: 4, fontSize: 11 }} />
-                  </div>
-                </div>
-
-                <div style={{ background: COLORS.void, padding: 10, borderRadius: 8 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.salvage, marginBottom: 4 }}>HULL SKIN</div>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6 }}>
-                    {(["titanium", "chrome", "gold", "singularity"] as HullSkin[]).map((skin) => {
-                      const isUnlocked = cosmeticsProfile.unlockedHullSkins.includes(skin);
-                      const isActive = captainProfile.activeHullSkin === skin;
-                      return (
-                        <button key={skin} disabled={!isUnlocked} onClick={() => { if (isUnlocked) setCaptainProfile({ ...captainProfile, activeHullSkin: skin }); }} className="action-btn" style={{ padding: "4px", borderRadius: 4, border: `1px solid ${isActive ? COLORS.salvage : COLORS.panelBorder}`, background: isActive ? `${COLORS.salvage}22` : COLORS.panel, color: isUnlocked ? COLORS.bone : COLORS.muted, fontSize: 11 }}>
-                          {skin} {isActive ? "✓" : ""}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div style={{ background: COLORS.void, padding: 10, borderRadius: 8 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.event }}>UNLOCKED SCOUT BADGES</div>
-                  <div style={{ display: "flex", gap: 8, fontSize: 11, color: COLORS.muted, marginTop: 2 }}>
-                    {(["ricky", "maude", "dez"] as PersonaId[]).map((p) => (
-                      <div key={p}><span style={{ color: ANCHORS[p].color }}>{p}:</span> {(cosmeticsProfile.unlockedBadges[p] || []).length}</div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ marginTop: 12, display: "flex", justifyContent: "flex-end" }}>
-                <button onClick={() => { setShipName(shipNameInput); saveCaptainProfile(captainProfile); setProfileOpen(false); }} className="action-btn" style={{ background: COLORS.morale, color: COLORS.void, border: "none", borderRadius: 6, padding: "6px 14px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
-                  SAVE PROFILE
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        {profileOpen && <ProfileModal setProfileOpen={setProfileOpen} captainProfile={captainProfile} setCaptainProfile={setCaptainProfile} cosmeticsProfile={cosmeticsProfile} COLORS={COLORS} panelStyle={panelStyle} ANCHORS={ANCHORS} shipNameInput={shipNameInput} setShipNameInput={setShipNameInput} saveCaptainProfile={saveCaptainProfile} setShipName={setShipName} />}
         {/* GLOBAL ARCADE LEADERBOARD CABINET MODAL */}
-        {leaderboardOpen && (
-          <div id="leaderboardModal" style={{ position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.92)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-            <div style={{ ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "20px 24px", border: `2px solid ${COLORS.morale}` }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0, color: COLORS.bone }}>ARCADE LEADERBOARD</h2>
-                <button onClick={() => setLeaderboardOpen(false)} className="action-btn" style={{ background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer" }}><X size={18} /></button>
-              </div>
-
-              {/* Filter Tabs */}
-              <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
-                {["All", "ricky", "maude", "dez"].map((tab) => {
-                  const isActive = leaderboardFilter === tab;
-                  return (
-                    <button
-                      key={tab}
-                      onClick={() => setLeaderboardFilter(tab)}
-                      className="action-btn"
-                      style={{
-                        padding: "4px 10px",
-                        borderRadius: 4,
-                        border: `1px solid ${isActive ? COLORS.morale : COLORS.panelBorder}`,
-                        background: isActive ? `${COLORS.morale}22` : COLORS.void,
-                        color: isActive ? COLORS.morale : COLORS.muted,
-                        fontWeight: 700,
-                        fontSize: 11,
-                        cursor: "pointer",
-                        textTransform: "capitalize",
-                      }}
-                    >
-                      {tab}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Leaderboard List */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 360, overflowY: "auto" }}>
-                {(() => {
-                  const filtered = highScoresList.filter((entry) => {
-                    if (leaderboardFilter === "All") return true;
-                    return entry.anchorPersona === leaderboardFilter;
-                  }).slice(0, 10);
-
-                  if (filtered.length === 0) {
-                    return (
-                      <div style={{ textAlign: "center", padding: 20, color: COLORS.muted, fontSize: 12 }}>
-                        No high scores recorded yet.
-                      </div>
-                    );
-                  }
-
-                  return filtered.map((entry, idx) => (
-                    <div
-                      key={entry.id || idx}
-                      style={{
-                        background: COLORS.void,
-                        border: `1px solid ${idx === 0 ? COLORS.morale : COLORS.panelBorder}`,
-                        borderRadius: 6,
-                        padding: "8px 12px",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <div>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: COLORS.bone }}>
-                          #{idx + 1} {entry.shipName} <span style={{ fontSize: 10, color: COLORS.muted }}>({entry.captainCallsign || "CAPTAIN"})</span>
-                        </div>
-                        <div style={{ fontSize: 10, color: COLORS.muted, marginTop: 2 }}>
-                          Sector {entry.sector} · Round {entry.rounds} · Hull: {entry.hullSkin || "titanium"}
-                        </div>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <div className="mono" style={{ fontSize: 14, fontWeight: 900, color: COLORS.salvage }}>
-                          {entry.score.toLocaleString()} PTS
-                        </div>
-                        <div style={{ fontSize: 10, color: ANCHORS[entry.anchorPersona]?.color || COLORS.muted, fontWeight: 700, textTransform: "capitalize" }}>
-                          {entry.anchorPersona}
-                        </div>
-                      </div>
-                    </div>
-                  ));
-                })()}
-              </div>
-
-              <div style={{ marginTop: 12, display: "flex", justifyContent: "flex-end" }}>
-                <button onClick={() => setLeaderboardOpen(false)} className="action-btn" style={{ background: COLORS.morale, color: COLORS.void, border: "none", borderRadius: 6, padding: "6px 14px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
-                  CLOSE LEADERBOARD
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        {leaderboardOpen && <LeaderboardModal setLeaderboardOpen={setLeaderboardOpen} leaderboardFilter={leaderboardFilter} setLeaderboardFilter={setLeaderboardFilter} highScoresList={highScoresList} COLORS={COLORS} panelStyle={panelStyle} ANCHORS={ANCHORS} />}
 
 
 

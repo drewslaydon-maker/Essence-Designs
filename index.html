@@ -1072,18 +1072,19 @@ function gtlDecayRate(front, round, activeModifiers) {
     return Math.max(rate, 0.0001);
 }
 function gtlDistance(front, state) {
+    const ent = state?.entropy ?? 0;
     return front === "entropy"
-        ? Math.max(0, 100 - state.entropy)
-        : Math.max(0, state[front]);
+        ? Math.max(0, 100 - ent)
+        : Math.max(0, state?.[front] ?? 0);
 }
-function gtlTTF(front, round, state, activeModifiers) {
+function gtlTTF(front, round, state, activeModifiers = {}) {
     return gtlDistance(front, state) / gtlDecayRate(front, round, activeModifiers);
 }
 function resolveChosenFront(roundEffects) {
     const helpScore = {
-        entropy: -(roundEffects.entropy ?? 0),
-        systems: roundEffects.systems ?? 0,
-        re: roundEffects.re ?? 0,
+        entropy: -(roundEffects?.entropy ?? 0),
+        systems: roundEffects?.systems ?? 0,
+        re: roundEffects?.re ?? 0,
     };
     const entries = Object.entries(helpScore);
     entries.sort((a, b) => b[1] - a[1]);
@@ -1100,11 +1101,11 @@ function computeGTL(round, state, roundEffects, activeModifiers = {}) {
         ttf[f] = gtlTTF(f, round, state, activeModifiers);
     const sortedFronts = [...fronts].sort((a, b) => ttf[a] - ttf[b]);
     const optimalFront = sortedFronts[0] ?? "entropy";
-    const chosenFront = resolveChosenFront(roundEffects);
+    const chosenFront = resolveChosenFront(roundEffects ?? {});
     const rankOfChosen = fronts.filter((f) => ttf[f] < ttf[chosenFront]).length;
     const gapMagnitude = rankOfChosen / (fronts.length - 1);
     const severity = Math.max(0, Math.min(1, 1 - ttf[optimalFront] / REFERENCE_TTF));
-    const helpMagnitude = Math.max(0, Math.abs(roundEffects[chosenFront] ?? 0));
+    const helpMagnitude = Math.max(0, Math.abs(roundEffects?.[chosenFront] ?? 0));
     const levelEfficiency = 1 - Math.abs(severity - Math.min(1, helpMagnitude / 6.5));
     return {
         optimalFront,
@@ -1870,6 +1871,291 @@ function processRunCompletion(state, shipName, captainProfile) {
         unlockedBadges,
     };
 }
+// --- Source: components/BriefingModal.tsx ---
+function BriefingModal({ setBriefingOpen, COLORS, panelStyle }) {
+    return (React.createElement("div", { style: { position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.88)", backdropFilter: "blur(6px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 } },
+        React.createElement("div", { style: { ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "24px 28px", boxShadow: "0 20px 50px rgba(0,0,0,0.8)", border: `1.5px solid ${COLORS.systems}` } },
+            React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, borderBottom: `1px solid ${COLORS.panelBorder}`, paddingBottom: 14 } },
+                React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10 } },
+                    React.createElement(FileText, { size: 22, color: COLORS.systems }),
+                    React.createElement("div", null,
+                        React.createElement("div", { style: { fontSize: 10, letterSpacing: 2, color: COLORS.muted } }, "1-MINUTE PLAYBOOK"),
+                        React.createElement("h2", { style: { fontSize: 20, fontWeight: 700, margin: 0, color: COLORS.bone } }, "TACTICAL BRIEFING"))),
+                React.createElement("button", { onClick: () => setBriefingOpen(false), className: "action-btn", style: { background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer", padding: 6 } },
+                    React.createElement(X, { size: 20 }))),
+            React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 16, fontSize: 13, lineHeight: 1.5, color: COLORS.muted } },
+                React.createElement("div", { style: { background: `${COLORS.systems}15`, border: `1px solid ${COLORS.systems}44`, borderRadius: 8, padding: 12 } },
+                    React.createElement("div", { style: { color: COLORS.systems, fontWeight: 700, fontSize: 14, marginBottom: 4, display: "flex", alignItems: "center", gap: 6 } },
+                        React.createElement(Rocket, { size: 15 }),
+                        " PRIMARY GOAL"),
+                    React.createElement("div", { style: { color: COLORS.bone } },
+                        "Survive ",
+                        React.createElement("b", null, "3 Sectors (30 Rounds total / 10 rounds per sector)"),
+                        " without letting Entropy hit 100%, Systems or RE collapse to 0%, or Morale deplete.")),
+                React.createElement("div", null,
+                    React.createElement("div", { style: { color: COLORS.bone, fontWeight: 700, fontSize: 14, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 } },
+                        React.createElement(Radar, { size: 15, color: COLORS.event }),
+                        " THE 5 FRONTS & METERS"),
+                    React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 8 } },
+                        React.createElement("div", { style: { background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${COLORS.panelBorder}` } },
+                            React.createElement("span", { style: { color: COLORS.systems, fontWeight: 700 } }, "1. Systems:"),
+                            " Ship hull integrity (0-100%)."),
+                        React.createElement("div", { style: { background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${COLORS.panelBorder}` } },
+                            React.createElement("span", { style: { color: COLORS.re, fontWeight: 700 } }, "2. Reality Engine:"),
+                            " Quantum engine (0-100%)."),
+                        React.createElement("div", { style: { background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${COLORS.panelBorder}` } },
+                            React.createElement("span", { style: { color: COLORS.morale, fontWeight: 700 } }, "3. Morale:"),
+                            " Crew fortitude (0-100%)."),
+                        React.createElement("div", { style: { background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${COLORS.panelBorder}` } },
+                            React.createElement("span", { style: { color: COLORS.salvage, fontWeight: 700 } }, "4. Salvage:"),
+                            " Repairs & barrier banking."),
+                        React.createElement("div", { style: { background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${COLORS.panelBorder}` } },
+                            React.createElement("span", { style: { color: COLORS.entropy, fontWeight: 700 } }, "5. Entropy:"),
+                            " Spacetime distortion (0-100%)."))),
+                React.createElement("div", null,
+                    React.createElement("div", { style: { color: COLORS.bone, fontWeight: 700, fontSize: 14, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 } },
+                        React.createElement(ShieldAlert, { size: 15, color: COLORS.morale }),
+                        " CORE LOOP: THREATS & ANCHORS"),
+                    React.createElement("div", { style: { marginBottom: 8 } },
+                        "Each round, an ",
+                        React.createElement("b", null, "Anomaly"),
+                        " attacks one or more fronts. You must choose an ",
+                        React.createElement("b", null, "Anchor Persona"),
+                        " (Ricky, Maude, or Dez) to lead the response."),
+                    React.createElement("ul", { style: { paddingLeft: 20, display: "flex", flexDirection: "column", gap: 4 } },
+                        React.createElement("li", null,
+                            React.createElement("span", { style: { color: COLORS.bone } }, "Ricky (Risky / Entropy):"),
+                            " High variance, rewards aggressive plays."),
+                        React.createElement("li", null,
+                            React.createElement("span", { style: { color: COLORS.bone } }, "Maude (Methodical / Systems):"),
+                            " Steady, predictable, builds combo streaks over time."),
+                        React.createElement("li", null,
+                            React.createElement("span", { style: { color: COLORS.bone } }, "Dez (Defiant / RE):"),
+                            " Hoards trust, then spends it on massive saves. Might disobey orders if distrust gets too high."))),
+                React.createElement("div", null,
+                    React.createElement("div", { style: { color: COLORS.bone, fontWeight: 700, fontSize: 14, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 } },
+                        React.createElement(Volume2, { size: 15, color: COLORS.re }),
+                        " GAMEPLAY TIPS"),
+                    React.createElement("ul", { style: { paddingLeft: 20, display: "flex", flexDirection: "column", gap: 4 } },
+                        React.createElement("li", null,
+                            "Banking Salvage into ",
+                            React.createElement("b", null, "Barriers"),
+                            " protects a specific front for future rounds."),
+                        React.createElement("li", null,
+                            "Read the ",
+                            React.createElement("b", null, "Action Log"),
+                            " to see why things happened."),
+                        React.createElement("li", null,
+                            "Equip ",
+                            React.createElement("b", null, "Spacetime Runes"),
+                            " to modify your run before you launch.")))),
+            React.createElement("div", { style: { marginTop: 20, paddingTop: 14, borderTop: `1px solid ${COLORS.panelBorder}`, display: "flex", justifyContent: "flex-end" } },
+                React.createElement("button", { onClick: () => setBriefingOpen(false), className: "action-btn", style: { background: COLORS.systems, color: COLORS.void, border: "none", borderRadius: 8, padding: "8px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 } },
+                    React.createElement(BookOpen, { size: 16 }),
+                    " CLOSE BRIEFING")))));
+}
+// --- Source: components/AchievementsModal.tsx ---
+function AchievementsModal({ setAchievementsOpen, ACHIEVEMENTS_LIST, unlockedAchList, COLORS, panelStyle }) {
+    return (React.createElement("div", { style: { position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.88)", backdropFilter: "blur(6px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 } },
+        React.createElement("div", { style: { ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "24px 28px", boxShadow: "0 20px 50px rgba(0,0,0,0.8)", border: `1.5px solid ${COLORS.salvage}` } },
+            React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, borderBottom: `1px solid ${COLORS.panelBorder}`, paddingBottom: 14 } },
+                React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10 } },
+                    React.createElement(Award, { size: 22, color: COLORS.salvage }),
+                    React.createElement("div", null,
+                        React.createElement("div", { style: { fontSize: 10, letterSpacing: 2, color: COLORS.muted } }, "MEDALS & HONORS"),
+                        React.createElement("h2", { style: { fontSize: 20, fontWeight: 700, margin: 0, color: COLORS.bone } },
+                            "ACHIEVEMENTS (",
+                            unlockedAchList.length,
+                            "/",
+                            ACHIEVEMENTS_LIST.length,
+                            ")"))),
+                React.createElement("button", { onClick: () => setAchievementsOpen(false), className: "action-btn", style: { background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer", padding: 6 } },
+                    React.createElement(X, { size: 20 }))),
+            React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 10, maxHeight: 380, overflowY: "auto" } }, ACHIEVEMENTS_LIST.map((ach) => {
+                const unlocked = unlockedAchList.includes(ach.id);
+                return (React.createElement("div", { key: ach.id, style: { background: COLORS.void, padding: 10, borderRadius: 8, border: `1px solid ${unlocked ? COLORS.salvage + "66" : COLORS.panelBorder}`, display: "flex", gap: 10, alignItems: "center", opacity: unlocked ? 1 : 0.5 } },
+                    React.createElement("div", { style: { width: 32, height: 32, borderRadius: "50%", background: unlocked ? `${COLORS.salvage}22` : `${COLORS.muted}11`, border: `1px solid ${unlocked ? COLORS.salvage : COLORS.muted}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 } }, unlocked ? React.createElement(CheckCircle, { size: 16, color: COLORS.salvage }) : React.createElement(Lock, { size: 14, color: COLORS.muted })),
+                    React.createElement("div", null,
+                        React.createElement("div", { style: { fontSize: 12.5, fontWeight: 700, color: unlocked ? COLORS.bone : COLORS.muted } }, ach.title),
+                        React.createElement("div", { style: { fontSize: 11, color: COLORS.muted, marginTop: 2 } }, ach.desc))));
+            })),
+            React.createElement("div", { style: { marginTop: 20, paddingTop: 14, borderTop: `1px solid ${COLORS.panelBorder}`, display: "flex", justifyContent: "flex-end" } },
+                React.createElement("button", { onClick: () => setAchievementsOpen(false), className: "action-btn", style: { background: COLORS.salvage, color: COLORS.void, border: "none", borderRadius: 8, padding: "8px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer" } }, "CLOSE ACHIEVEMENTS")))));
+}
+// --- Source: components/WdtModal.tsx ---
+function WdtModal({ setWdtOpen, wdtStep, setWdtStep, wdtAnswers, setWdtAnswers, COLORS, panelStyle, ANCHORS }) {
+    return (React.createElement("div", { id: "wdtModal", style: { position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.92)", backdropFilter: "blur(6px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 } },
+        React.createElement("div", { style: { ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "24px 28px", boxShadow: "0 20px 50px rgba(0,0,0,0.8)", border: `1.5px solid ${COLORS.event}` } },
+            React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, borderBottom: `1px solid ${COLORS.panelBorder}`, paddingBottom: 14 } },
+                React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10 } },
+                    React.createElement(Compass, { size: 22, color: COLORS.event }),
+                    React.createElement("div", null,
+                        React.createElement("div", { style: { fontSize: 10, letterSpacing: 2, color: COLORS.muted } }, "ONBOARDING DIAGNOSTIC"),
+                        React.createElement("h2", { style: { fontSize: 20, fontWeight: 700, margin: 0, color: COLORS.bone } }, "QUANTUM CALIBRATION"))),
+                React.createElement("button", { onClick: () => setWdtOpen(false), className: "action-btn", style: { background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer", padding: 6 } },
+                    React.createElement(X, { size: 20 }))),
+            wdtStep < WDT_SCENARIOS.length ? (React.createElement("div", null,
+                React.createElement("div", { style: { fontSize: 11, letterSpacing: 1.5, color: COLORS.event, fontWeight: 700, marginBottom: 4 } },
+                    "SCENARIO ",
+                    wdtStep + 1,
+                    " OF ",
+                    WDT_SCENARIOS.length,
+                    " \u2014 ",
+                    WDT_SCENARIOS[wdtStep].title),
+                React.createElement("div", { style: { fontSize: 14, color: COLORS.bone, marginBottom: 16, lineHeight: 1.5 } }, WDT_SCENARIOS[wdtStep].question),
+                React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 10 } }, WDT_SCENARIOS[wdtStep].options.map((opt) => {
+                    const selected = wdtAnswers[WDT_SCENARIOS[wdtStep].id] === opt.id;
+                    return (React.createElement("button", { key: opt.id, onClick: () => {
+                            setWdtAnswers({ ...wdtAnswers, [WDT_SCENARIOS[wdtStep].id]: opt.id });
+                            if (wdtStep + 1 <= WDT_SCENARIOS.length) {
+                                setWdtStep(wdtStep + 1);
+                            }
+                        }, className: "action-btn", style: {
+                            textAlign: "left",
+                            padding: "12px 16px",
+                            borderRadius: 8,
+                            border: `1px solid ${selected ? COLORS.event : COLORS.panelBorder}`,
+                            background: selected ? `${COLORS.event}22` : COLORS.void,
+                            color: COLORS.bone,
+                            cursor: "pointer",
+                            fontSize: 13,
+                        } }, opt.text));
+                })))) : ((() => {
+                const recPersona = evaluateDiagnosticResult(wdtAnswers);
+                const patch = getCalibrationPatch(recPersona);
+                return (React.createElement("div", { style: { textAlign: "center", padding: "20px 0" } },
+                    React.createElement("div", { style: { fontSize: 14, color: COLORS.muted, marginBottom: 12 } }, "DIAGNOSTIC COMPLETE"),
+                    React.createElement("div", { style: { fontSize: 16, color: COLORS.bone, marginBottom: 20 } },
+                        "Recommended Anchor: ",
+                        React.createElement("span", { style: { color: ANCHORS[recPersona].color, fontWeight: 900 } }, ANCHORS[recPersona].name)),
+                    React.createElement("div", { style: { background: `${COLORS.event}11`, border: `1px solid ${COLORS.event}33`, padding: 16, borderRadius: 8, color: COLORS.bone, fontSize: 13, lineHeight: 1.5, textAlign: "left", marginBottom: 24 } }, patch),
+                    React.createElement("button", { onClick: () => {
+                            setWdtOpen(false);
+                            setWdtStep(0);
+                            setWdtAnswers({});
+                        }, className: "action-btn", style: {
+                            background: COLORS.event,
+                            color: COLORS.void,
+                            border: "none",
+                            borderRadius: 8,
+                            padding: "10px 24px",
+                            fontWeight: 700,
+                            fontSize: 13,
+                            cursor: "pointer",
+                        } }, "ACKNOWLEDGE")));
+            })()))));
+}
+// --- Source: components/ProfileModal.tsx ---
+function ProfileModal({ setProfileOpen, captainProfile, setCaptainProfile, cosmeticsProfile, COLORS, panelStyle, ANCHORS, shipNameInput, setShipNameInput, saveCaptainProfile, setShipName }) {
+    return (React.createElement("div", { id: "profileModal", style: { position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.92)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 } },
+        React.createElement("div", { style: { ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "20px 24px", border: `1.5px solid ${COLORS.morale}` } },
+            React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 } },
+                React.createElement("h2", { style: { fontSize: 18, fontWeight: 700, margin: 0, color: COLORS.bone } }, "CAPTAIN PROFILE"),
+                React.createElement("button", { onClick: () => setProfileOpen(false), className: "action-btn", style: { background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer" } },
+                    React.createElement(X, { size: 18 }))),
+            React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 10 } },
+                React.createElement("div", { style: { display: "flex", gap: 10 } },
+                    React.createElement("div", { style: { flex: 1, background: COLORS.void, padding: 10, borderRadius: 8 } },
+                        React.createElement("label", { style: { fontSize: 10, color: COLORS.muted } }, "Vessel Name"),
+                        React.createElement("input", { type: "text", value: shipNameInput, onChange: (e) => setShipNameInput(e.target.value), style: { width: "100%", background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px 8px", borderRadius: 4, fontSize: 12 } })),
+                    React.createElement("div", { style: { flex: 1, background: COLORS.void, padding: 10, borderRadius: 8 } },
+                        React.createElement("label", { style: { fontSize: 10, color: COLORS.muted } }, "Captain Call-Sign"),
+                        React.createElement("input", { type: "text", value: captainProfile.captainCallsign, onChange: (e) => setCaptainProfile({ ...captainProfile, captainCallsign: e.target.value }), style: { width: "100%", background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px 8px", borderRadius: 4, fontSize: 12 } }))),
+                React.createElement("div", { style: { background: COLORS.void, padding: 10, borderRadius: 8 } },
+                    React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: COLORS.systems, marginBottom: 4 } }, "CREW ROSTER"),
+                    React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6 } },
+                        React.createElement("input", { type: "text", value: captainProfile.helmName, onChange: (e) => setCaptainProfile({ ...captainProfile, helmName: e.target.value }), style: { background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px", borderRadius: 4, fontSize: 11 } }),
+                        React.createElement("input", { type: "text", value: captainProfile.geneName, onChange: (e) => setCaptainProfile({ ...captainProfile, geneName: e.target.value }), style: { background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px", borderRadius: 4, fontSize: 11 } }),
+                        React.createElement("input", { type: "text", value: captainProfile.salName, onChange: (e) => setCaptainProfile({ ...captainProfile, salName: e.target.value }), style: { background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px", borderRadius: 4, fontSize: 11 } }))),
+                React.createElement("div", { style: { background: COLORS.void, padding: 10, borderRadius: 8 } },
+                    React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: COLORS.salvage, marginBottom: 4 } }, "HULL SKIN"),
+                    React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6 } }, ["titanium", "chrome", "gold", "singularity"].map((skin) => {
+                        const isUnlocked = cosmeticsProfile.unlockedHullSkins.includes(skin);
+                        const isActive = captainProfile.activeHullSkin === skin;
+                        return (React.createElement("button", { key: skin, disabled: !isUnlocked, onClick: () => { if (isUnlocked)
+                                setCaptainProfile({ ...captainProfile, activeHullSkin: skin }); }, className: "action-btn", style: { padding: "4px", borderRadius: 4, border: `1px solid ${isActive ? COLORS.salvage : COLORS.panelBorder}`, background: isActive ? `${COLORS.salvage}22` : COLORS.panel, color: isUnlocked ? COLORS.bone : COLORS.muted, fontSize: 11 } },
+                            skin,
+                            " ",
+                            isActive ? "✓" : ""));
+                    }))),
+                React.createElement("div", { style: { background: COLORS.void, padding: 10, borderRadius: 8 } },
+                    React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: COLORS.event } }, "UNLOCKED SCOUT BADGES"),
+                    React.createElement("div", { style: { display: "flex", gap: 8, fontSize: 11, color: COLORS.muted, marginTop: 2 } }, ["ricky", "maude", "dez"].map((p) => (React.createElement("div", { key: p },
+                        React.createElement("span", { style: { color: ANCHORS[p].color } },
+                            p,
+                            ":"),
+                        " ",
+                        (cosmeticsProfile.unlockedBadges[p] || []).length)))))),
+            React.createElement("div", { style: { marginTop: 12, display: "flex", justifyContent: "flex-end" } },
+                React.createElement("button", { onClick: () => { setShipName(shipNameInput); saveCaptainProfile(captainProfile); setProfileOpen(false); }, className: "action-btn", style: { background: COLORS.morale, color: COLORS.void, border: "none", borderRadius: 6, padding: "6px 14px", fontWeight: 700, fontSize: 12, cursor: "pointer" } }, "SAVE PROFILE")))));
+}
+// --- Source: components/LeaderboardModal.tsx ---
+function LeaderboardModal({ setLeaderboardOpen, leaderboardFilter, setLeaderboardFilter, highScoresList, COLORS, panelStyle, ANCHORS }) {
+    return (React.createElement("div", { id: "leaderboardModal", style: { position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.92)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 } },
+        React.createElement("div", { style: { ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "20px 24px", border: `2px solid ${COLORS.morale}` } },
+            React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 } },
+                React.createElement("h2", { style: { fontSize: 18, fontWeight: 700, margin: 0, color: COLORS.bone } }, "ARCADE LEADERBOARD"),
+                React.createElement("button", { onClick: () => setLeaderboardOpen(false), className: "action-btn", style: { background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer" } },
+                    React.createElement(X, { size: 18 }))),
+            React.createElement("div", { style: { display: "flex", gap: 6, marginBottom: 12 } }, ["All", "ricky", "maude", "dez"].map((tab) => {
+                const isActive = leaderboardFilter === tab;
+                return (React.createElement("button", { key: tab, onClick: () => setLeaderboardFilter(tab), className: "action-btn", style: {
+                        padding: "4px 10px",
+                        borderRadius: 4,
+                        border: `1px solid ${isActive ? COLORS.morale : COLORS.panelBorder}`,
+                        background: isActive ? `${COLORS.morale}22` : COLORS.void,
+                        color: isActive ? COLORS.morale : COLORS.muted,
+                        fontWeight: 700,
+                        fontSize: 11,
+                        cursor: "pointer",
+                        textTransform: "capitalize",
+                    } }, tab));
+            })),
+            React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 6, maxHeight: 360, overflowY: "auto" } }, (() => {
+                const filtered = highScoresList.filter((entry) => {
+                    if (leaderboardFilter === "All")
+                        return true;
+                    return entry.anchorPersona === leaderboardFilter;
+                }).slice(0, 10);
+                if (filtered.length === 0) {
+                    return (React.createElement("div", { style: { textAlign: "center", padding: 20, color: COLORS.muted, fontSize: 12 } }, "No high scores recorded yet."));
+                }
+                return filtered.map((entry, idx) => (React.createElement("div", { key: entry.id || idx, style: {
+                        background: COLORS.void,
+                        border: `1px solid ${idx === 0 ? COLORS.morale : COLORS.panelBorder}`,
+                        borderRadius: 6,
+                        padding: "8px 12px",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                    } },
+                    React.createElement("div", null,
+                        React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: COLORS.bone } },
+                            "#",
+                            idx + 1,
+                            " ",
+                            entry.shipName,
+                            " ",
+                            React.createElement("span", { style: { fontSize: 10, color: COLORS.muted } },
+                                "(",
+                                entry.captainCallsign || "CAPTAIN",
+                                ")")),
+                        React.createElement("div", { style: { fontSize: 10, color: COLORS.muted, marginTop: 2 } },
+                            "Sector ",
+                            entry.sector,
+                            " \u00B7 Round ",
+                            entry.rounds,
+                            " \u00B7 Hull: ",
+                            entry.hullSkin || "titanium")),
+                    React.createElement("div", { style: { textAlign: "right" } },
+                        React.createElement("div", { className: "mono", style: { fontSize: 14, fontWeight: 900, color: COLORS.salvage } },
+                            entry.score.toLocaleString(),
+                            " PTS"),
+                        React.createElement("div", { style: { fontSize: 10, color: ANCHORS[entry.anchorPersona]?.color || COLORS.muted, fontWeight: 700, textTransform: "capitalize" } }, entry.anchorPersona)))));
+            })()),
+            React.createElement("div", { style: { marginTop: 12, display: "flex", justifyContent: "flex-end" } },
+                React.createElement("button", { onClick: () => setLeaderboardOpen(false), className: "action-btn", style: { background: COLORS.morale, color: COLORS.void, border: "none", borderRadius: 6, padding: "6px 14px", fontWeight: 700, fontSize: 12, cursor: "pointer" } }, "CLOSE LEADERBOARD")))));
+}
 // --- Source: test/the-fracture-playtest.tsx ---
 // ============================================================
 // WEB AUDIO API SOUND SYNTHESIZER
@@ -2200,8 +2486,8 @@ function PostMortemModal({ gameOver, lossType, round, sector, domFront, postMort
                     React.createElement("div", { style: { background: "#00000040", padding: 12, borderRadius: 8, marginBottom: 12 } },
                         React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: COLORS.muted, marginBottom: 8 } }, "DAMAGE SUSTAINED BY FRONT"),
                         React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 6 } }, ["systems", "entropy", "re"].map((front) => {
-                            const dmg = postMortemResult ? postMortemResult.analytics.damageByFront[front] : 0;
-                            const total = postMortemResult ? Math.max(1, postMortemResult.analytics.totalDamageTaken) : 1;
+                            const dmg = postMortemResult?.analytics?.damageByFront?.[front] ?? 0;
+                            const total = postMortemResult?.analytics?.totalDamageTaken ? Math.max(1, postMortemResult.analytics.totalDamageTaken) : 1;
                             const pct = Math.min(100, Math.round((dmg / total) * 100));
                             const color = front === "entropy" ? COLORS.entropy : front === "systems" ? COLORS.systems : COLORS.re;
                             const label = front === "entropy" ? "Entropy" : front === "systems" ? "Systems" : "Reality Engine";
@@ -2391,7 +2677,7 @@ function gtlDecayRate(front, round, activeModifiers) {
         rate += activeModifiers[front];
     return Math.max(rate, 0.0001);
 }
-function gtlDistance(front, state) { return front === "entropy" ? Math.max(0, 100 - state.entropy) : Math.max(0, state[front]); }
+function gtlDistance(front, state) { const ent = (state && state.entropy !== undefined) ? state.entropy : 0; return front === "entropy" ? Math.max(0, 100 - ent) : Math.max(0, (state && state[front] !== undefined) ? state[front] : 0); }
 function gtlTTF(front, round, state, activeModifiers) { return gtlDistance(front, state) / gtlDecayRate(front, round, activeModifiers); }
 function resolveChosenFront(roundEffects) {
     const helpScore = { entropy: -(roundEffects.entropy || 0), systems: roundEffects.systems || 0, re: roundEffects.re || 0 };
@@ -3619,14 +3905,14 @@ function TheFracturePlaytest() {
                         React.createElement("span", null, rune ? rune.name : "Empty Slot")));
                 }))),
             (() => {
-                const gtl = computeGTL(state.round, { entropy: state.entropy, systems: state.systems, re: state.re }, { entropy: 0, systems: 0, re: 0 }, state.activeModifiers);
+                const gtl = computeGTL(state?.round || 1, { entropy: state?.entropy || 0, systems: state?.systems || 100, re: state?.re || 100 }, { entropy: 0, systems: 0, re: 0 }, state?.activeModifiers || {});
                 return (React.createElement("div", { className: "ttf-radar-gauge", id: "ttfRadarGauge", style: { ...panelStyle, padding: "10px 14px", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" } },
                     React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
                         React.createElement(Radar, { size: 16, color: COLORS.event }),
                         React.createElement("span", { style: { fontSize: 11, fontWeight: 700, color: COLORS.bone, letterSpacing: 1 } }, "GTL TTF RADAR GAUGE:")),
                     React.createElement("div", { style: { display: "flex", gap: 12, fontSize: 11, flexWrap: "wrap" } }, ["entropy", "systems", "re"].map((f) => {
-                        const ttf = gtl.ttf[f];
-                        const isOptimal = gtl.optimalFront === f;
+                        const ttf = gtl?.ttf?.[f] ?? 0;
+                        const isOptimal = gtl?.optimalFront === f;
                         const warningColor = ttf <= 3 ? COLORS.danger : ttf <= 5 ? COLORS.morale : COLORS.salvage;
                         return (React.createElement("div", { key: f, style: { background: COLORS.void, border: `1px solid ${isOptimal ? warningColor : COLORS.panelBorder}`, borderRadius: 6, padding: "4px 10px", display: "flex", alignItems: "center", gap: 6 } },
                             React.createElement("span", { style: { textTransform: "uppercase", fontWeight: 700, color: isOptimal ? warningColor : COLORS.muted } },
@@ -3689,7 +3975,7 @@ function TheFracturePlaytest() {
                             "LEVEL ",
                             c.level)))))))),
             underPressureNow && !state.gameOver && (React.createElement("div", { style: { textAlign: "center", fontSize: 12, color: COLORS.danger, marginBottom: 14, letterSpacing: 0.5, fontWeight: 600 } }, "\u26A0 UNDER PRESSURE \u2014 Level III choices now read as desperation, not control")),
-            React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 12 } }, [{ key: "entropy", label: "Entropy", val: state.entropy, invert: false, buffer: false }, { key: "systems", label: "Systems Health", val: state.systems, invert: true, buffer: true }, { key: "re", label: "Reality Engine", val: state.re, invert: true, buffer: true }].map((m) => (React.createElement("div", { key: m.label, className: meterFlash === m.key ? "meter-hit" : "", style: { ...panelStyle, padding: 13, border: meterFlash === m.key ? `1.5px solid ${METER_KEY_COLOR[m.key]}` : panelStyle.border, boxShadow: meterFlash === m.key ? `0 0 16px ${METER_KEY_COLOR[m.key]}66` : "none" } },
+            React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 12 } }, [{ key: "entropy", label: "Entropy", val: (state && state.entropy !== undefined) ? state.entropy : 0, invert: false, buffer: false }, { key: "systems", label: "Systems Health", val: state.systems, invert: true, buffer: true }, { key: "re", label: "Reality Engine", val: state.re, invert: true, buffer: true }].map((m) => (React.createElement("div", { key: m.label, className: meterFlash === m.key ? "meter-hit" : "", style: { ...panelStyle, padding: 13, border: meterFlash === m.key ? `1.5px solid ${METER_KEY_COLOR[m.key]}` : panelStyle.border, boxShadow: meterFlash === m.key ? `0 0 16px ${METER_KEY_COLOR[m.key]}66` : "none" } },
                 React.createElement("div", { style: { fontSize: 10.5, color: COLORS.muted, marginBottom: 6, letterSpacing: 1 } }, m.label.toUpperCase()),
                 React.createElement("div", { className: "mono", style: { fontSize: 19, fontWeight: 700, color: meterColor(m.val, m.invert), marginBottom: 3 } }, m.val.toFixed(1)),
                 m.buffer && m.val > 100 && React.createElement("div", { className: "mono", style: { fontSize: 9.5, color: COLORS.salvage, marginBottom: 4 } },
@@ -3927,69 +4213,7 @@ function TheFracturePlaytest() {
                     return null;
                 }),
                 React.createElement("div", { ref: logEndRef })),
-            briefingOpen && (React.createElement("div", { style: { position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.88)", backdropFilter: "blur(6px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 } },
-                React.createElement("div", { style: { ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "24px 28px", boxShadow: "0 20px 50px rgba(0,0,0,0.8)", border: `1.5px solid ${COLORS.systems}` } },
-                    React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, borderBottom: `1px solid ${COLORS.panelBorder}`, paddingBottom: 14 } },
-                        React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10 } },
-                            React.createElement(FileText, { size: 22, color: COLORS.systems }),
-                            React.createElement("div", null,
-                                React.createElement("div", { style: { fontSize: 10, letterSpacing: 2, color: COLORS.muted } }, "1-MINUTE PLAYBOOK"),
-                                React.createElement("h2", { style: { fontSize: 20, fontWeight: 700, margin: 0, color: COLORS.bone } }, "TACTICAL BRIEFING"))),
-                        React.createElement("button", { onClick: () => setBriefingOpen(false), className: "action-btn", style: { background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer", padding: 6 } },
-                            React.createElement(X, { size: 20 }))),
-                    React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 16, fontSize: 13, lineHeight: 1.5, color: COLORS.muted } },
-                        React.createElement("div", { style: { background: `${COLORS.systems}15`, border: `1px solid ${COLORS.systems}44`, borderRadius: 8, padding: 12 } },
-                            React.createElement("div", { style: { color: COLORS.systems, fontWeight: 700, fontSize: 14, marginBottom: 4, display: "flex", alignItems: "center", gap: 6 } },
-                                React.createElement(Rocket, { size: 15 }),
-                                " PRIMARY GOAL"),
-                            React.createElement("div", { style: { color: COLORS.bone } },
-                                "Survive ",
-                                React.createElement("b", null, "3 Sectors (30 Rounds total / 10 rounds per sector)"),
-                                " without letting Entropy hit 100%, Systems or RE collapse to 0%, or Morale deplete.")),
-                        React.createElement("div", null,
-                            React.createElement("div", { style: { color: COLORS.bone, fontWeight: 700, fontSize: 14, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 } },
-                                React.createElement(Radar, { size: 15, color: COLORS.event }),
-                                " THE 5 FRONTS & METERS"),
-                            React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 8 } },
-                                React.createElement("div", { style: { background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${COLORS.panelBorder}` } },
-                                    React.createElement("span", { style: { color: COLORS.systems, fontWeight: 700 } }, "1. Systems:"),
-                                    " Ship hull integrity (0-100%)."),
-                                React.createElement("div", { style: { background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${COLORS.panelBorder}` } },
-                                    React.createElement("span", { style: { color: COLORS.re, fontWeight: 700 } }, "2. Reality Engine:"),
-                                    " Quantum engine (0-100%)."),
-                                React.createElement("div", { style: { background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${COLORS.panelBorder}` } },
-                                    React.createElement("span", { style: { color: COLORS.morale, fontWeight: 700 } }, "3. Morale:"),
-                                    " Crew fortitude (0-100%)."),
-                                React.createElement("div", { style: { background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${COLORS.panelBorder}` } },
-                                    React.createElement("span", { style: { color: COLORS.salvage, fontWeight: 700 } }, "4. Salvage:"),
-                                    " Repairs & barrier banking."),
-                                React.createElement("div", { style: { background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${COLORS.panelBorder}` } },
-                                    React.createElement("span", { style: { color: COLORS.entropy, fontWeight: 700 } }, "5. Entropy:"),
-                                    " Spacetime distortion (0-100%)."))),
-                        React.createElement("div", null,
-                            React.createElement("div", { style: { color: COLORS.bone, fontWeight: 700, fontSize: 14, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 } },
-                                React.createElement(Anchor, { size: 15, color: COLORS.morale }),
-                                " 3 ANCHOR PERSONAS"),
-                            React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 6 } },
-                                React.createElement("div", { style: { background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${ANCHORS.ricky.color}44` } },
-                                    React.createElement("b", { style: { color: ANCHORS.ricky.color } }, "Ricky (Methodical):"),
-                                    " Steady calls. Builds Belief when matching TTF."),
-                                React.createElement("div", { style: { background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${ANCHORS.maude.color}44` } },
-                                    React.createElement("b", { style: { color: ANCHORS.maude.color } }, "Maude (Ruthless):"),
-                                    " Aggressive coverage across multiple fronts; levies strain tax."),
-                                React.createElement("div", { style: { background: COLORS.void, padding: 8, borderRadius: 6, border: `1px solid ${ANCHORS.dez.color}44` } },
-                                    React.createElement("b", { style: { color: ANCHORS.dez.color } }, "Dez (Desperate):"),
-                                    " Volatile gambits. High Distrust leads to crew overrides."))),
-                        React.createElement("div", { style: { background: COLORS.void, padding: 10, borderRadius: 8, border: `1px solid ${COLORS.panelBorder}` } },
-                            React.createElement("div", { style: { color: COLORS.bone, fontWeight: 700, fontSize: 14, marginBottom: 4, display: "flex", alignItems: "center", gap: 6 } },
-                                React.createElement(ShieldAlert, { size: 15, color: COLORS.salvage }),
-                                " COMPOUNDING BARRIERS"),
-                            React.createElement("div", null,
-                                "Allocate actions into ",
-                                React.createElement("b", null, "Banked Barriers"),
-                                ". Unclaimed barriers compound (+15%/rnd). Claiming pays out restoration; threat hits cause haircuts."))),
-                    React.createElement("div", { style: { marginTop: 20, paddingTop: 14, borderTop: `1px solid ${COLORS.panelBorder}`, display: "flex", justifyContent: "flex-end" } },
-                        React.createElement("button", { onClick: () => setBriefingOpen(false), className: "action-btn", style: { background: COLORS.systems, color: COLORS.void, border: "none", borderRadius: 8, padding: "8px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer" } }, "CLOSE BRIEFING"))))),
+            briefingOpen && React.createElement(BriefingModal, { setBriefingOpen: setBriefingOpen, COLORS: COLORS, panelStyle: panelStyle }),
             manifestOpen && (React.createElement("div", { style: { position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.88)", backdropFilter: "blur(6px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 } },
                 React.createElement("div", { style: { ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "24px 28px", boxShadow: "0 20px 50px rgba(0,0,0,0.8)", border: `1.5px solid ${COLORS.event}` } },
                     React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, borderBottom: `1px solid ${COLORS.panelBorder}`, paddingBottom: 14 } },
@@ -4059,192 +4283,10 @@ function TheFracturePlaytest() {
                     })),
                     React.createElement("div", { style: { marginTop: 20, paddingTop: 14, borderTop: `1px solid ${COLORS.panelBorder}`, display: "flex", justifyContent: "flex-end" } },
                         React.createElement("button", { onClick: () => setLoreOpen(false), className: "action-btn", style: { background: COLORS.re, color: COLORS.bone, border: "none", borderRadius: 8, padding: "8px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer" } }, "CLOSE LORE SIGNALS"))))),
-            achievementsOpen && (React.createElement("div", { style: { position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.88)", backdropFilter: "blur(6px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 } },
-                React.createElement("div", { style: { ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "24px 28px", boxShadow: "0 20px 50px rgba(0,0,0,0.8)", border: `1.5px solid ${COLORS.salvage}` } },
-                    React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, borderBottom: `1px solid ${COLORS.panelBorder}`, paddingBottom: 14 } },
-                        React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10 } },
-                            React.createElement(Award, { size: 22, color: COLORS.salvage }),
-                            React.createElement("div", null,
-                                React.createElement("div", { style: { fontSize: 10, letterSpacing: 2, color: COLORS.muted } }, "MEDALS & HONORS"),
-                                React.createElement("h2", { style: { fontSize: 20, fontWeight: 700, margin: 0, color: COLORS.bone } },
-                                    "ACHIEVEMENTS (",
-                                    unlockedAchList.length,
-                                    "/",
-                                    ACHIEVEMENTS_LIST.length,
-                                    ")"))),
-                        React.createElement("button", { onClick: () => setAchievementsOpen(false), className: "action-btn", style: { background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer", padding: 6 } },
-                            React.createElement(X, { size: 20 }))),
-                    React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 10, maxHeight: 380, overflowY: "auto" } }, ACHIEVEMENTS_LIST.map((ach) => {
-                        const unlocked = unlockedAchList.includes(ach.id);
-                        return (React.createElement("div", { key: ach.id, style: { background: COLORS.void, padding: 10, borderRadius: 8, border: `1px solid ${unlocked ? COLORS.salvage + "66" : COLORS.panelBorder}`, display: "flex", gap: 10, alignItems: "center", opacity: unlocked ? 1 : 0.5 } },
-                            React.createElement("div", { style: { width: 32, height: 32, borderRadius: "50%", background: unlocked ? `${COLORS.salvage}22` : `${COLORS.muted}11`, border: `1px solid ${unlocked ? COLORS.salvage : COLORS.muted}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 } }, unlocked ? React.createElement(CheckCircle, { size: 16, color: COLORS.salvage }) : React.createElement(Lock, { size: 14, color: COLORS.muted })),
-                            React.createElement("div", null,
-                                React.createElement("div", { style: { fontSize: 12.5, fontWeight: 700, color: unlocked ? COLORS.bone : COLORS.muted } }, ach.title),
-                                React.createElement("div", { style: { fontSize: 11, color: COLORS.muted, marginTop: 2 } }, ach.desc))));
-                    })),
-                    React.createElement("div", { style: { marginTop: 20, paddingTop: 14, borderTop: `1px solid ${COLORS.panelBorder}`, display: "flex", justifyContent: "flex-end" } },
-                        React.createElement("button", { onClick: () => setAchievementsOpen(false), className: "action-btn", style: { background: COLORS.salvage, color: COLORS.void, border: "none", borderRadius: 8, padding: "8px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer" } }, "CLOSE ACHIEVEMENTS"))))),
-            wdtOpen && (React.createElement("div", { id: "wdtModal", style: { position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.92)", backdropFilter: "blur(6px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 } },
-                React.createElement("div", { style: { ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "24px 28px", boxShadow: "0 20px 50px rgba(0,0,0,0.8)", border: `1.5px solid ${COLORS.event}` } },
-                    React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, borderBottom: `1px solid ${COLORS.panelBorder}`, paddingBottom: 14 } },
-                        React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10 } },
-                            React.createElement(Compass, { size: 22, color: COLORS.event }),
-                            React.createElement("div", null,
-                                React.createElement("div", { style: { fontSize: 10, letterSpacing: 2, color: COLORS.muted } }, "ONBOARDING DIAGNOSTIC"),
-                                React.createElement("h2", { style: { fontSize: 20, fontWeight: 700, margin: 0, color: COLORS.bone } }, "QUANTUM CALIBRATION"))),
-                        React.createElement("button", { onClick: () => setWdtOpen(false), className: "action-btn", style: { background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer", padding: 6 } },
-                            React.createElement(X, { size: 20 }))),
-                    wdtStep < WDT_SCENARIOS.length ? (React.createElement("div", null,
-                        React.createElement("div", { style: { fontSize: 11, letterSpacing: 1.5, color: COLORS.event, fontWeight: 700, marginBottom: 4 } },
-                            "SCENARIO ",
-                            wdtStep + 1,
-                            " OF ",
-                            WDT_SCENARIOS.length,
-                            " \u2014 ",
-                            WDT_SCENARIOS[wdtStep].title),
-                        React.createElement("div", { style: { fontSize: 14, color: COLORS.bone, marginBottom: 16, lineHeight: 1.5 } }, WDT_SCENARIOS[wdtStep].question),
-                        React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 10 } }, WDT_SCENARIOS[wdtStep].options.map((opt) => {
-                            const selected = wdtAnswers[WDT_SCENARIOS[wdtStep].id] === opt.id;
-                            return (React.createElement("button", { key: opt.id, onClick: () => {
-                                    setWdtAnswers({ ...wdtAnswers, [WDT_SCENARIOS[wdtStep].id]: opt.id });
-                                    if (wdtStep + 1 <= WDT_SCENARIOS.length) {
-                                        setWdtStep(wdtStep + 1);
-                                    }
-                                }, className: "action-btn", style: {
-                                    textAlign: "left",
-                                    padding: "12px 16px",
-                                    borderRadius: 8,
-                                    border: `1px solid ${selected ? COLORS.event : COLORS.panelBorder}`,
-                                    background: selected ? `${COLORS.event}22` : COLORS.void,
-                                    color: COLORS.bone,
-                                    cursor: "pointer",
-                                    fontSize: 13,
-                                } }, opt.text));
-                        })))) : ((() => {
-                        const recPersona = evaluateDiagnosticResult(wdtAnswers);
-                        const patch = getCalibrationPatch(recPersona);
-                        return (React.createElement("div", null,
-                            React.createElement("div", { style: { fontSize: 12, letterSpacing: 1.5, color: COLORS.salvage, fontWeight: 700, marginBottom: 8 } }, "CALIBRATION COMPLETE \u2014 RECOMMENDED ANCHOR AI"),
-                            React.createElement("div", { style: { background: COLORS.void, borderRadius: 12, border: `1.5px solid ${patch.color}`, padding: 16, marginBottom: 16 } },
-                                React.createElement("div", { style: { display: "flex", gap: 12, alignItems: "center", marginBottom: 8 } },
-                                    React.createElement("div", { dangerouslySetInnerHTML: { __html: patch.svg } }),
-                                    React.createElement("div", null,
-                                        React.createElement("h3", { style: { fontSize: 16, fontWeight: 700, color: patch.color, margin: 0 } }, patch.title),
-                                        React.createElement("div", { style: { fontSize: 11, color: COLORS.muted } }, patch.tagline))),
-                                React.createElement("div", { style: { fontSize: 12, color: COLORS.bone, marginBottom: 8 } }, patch.description)),
-                            React.createElement("div", { style: { display: "flex", gap: 10, justifyContent: "space-between" } },
-                                React.createElement("button", { onClick: () => { setWdtAnswers({}); setWdtStep(0); }, className: "action-btn", style: { background: COLORS.panel, color: COLORS.muted, border: `1px solid ${COLORS.panelBorder}`, borderRadius: 8, padding: "8px 16px", fontSize: 12, cursor: "pointer" } }, "Retake"),
-                                React.createElement("button", { onClick: () => { setAnchorChoice(recPersona); setWdtOpen(false); }, className: "action-btn", style: { background: patch.color, color: COLORS.void, border: "none", borderRadius: 8, padding: "8px 20px", fontWeight: 700, fontSize: 13, cursor: "pointer" } },
-                                    "Confirm & Select ",
-                                    ANCHORS[recPersona].name))));
-                    })())))),
-            profileOpen && (React.createElement("div", { id: "profileModal", style: { position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.92)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 } },
-                React.createElement("div", { style: { ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "20px 24px", border: `1.5px solid ${COLORS.morale}` } },
-                    React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 } },
-                        React.createElement("h2", { style: { fontSize: 18, fontWeight: 700, margin: 0, color: COLORS.bone } }, "CAPTAIN PROFILE"),
-                        React.createElement("button", { onClick: () => setProfileOpen(false), className: "action-btn", style: { background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer" } },
-                            React.createElement(X, { size: 18 }))),
-                    React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 10 } },
-                        React.createElement("div", { style: { background: COLORS.void, padding: 10, borderRadius: 8 } },
-                            React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: COLORS.morale, marginBottom: 4 } }, "VESSEL & COMMANDER"),
-                            React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 } },
-                                React.createElement("div", null,
-                                    React.createElement("label", { style: { fontSize: 10, color: COLORS.muted } }, "Vessel Name"),
-                                    React.createElement("input", { type: "text", value: shipNameInput, onChange: (e) => setShipNameInput(e.target.value), style: { width: "100%", background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px 8px", borderRadius: 4, fontSize: 12 } })),
-                                React.createElement("div", null,
-                                    React.createElement("label", { style: { fontSize: 10, color: COLORS.muted } }, "Captain Call-Sign"),
-                                    React.createElement("input", { type: "text", value: captainProfile.captainCallsign, onChange: (e) => setCaptainProfile({ ...captainProfile, captainCallsign: e.target.value }), style: { width: "100%", background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px 8px", borderRadius: 4, fontSize: 12 } })))),
-                        React.createElement("div", { style: { background: COLORS.void, padding: 10, borderRadius: 8 } },
-                            React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: COLORS.systems, marginBottom: 4 } }, "CREW ROSTER"),
-                            React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6 } },
-                                React.createElement("input", { type: "text", value: captainProfile.helmName, onChange: (e) => setCaptainProfile({ ...captainProfile, helmName: e.target.value }), style: { background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px", borderRadius: 4, fontSize: 11 } }),
-                                React.createElement("input", { type: "text", value: captainProfile.geneName, onChange: (e) => setCaptainProfile({ ...captainProfile, geneName: e.target.value }), style: { background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px", borderRadius: 4, fontSize: 11 } }),
-                                React.createElement("input", { type: "text", value: captainProfile.salName, onChange: (e) => setCaptainProfile({ ...captainProfile, salName: e.target.value }), style: { background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px", borderRadius: 4, fontSize: 11 } }))),
-                        React.createElement("div", { style: { background: COLORS.void, padding: 10, borderRadius: 8 } },
-                            React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: COLORS.salvage, marginBottom: 4 } }, "HULL SKIN"),
-                            React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6 } }, ["titanium", "chrome", "gold", "singularity"].map((skin) => {
-                                const isUnlocked = cosmeticsProfile.unlockedHullSkins.includes(skin);
-                                const isActive = captainProfile.activeHullSkin === skin;
-                                return (React.createElement("button", { key: skin, disabled: !isUnlocked, onClick: () => { if (isUnlocked)
-                                        setCaptainProfile({ ...captainProfile, activeHullSkin: skin }); }, className: "action-btn", style: { padding: "4px", borderRadius: 4, border: `1px solid ${isActive ? COLORS.salvage : COLORS.panelBorder}`, background: isActive ? `${COLORS.salvage}22` : COLORS.panel, color: isUnlocked ? COLORS.bone : COLORS.muted, fontSize: 11 } },
-                                    skin,
-                                    " ",
-                                    isActive ? "✓" : ""));
-                            }))),
-                        React.createElement("div", { style: { background: COLORS.void, padding: 10, borderRadius: 8 } },
-                            React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: COLORS.event } }, "UNLOCKED SCOUT BADGES"),
-                            React.createElement("div", { style: { display: "flex", gap: 8, fontSize: 11, color: COLORS.muted, marginTop: 2 } }, ["ricky", "maude", "dez"].map((p) => (React.createElement("div", { key: p },
-                                React.createElement("span", { style: { color: ANCHORS[p].color } },
-                                    p,
-                                    ":"),
-                                " ",
-                                (cosmeticsProfile.unlockedBadges[p] || []).length)))))),
-                    React.createElement("div", { style: { marginTop: 12, display: "flex", justifyContent: "flex-end" } },
-                        React.createElement("button", { onClick: () => { setShipName(shipNameInput); saveCaptainProfile(captainProfile); setProfileOpen(false); }, className: "action-btn", style: { background: COLORS.morale, color: COLORS.void, border: "none", borderRadius: 6, padding: "6px 14px", fontWeight: 700, fontSize: 12, cursor: "pointer" } }, "SAVE PROFILE"))))),
-            leaderboardOpen && (React.createElement("div", { id: "leaderboardModal", style: { position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.92)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 } },
-                React.createElement("div", { style: { ...panelStyle, maxWidth: 680, width: "100%", maxHeight: "85vh", overflowY: "auto", padding: "20px 24px", border: `2px solid ${COLORS.morale}` } },
-                    React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 } },
-                        React.createElement("h2", { style: { fontSize: 18, fontWeight: 700, margin: 0, color: COLORS.bone } }, "ARCADE LEADERBOARD"),
-                        React.createElement("button", { onClick: () => setLeaderboardOpen(false), className: "action-btn", style: { background: "transparent", border: "none", color: COLORS.muted, cursor: "pointer" } },
-                            React.createElement(X, { size: 18 }))),
-                    React.createElement("div", { style: { display: "flex", gap: 6, marginBottom: 12 } }, ["All", "ricky", "maude", "dez"].map((tab) => {
-                        const isActive = leaderboardFilter === tab;
-                        return (React.createElement("button", { key: tab, onClick: () => setLeaderboardFilter(tab), className: "action-btn", style: {
-                                padding: "4px 10px",
-                                borderRadius: 4,
-                                border: `1px solid ${isActive ? COLORS.morale : COLORS.panelBorder}`,
-                                background: isActive ? `${COLORS.morale}22` : COLORS.void,
-                                color: isActive ? COLORS.morale : COLORS.muted,
-                                fontWeight: 700,
-                                fontSize: 11,
-                                cursor: "pointer",
-                                textTransform: "capitalize",
-                            } }, tab));
-                    })),
-                    React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 6, maxHeight: 360, overflowY: "auto" } }, (() => {
-                        const filtered = highScoresList.filter((entry) => {
-                            if (leaderboardFilter === "All")
-                                return true;
-                            return entry.anchorPersona === leaderboardFilter;
-                        }).slice(0, 10);
-                        if (filtered.length === 0) {
-                            return (React.createElement("div", { style: { textAlign: "center", padding: 20, color: COLORS.muted, fontSize: 12 } }, "No high scores recorded yet."));
-                        }
-                        return filtered.map((entry, idx) => (React.createElement("div", { key: entry.id || idx, style: {
-                                background: COLORS.void,
-                                border: `1px solid ${idx === 0 ? COLORS.morale : COLORS.panelBorder}`,
-                                borderRadius: 6,
-                                padding: "8px 12px",
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                            } },
-                            React.createElement("div", null,
-                                React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: COLORS.bone } },
-                                    "#",
-                                    idx + 1,
-                                    " ",
-                                    entry.shipName,
-                                    " ",
-                                    React.createElement("span", { style: { fontSize: 10, color: COLORS.muted } },
-                                        "(",
-                                        entry.captainCallsign || "CAPTAIN",
-                                        ")")),
-                                React.createElement("div", { style: { fontSize: 10, color: COLORS.muted, marginTop: 2 } },
-                                    "Sector ",
-                                    entry.sector,
-                                    " \u00B7 Round ",
-                                    entry.rounds,
-                                    " \u00B7 Hull: ",
-                                    entry.hullSkin || "titanium")),
-                            React.createElement("div", { style: { textAlign: "right" } },
-                                React.createElement("div", { className: "mono", style: { fontSize: 14, fontWeight: 900, color: COLORS.salvage } },
-                                    entry.score.toLocaleString(),
-                                    " PTS"),
-                                React.createElement("div", { style: { fontSize: 10, color: ANCHORS[entry.anchorPersona]?.color || COLORS.muted, fontWeight: 700, textTransform: "capitalize" } }, entry.anchorPersona)))));
-                    })()),
-                    React.createElement("div", { style: { marginTop: 12, display: "flex", justifyContent: "flex-end" } },
-                        React.createElement("button", { onClick: () => setLeaderboardOpen(false), className: "action-btn", style: { background: COLORS.morale, color: COLORS.void, border: "none", borderRadius: 6, padding: "6px 14px", fontWeight: 700, fontSize: 12, cursor: "pointer" } }, "CLOSE LEADERBOARD"))))))));
+            achievementsOpen && React.createElement(AchievementsModal, { setAchievementsOpen: setAchievementsOpen, ACHIEVEMENTS_LIST: ACHIEVEMENTS_LIST, unlockedAchList: unlockedAchList, COLORS: COLORS, panelStyle: panelStyle }),
+            wdtOpen && React.createElement(WdtModal, { setWdtOpen: setWdtOpen, wdtStep: wdtStep, setWdtStep: setWdtStep, wdtAnswers: wdtAnswers, setWdtAnswers: setWdtAnswers, COLORS: COLORS, panelStyle: panelStyle, ANCHORS: ANCHORS, setAnchorChoice: setAnchorChoice }),
+            profileOpen && React.createElement(ProfileModal, { setProfileOpen: setProfileOpen, captainProfile: captainProfile, setCaptainProfile: setCaptainProfile, cosmeticsProfile: cosmeticsProfile, COLORS: COLORS, panelStyle: panelStyle, ANCHORS: ANCHORS, shipNameInput: shipNameInput, setShipNameInput: setShipNameInput, saveCaptainProfile: saveCaptainProfile, setShipName: setShipName }),
+            leaderboardOpen && React.createElement(LeaderboardModal, { setLeaderboardOpen: setLeaderboardOpen, leaderboardFilter: leaderboardFilter, setLeaderboardFilter: setLeaderboardFilter, highScoresList: highScoresList, COLORS: COLORS, panelStyle: panelStyle, ANCHORS: ANCHORS }))));
 }
 
 

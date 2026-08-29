@@ -19,6 +19,11 @@ const filesToCompile = [
   "mechanics.ts",
   "persistence.ts",
   "analytics.ts",
+  "components/BriefingModal.tsx",
+  "components/AchievementsModal.tsx",
+  "components/WdtModal.tsx",
+  "components/ProfileModal.tsx",
+  "components/LeaderboardModal.tsx",
   "test/the-fracture-playtest.tsx",
 ];
 
