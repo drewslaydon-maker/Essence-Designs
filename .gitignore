@@ -1,7 +1,25 @@
+﻿# Global Ignores
 .aider*
 aider/
 desktop.ini
 *.tmp
 *.log
 node_modules/
+.env
 
+# Private Studio Core & Architecture (ESSENCE DESIGNS)
+ESSENCE_DESIGNS/00_ESSENCE_CORE/
+ESSENCE_DESIGNS/DOCS/
+ESSENCE_DESIGNS/ME/
+
+# Game Dev State Isolation
+ESSENCE_DESIGNS/GAME_DEV/PARKED/
+ESSENCE_DESIGNS/GAME_DEV/ON_DECK/
+ESSENCE_DESIGNS/GAME_DEV/BROKEN/
+
+# Explicit Whitelists (Public facing)
+# Allow the main Prosis active dev folder
+!ESSENCE_DESIGNS/GAME_DEV/02_PROSIS/
+
+# Allow Mama Jo's Cookbook folder
+!ESSENCE_DESIGNS/ME/04_MaMa/
