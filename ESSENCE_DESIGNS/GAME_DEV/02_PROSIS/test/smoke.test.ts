@@ -321,8 +321,7 @@ test("integration: different-front + same-front-later + banking in one round pro
   assert.ok(helmAbility && engAbility && aftAbility);
   assert.strictEqual(helmAbility.levels.I.entropyDelta, -1.5);
   assert.strictEqual(helmAbility.levels.I.systemsDelta, -3);
-  assert.strictEqual(engAbility.levels.I.systemsDelta, 6);
-  assert.strictEqual(engAbility.levels.I.wearBump, 0.02);
+  assert.strictEqual(engAbility.levels.I.banked, 4);
   assert.strictEqual(aftAbility.levels.I.banked, 4);
   assert.strictEqual(aftAbility.front, "re");
 });

@@ -58,6 +58,7 @@ import {
   getHighScores,
   submitHighScore,
   calculateRunScore,
+  resetAllData,
   RunHistorySummary,
   ShipLogEntry,
 } from "./persistence";
@@ -85,6 +86,9 @@ import {
   toggleMute,
   isMuted,
   playSFX,
+  setVolume,
+  updatePadState,
+  ensureAudioContext,
 } from "./audio";
 import type { LogicState, CaptainProfile, CosmeticsProfile, HighScoreEntry, HullSkin, PersonaId, Front } from "./types";
 import { BriefingModal } from "../components/BriefingModal";
@@ -683,8 +687,9 @@ const ROLES = [
         desc: "Entropy drops immediately. Systems takes the hit, same round.",
         levels: { I: { entropyDelta: -1.5, systemsDelta: -3 }, II: { entropyDelta: -3.5, systemsDelta: -6 }, III: { entropyDelta: -7, systemsDelta: -10 } } },
       { id: "suppress", label: "Suppress", shape: "same_front_later",
-        desc: "Entropy drops now. Ambient Entropy growth runs hot for the next 2 rounds.",
-        levels: { I: { entropyDelta: -1, ambientBump: 0.02, bumpRounds: 2 }, II: { entropyDelta: -2.5, ambientBump: 0.04, bumpRounds: 2 }, III: { entropyDelta: -5, ambientBump: 0.07, bumpRounds: 2 } } },
+        desc: "Deploy a flat Entropy Quick Barrier. Active instantly; holds steady from day one.",
+        levels: { I: { banked: 3 }, II: { banked: 6.5 }, III: { banked: 11.5 } },
+        front: "entropy" },
       { id: "threat_ledger", label: "Threat Ledger", shape: "deferred_compounding",
         desc: "Raises a barrier against Entropy. The longer it holds, the more it's worth — but an Entropy spike while it's up costs the barrier the same haircut Entropy itself would take.",
         levels: { I: { banked: 2 }, II: { banked: 5 }, III: { banked: 9 } },
@@ -699,8 +704,9 @@ const ROLES = [
         desc: "Big Systems gain. Entropy takes the hit, same round.",
         levels: { I: { systemsDelta: 7, entropyDelta: 1 }, II: { systemsDelta: 15, entropyDelta: 2.5 }, III: { systemsDelta: 26, entropyDelta: 5 } } },
       { id: "overclock", label: "Overclock", shape: "same_front_later",
-        desc: "Systems gain now. Systems' own wear rate runs hot for the next 2 rounds.",
-        levels: { I: { systemsDelta: 6, wearBump: 0.02, bumpRounds: 2 }, II: { systemsDelta: 13, wearBump: 0.04, bumpRounds: 2 }, III: { systemsDelta: 23, wearBump: 0.07, bumpRounds: 2 } } },
+        desc: "Deploy a flat Systems Quick Barrier. Active instantly; holds steady from day one.",
+        levels: { I: { banked: 4 }, II: { banked: 9 }, III: { banked: 16 } },
+        front: "systems" },
       { id: "reserve_cache", label: "Reserve Cache", shape: "deferred_compounding",
         desc: "Raises a barrier around Systems. The longer it holds, the more it's worth — but a hit to Systems while it's up costs the barrier the same haircut Systems itself would take.",
         levels: { I: { banked: 4 }, II: { banked: 9 }, III: { banked: 16 } },
@@ -715,8 +721,9 @@ const ROLES = [
         desc: "Fast Salvage grab. The Reality Engine takes the hit, same round.",
         levels: { I: { salvageDelta: 5, reDelta: 0 }, II: { salvageDelta: 11, reDelta: -1 }, III: { salvageDelta: 20, reDelta: -3 } } },
       { id: "patch_job", label: "Patch Job", shape: "same_front_later",
-        desc: "RE gain now. RE's own wear rate runs hot for the next 2 rounds.",
-        levels: { I: { reDelta: 6, wearBump: 0.02, bumpRounds: 2 }, II: { reDelta: 13, wearBump: 0.04, bumpRounds: 2 }, III: { reDelta: 23, wearBump: 0.07, bumpRounds: 2 } } },
+        desc: "Deploy a flat Engine Quick Barrier. Active instantly; holds steady from day one.",
+        levels: { I: { banked: 5 }, II: { banked: 11 }, III: { banked: 19.5 } },
+        front: "re" },
       { id: "stockpile", label: "Stockpile", shape: "deferred_compounding",
         // REDESIGNED 2026-08-20: previously banked Salvage, which left Aft as the
         // only role with no defensive tool for its own front (Force Extraction
@@ -844,6 +851,8 @@ const MORALE_ON_CLAIM = 5;        // FIRST PASS -- new morale lever
 
 function tickBankGrowth(entry) {
   const roundsHeld = entry.roundsHeld + 1;
+  const isQuickBarrier = ["suppress", "overclock", "patch_job"].includes(entry.abilityId);
+  if (isQuickBarrier) return { ...entry, roundsHeld };
   if (roundsHeld > BANK_GROWTH_CAP_ROUNDS) return { ...entry, roundsHeld }; // locked: no further growth
   return { ...entry, banked: entry.banked * (1 + BANK_GROWTH_RATE), roundsHeld };
 }
@@ -1021,6 +1030,15 @@ const initialState = (anchorPersona = "ricky"): LogicState => {
   };
 };
 
+const isUnderPressure = (state: LogicState): boolean => {
+  return (
+    state.entropy > 55 ||
+    state.systems < 40 ||
+    state.re < 40 ||
+    state.morale < MORALE_PRESSURE_THRESHOLD
+  );
+};
+
 export default function TheFracturePlaytest() {
   const [state, setState] = useState<LogicState>(initialState());
   const [savedRun, setSavedRun] = useState<LogicState | null>(() => loadRunState());
@@ -1033,9 +1051,16 @@ export default function TheFracturePlaytest() {
   const [bestRound, setBestRound] = useState(null);
   const [runsPlayed, setRunsPlayed] = useState(0);
   const [statsLoaded, setStatsLoaded] = useState(false);
-  const [anchorChoice, setAnchorChoice] = useState(null);
+  const [anchorChoice, setAnchorChoice] = useState<PersonaId | null>(() => {
+    const prof: any = getCaptainProfile();
+    return prof?.activeAnchor || null;
+  });
   const [claimFront, setClaimFront] = useState(null);
-  const [audioMuted, setAudioMuted] = useState(false);
+  const [audioMuted, setAudioMuted] = useState<boolean>(() => isMuted());
+  const [volume, setVolumeState] = useState<number>(() => {
+    const prefs = getAudioPrefs();
+    return prefs.volume;
+  });
   const [briefingOpen, setBriefingOpen] = useState(false);
   const [manifestOpen, setManifestOpen] = useState(false);
   const [loreOpen, setLoreOpen] = useState(false);
@@ -1046,6 +1071,8 @@ export default function TheFracturePlaytest() {
   const [wdtAnswers, setWdtAnswers] = useState<Record<string, string>>({});
   const [wdtStep, setWdtStep] = useState(0);
   const [leaderboardFilter, setLeaderboardFilter] = useState<string>("All");
+  const [openSubmenu, setOpenSubmenu] = useState<"intel" | "registry" | "ops" | null>(null);
+  const [landingTab, setLandingTab] = useState<"logs" | "achievements" | "lore">("logs");
 
   const [captainProfile, setCaptainProfile] = useState<CaptainProfile>(() => getCaptainProfile());
   const [cosmeticsProfile, setCosmeticsProfile] = useState<CosmeticsProfile>(() => getCosmeticsProfile());
@@ -1057,14 +1084,275 @@ export default function TheFracturePlaytest() {
   const [unlockedLoreList, setUnlockedLoreList] = useState<string[]>(() => getUnlockedLoreIds());
   const [unlockedAchList, setUnlockedAchList] = useState<string[]>(() => getUnlockedAchievementIds());
   const [manifestEntries, setManifestEntries] = useState<ShipLogEntry[]>(() => getCaptainsManifest());
-  const logEndRef = useRef(null);
+  const logEndRef = useRef<HTMLDivElement | null>(null);
+  const logContainerRef = useRef<HTMLDivElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  const sharedStyles = (
+    <style>{`
+      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+      .mono { font-family: 'JetBrains Mono', monospace; }
+      @keyframes pulseGlow { 0%,100% { opacity: 0.55; } 50% { opacity: 1; } }
+      @keyframes glitchShift { 0%,100% { transform: translate(0,0); filter: hue-rotate(0deg); } 20% { transform: translate(-1px,1px); filter: hue-rotate(15deg); } 40% { transform: translate(1px,-1px); filter: hue-rotate(-10deg); } 60% { transform: translate(-1px,-1px); filter: hue-rotate(20deg); } 80% { transform: translate(1px,1px); filter: hue-rotate(-15deg); } }
+      @keyframes ringPulseBurst { 0% { r: 46; opacity: 1; } 100% { r: 62; opacity: 0; } }
+      @keyframes warmBuild { 0% { opacity: 0.4; } 100% { opacity: 1; filter: brightness(1.3); } }
+      @keyframes toastIn { 0% { opacity: 0; transform: translate(-50%, -8px) scale(0.96); } 15% { opacity: 1; transform: translate(-50%, 0) scale(1); } 85% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -4px) scale(0.98); } }
+      @keyframes meterShake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-3px); } 40% { transform: translateX(3px); } 60% { transform: translateX(-2px); } 80% { transform: translateX(2px); } }
+      .core-ring { transition: stroke 0.4s ease, opacity 0.4s ease; }
+      .flash-cascading { animation: glitchShift 0.35s steps(2) 3; }
+      .flash-targeted circle:nth-child(2) { animation: ringPulseBurst 0.6s ease-out; }
+      .flash-telegraphed circle:nth-child(2) { animation: warmBuild 0.9s ease-in; }
+      .action-btn { transition: all 0.15s ease; }
+      .action-btn:hover:not(:disabled) { transform: translateY(-1px); border-color: #454858 !important; }
+      .primary-btn:hover:not(:disabled) { filter: brightness(1.08); }
+      .impact-toast { position: fixed; top: 18px; left: 50%; z-index: 50; animation: toastIn 1.8s ease forwards; }
+      .meter-hit { animation: meterShake 0.5s ease; }
+      .level-pill { transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1); }
+      .level-pill:hover:not(:disabled) { transform: translateY(-1.5px) scale(1.02); filter: brightness(1.22); }
+      .level-pill:active:not(:disabled) { transform: translateY(0) scale(0.97); }
+      /* Signature pulses -- each one embodies the persona's own mechanic, not decoration */
+      @keyframes rickySpike { 0%,100% { transform: scaleY(0.3); opacity: 0.55; } 8% { transform: scaleY(1.4); opacity: 1; } 14% { transform: scaleY(0.25); opacity: 0.5; } 45% { transform: scaleY(0.35); opacity: 0.6; } 52% { transform: scaleY(1.15); opacity: 0.95; } 60% { transform: scaleY(0.2); opacity: 0.45; } }
+      .pulse-ricky span { animation: rickySpike 2.6s ease-in-out infinite; animation-delay: calc(var(--i) * 0.09s); }
+      @keyframes maudeBreathe { 0%,100% { transform: scaleY(0.55); opacity: 0.7; } 50% { transform: scaleY(0.85); opacity: 0.95; } }
+      .pulse-maude span { animation: maudeBreathe 3.6s ease-in-out infinite; animation-delay: calc(var(--i) * 0.22s); }
+      @keyframes dezStutter { 0%,100% { transform: scaleY(0.5); opacity: 0.5; } 10% { transform: scaleY(0.75); opacity: 0.85; } 18% { transform: scaleY(0.4); opacity: 0.4; } 30% { transform: scaleY(0.55); opacity: 0.5; } 55% { transform: scaleY(0.35); opacity: 0.35; } 70% { transform: scaleY(0.68); opacity: 0.8; } 78% { transform: scaleY(0.42); opacity: 0.45; } }
+      .pulse-dez span { animation: dezStutter 2.9s ease-in-out infinite; animation-delay: calc(var(--i) * 0.31s); }
+      @keyframes cardFloatIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+      .anchor-card { animation: cardFloatIn 0.5s ease both; }
+      
+      /* Dynamic Jitter and Dash Flow styles for Refurbished Tactical Console */
+      @keyframes dynamic-jitter {
+        0% { transform: rotate(var(--jitter-min, -1deg)); }
+        100% { transform: rotate(var(--jitter-max, 1deg)); }
+      }
+      @keyframes dash-flow {
+        to { stroke-dashoffset: -20; }
+      }
+    `}</style>
+  );
 
   const sector = Math.max(1, Math.floor((state.round - 1) / 10) + 1);
+
+  // Relocated to avoid TDZ reference errors in the canvas useEffect hook dependency array:
+  const underPressureNow = state.entropy > 55 || state.systems < 40 || state.re < 40 || state.morale < MORALE_PRESSURE_THRESHOLD;
+
+  // Stable ref to access state in continuous animation loops without triggering re-runs:
+  const stateRef = useRef({
+    entropy: state.entropy,
+    anchorPersona: state.anchorPersona,
+    anchorChoice,
+    started: state.started,
+    underPressure: underPressureNow,
+    round: state.round,
+    gameOver: state.gameOver,
+  });
+
+  useEffect(() => {
+    stateRef.current = {
+      entropy: state.entropy,
+      anchorPersona: state.anchorPersona,
+      anchorChoice,
+      started: state.started,
+      underPressure: underPressureNow,
+      round: state.round,
+      gameOver: state.gameOver,
+    };
+  }, [state.entropy, state.anchorPersona, anchorChoice, state.started, underPressureNow, state.round, state.gameOver]);
 
   // Audio control effect
   useEffect(() => {
     synth.setMuted(audioMuted);
   }, [audioMuted]);
+
+  // Canvas constellation / particle web animation effect
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    const handleResize = () => {
+      if (canvas) {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      }
+    };
+    window.addEventListener("resize", handleResize);
+
+    const hexToRgb = (hex) => {
+      const cleanHex = hex.replace("#", "");
+      const bigint = parseInt(cleanHex, 16);
+      return {
+        r: (bigint >> 16) & 255,
+        g: (bigint >> 8) & 255,
+        b: bigint & 255,
+      };
+    };
+
+    const initialPersona = stateRef.current.started ? stateRef.current.anchorPersona : (stateRef.current.anchorChoice || "ricky");
+    const initialColor = ANCHORS[initialPersona]?.color || "#FF4D6D";
+    let currentRgb = hexToRgb(initialColor);
+    let currentSpeedScale = 0.55;
+    let lastRound = stateRef.current.round;
+    const shockwaves = [];
+
+    const totalPoolSize = 60;
+    const particles = Array.from({ length: totalPoolSize }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: (Math.random() - 0.5),
+      vy: (Math.random() - 0.5),
+      size: Math.random() * 2 + 1.2,
+      alpha: 0,
+      pulseOffset: Math.random() * Math.PI * 2,
+    }));
+
+    let animationId;
+    const animate = (timestamp) => {
+      ctx.clearRect(0, 0, width, height);
+
+      const underPressure = stateRef.current.underPressure;
+      const entropy = stateRef.current.entropy;
+      const targetCount = underPressure ? 50 : 28;
+
+      // Smoothly interpolate speed scale based on state values
+      const entropyFactor = Math.max(0.4, entropy / 45);
+      const targetSpeedScale = underPressure ? entropyFactor * 1.5 : entropyFactor * 0.55;
+      currentSpeedScale += (targetSpeedScale - currentSpeedScale) * 0.04;
+
+      // Smoothly interpolate RGB colors based on current anchor
+      const activePersona = stateRef.current.started ? stateRef.current.anchorPersona : (stateRef.current.anchorChoice || "ricky");
+      const targetColorHex = ANCHORS[activePersona]?.color || "#FF4D6D";
+      const targetRgb = hexToRgb(targetColorHex);
+      currentRgb.r += (targetRgb.r - currentRgb.r) * 0.05;
+      currentRgb.g += (targetRgb.g - currentRgb.g) * 0.05;
+      currentRgb.b += (targetRgb.b - currentRgb.b) * 0.05;
+
+      const strokeColorStr = "rgba(" + Math.round(currentRgb.r) + ", " + Math.round(currentRgb.g) + ", " + Math.round(currentRgb.b);
+
+      // Spawn resolution shockwaves
+      if (stateRef.current.started && stateRef.current.round > lastRound) {
+        shockwaves.push({
+          x: width / 2,
+          y: height / 2,
+          radius: 0,
+          maxRadius: Math.max(width, height) * 0.75,
+          speed: 12,
+        });
+        lastRound = stateRef.current.round;
+      } else if (stateRef.current.round < lastRound) {
+        lastRound = stateRef.current.round;
+      }
+
+      // Update shockwaves
+      for (let sIdx = shockwaves.length - 1; sIdx >= 0; sIdx--) {
+        const sw = shockwaves[sIdx];
+        sw.radius += sw.speed;
+        if (sw.radius > sw.maxRadius) {
+          shockwaves.splice(sIdx, 1);
+        }
+      }
+
+      // Render & Update particles
+      ctx.lineWidth = 0.8;
+      const jitterFactor = entropy > 50 ? Math.min(3, (entropy - 50) / 8) : 0;
+      const flicker = underPressure ? (Math.random() > 0.06 ? 1 : 0.3) : 1;
+
+      for (let i = 0; i < particles.length; i++) {
+        const p1 = particles[i];
+
+        // LERP individual opacity based on target count allocation
+        const targetAlpha = i < targetCount ? (underPressure ? 0.95 : 0.7) : 0;
+        p1.alpha += (targetAlpha - p1.alpha) * 0.05;
+
+        if (p1.alpha < 0.01) continue;
+
+        // Move particle
+        p1.x += p1.vx * currentSpeedScale;
+        p1.y += p1.vy * currentSpeedScale;
+
+        // Wrap around boundaries smoothly
+        if (p1.x < -20) p1.x = width + 20;
+        if (p1.x > width + 20) p1.x = -20;
+        if (p1.y < -20) p1.y = height + 20;
+        if (p1.y > height + 20) p1.y = -20;
+
+        // Jitter based on Entropy
+        let finalX = p1.x;
+        let finalY = p1.y;
+        if (jitterFactor > 0) {
+          finalX += (Math.random() - 0.5) * jitterFactor * 1.8;
+          finalY += (Math.random() - 0.5) * jitterFactor * 1.8;
+        }
+
+        // Apply radial shockwave force pushes and brightness flares
+        let brightnessMult = 1.0;
+        for (let sIdx = 0; sIdx < shockwaves.length; sIdx++) {
+          const sw = shockwaves[sIdx];
+          const dx = finalX - sw.x;
+          const dy = finalY - sw.y;
+          const distToCenter = Math.hypot(dx, dy);
+          const distToWave = Math.abs(distToCenter - sw.radius);
+          if (distToWave < 75) {
+            const waveIntensity = (1 - distToWave / 75) * ((sw.maxRadius - sw.radius) / sw.maxRadius);
+            finalX += (dx / (distToCenter || 1)) * waveIntensity * 28;
+            finalY += (dy / (distToCenter || 1)) * waveIntensity * 28;
+            brightnessMult += waveIntensity * 2.2;
+          }
+        }
+
+        // Under Pressure Pulsation
+        let sizePulse = 1.0;
+        if (underPressure) {
+          sizePulse = 1.0 + Math.sin(timestamp * 0.006 + p1.pulseOffset) * 0.35;
+        }
+
+        // Draw node
+        ctx.beginPath();
+        ctx.arc(finalX, finalY, p1.size * sizePulse, 0, Math.PI * 2);
+        const nodeAlpha = p1.alpha * Math.min(1, brightnessMult) * flicker;
+        ctx.fillStyle = strokeColorStr + ", " + nodeAlpha + ")";
+        ctx.fill();
+
+        // Draw connections
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          if (p2.alpha < 0.01) continue;
+
+          let p2FinalX = p2.x;
+          let p2FinalY = p2.y;
+          if (jitterFactor > 0) {
+            p2FinalX += (Math.random() - 0.5) * jitterFactor * 1.8;
+            p2FinalY += (Math.random() - 0.5) * jitterFactor * 1.8;
+          }
+
+          const dist = Math.hypot(finalX - p2FinalX, finalY - p2FinalY);
+          const maxDist = underPressure ? 175 : 125;
+          if (dist < maxDist) {
+            const baseAlpha = (1 - dist / maxDist) * (underPressure ? 0.38 : 0.18);
+            const lineAlpha = baseAlpha * Math.min(p1.alpha, p2.alpha) * brightnessMult * flicker;
+            ctx.strokeStyle = strokeColorStr + ", " + lineAlpha + ")";
+            ctx.beginPath();
+            ctx.moveTo(finalX, finalY);
+            ctx.lineTo(p2FinalX, p2FinalY);
+            ctx.stroke();
+          }
+        }
+      }
+
+      animationId = requestAnimationFrame(animate);
+    };
+
+    animationId = requestAnimationFrame(animate);
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   // Unlock triggers effect
   useEffect(() => {
@@ -1133,7 +1421,14 @@ export default function TheFracturePlaytest() {
     }
   };
 
-  useEffect(() => { logEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [state.log]);
+  useEffect(() => {
+    if (logContainerRef.current) {
+      logContainerRef.current.scrollTo({
+        top: logContainerRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [state.log]);
   useEffect(() => {
     (async () => {
       try { const best = await window.storage.get("prosis_best_round"); if (best) setBestRound(JSON.parse(best.value)); } catch (e) {}
@@ -1169,13 +1464,14 @@ export default function TheFracturePlaytest() {
     setState((s) => { const players = [...s.players]; players[idx] = { ...players[idx], ability: abilityId, level }; return { ...s, players }; });
   };
 
-  const underPressureNow = state.entropy > 55 || state.systems < 40 || state.re < 40 || state.morale < MORALE_PRESSURE_THRESHOLD;
-
-  const fireImpact = (catKey, hits, dmg) => {
+  const fireImpact = (catKey, hits, dmg, haircutHappened = false) => {
     if (!catKey || catKey === "lull") return;
     synth.playSfx("damage");
     const color = CATEGORIES[catKey].axis === "ruthless" ? COLORS.ruthless : CATEGORIES[catKey].axis === "methodical" ? COLORS.methodical : COLORS.desperate1;
-    setToast({ text: `${CATEGORIES[catKey].label.toUpperCase()} — ${meterLabelStatic[hits]} -${dmg.toFixed(1)}`, color });
+    const text = haircutHappened 
+      ? `⚠️ BARRIER HAIRCUT (-30%)! ${CATEGORIES[catKey].label.toUpperCase()} hit ${meterLabelStatic[hits]} -${dmg.toFixed(1)}`
+      : `${CATEGORIES[catKey].label.toUpperCase()} — ${meterLabelStatic[hits]} -${dmg.toFixed(1)}`;
+    setToast({ text, color: haircutHappened ? COLORS.danger : color });
     setMeterFlash(hits); setFlashCat(catKey);
     setTimeout(() => setToast(null), 1800);
     setTimeout(() => setMeterFlash(null), 700);
@@ -1298,14 +1594,14 @@ export default function TheFracturePlaytest() {
       // Engineer's immediate gain (if the ability has one) is taxed and rerouted.
       const isMaude = anchorPersona === "maude";
       const coverTarget = isMaude ? prev.maudeCoverTarget : null;
-      const engineerHasImmediateGain = e.ability.shape !== "deferred_compounding" && typeof e.params.systemsDelta === "number";
+      const engineerHasImmediateGain = e.ability.shape !== "deferred_compounding" && e.ability.shape !== "same_front_later" && typeof e.params.systemsDelta === "number";
       const engineerRedirecting = isMaude && coverTarget && coverTarget !== "systems" && engineerHasImmediateGain;
       const engineerTaxPct = engineerRedirecting ? maudeTax(prev.maudeConsecutiveCoverage + 1) : 0;
 
       // ---- Proposed per-front deltas this round, for GTL ----
       const proposed = { entropy: 0, systems: 0, re: 0 };
-      if (h.ability.shape !== "deferred_compounding") { proposed.entropy += (h.params.entropyDelta || 0); proposed.systems += (h.params.systemsDelta || 0); }
-      if (e.ability.shape !== "deferred_compounding") {
+      if (h.ability.shape !== "deferred_compounding" && h.ability.shape !== "same_front_later") { proposed.entropy += (h.params.entropyDelta || 0); proposed.systems += (h.params.systemsDelta || 0); }
+      if (e.ability.shape !== "deferred_compounding" && e.ability.shape !== "same_front_later") {
         const gain = (e.params.systemsDelta || 0) * engCostScale;
         if (engineerRedirecting) {
           if (coverTarget === "entropy") proposed.entropy += -gain * (1 - engineerTaxPct);
@@ -1315,7 +1611,7 @@ export default function TheFracturePlaytest() {
         }
         proposed.entropy += (e.params.entropyDelta || 0) * engCostScale;
       }
-      if (a.ability.shape !== "deferred_compounding") proposed.re += (a.params.reDelta || 0);
+      if (a.ability.shape !== "deferred_compounding" && a.ability.shape !== "same_front_later") proposed.re += (a.params.reDelta || 0);
       // BUG FIX 2026-08-20: deferred/banking picks previously counted as 0 immediate
       // help toward GTL, meaning GTL couldn't recognize "banking toward RE" as
       // helping RE at all this round -- a real gap when all three roles bank in
@@ -1324,7 +1620,7 @@ export default function TheFracturePlaytest() {
       // move until claimed, so it earns partial credit toward the front it protects.
       const BANKING_GTL_CREDIT = 0.4; // FIRST PASS, flag for Monte Carlo tuning
       const addBankingCredit = (ability, params) => {
-        if (ability.shape !== "deferred_compounding") return;
+        if (ability.shape !== "deferred_compounding" && ability.shape !== "same_front_later") return;
         const credit = params.banked * BANKING_GTL_CREDIT;
         if (ability.front === "entropy") proposed.entropy -= credit; // entropy: relief is a negative delta
         else proposed[ability.front] += credit; // systems/re: gain is a positive delta
@@ -1364,6 +1660,7 @@ export default function TheFracturePlaytest() {
       // Sal's Ration the Take shields existing barriers from this round's exposure entirely.
       const deadReckoningExtend = e.ability.id === "dead_reckoning" ? (e.params.extend || 0) : 0;
       const rationShielded = aftUse.ability.id === "ration_the_take" && !!aftUse.params.shield;
+      const haircutHappened = catKey !== "lull" && hits && !rationShielded && prev.openBanks.some(b => b.front === hits);
       let newOpenBanks = prev.openBanks
         .map((b) => (deadReckoningExtend > 0 ? { ...b, roundsHeld: Math.max(0, b.roundsHeld - deadReckoningExtend) } : b))
         .map(tickBankGrowth);
@@ -1384,12 +1681,11 @@ export default function TheFracturePlaytest() {
         moraleRef.v = Math.min(100, moraleRef.v + h.params.morale);
         breakdown.moraleDelta += h.params.morale; breakdown.moraleNotes.push(`+${h.params.morale} (Analyze)`);
       }
-      if (h.ability.shape === "deferred_compounding") {
+      if (h.ability.shape === "deferred_compounding" || h.ability.shape === "same_front_later") {
         newOpenBanks.push({ abilityId: h.ability.id, front: h.ability.front, banked: h.params.banked, roundsHeld: 0 });
       } else {
         entropy = Math.max(0, entropy + (h.params.entropyDelta || 0));
         systems += (h.params.systemsDelta || 0);
-        if (h.ability.shape === "same_front_later") newActiveModifiers.entropy = { bump: h.params.ambientBump, roundsRemaining: h.params.bumpRounds };
       }
 
       // Engineer
@@ -1397,7 +1693,7 @@ export default function TheFracturePlaytest() {
       totalActions += 1; salvage -= engActualFunded;
       actionsTaken.push({ role: e.role.personalName, label: `${e.ability.label} ${e.level}${engineerRedirecting ? ` → ${frontLabel[coverTarget]} (${(engineerTaxPct * 100).toFixed(0)}% tax)` : ""}` });
       if (e.ability.id === "dead_reckoning" && catKey !== "lull") { dmg *= (1 - e.params.mitigation); mitigated = true; }
-      if (e.ability.shape === "deferred_compounding") {
+      if (e.ability.shape === "deferred_compounding" || e.ability.shape === "same_front_later") {
         newOpenBanks.push({ abilityId: e.ability.id, front: e.ability.front, banked: e.params.banked, roundsHeld: 0 });
       } else {
         const gain = (e.params.systemsDelta || 0) * engCostScale;
@@ -1408,7 +1704,6 @@ export default function TheFracturePlaytest() {
           systems += gain;
         }
         entropy += (e.params.entropyDelta || 0) * engCostScale;
-        if (e.ability.shape === "same_front_later") newActiveModifiers.systems = { bump: e.params.wearBump, roundsRemaining: e.params.bumpRounds };
       }
       const newMaudeConsecutiveCoverage = engineerRedirecting ? prev.maudeConsecutiveCoverage + 1 : 0;
 
@@ -1417,12 +1712,11 @@ export default function TheFracturePlaytest() {
       totalActions += 1; roundEntropyCost += LEVELS[aftUse.level].cost;
       actionsTaken.push({ role: aftUse.role.personalName, label: `${aftUse.ability.label} ${aftUse.level}${lastDefiance ? " (crew override)" : ""}` });
       if (aftUse.ability.id === "ration_the_take" && catKey !== "lull") { dmg *= (1 - aftUse.params.mitigation); mitigated = true; }
-      if (aftUse.ability.shape === "deferred_compounding") {
+      if (aftUse.ability.shape === "deferred_compounding" || aftUse.ability.shape === "same_front_later") {
         newOpenBanks.push({ abilityId: aftUse.ability.id, front: aftUse.ability.front, banked: aftUse.params.banked, roundsHeld: 0 });
       } else {
         salvage += (aftUse.params.salvageDelta || 0);
         re += (aftUse.params.reDelta || 0);
-        if (aftUse.ability.shape === "same_front_later") newActiveModifiers.re = { bump: aftUse.params.wearBump, roundsRemaining: aftUse.params.bumpRounds };
       }
 
       morale = moraleRef.v;
@@ -1434,7 +1728,7 @@ export default function TheFracturePlaytest() {
         const line = CREW_LINES[catKey][Math.floor(Math.random() * CREW_LINES[catKey].length)];
         breakdown.threat = { category: catKey, dmg, hits, mitigated };
         log = [...log, { type: "threat", category: catKey, dmg: dmg.toFixed(1), hits, mitigated, line }];
-        fireImpact(catKey, hits, dmg);
+        fireImpact(catKey, hits, dmg, haircutHappened);
       } else {
         log = [...log, { type: "lull" }];
       }
@@ -1455,6 +1749,30 @@ export default function TheFracturePlaytest() {
       if (target === "systems") { restored = usable * SALVAGE_EFF.systems; systems += restored; }
       if (target === "re") { restored = usable * SALVAGE_EFF.re; re += restored; }
       breakdown.salvageSpent = spend; breakdown.salvageTarget = target; breakdown.salvageRestored = restored;
+
+      // ---- Auto-discharge quick barriers (same_front_later shape) held for at least 1 round ----
+      const remainingBanks: typeof newOpenBanks = [];
+      newOpenBanks.forEach((b) => {
+        const isQuick = ["suppress", "overclock", "patch_job"].includes(b.abilityId);
+        if (isQuick && b.roundsHeld >= 1) {
+          const { front, payout, moraleGain } = claimBank(b);
+          if (front === "entropy") entropy = Math.max(0, entropy - payout);
+          if (front === "systems") systems += payout;
+          if (front === "re") re += payout;
+          morale = clamp(morale + moraleGain, 0, 100);
+          log = [...log, { 
+            type: "bank_claimed", 
+            front, 
+            payout, 
+            moraleGain, 
+            isAuto: true,
+            label: b.abilityId === "suppress" ? "Suppress" : b.abilityId === "overclock" ? "Overclock" : "Patch Job" 
+          }];
+        } else {
+          remainingBanks.push(b);
+        }
+      });
+      newOpenBanks = remainingBanks;
 
       return finalizeRound(prev, {
         entropy, systems, re, morale, salvage, axisCounts: newAxisCounts, totalActions, log, usedEventIds,
@@ -1597,7 +1915,29 @@ export default function TheFracturePlaytest() {
     });
     setFlashCat(null); setToast(null); setMeterFlash(null);
   };
-  const fullReset = () => { synth.playSfx("click"); setState(initialState()); setAnchorChoice(null); setFlashCat(null); setToast(null); setMeterFlash(null); };
+  const [confirmResetOpen, setConfirmResetOpen] = useState(false);
+  const fullReset = () => {
+    synth.playSfx("click");
+    setConfirmResetOpen(true);
+  };
+  const executeFullReset = () => {
+    synth.playSfx("click");
+    resetAllData();
+    setState(initialState());
+    setAnchorChoice(null);
+    setFlashCat(null);
+    setToast(null);
+    setMeterFlash(null);
+    setConfirmResetOpen(false);
+    setSavedRun(null);
+    setHistoryList([]);
+    setUnlockedLoreList(getUnlockedLoreIds());
+    setUnlockedAchList(getUnlockedAchievementIds());
+    setManifestEntries([]);
+    setHighScoresList([]);
+    setCaptainProfile(getCaptainProfile());
+    setCosmeticsProfile(getCosmeticsProfile());
+  };
 
   const flashColor = flashCat === "targeted" ? COLORS.ruthless : flashCat === "telegraphed" ? COLORS.methodical : flashCat === "cascading" ? COLORS.desperate1 : "transparent";
   const dom = dominantAxis();
@@ -1619,149 +1959,271 @@ export default function TheFracturePlaytest() {
     </svg>
   );
 
-  const sharedStyles = (
-    <style>{`
-      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
-      .mono { font-family: 'JetBrains Mono', monospace; }
-      @keyframes pulseGlow { 0%,100% { opacity: 0.55; } 50% { opacity: 1; } }
-      @keyframes glitchShift { 0%,100% { transform: translate(0,0); filter: hue-rotate(0deg); } 20% { transform: translate(-1px,1px); filter: hue-rotate(15deg); } 40% { transform: translate(1px,-1px); filter: hue-rotate(-10deg); } 60% { transform: translate(-1px,-1px); filter: hue-rotate(20deg); } 80% { transform: translate(1px,1px); filter: hue-rotate(-15deg); } }
-      @keyframes ringPulseBurst { 0% { r: 46; opacity: 1; } 100% { r: 62; opacity: 0; } }
-      @keyframes warmBuild { 0% { opacity: 0.4; } 100% { opacity: 1; filter: brightness(1.3); } }
-      @keyframes toastIn { 0% { opacity: 0; transform: translate(-50%, -8px) scale(0.96); } 15% { opacity: 1; transform: translate(-50%, 0) scale(1); } 85% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -4px) scale(0.98); } }
-      @keyframes meterShake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-3px); } 40% { transform: translateX(3px); } 60% { transform: translateX(-2px); } 80% { transform: translateX(2px); } }
-      .core-ring { transition: stroke 0.4s ease, opacity 0.4s ease; }
-      .flash-cascading { animation: glitchShift 0.35s steps(2) 3; }
-      .flash-targeted circle:nth-child(2) { animation: ringPulseBurst 0.6s ease-out; }
-      .flash-telegraphed circle:nth-child(2) { animation: warmBuild 0.9s ease-in; }
-      .action-btn { transition: all 0.15s ease; }
-      .action-btn:hover:not(:disabled) { transform: translateY(-1px); border-color: #454858 !important; }
-      .primary-btn:hover:not(:disabled) { filter: brightness(1.08); }
-      .impact-toast { position: fixed; top: 18px; left: 50%; z-index: 50; animation: toastIn 1.8s ease forwards; }
-      .meter-hit { animation: meterShake 0.5s ease; }
-      .level-pill { transition: all 0.12s ease; }
-      .level-pill:hover:not(:disabled) { transform: translateY(-1px); }
-      /* Signature pulses -- each one embodies the persona's own mechanic, not decoration */
-      @keyframes rickySpike { 0%,100% { transform: scaleY(0.3); opacity: 0.55; } 8% { transform: scaleY(1.4); opacity: 1; } 14% { transform: scaleY(0.25); opacity: 0.5; } 45% { transform: scaleY(0.35); opacity: 0.6; } 52% { transform: scaleY(1.15); opacity: 0.95; } 60% { transform: scaleY(0.2); opacity: 0.45; } }
-      .pulse-ricky span { animation: rickySpike 2.6s ease-in-out infinite; animation-delay: calc(var(--i) * 0.09s); }
-      @keyframes maudeBreathe { 0%,100% { transform: scaleY(0.55); opacity: 0.7; } 50% { transform: scaleY(0.85); opacity: 0.95; } }
-      .pulse-maude span { animation: maudeBreathe 3.6s ease-in-out infinite; animation-delay: calc(var(--i) * 0.22s); }
-      @keyframes dezStutter { 0%,100% { transform: scaleY(0.5); opacity: 0.5; } 10% { transform: scaleY(0.75); opacity: 0.85; } 18% { transform: scaleY(0.4); opacity: 0.4; } 30% { transform: scaleY(0.55); opacity: 0.5; } 55% { transform: scaleY(0.35); opacity: 0.35; } 70% { transform: scaleY(0.68); opacity: 0.8; } 78% { transform: scaleY(0.42); opacity: 0.45; } }
-      .pulse-dez span { animation: dezStutter 2.9s ease-in-out infinite; animation-delay: calc(var(--i) * 0.31s); }
-      @keyframes cardFloatIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
-      .anchor-card { animation: cardFloatIn 0.5s ease both; }
-    `}</style>
-  );
-
   if (!state.started) {
+    const recommendedAnchor = anchorChoice || "ricky";
+    const recommendedDef = ANCHORS[recommendedAnchor];
     return (
-      <div style={{ background: COLORS.void, color: COLORS.bone, minHeight: "100%", fontFamily: "'Space Grotesk', sans-serif", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+      <div style={{ background: COLORS.void, color: COLORS.bone, minHeight: "100vh", fontFamily: "'Space Grotesk', sans-serif", padding: 24, position: "relative", overflowX: "hidden" }}>
+        <canvas
+          ref={canvasRef}
+          id="reality-engine-canvas"
+          style={{
+            position: "fixed",
+            top: 0, left: 0,
+            width: "100vw", height: "100vh",
+            pointerEvents: "none", zIndex: 0, opacity: 0.5
+          }}
+        />
         {sharedStyles}
-        <div style={{ maxWidth: 640, width: "100%", textAlign: "center" }}>
-          <div style={{ fontSize: 12, letterSpacing: 3, color: COLORS.muted, marginBottom: 6 }}>PROSIS · PLAYTEST BUILD</div>
-          <h1 style={{ fontSize: 40, fontWeight: 700, margin: "0 0 6px 0", letterSpacing: -1 }}>THE FRACTURE</h1>
-          <div style={{ fontSize: 14, color: COLORS.muted, marginBottom: 28, lineHeight: 1.6 }}>
-            You are not the last human aboard the Theseus.<br/>
-            <span style={{ color: COLORS.bone }}>You are the intelligence deciding how it dies — again, and again, until it doesn't.</span>
+        
+        <div style={{ maxWidth: 1000, margin: "0 auto", position: "relative", zIndex: 1 }}>
+          <div style={{ textAlign: "center", marginBottom: 32 }}>
+            <div style={{ fontSize: 11, letterSpacing: 3, color: COLORS.muted, marginBottom: 4 }}>PROSIS · THE DEEP STATION HUB</div>
+            <h1 style={{ fontSize: 42, fontWeight: 700, margin: 0, letterSpacing: -1, background: `linear-gradient(135deg, ${COLORS.bone}, ${COLORS.muted})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>THE FRACTURE</h1>
+            <p style={{ fontSize: 13.5, color: COLORS.muted, maxWidth: 580, margin: "6px auto 0 auto", lineHeight: 1.6 }}>
+              You are the intelligence coordinating safety subsystems aboard the <span style={{ color: COLORS.bone }}>USSC Theseus</span>. Establish your pilot diagnostic and anchor persona before engaging the bridge.
+            </p>
           </div>
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: 24, opacity: 0.85 }}><CoreRing size={110} /></div>
-
-          <div style={{ fontSize: 11, letterSpacing: 2, color: COLORS.muted, marginBottom: 4 }}>CHOOSE YOUR ANCHOR</div>
-          <div style={{ fontSize: 11, color: COLORS.muted, marginBottom: 16 }}>Three intelligences. Three ways to hold the line.</div>
-          <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
-            {Object.values(ANCHORS).map((a, idx) => {
-              const Icon = a.id === "ricky" ? Flame : a.id === "maude" ? Compass : EyeOff;
-              const selected = anchorChoice === a.id;
-              return (
-                <button key={a.id} onClick={() => setAnchorChoice(a.id)} className="action-btn anchor-card"
-                  style={{ animationDelay: `${idx * 0.08}s`, flex: 1, textAlign: "left", padding: "16px 14px", borderRadius: 14, cursor: "pointer",
-                    border: `1.5px solid ${selected ? a.color : COLORS.panelBorder}`,
-                    background: selected ? `linear-gradient(160deg, ${a.color}22, ${a.color}08)` : "#00000020",
-                    boxShadow: selected ? `0 0 24px ${a.color}33` : "none",
-                    display: "flex", flexDirection: "column", gap: 8 }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <Icon size={18} color={selected ? a.color : COLORS.muted} />
-                    <div className={a.pulseClass} style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 16 }}>
-                      {[0, 1, 2, 3, 4].map((i) => <span key={i} style={{ "--i": i, width: 2.5, height: "100%", borderRadius: 2, background: selected ? a.color : COLORS.panelBorder, transformOrigin: "bottom" }} />)}
+          <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 24 }}>
+            {/* Left Column: MISSION CONTROL ONBOARDING */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div style={{ ...panelStyle, padding: "20px 24px", border: `1.5px solid ${COLORS.panelBorder}` }}>
+                <h2 style={{ fontSize: 16, fontWeight: 700, color: COLORS.bone, letterSpacing: 1, borderBottom: `1px solid ${COLORS.panelBorder}`, paddingBottom: 10, margin: "0 0 16px 0", display: "flex", alignItems: "center", gap: 8 }}>
+                  <Terminal size={16} color={COLORS.event} /> FLIGHT AUTH PROTOCOL
+                </h2>
+                <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                  <div style={{ opacity: 1 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: COLORS.muted }}>STEP 1: COGNITIVE DIAGNOSTIC</span>
+                      {captainProfile.diagnosticCompleted ? <span className="mono" style={{ color: COLORS.salvage, fontSize: 10, fontWeight: 800 }}>🟢 COMPLETED</span> : <span className="mono" style={{ color: COLORS.danger, fontSize: 10, fontWeight: 800 }}>⚠️ REQUIRED</span>}
                     </div>
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: 700, color: selected ? a.color : COLORS.bone, fontSize: 15 }}>{a.name}</div>
-                    <div style={{ fontSize: 9.5, color: COLORS.muted, letterSpacing: 0.5 }}>{a.direction.toUpperCase()}</div>
-                  </div>
-                  <div style={{ fontSize: 10, color: COLORS.muted, lineHeight: 1.45 }}>{a.blurb}</div>
-                  <div style={{ fontSize: 9.5, fontStyle: "italic", color: selected ? a.color : COLORS.muted, lineHeight: 1.4, borderTop: `1px solid ${COLORS.panelBorder}`, paddingTop: 6, marginTop: 2 }}>&ldquo;{a.signature}&rdquo;</div>
-                </button>
-              );
-            })}
-          </div>
-
-          {savedRun && (
-            <button
-              onClick={handleResumeRun}
-              className="action-btn primary-btn"
-              style={{
-                width: "100%",
-                padding: "15px",
-                borderRadius: 12,
-                border: `1.5px solid ${COLORS.salvage}`,
-                fontSize: 14,
-                fontWeight: 700,
-                cursor: "pointer",
-                background: `${COLORS.salvage}22`,
-                color: COLORS.salvage,
-                letterSpacing: 1.2,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 8,
-                marginBottom: 14,
-              }}
-            >
-              <RotateCcw size={16} /> RESUME SAVED RUN (Sector {Math.max(1, Math.floor((savedRun.round - 1) / 10) + 1)} · Round {savedRun.round})
-            </button>
-          )}
-
-          <button onClick={launchVoyage} disabled={!anchorChoice} className="action-btn primary-btn" style={{ width: "100%", padding: "16px", borderRadius: 12, border: "none", fontSize: 15, fontWeight: 700, cursor: anchorChoice ? "pointer" : "not-allowed", background: anchorChoice ? COLORS.bone : COLORS.panelBorder, color: anchorChoice ? COLORS.void : COLORS.muted, letterSpacing: 1.5, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 14 }}>
-            <Rocket size={16} /> LAUNCH VOYAGE
-          </button>
-          <button onClick={() => setRulesOpen((v) => !v)} className="action-btn" style={{ ...iconBtnStyle, margin: "0 auto 16px auto", justifyContent: "center" }}><HelpCircle size={14} /> How this works</button>
-          {rulesOpen && (
-            <div style={{ ...panelStyle, padding: 16, marginBottom: 16, fontSize: 13, lineHeight: 1.65, color: COLORS.muted, textAlign: "left" }}>
-              <div style={{ color: COLORS.bone, fontWeight: 600, marginBottom: 6 }}>How this works</div>
-              <div><b style={{ color: COLORS.bone }}>Three crew, three abilities each, three levels apiece.</b> Level I is cheap and safe, Level III is powerful and reckless, Level II is a real neutral middle — it doesn't feed the deck's read on how you play.</div>
-              <div style={{ marginTop: 4 }}><b style={{ color: COLORS.bone }}>You see what's coming before you act.</b> Threats, quiet lulls, and narrative Events — one-off choices that shape the run — are all possible each round.</div>
-              <div style={{ marginTop: 4 }}><b style={{ color: COLORS.bone }}>Four ways to lose:</b> Entropy maxes, Systems or the Reality Engine fail with no Fractures left, or Crew Morale hits zero.</div>
-            </div>
-          )}
-          {statsLoaded && (bestRound !== null || runsPlayed > 0 || historyList.length > 0) && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "center", fontSize: 12, color: COLORS.muted }}>
-              <div style={{ display: "flex", justifyContent: "center", gap: 20 }}>
-                {bestRound !== null && <div style={{ display: "flex", alignItems: "center", gap: 5 }}><Trophy size={12} color={COLORS.salvage} /><span className="mono" style={{ color: COLORS.salvage, fontWeight: 700 }}>{bestRound}</span> best round</div>}
-                <div>{runsPlayed} voyage{runsPlayed === 1 ? "" : "s"} logged</div>
-              </div>
-              {historyList.length > 0 && (
-                <div style={{ ...panelStyle, width: "100%", padding: 12, textAlign: "left", background: "#00000030", borderColor: COLORS.panelBorder, marginTop: 6 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.muted, letterSpacing: 1, display: "flex", alignItems: "center", gap: 6 }}>
-                      <History size={13} /> PAST RUN HISTORY ({historyList.length})
-                    </div>
-                    <button onClick={() => { clearRunHistory(); setHistoryList([]); }} className="action-btn" style={{ padding: "3px 8px", borderRadius: 4, border: `1px solid ${COLORS.danger}55`, background: `${COLORS.danger}15`, color: COLORS.danger, fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
-                      <Trash2 size={10} /> Clear
-                    </button>
-                  </div>
-                  <div style={{ maxHeight: 120, overflowY: "auto", display: "flex", flexDirection: "column", gap: 4 }}>
-                    {historyList.slice().reverse().map((run, idx) => (
-                      <div key={idx} style={{ display: "flex", justifyContent: "space-between", fontSize: 11, padding: "3px 6px", background: "#00000040", borderRadius: 4 }}>
-                        <span className="mono" style={{ color: COLORS.event }}>Run #{historyList.length - idx} · Sector {run.sector} (R{run.round})</span>
-                        <span style={{ color: COLORS.bone, opacity: 0.8, maxWidth: "50%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{run.causeOfLoss || "Completed"}</span>
+                    {captainProfile.diagnosticCompleted ? (
+                      <div style={{ background: "#00000030", padding: "10px 14px", borderRadius: 8, border: `1px dashed ${COLORS.salvage}33`, fontSize: 12.5, color: COLORS.bone }}>
+                        Compass calibrated. Recommended Anchor: <strong style={{ color: recommendedDef.color }}>{recommendedDef.name}</strong> ({recommendedDef.direction}).
                       </div>
-                    ))}
+                    ) : (
+                      <button onClick={() => setWdtOpen(true)} className="action-btn" style={{ ...iconBtnStyle, width: "100%", justifyContent: "center", borderColor: COLORS.event, color: COLORS.event }}>
+                        <Compass size={14} /> INITIALIZE COMPASS DIAGNOSTIC
+                      </button>
+                    )}
+                  </div>
+                  {/* STEP 2: Identity & Anchor */}
+                  <div style={{ opacity: captainProfile.diagnosticCompleted ? 1 : 0.45, transition: "all 0.3s" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: COLORS.muted }}>STEP 2: CAPTAIN REGISTER & ANCHOR</span>
+                      {captainProfile.profileConfirmed ? <span className="mono" style={{ fontSize: 10, color: COLORS.salvage, fontWeight: 800 }}>🟢 CONFIRMED</span> : <span className="mono" style={{ fontSize: 10, color: COLORS.muted, fontWeight: 800 }}>⚠️ REQUIRED</span>}
+                    </div>
+                    {!captainProfile.diagnosticCompleted ? (
+                      <div style={{ fontSize: 12, color: COLORS.muted, background: "#00000020", padding: "10px 14px", borderRadius: 8, border: `1px solid ${COLORS.panelBorder}33` }}>
+                        Please complete Step 1 first.
+                      </div>
+                    ) : !captainProfile.profileConfirmed ? (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 12, background: "#00000020", padding: 14, borderRadius: 8, border: `1px solid ${COLORS.panelBorder}` }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                          <div>
+                            <label style={{ fontSize: 10, color: COLORS.muted, display: "block", marginBottom: 4 }}>CAPTAIN CALLSIGN</label>
+                            <input id="landing-callsign" type="text" defaultValue={captainProfile.captainCallsign || "CAPTAIN"} style={{ width: "100%", background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px 8px", borderRadius: 6, fontSize: 11, boxSizing: "border-box" }} />
+                          </div>
+                          <div>
+                            <label style={{ fontSize: 10, color: COLORS.muted, display: "block", marginBottom: 4 }}>SHIP REGISTRY NAME</label>
+                            <input id="landing-shipname" type="text" defaultValue={shipNameInput || "USSC FRACTURE"} style={{ width: "100%", background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, color: COLORS.bone, padding: "4px 8px", borderRadius: 6, fontSize: 11, boxSizing: "border-box" }} />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label style={{ fontSize: 10, color: COLORS.muted, display: "block", marginBottom: 6 }}>SELECT ANCHOR PERSONA</label>
+                          <div style={{ display: "flex", gap: 8 }}>
+                            {Object.values(ANCHORS).map((a) => {
+                              const isSelected = anchorChoice === a.id;
+                              return (
+                                <button key={a.id} onClick={() => setAnchorChoice(a.id)} className="action-btn" style={{ flex: 1, background: isSelected ? `${a.color}15` : COLORS.panel, border: `1px solid ${isSelected ? a.color : COLORS.panelBorder}`, borderRadius: 8, padding: "6px 4px", textAlign: "center", cursor: "pointer" }}>
+                                  <div style={{ fontSize: 11, fontWeight: 700, color: isSelected ? a.color : COLORS.bone }}>{a.name}</div>
+                                  <div style={{ fontSize: 8, color: COLORS.muted, letterSpacing: 0.2 }}>{a.direction.toUpperCase()}</div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => {
+                            const cEl = document.getElementById("landing-callsign") as HTMLInputElement;
+                            const sEl = document.getElementById("landing-shipname") as HTMLInputElement;
+                            const callsign = cEl?.value?.trim() || "CAPTAIN";
+                            const sName = sEl?.value?.trim() || "USSC FRACTURE";
+                            const chosenAnchor = anchorChoice || "ricky";
+                            if (!anchorChoice) setAnchorChoice("ricky");
+                            const up = { ...captainProfile, captainCallsign: callsign, diagnosticCompleted: true, profileConfirmed: true, activeAnchor: chosenAnchor };
+                            saveCaptainProfile(up);
+                            setCaptainProfile(up);
+                            setShipNameInput(sName);
+                            setShipName(sName);
+                            synth.playSfx("click");
+                          }}
+                          className="action-btn"
+                          style={{ background: COLORS.salvage, color: COLORS.void, border: "none", borderRadius: 6, padding: "8px 12px", fontWeight: 700, fontSize: 12, cursor: "pointer", marginTop: 4, width: "100%" }}
+                        >
+                          ESTABLISH IDENTITY & ANCHOR
+                        </button>
+                      </div>
+                    ) : (
+                      <div style={{ background: "#00000030", padding: "12px 14px", borderRadius: 8, border: `1px dashed ${COLORS.salvage}33`, fontSize: 12, color: COLORS.muted, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div style={{ paddingRight: 6 }}>
+                          Captain <span style={{ color: COLORS.bone, fontWeight: 700 }}>{captainProfile.captainCallsign}</span> of <span style={{ color: COLORS.bone, fontWeight: 700 }}>{shipNameInput}</span>.<br />
+                          Anchor: <strong style={{ color: recommendedDef.color }}>{recommendedDef.name}</strong> ({recommendedDef.direction}).
+                        </div>
+                        <button onClick={() => {
+                          const up = { ...captainProfile, profileConfirmed: false };
+                          saveCaptainProfile(up);
+                          setCaptainProfile(up);
+                        }} className="action-btn" style={{ padding: "4px 8px", background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, borderRadius: 4, color: COLORS.bone, fontSize: 9.5, cursor: "pointer", flexShrink: 0 }}>
+                          EDIT
+                        </button>
+                      </div>
+                    )}
+
+                    {captainProfile.diagnosticCompleted && captainProfile.profileConfirmed && (
+                      <button
+                        onClick={launchVoyage}
+                        className="action-btn"
+                        style={{
+                          background: `linear-gradient(135deg, ${COLORS.salvage}, #10b981)`,
+                          color: COLORS.void,
+                          border: "none",
+                          borderRadius: 8,
+                          padding: "12px 20px",
+                          fontWeight: 800,
+                          fontSize: 13,
+                          cursor: "pointer",
+                          marginTop: 16,
+                          width: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 8,
+                          boxShadow: `0 4px 14px ${COLORS.salvage}33`
+                        }}
+                      >
+                        <Rocket size={14} /> ENGAGE COGNITIVE BRIDGE
+                      </button>
+                    )}
                   </div>
                 </div>
-              )}
+              </div>
             </div>
-          )}
+
+            {/* Right Column: BRIDGE TELEMETRY / DATA RECORDS */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div style={{ ...panelStyle, padding: "20px 24px", minHeight: 460, border: `1.5px solid ${COLORS.panelBorder}`, display: "flex", flexDirection: "column" }}>
+                {/* Tabs Row */}
+                <div style={{ display: "flex", gap: 6, borderBottom: `1px solid ${COLORS.panelBorder}`, paddingBottom: 10, marginBottom: 16 }}>
+                  {(["logs", "achievements", "lore"] as const).map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setLandingTab(tab)}
+                      className="action-btn"
+                      style={{
+                        padding: "6px 12px", borderRadius: 6, border: `1px solid ${landingTab === tab ? COLORS.salvage : "transparent"}`,
+                        background: landingTab === tab ? `${COLORS.salvage}15` : "transparent",
+                        color: landingTab === tab ? COLORS.salvage : COLORS.muted,
+                        fontSize: 11, fontWeight: 700, cursor: "pointer", textTransform: "uppercase"
+                      }}
+                    >
+                      {tab === "logs" ? "Ship Log" : tab === "achievements" ? "Honors" : "Intel"}
+                    </button>
+                  ))}
+                </div>
+                {/* Tab Content */}
+                <div style={{ flex: 1, overflowY: "auto", maxHeight: 365 }}>
+                  {landingTab === "logs" && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                      {/* Past Run History */}
+                      <div>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.muted, letterSpacing: 0.5, marginBottom: 8, textTransform: "uppercase" }}>Past Voyages ({historyList.length})</div>
+                        {historyList.length === 0 ? (
+                          <div style={{ fontSize: 12, color: COLORS.muted, fontStyle: "italic" }}>No previous voyage telemetry on file.</div>
+                        ) : (
+                          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                            {historyList.slice().reverse().map((run, idx) => (
+                              <div key={idx} style={{ display: "flex", justifyContent: "space-between", fontSize: 11, padding: "6px 10px", background: "#00000030", borderRadius: 6, border: `1px solid ${COLORS.panelBorder}55` }}>
+                                <span className="mono" style={{ color: COLORS.event }}>Run #{historyList.length - idx} · Sector {run.sector} (R{run.round})</span>
+                                <span style={{ color: COLORS.bone, opacity: 0.8 }}>{run.causeOfLoss || "Completed"}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {landingTab === "achievements" && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.muted, letterSpacing: 0.5, marginBottom: 4, textTransform: "uppercase" }}>Medals Unlocked ({unlockedAchList.length}/{ACHIEVEMENTS_LIST.length})</div>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 6 }}>
+                        {ACHIEVEMENTS_LIST.map((ach) => {
+                          const unlocked = unlockedAchList.includes(ach.id);
+                          return (
+                            <div key={ach.id} style={{ background: "#00000030", padding: "8px 10px", borderRadius: 6, border: `1px solid ${unlocked ? COLORS.salvage + "44" : COLORS.panelBorder + "33"}`, display: "flex", gap: 10, alignItems: "center", opacity: unlocked ? 1 : 0.5 }}>
+                              {unlocked ? <CheckCircle size={14} color={COLORS.salvage} /> : <Lock size={14} color={COLORS.muted} />}
+                              <div>
+                                <div style={{ fontSize: 11.5, fontWeight: 700, color: COLORS.bone }}>{ach.title}</div>
+                                <div style={{ fontSize: 10, color: COLORS.muted }}>{ach.desc}</div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {landingTab === "lore" && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.muted, letterSpacing: 0.5, marginBottom: 4, textTransform: "uppercase" }}>Sector Data Signals ({unlockedLoreList.length}/{LORE_SIGNALS.length})</div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                        {LORE_SIGNALS.map((sig) => {
+                          const unlocked = unlockedLoreList.includes(sig.id);
+                          return (
+                            <div key={sig.id} style={{ background: "#00000040", padding: 10, borderRadius: 6, border: `1px solid ${unlocked ? COLORS.re + "44" : COLORS.panelBorder + "22"}`, opacity: unlocked ? 1 : 0.65 }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <span style={{ fontSize: 11.5, fontWeight: 700, color: unlocked ? COLORS.re : COLORS.muted }}>{sig.title}</span>
+                                <span style={{ fontSize: 8.5, color: COLORS.muted }}>{sig.category}</span>
+                              </div>
+                              {unlocked ? (
+                                <p style={{ fontSize: 10, color: COLORS.muted, margin: "6px 0 0 0", lineHeight: 1.45, fontStyle: "italic" }}>"{sig.content}"</p>
+                              ) : (
+                                <div style={{ fontSize: 9.5, color: COLORS.muted, marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
+                                  <Lock size={10} /> Locked. Telemetry required.
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+        {wdtOpen && (
+          <WdtModal
+            setWdtOpen={setWdtOpen}
+            wdtStep={wdtStep}
+            setWdtStep={setWdtStep}
+            wdtAnswers={wdtAnswers}
+            setWdtAnswers={setWdtAnswers}
+            COLORS={COLORS}
+            panelStyle={panelStyle}
+            ANCHORS={ANCHORS}
+            setAnchorChoice={setAnchorChoice}
+            captainProfile={captainProfile}
+            setCaptainProfile={setCaptainProfile}
+            saveCaptainProfile={saveCaptainProfile}
+            shipNameInput={shipNameInput}
+            setShipNameInput={setShipNameInput}
+            setShipName={setShipName}
+          />
+        )}
       </div>
     );
   }
@@ -1771,6 +2233,20 @@ export default function TheFracturePlaytest() {
 
   return (
     <div style={{ background: COLORS.void, color: COLORS.bone, minHeight: "100%", fontFamily: "'Space Grotesk', sans-serif", padding: "24px 20px", position: "relative", overflow: "hidden" }}>
+      <canvas
+        ref={canvasRef}
+        id="reality-engine-canvas"
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          pointerEvents: "none",
+          zIndex: 0,
+          opacity: 0.6,
+        }}
+      />
       {sharedStyles}
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none", background: `radial-gradient(circle at 50% 20%, ${flashColor}22, transparent 55%)`, transition: "background 0.5s ease", zIndex: 0 }} />
       {toast && (
@@ -1781,48 +2257,100 @@ export default function TheFracturePlaytest() {
 
       <div style={{ maxWidth: 900, margin: "0 auto", position: "relative", zIndex: 1 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18, paddingBottom: 16, borderBottom: `1px solid ${COLORS.panelBorder}`, flexWrap: "wrap", gap: 12 }}>
-          <ProsisBlackHoleLogo size={36} isVoyageActive={state.started && !state.gameOver} />
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <button
-              onClick={() => {
-                const newMuted = toggleMute();
-                setAudioMuted(newMuted);
-                if (!newMuted) {
-                  startAmbientPad();
-                } else {
-                  stopAmbientPad();
-                }
-              }}
-              className="action-btn"
-              style={iconBtnStyle}
-            >
-              {audioMuted ? <VolumeX size={14} /> : <Volume2 size={14} />} {audioMuted ? "Muted" : "Audio"}
-            </button>
-            <button onClick={() => setBriefingOpen(true)} className="action-btn" style={iconBtnStyle}>
-              <FileText size={14} /> Briefing
-            </button>
-            <button onClick={() => setManifestOpen(true)} className="action-btn" style={iconBtnStyle}>
-              <Terminal size={14} /> Manifest
-            </button>
-            <button onClick={() => setLoreOpen(true)} className="action-btn" style={iconBtnStyle}>
-              <Radio size={14} /> Lore Signals
-            </button>
-            <button onClick={() => setAchievementsOpen(true)} className="action-btn" style={iconBtnStyle}>
-              <Award size={14} /> Achievements
-            </button>
-            <button onClick={() => setWdtOpen(true)} className="action-btn" style={iconBtnStyle}>
-              <Compass size={14} /> WDT Diagnostic
-            </button>
-            <button onClick={() => setProfileOpen(true)} className="action-btn" style={iconBtnStyle}>
-              <Award size={14} /> Profile
-            </button>
-            <button onClick={() => setLeaderboardOpen(true)} className="action-btn" style={iconBtnStyle}>
-              <Trophy size={14} /> Leaderboard
-            </button>
-            <button onClick={() => setRulesOpen((v) => !v)} className="action-btn" style={iconBtnStyle}><HelpCircle size={14} /> Rules</button>
-            <button onClick={() => setDesignerView((d) => !d)} className="action-btn" style={iconBtnStyle}>{designerView ? <EyeOff size={14} /> : <Eye size={14} />} Designer</button>
-            <button onClick={fullReset} className="action-btn" style={iconBtnStyle}><RotateCcw size={14} /> Reset</button>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <ProsisBlackHoleLogo size={36} isVoyageActive={state.started && !state.gameOver} />
+            <span className="mono" style={{ background: `${COLORS.event}22`, border: `1px solid ${COLORS.event}55`, color: COLORS.event, padding: "5px 12px", borderRadius: 6, fontSize: 11, fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <Radar size={12} /> Sector {sector} · Round {state.round > 0 ? ((state.round - 1) % 10) + 1 : 1} / 10
+            </span>
           </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-end" }}>
+            <div style={{ display: "flex", gap: 6 }}>
+              {["intel", "registry", "ops"].map((cat) => (
+                <button key={cat} onClick={() => setOpenSubmenu(openSubmenu === cat ? null : cat as any)} className="action-btn" style={{ ...iconBtnStyle, background: openSubmenu === cat ? `${COLORS.salvage}30` : COLORS.panel, borderColor: openSubmenu === cat ? COLORS.salvage : COLORS.panelBorder, color: openSubmenu === cat ? COLORS.bone : COLORS.muted, fontWeight: "bold", textTransform: "uppercase", fontSize: 11 }}>
+                  {cat} {openSubmenu === cat ? "▲" : "▼"}
+                </button>
+              ))}
+            </div>
+            {openSubmenu === "intel" && (
+              <div style={{ display: "flex", gap: 4, background: "#0c0e17", border: `1px solid ${COLORS.panelBorder}`, borderRadius: 6, padding: 4, zIndex: 100 }}>
+                <button onClick={() => { setBriefingOpen(true); setOpenSubmenu(null); }} className="action-btn" style={iconBtnStyle}><FileText size={12} /> Briefing</button>
+                <button onClick={() => { setLoreOpen(true); setOpenSubmenu(null); }} className="action-btn" style={iconBtnStyle}><Radio size={12} /> Lore</button>
+                <button onClick={() => { setRulesOpen(!rulesOpen); setOpenSubmenu(null); }} className="action-btn" style={iconBtnStyle}><HelpCircle size={12} /> Rules</button>
+              </div>
+            )}
+            {openSubmenu === "registry" && (
+              <div style={{ display: "flex", gap: 4, background: "#0c0e17", border: `1px solid ${COLORS.panelBorder}`, borderRadius: 6, padding: 4, zIndex: 100 }}>
+                <button onClick={() => { setProfileOpen(true); setOpenSubmenu(null); }} className="action-btn" style={iconBtnStyle}><Award size={12} /> Profile</button>
+                <button onClick={() => { setAchievementsOpen(true); setOpenSubmenu(null); }} className="action-btn" style={iconBtnStyle}><Award size={12} /> Achievements</button>
+                <button onClick={() => { setLeaderboardOpen(true); setOpenSubmenu(null); }} className="action-btn" style={iconBtnStyle}><Trophy size={12} /> Leaderboard</button>
+                <button onClick={() => { setWdtOpen(true); setOpenSubmenu(null); }} className="action-btn" style={iconBtnStyle}><Compass size={12} /> Diagnostic</button>
+              </div>
+            )}
+            {openSubmenu === "ops" && (
+              <div style={{ display: "flex", gap: 4, background: "#0c0e17", border: `1px solid ${COLORS.panelBorder}`, borderRadius: 6, padding: 4, zIndex: 100, alignItems: "center" }}>
+                {/* Compact Volume */}
+                <div style={{ display: "flex", alignItems: "center", gap: 4, background: COLORS.panel, border: `1px solid ${COLORS.panelBorder}`, borderRadius: 4, padding: "2px 6px", height: 22 }}>
+                  <button
+                    onClick={() => {
+                      const newMuted = toggleMute();
+                      setAudioMuted(newMuted);
+                      if (!newMuted) startAmbientPad();
+                      else stopAmbientPad();
+                    }}
+                    className="action-btn"
+                    style={{ background: "none", border: "none", color: COLORS.muted, cursor: "pointer", display: "flex", alignItems: "center", padding: 0 }}
+                  >
+                    {audioMuted ? <VolumeX size={12} /> : <Volume2 size={12} />}
+                  </button>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.05"
+                    value={volume}
+                    onChange={(e) => {
+                      const v = parseFloat(e.target.value);
+                      setVolumeState(v);
+                      setVolume(v);
+                    }}
+                    style={{ width: 40, height: 2, accentColor: COLORS.salvage, cursor: "pointer" }}
+                  />
+                </div>
+                <button onClick={() => { setManifestOpen(true); setOpenSubmenu(null); }} className="action-btn" style={iconBtnStyle}><Terminal size={12} /> Manifest</button>
+                <button onClick={() => { setDesignerView(!designerView); setOpenSubmenu(null); }} className="action-btn" style={iconBtnStyle}>{designerView ? <EyeOff size={12} /> : <Eye size={12} />} Designer</button>
+                <button onClick={() => { fullReset(); setOpenSubmenu(null); }} className="action-btn" style={{ ...iconBtnStyle, color: COLORS.danger, borderColor: `${COLORS.danger}44` }}><RotateCcw size={12} /> Reset</button>
+              </div>
+            )}
+          </div>
+        {confirmResetOpen && (
+          <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.94)", backdropFilter: "blur(8px)", zIndex: 1100, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+            <div style={{ ...panelStyle, maxWidth: 480, width: "100%", padding: 24, border: `2px solid ${COLORS.danger}`, textAlign: "center", boxShadow: "0 20px 50px rgba(239, 68, 68, 0.3)" }}>
+              <div style={{ display: "inline-flex", padding: 12, borderRadius: "50%", background: `${COLORS.danger}22`, border: `1px solid ${COLORS.danger}55`, marginBottom: 16 }}>
+                <AlertTriangle size={32} color={COLORS.danger} />
+              </div>
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: COLORS.bone, marginBottom: 8 }}>RESET ALL VOYAGE DATA?</h2>
+              <p style={{ fontSize: 13, color: COLORS.muted, lineHeight: 1.5, marginBottom: 20 }}>
+                This action is <strong style={{ color: COLORS.danger }}>IRREVERSIBLE</strong>. All saved runs, log history, unlockable lore signals, high scores, captain profiles, and cosmetics will be completely purged.
+              </p>
+              <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+                <button
+                  onClick={() => setConfirmResetOpen(false)}
+                  className="action-btn"
+                  style={{ flex: 1, padding: "12px", borderRadius: 8, border: `1px solid ${COLORS.panelBorder}`, background: COLORS.panel, color: COLORS.bone, fontSize: 13, fontWeight: 600, cursor: "pointer" }}
+                >
+                  CANCEL
+                </button>
+                <button
+                  onClick={executeFullReset}
+                  className="action-btn"
+                  style={{ flex: 1, padding: "12px", borderRadius: 8, border: "none", background: COLORS.danger, color: COLORS.void, fontSize: 13, fontWeight: 700, cursor: "pointer" }}
+                >
+                  PURGE DATA
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         </div>
 
         <div style={{ ...panelStyle, padding: "16px 18px", marginBottom: 18, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
@@ -1874,28 +2402,56 @@ export default function TheFracturePlaytest() {
           </div>
         </div>
 
-        {/* GTL TTF RADAR GAUGE */}
+        {/* DYNAMIC VECTOR RADAR */}
         {(() => {
           const gtl = computeGTL(state?.round || 1, { entropy: state?.entropy || 0, systems: state?.systems || 100, re: state?.re || 100 }, { entropy: 0, systems: 0, re: 0 }, state?.activeModifiers || {});
+          const sysV = state?.systems ?? 100, reV = state?.re ?? 100, entV = state?.entropy ?? 0, morV = state?.morale ?? 100;
+          const r_sys = Math.min(100, Math.max(0, sysV)) * 0.9, r_re = Math.min(100, Math.max(0, reV)) * 0.9, r_ent = Math.min(100, Math.max(0, entV)) * 0.9, r_mor = Math.min(100, Math.max(0, morV)) * 0.9;
+          let tx = 150, ty = 55; if (gtl.optimalFront === "re") { tx = 245; ty = 150; } else if (gtl.optimalFront === "entropy") { tx = 150; ty = 245; }
+          const distrust = state.anchorPersona === "dez" ? (state.distrust || 0) : 0, belief = state.anchorPersona !== "dez" ? (state.beliefOrTrust || 0) : 0;
+          const jit = distrust > 0 ? Math.min(15, distrust * 2) : (belief >= 8 ? 0.1 : Math.max(0.4, (8 - belief) * 0.2)), bl = distrust > 0 ? Math.min(4, distrust * 0.4) : 0;
+          const vCol = METER_KEY_COLOR[gtl.optimalFront] || COLORS.bone, isStressed = entV > 55 || sysV < 40 || reV < 40;
+          const pCol = isStressed ? "rgba(255, 71, 87, 0.15)" : "rgba(56, 189, 248, 0.15)", pStr = isStressed ? "rgba(255, 71, 87, 0.5)" : "rgba(56, 189, 248, 0.5)";
+          let rCol = "rgba(107, 110, 122, 0.3)", rOp = 0.5, rDash = "none", rW = 1.5;
+          if (state.anchorPersona === "dez") { if (distrust > 0) { rCol = COLORS.danger; rOp = 0.8; rDash = "4,4"; rW = 2; } else { rCol = COLORS.salvage; rOp = 0.6; } }
+          else { rCol = ANCHORS[state.anchorPersona]?.color || COLORS.bone; rOp = state.beliefReady ? 0.9 : 0.4; if (state.beliefReady) { rDash = "6,4"; rW = 2; } }
           return (
-            <div className="ttf-radar-gauge" id="ttfRadarGauge" style={{ ...panelStyle, padding: "10px 14px", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <Radar size={16} color={COLORS.event} />
-                <span style={{ fontSize: 11, fontWeight: 700, color: COLORS.bone, letterSpacing: 1 }}>GTL TTF RADAR GAUGE:</span>
-              </div>
-              <div style={{ display: "flex", gap: 12, fontSize: 11, flexWrap: "wrap" }}>
-                {(["entropy", "systems", "re"] as Front[]).map((f) => {
-                  const ttf = gtl?.ttf?.[f] ?? 0;
-                  const isOptimal = gtl?.optimalFront === f;
-                  const warningColor = ttf <= 3 ? COLORS.danger : ttf <= 5 ? COLORS.morale : COLORS.salvage;
-                  return (
-                    <div key={f} style={{ background: COLORS.void, border: `1px solid ${isOptimal ? warningColor : COLORS.panelBorder}`, borderRadius: 6, padding: "4px 10px", display: "flex", alignItems: "center", gap: 6 }}>
-                      <span style={{ textTransform: "uppercase", fontWeight: 700, color: isOptimal ? warningColor : COLORS.muted }}>{f}:</span>
-                      <span className="mono" style={{ fontWeight: 900, color: warningColor }}>{ttf === Infinity ? "∞" : `${ttf.toFixed(1)} RNDS`}</span>
-                      {isOptimal && <span style={{ fontSize: 10, color: warningColor }}>⚠️ OPTIMAL</span>}
-                    </div>
-                  );
-                })}
+            <div className="ttf-radar-gauge" id="ttfRadarGauge" style={{ ...panelStyle, padding: "16px", marginBottom: 14 }}>
+              <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", alignItems: "center", justifyContent: "space-around", gap: 20 }}>
+                <div style={{ position: "relative", width: 300, height: 300, background: "#050608", borderRadius: "50%", border: `1px solid ${COLORS.panelBorder}` }}>
+                  <svg width="300" height="300" viewBox="0 0 300 300" style={{ overflow: "visible" }}>
+                    <circle cx="150" cy="150" r="30" stroke="rgba(255,255,255,0.04)" fill="none" strokeDasharray="2,2" />
+                    <circle cx="150" cy="150" r="60" stroke="rgba(255,255,255,0.06)" fill="none" strokeDasharray="3,3" />
+                    <circle cx="150" cy="150" r="90" stroke="rgba(255,255,255,0.09)" fill="none" />
+                    <line x1="150" y1="25" x2="150" y2="275" stroke="rgba(255,255,255,0.05)" />
+                    <line x1="25" y1="150" x2="275" y2="150" stroke="rgba(255,255,255,0.05)" />
+                    <text x="150" y="16" fontSize="9" fill={COLORS.ruthless} fontWeight="800" textAnchor="middle" className="mono">SYSTEMS</text>
+                    <text x="282" y="153" fontSize="9" fill={COLORS.desperate1} fontWeight="800" textAnchor="start" className="mono">ENGINE</text>
+                    <text x="150" y="291" fontSize="9" fill={COLORS.methodical} fontWeight="800" textAnchor="middle" className="mono">ENTROPY</text>
+                    <text x="18" y="153" fontSize="9" fill={COLORS.morale} fontWeight="800" textAnchor="end" className="mono">MORALE</text>
+                    <polygon points={`150,${150 - r_sys} ${150 + r_re},150 150,${150 + r_ent} ${150 - r_mor},150`} fill={pCol} stroke={pStr} strokeWidth="1.5" />
+                    <circle cx="150" cy={150 - r_sys} r="4.5" fill={COLORS.ruthless} stroke="#050608" strokeWidth="1.5" />
+                    <circle cx={150 + r_re} cy="150" r="4.5" fill={COLORS.desperate1} stroke="#050608" strokeWidth="1.5" />
+                    <circle cx="150" cy={150 + r_ent} r="4.5" fill={COLORS.methodical} stroke="#050608" strokeWidth="1.5" />
+                    <circle cx={150 - r_mor} cy="150" r="4.5" fill={COLORS.morale} stroke="#050608" strokeWidth="1.5" />
+                    <circle cx="150" cy="150" r="115" stroke={rCol} strokeWidth={rW} fill="none" opacity={rOp} strokeDasharray={rDash} />
+                    <g style={{ "--jitter-min": `${-jit}deg`, "--jitter-max": `${jit}deg`, filter: bl > 0 ? `blur(${bl}px)` : "none", transformOrigin: "150px 150px", animation: "dynamic-jitter 0.1s infinite alternate" } as any}>
+                      <line x1="150" y1="150" x2={tx} y2={ty} stroke={vCol} strokeWidth="2.5" strokeDasharray="3,3" />
+                      <circle cx={tx} cy={ty} r="9" stroke={vCol} strokeWidth="2" fill="none" />
+                    </g>
+                  </svg>
+                </div>
+                <div style={{ flex: 1, minWidth: 200 }}>
+                  {(["entropy", "systems", "re"] as Front[]).map((f) => {
+                    const ttf = gtl?.ttf?.[f] ?? 0; const isOpt = gtl?.optimalFront === f;
+                    return (
+                      <div key={f} style={{ background: COLORS.void, border: `1px solid ${isOpt ? (vCol) : COLORS.panelBorder}`, borderRadius: 8, padding: "8px 12px", display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                        <span className="mono" style={{ textTransform: "uppercase", fontWeight: 700, color: isOpt ? vCol : COLORS.bone }}>{f}</span>
+                        <span className="mono" style={{ fontWeight: 900, color: isOpt ? vCol : COLORS.bone }}>{ttf === Infinity ? "∞" : `${ttf.toFixed(1)} R`}</span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           );
@@ -1937,17 +2493,56 @@ export default function TheFracturePlaytest() {
         )}
 
         {!showingEvent && state.incomingThreat && (
-          <div style={{ ...panelStyle, padding: 14, marginBottom: 14, border: `1px solid ${state.incomingThreat === "lull" ? COLORS.panelBorder : axisColor[CATEGORIES[state.incomingThreat].axis]}66` }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <Radar size={15} color={state.incomingThreat === "lull" ? COLORS.muted : axisColor[CATEGORIES[state.incomingThreat].axis]} />
-              {state.incomingThreat === "lull" ? (
-                <div style={{ fontSize: 13, color: COLORS.muted, fontStyle: "italic" }}>Quiet this round. No threat detected — a chance to get ahead of things.</div>
-              ) : (
-                <div style={{ fontSize: 13 }}>
-                  <span style={{ fontWeight: 700, color: axisColor[CATEGORIES[state.incomingThreat].axis] }}>Incoming: {CATEGORIES[state.incomingThreat].label}</span>
-                  <span style={{ color: COLORS.muted }}> — {CATEGORIES[state.incomingThreat].tag}. Decide how the crew responds.</span>
+          <div style={{ ...panelStyle, padding: 14, marginBottom: 14, border: `1px solid ${state.incomingThreat === "lull" ? COLORS.panelBorder : axisColor[CATEGORIES[state.incomingThreat].axis]}88` }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <Radar size={15} color={state.incomingThreat === "lull" ? COLORS.muted : axisColor[CATEGORIES[state.incomingThreat].axis]} />
+                  <span className="mono" style={{ fontSize: 11, fontWeight: 700, color: state.incomingThreat === "lull" ? COLORS.muted : axisColor[CATEGORIES[state.incomingThreat].axis] }}>
+                    {state.incomingThreat === "lull" ? "SECTOR DETECTOR: CALM" : `INCOMING: [${CATEGORIES[state.incomingThreat].label.toUpperCase()}]`}
+                  </span>
                 </div>
-              )}
+              </div>
+              {state.incomingThreat === "lull" ? (
+                <div style={{ fontSize: 12.5, color: COLORS.muted, fontStyle: "italic" }}>Quiet this round. No anomaly patterns detected — fortify system positions.</div>
+              ) : (() => {
+                const tk = state.incomingThreat; const cat = CATEGORIES[tk]; const col = axisColor[cat.axis]; const actT = cat.hits;
+                let ty = 30; if (actT === "systems") ty = 12; else if (actT === "entropy") ty = 48;
+                let pM = []; let cMit = 1;
+                const hP = state.players.find(p => p.roleId === "helm"), eP = state.players.find(p => p.roleId === "engineer"), aP = state.players.find(p => p.roleId === "aft");
+                if (hP && hP.ability === "analyze" && hP.level) { const m = ROLES.find(r => r.id === "helm")?.abilities.find(a => a.id === "analyze")?.levels[hP.level]?.mitigation; if (m) { pM.push({ r: "Helm", l: `×${(1-m).toFixed(2)}` }); cMit *= (1-m); } }
+                if (eP && eP.ability === "dead_reckoning" && eP.level) { const m = ROLES.find(r => r.id === "engineer")?.abilities.find(a => a.id === "dead_reckoning")?.levels[eP.level]?.mitigation; if (m) { pM.push({ r: "Gene", l: `×${(1-m).toFixed(2)}` }); cMit *= (1-m); } }
+                if (aP && aP.ability === "ration_the_take" && aP.level) { const m = ROLES.find(r => r.id === "aft")?.abilities.find(a => a.id === "ration_the_take")?.levels[aP.level]?.mitigation; if (m) { pM.push({ r: "Sal", l: `×${(1-m).toFixed(2)}` }); cMit *= (1-m); } }
+                const minD = cat.dmgRange[0], maxD = cat.dmgRange[1];
+                return (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, background: "#050608", border: `1px solid ${COLORS.panelBorder}`, borderRadius: 8, padding: "8px 12px" }}>
+                      <span style={{ fontSize: 11, color: COLORS.muted }}>{cat.tag}</span>
+                      <div style={{ width: 140, height: 40 }}>
+                        <svg width="140" height="40" style={{ overflow: "visible" }}>
+                          <circle cx="10" cy="20" r="4" fill={col} style={{ animation: "accretion-pulse 1.2s infinite" }} />
+                          <path d={`M 10,20 Q 60,${ty} 110,${ty}`} fill="none" stroke={col} strokeWidth="1.5" strokeDasharray="4,3" style={{ animation: "dash-flow 0.5s linear infinite" }} />
+                          <polygon points={`108,${ty-3} 114,${ty} 108,${ty+3}`} fill={col} />
+                          {[{ k: "systems", l: "SYS", y: 8 }, { k: "re", l: "RE", y: 20 }, { k: "entropy", l: "ENT", y: 32 }].map((n) => (
+                            <text key={n.k} x="122" y={n.y+3} fontSize="8" fill={n.k === actT ? col : COLORS.muted} fontWeight="bold" className="mono">{n.l}</text>
+                          ))}
+                        </svg>
+                      </div>
+                    </div>
+                    <div style={{ background: "rgba(0,0,0,0.3)", borderRadius: 6, padding: "8px 10px", display: "flex", justifyContent: "space-between", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
+                      <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                        {pM.length === 0 ? <span style={{ fontSize: 9.5, color: COLORS.muted }}>No mitigation committed</span> : pM.map((m, idx) => (
+                          <span key={idx} className="mono" style={{ background: "rgba(53,214,138,0.12)", border: `1px solid ${COLORS.salvage}33`, color: COLORS.salvage, borderRadius: 4, padding: "1px 4px", fontSize: 9 }}>🛡️ {m.r} {m.l}</span>
+                        ))}
+                      </div>
+                      <div style={{ textAlign: "right", fontSize: 11.5 }}>
+                        <span style={{ textDecoration: pM.length > 0 ? "line-through" : "none", color: COLORS.muted, marginRight: 6 }}>{minD.toFixed(1)}–{maxD.toFixed(1)}</span>
+                        {pM.length > 0 && <span style={{ fontWeight: 800, color: COLORS.bone }}>{(minD * cMit).toFixed(1)}–{(maxD * cMit).toFixed(1)} {actT.toUpperCase()}</span>}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </div>
         )}
@@ -1977,22 +2572,99 @@ export default function TheFracturePlaytest() {
         )}
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
-          {[{ key: "entropy", label: "Entropy", val: (state && state.entropy !== undefined) ? state.entropy : 0, invert: false, buffer: false }, { key: "systems", label: "Systems Health", val: state.systems, invert: true, buffer: true }, { key: "re", label: "Reality Engine", val: state.re, invert: true, buffer: true }].map((m) => (
-            <div key={m.label} className={meterFlash === m.key ? "meter-hit" : ""} style={{ ...panelStyle, padding: 13, border: meterFlash === m.key ? `1.5px solid ${METER_KEY_COLOR[m.key]}` : panelStyle.border, boxShadow: meterFlash === m.key ? `0 0 16px ${METER_KEY_COLOR[m.key]}66` : "none" }}>
-              <div style={{ fontSize: 10.5, color: COLORS.muted, marginBottom: 6, letterSpacing: 1 }}>{m.label.toUpperCase()}</div>
-              <div className="mono" style={{ fontSize: 19, fontWeight: 700, color: meterColor(m.val, m.invert), marginBottom: 3 }}>{m.val.toFixed(1)}</div>
-              {m.buffer && m.val > 100 && <div className="mono" style={{ fontSize: 9.5, color: COLORS.salvage, marginBottom: 4 }}>+{(m.val - 100).toFixed(1)} buffered — decays if unused</div>}
-              <div style={{ height: 4, background: "#000", borderRadius: 2, overflow: "hidden", marginTop: m.buffer && m.val > 100 ? 0 : 7 }}><div style={{ height: "100%", width: `${clamp(m.val, 0, 100)}%`, background: meterColor(m.val, m.invert), transition: "width 0.4s ease" }} /></div>
-            </div>
-          ))}
+          {[{ key: "entropy", label: "Entropy", val: (state && state.entropy !== undefined) ? state.entropy : 0, invert: false, buffer: false }, { key: "systems", label: "Systems Health", val: state.systems, invert: true, buffer: true }, { key: "re", label: "Reality Engine", val: state.re, invert: true, buffer: true }].map((m) => {
+            const isTargeted = !showingEvent && state.incomingThreat && state.incomingThreat !== "lull" && CATEGORIES[state.incomingThreat]?.hits === m.key;
+            const themeColor = METER_KEY_COLOR[m.key];
+            const borderStyle = isTargeted 
+              ? `1.5px dashed ${COLORS.danger}` 
+              : meterFlash === m.key 
+              ? `1.5px solid ${themeColor}` 
+              : `1px solid ${COLORS.panelBorder}`;
+            const glowStyle = isTargeted 
+              ? `0 0 16px ${COLORS.danger}bb` 
+              : meterFlash === m.key 
+              ? `0 0 16px ${themeColor}66` 
+              : "none";
+            
+            return (
+              <div 
+                key={m.label} 
+                className={meterFlash === m.key ? "meter-hit" : ""} 
+                style={{ 
+                  ...panelStyle, 
+                  padding: 13, 
+                  border: borderStyle, 
+                  boxShadow: glowStyle,
+                  background: isTargeted ? `linear-gradient(180deg, #1c0e12, ${COLORS.panel})` : panelStyle.background,
+                  transition: "all 0.3s ease",
+                  position: "relative"
+                }}
+              >
+                {isTargeted && (
+                  <div style={{ position: "absolute", top: 4, right: 8, display: "flex", alignItems: "center" }}>
+                    <span className="mono" style={{ fontSize: 7, padding: "1px 4px", background: COLORS.danger, color: COLORS.void, borderRadius: 2, fontWeight: 900, letterSpacing: 0.5, animation: "pulseGlow 0.8s infinite" }}>TARGETED</span>
+                  </div>
+                )}
+                <div style={{ fontSize: 10.5, color: isTargeted ? COLORS.danger : COLORS.muted, marginBottom: 6, letterSpacing: 1, fontWeight: 700 }}>{m.label.toUpperCase()}</div>
+                <div className="mono" style={{ fontSize: 19, fontWeight: 700, color: meterColor(m.val, m.invert), marginBottom: 3 }}>{m.val.toFixed(1)}</div>
+                {m.buffer && m.val > 100 && <div className="mono" style={{ fontSize: 9.5, color: COLORS.salvage, marginBottom: 4 }}>+{(m.val - 100).toFixed(1)} buffered</div>}
+                
+                {/* Segmented Neon Bar */}
+                <div style={{ height: 6, background: "#050608", borderRadius: 3, overflow: "hidden", marginTop: m.buffer && m.val > 100 ? 0 : 7, position: "relative", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <div 
+                    style={{ 
+                      height: "100%", 
+                      width: `${clamp(m.val, 0, 100)}%`, 
+                      background: isTargeted ? COLORS.danger : meterColor(m.val, m.invert), 
+                      boxShadow: `0 0 8px ${isTargeted ? COLORS.danger : meterColor(m.val, m.invert)}`,
+                      transition: "width 0.4s ease",
+                      backgroundImage: "repeating-linear-gradient(90deg, transparent, transparent 4px, rgba(0,0,0,0.4) 4px, rgba(0,0,0,0.4) 6px)"
+                    }} 
+                  />
+                </div>
+              </div>
+            );
+          })}
         </div>
 
-        <div style={{ ...panelStyle, padding: 13, marginBottom: 14, border: `1px solid ${state.morale < MORALE_PRESSURE_THRESHOLD ? COLORS.morale : COLORS.panelBorder}` }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}><Heart size={12} color={COLORS.morale} /><span style={{ fontSize: 10.5, color: COLORS.muted, letterSpacing: 1 }}>CREW MORALE — THE HUMAN FRONT</span></div>
+        {/* Tactical Morale Bar with ECG vital pattern background */}
+        <div style={{ 
+          ...panelStyle, 
+          padding: 13, 
+          marginBottom: 14, 
+          border: `1.5px solid ${state.morale < MORALE_PRESSURE_THRESHOLD ? COLORS.morale : COLORS.panelBorder}`,
+          boxShadow: state.morale < MORALE_PRESSURE_THRESHOLD ? `0 0 12px ${COLORS.morale}33` : "none",
+          position: "relative",
+          overflow: "hidden"
+        }}>
+          {/* Subtle running ECG grid line in the background */}
+          <div style={{ position: "absolute", top: 0, right: 10, bottom: 0, width: 120, opacity: 0.15, pointerEvents: "none" }}>
+            <svg width="100%" height="100%" viewBox="0 0 120 40">
+              <path d="M 0,20 L 40,20 L 48,10 L 54,32 L 62,20 L 120,20" fill="none" stroke={COLORS.morale} strokeWidth="1.5" />
+            </svg>
+          </div>
+          
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6, position: "relative", zIndex: 1 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <Heart size={12} color={COLORS.morale} style={{ animation: state.morale < MORALE_PRESSURE_THRESHOLD ? "accretion-pulse 0.8s infinite" : "none" }} />
+              <span style={{ fontSize: 10, color: COLORS.muted, letterSpacing: 1, fontWeight: 700 }}>CREW VITAL SIGN STABILITY — MORALE</span>
+            </div>
             <span className="mono" style={{ fontSize: 15, fontWeight: 700, color: state.morale < MORALE_PRESSURE_THRESHOLD ? COLORS.morale : COLORS.bone }}>{state.morale.toFixed(1)}</span>
           </div>
-          <div style={{ height: 5, background: "#000", borderRadius: 2, overflow: "hidden" }}><div style={{ height: "100%", width: `${clamp(state.morale, 0, 100)}%`, background: COLORS.morale, transition: "width 0.4s ease" }} /></div>
+          
+          {/* Segmented neon progress bar */}
+          <div style={{ height: 6, background: "#050608", borderRadius: 3, overflow: "hidden", position: "relative", border: "1px solid rgba(255,255,255,0.05)" }}>
+            <div 
+              style={{ 
+                height: "100%", 
+                width: `${clamp(state.morale, 0, 100)}%`, 
+                background: COLORS.morale, 
+                boxShadow: `0 0 8px ${COLORS.morale}`,
+                transition: "width 0.4s ease",
+                backgroundImage: "repeating-linear-gradient(90deg, transparent, transparent 5px, rgba(0,0,0,0.5) 5px, rgba(0,0,0,0.5) 7px)"
+              }} 
+            />
+          </div>
         </div>
 
         <div style={{ display: "flex", gap: 10, marginBottom: 18, alignItems: "center", flexWrap: "wrap" }}>
@@ -2075,14 +2747,41 @@ export default function TheFracturePlaytest() {
             )}
 
             {state.openBanks.length > 0 && (
-              <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 5 }}>
-                <span style={{ fontSize: 10.5, color: COLORS.muted, letterSpacing: 0.5 }}>OPEN BARRIERS</span>
-                {state.openBanks.map((bank, i) => (
-                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 11.5, background: "#00000030", borderRadius: 6, padding: "6px 10px" }}>
-                    <span className="mono" style={{ color: COLORS.bone }}>{bank.banked.toFixed(1)} → {meterLabelStatic[bank.front] || bank.front} <span style={{ color: bank.roundsHeld >= BANK_GROWTH_CAP_ROUNDS ? COLORS.muted : COLORS.salvage }}>{bank.roundsHeld >= BANK_GROWTH_CAP_ROUNDS ? "(grown, holding steady — claim anytime)" : `(growing — held ${bank.roundsHeld} round${bank.roundsHeld === 1 ? "" : "s"}, exposed to a hit on this front)`}</span></span>
-                    <button onClick={() => claimBankAction(i)} className="action-btn" style={{ padding: "3px 9px", borderRadius: 6, border: `1px solid ${COLORS.salvage}`, background: `${COLORS.salvage}18`, color: COLORS.salvage, fontSize: 10.5, cursor: "pointer", fontWeight: 600 }}>CLAIM</button>
-                  </div>
-                ))}
+              <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 6 }}>
+                <span style={{ fontSize: 10, color: COLORS.muted, letterSpacing: 1, fontWeight: 700 }}>TACTICAL STAKING (ACTIVE BARRIERS):</span>
+                {state.openBanks.map((bank, i) => {
+                  const cap = BANK_GROWTH_CAP_ROUNDS, pct = Math.min(1.0, bank.roundsHeld / cap);
+                  const circ = 2 * Math.PI * 10, isFull = bank.roundsHeld >= cap;
+                  const fCol = METER_KEY_COLOR[bank.front] || COLORS.bone;
+                  return (
+                    <div key={i} style={{ display: "flex", flexDirection: "column", gap: 6, background: "#08090d", border: `1px solid ${fCol}55`, borderRadius: 8, padding: "8px 12px", position: "relative" }}>
+                      {!isFull && <div style={{ position: "absolute", top: 0, right: 0, bottom: 0, width: 3, background: COLORS.danger, boxShadow: `0 0 6px ${COLORS.danger}` }} />}
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <div style={{ position: "relative", width: 26, height: 26, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <svg width="26" height="26" viewBox="0 0 24 24">
+                              <circle cx="12" cy="12" r="10" fill="none" stroke="#161822" strokeWidth="2.5" />
+                              <circle cx="12" cy="12" r="10" fill="none" stroke={COLORS.salvage} strokeWidth="2.5" strokeDasharray={circ} strokeDashoffset={circ * (1 - pct)} strokeLinecap="round" transform="rotate(-90 12 12)" />
+                            </svg>
+                            <span className="mono" style={{ position: "absolute", fontSize: 8, fontWeight: 800, color: COLORS.bone }}>{bank.roundsHeld}</span>
+                          </div>
+                          <div>
+                            <span className="mono" style={{ fontSize: 12, fontWeight: 700, color: COLORS.bone }}>{bank.banked.toFixed(1)} U </span>
+                            <span style={{ fontSize: 9, fontWeight: 700, color: fCol }}>→ {meterLabelStatic[bank.front]?.toUpperCase()}</span>
+                          </div>
+                        </div>
+                        {!isFull && <span className="mono" style={{ background: "rgba(255,71,87,0.12)", border: `1px solid ${COLORS.danger}33`, color: COLORS.danger, borderRadius: 4, padding: "2px 4px", fontSize: 8, fontWeight: 700 }}>⚠️ 30% HAIRCUT EXPOSURE</span>}
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #161822", paddingTop: 6 }}>
+                        <span style={{ fontSize: 8, color: COLORS.muted }}>EMERGENCY PAYOUT CORES</span>
+                        <button onClick={() => claimBankAction(i)} className="action-btn" style={{ padding: "4px 8px", borderRadius: 4, background: `linear-gradient(135deg, ${COLORS.salvage}, ${COLORS.morale})`, color: COLORS.void, border: "none", fontSize: 9.5, fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: 3 }}>
+                          <Heart size={8} fill={COLORS.void} />
+                          <span>CLAIM [ +5 MORALE ]</span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -2094,32 +2793,112 @@ export default function TheFracturePlaytest() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
               {state.players.map((p, idx) => {
                 const role = ROLES.find((r) => r.id === p.roleId);
-                const crewName = p.roleId === "helm" ? captainProfile.helmName : p.roleId === "engineer" ? captainProfile.geneName : captainProfile.salName;
+                const crewName = p.roleId === "helm"
+                  ? (captainProfile.helmName || "Helm")
+                  : p.roleId === "engineer"
+                  ? (captainProfile.geneName || "Gene")
+                  : (captainProfile.salName || "Sal");
                 return (
                   <div key={idx} style={{ ...panelStyle, padding: 12 }}>
-                    <div style={{ fontSize: 12.5, fontWeight: 600, color: COLORS.bone }}>{crewName || role.personalName} <span style={{ fontSize: 10, color: COLORS.muted }}>({role.name})</span></div>
-                    <div style={{ fontSize: 10, color: COLORS.muted, marginBottom: 9 }}>{role.name} · {role.focus}</div>
+                    <div style={{ fontSize: 12.5, fontWeight: 600, color: COLORS.bone }}>{crewName}</div>
+                    <div style={{ fontSize: 10, color: COLORS.muted, marginBottom: 9 }}>
+                      {crewName.toLowerCase() !== role?.name.toLowerCase() ? `${role?.name} · ` : ""}{role?.focus}
+                    </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                       {role.abilities.map((ability) => (
                         <div key={ability.id}>
                           <div style={{ fontSize: 11, color: COLORS.bone, fontWeight: 600 }}>{ability.label}</div>
                           <div style={{ fontSize: 9.5, color: COLORS.muted, marginBottom: 4 }}>{ability.desc}</div>
-                          <div style={{ display: "flex", gap: 4 }}>
-                            {["I", "II", "III"].map((lvl) => {
-                              const selected = p.ability === ability.id && p.level === lvl;
-                              const isSalvage = role.id === "engineer";
-                              const costVal = isSalvage ? LEVELS_SALVAGE[lvl] : LEVELS[lvl].cost;
-                              const costLabel = `${costVal.toFixed(1)} ${isSalvage ? "Salvage" : "Entropy"}`;
+                          {(() => {
+                            const sh = ability.shape;
+                            if (sh === "different_front_now") {
+                              let src = "A", dst = "B", sC = COLORS.bone, dC = COLORS.bone;
+                              if (ability.id === "force_correction") { src = "ENT"; sC = COLORS.methodical; dst = "SYS"; dC = COLORS.ruthless; }
+                              else if (ability.id === "overload") { src = "SYS"; sC = COLORS.ruthless; dst = "ENT"; dC = COLORS.methodical; }
+                              else if (ability.id === "force_extraction") { src = "SLV"; sC = COLORS.salvage; dst = "RE"; dC = COLORS.desperate1; }
                               return (
-                                <button key={lvl} onClick={() => setPlayerChoice(idx, ability.id, lvl)} disabled={!!state.gameOver} className="level-pill"
-                                  title={costLabel}
-                                  style={{ flex: 1, padding: "5px 0", borderRadius: 5, cursor: state.gameOver ? "default" : "pointer", border: `1px solid ${selected ? LEVEL_COLOR[lvl] : COLORS.panelBorder}`, background: selected ? `${LEVEL_COLOR[lvl]}22` : "#00000020", display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
-                                  <span className="mono" style={{ fontSize: 10, fontWeight: 700, color: selected ? LEVEL_COLOR[lvl] : COLORS.muted }}>{lvl}</span>
-                                  <span className="mono" style={{ fontSize: 7.5, fontWeight: 500, color: selected ? LEVEL_COLOR[lvl] : COLORS.muted, opacity: 0.75 }}>{costVal.toFixed(1)} {isSalvage ? "SLV" : "ENT"}</span>
-                                </button>
+                                <div style={{ height: 24, display: "flex", alignItems: "center", gap: 6, background: "#00000030", borderRadius: 4, margin: "4px 0", padding: "0 6px" }}>
+                                  <span className="mono" style={{ fontSize: 8, color: sC, fontWeight: 700, border: `1px solid ${sC}44`, padding: "0 2px", borderRadius: 2 }}>{src}</span>
+                                  <svg width="40" height="12" style={{ overflow: "visible" }}>
+                                    <path d="M 2,6 Q 20,0 38,6" fill="none" stroke={dC} strokeWidth="1" strokeDasharray="3,2" style={{ animation: "dash-flow 0.8s linear infinite" }} />
+                                    <polygon points="35,3 39,6 34,8" fill={dC} />
+                                  </svg>
+                                  <span className="mono" style={{ fontSize: 8, color: dC, fontWeight: 700, border: `1px solid ${dC}44`, padding: "0 2px", borderRadius: 2 }}>{dst}</span>
+                                  <span style={{ fontSize: 8, color: COLORS.muted }}>REDIRECTION ARC</span>
+                                </div>
                               );
-                            })}
-                          </div>
+                            }
+                            if (sh === "deferred_compounding") {
+                              const sCol = ability.front ? METER_KEY_COLOR[ability.front] : COLORS.salvage;
+                              const isQuick = ["suppress", "overclock", "patch_job"].includes(ability.id);
+                              return (
+                                <div style={{ height: 24, display: "flex", alignItems: "center", justifyContent: "space-between", background: "#00000030", borderRadius: 4, margin: "4px 0", padding: "0 6px" }}>
+                                  <span style={{ fontSize: 8, color: COLORS.muted, letterSpacing: 0.5 }}>{isQuick ? "⏱️ QUICK BARRIER:" : "📈 EXPONENTIAL YIELD:"}</span>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                                    <svg width="30" height="12" style={{ background: "#00000020", borderRadius: 2 }}>
+                                      {isQuick ? (
+                                        <line x1="2" y1="6" x2="28" y2="6" stroke={sCol} strokeWidth="1.5" />
+                                      ) : (
+                                        <path d="M 2,10 Q 20,9 28,2" fill="none" stroke={sCol} strokeWidth="1" />
+                                      )}
+                                    </svg>
+                                    <span className="mono" style={{ fontSize: 8, color: sCol, fontWeight: 700 }}>{isQuick ? "FLAT" : "+8% / RND"}</span>
+                                  </div>
+                                </div>
+                              );
+                            }
+                            if (sh === "personal") {
+                              return (
+                                <div style={{ height: 24, display: "flex", alignItems: "center", justifyContent: "space-between", background: "#00000030", borderRadius: 4, margin: "4px 0", padding: "0 6px" }}>
+                                  <span style={{ fontSize: 8, color: COLORS.muted, letterSpacing: 0.5 }}>🛡️ PERSONAL SHIELD:</span>
+                                  <span className="mono" style={{ fontSize: 8, color: COLORS.salvage, fontWeight: 700 }}>×{(1 - ability.levels.I.mitigation).toFixed(2)} Base</span>
+                                </div>
+                              );
+                            }
+                            return null;
+                          })()}
+                          {(() => {
+                            const isBlockedBarrier = ability.shape === "deferred_compounding" && state.openBanks.some(b => b.front === ability.front);
+                            return (
+                              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                                {isBlockedBarrier && (
+                                  <div style={{ fontSize: 8.5, color: COLORS.danger, fontWeight: 800, margin: "4px 0", textTransform: "uppercase", letterSpacing: 0.5 }}>
+                                    ⚠️ BLOCKED: BARRIER ACTIVE ON THIS FRONT
+                                  </div>
+                                )}
+                                <div style={{ display: "flex", gap: 4 }}>
+                                  {["I", "II", "III"].map((lvl) => {
+                                    const selected = p.ability === ability.id && p.level === lvl;
+                                    const isSalvage = role.id === "engineer";
+                                    const costVal = isSalvage ? LEVELS_SALVAGE[lvl] : LEVELS[lvl].cost;
+                                    const costLabel = `${costVal.toFixed(1)} ${isSalvage ? "Salvage" : "Entropy"}`;
+                                    return (
+                                      <button key={lvl} onClick={() => setPlayerChoice(idx, ability.id, lvl)} disabled={!!state.gameOver || isBlockedBarrier} className="level-pill"
+                                        title={isBlockedBarrier ? "Only one barrier can be active on this front at a time" : costLabel}
+                                        style={{
+                                          flex: 1,
+                                          padding: "5px 0",
+                                          borderRadius: 5,
+                                          cursor: isBlockedBarrier ? "not-allowed" : state.gameOver ? "default" : "pointer",
+                                          border: `1px solid ${selected ? LEVEL_COLOR[lvl] : COLORS.panelBorder}`,
+                                          background: selected ? `${LEVEL_COLOR[lvl]}22` : "#00000020",
+                                          boxShadow: selected ? `0 0 10px ${LEVEL_COLOR[lvl]}44` : "none",
+                                          display: "flex",
+                                          flexDirection: "column",
+                                          alignItems: "center",
+                                          gap: 1,
+                                          transition: "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+                                          opacity: isBlockedBarrier ? 0.35 : 1
+                                        }}>
+                                        <span className="mono" style={{ fontSize: 10, fontWeight: 700, color: selected ? LEVEL_COLOR[lvl] : COLORS.muted }}>{lvl}</span>
+                                        <span className="mono" style={{ fontSize: 7.5, fontWeight: 500, color: selected ? LEVEL_COLOR[lvl] : COLORS.muted, opacity: 0.75 }}>{costVal.toFixed(1)} {isSalvage ? "SLV" : "ENT"}</span>
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            );
+                          })()}
                         </div>
                       ))}
                     </div>
@@ -2159,7 +2938,7 @@ export default function TheFracturePlaytest() {
         )}
 
         <div style={{ fontSize: 10.5, color: COLORS.muted, letterSpacing: 1, marginBottom: 8 }}>SESSION LOG</div>
-        <div style={{ ...panelStyle, padding: 12, maxHeight: 200, overflowY: "auto" }}>
+        <div ref={logContainerRef} style={{ ...panelStyle, padding: 12, maxHeight: 200, overflowY: "auto" }}>
           {state.log.length === 0 && <div style={{ color: COLORS.muted, fontSize: 12.5 }}>Respond to the first round to begin.</div>}
           {state.log.map((entry, i) => {
             if (entry.type === "intro") return <div key={i} style={{ fontSize: 12.5, color: COLORS.bone, fontStyle: "italic", padding: "2px 0" }}>The Fracture opens. The first threat is already visible. Answer it.</div>;
@@ -2302,7 +3081,7 @@ export default function TheFracturePlaytest() {
         {/* ACHIEVEMENTS MODAL */}
         {achievementsOpen && <AchievementsModal setAchievementsOpen={setAchievementsOpen} ACHIEVEMENTS_LIST={ACHIEVEMENTS_LIST} unlockedAchList={unlockedAchList} COLORS={COLORS} panelStyle={panelStyle} />}
         {/* WDT ONBOARDING DIAGNOSTIC MODAL */}
-        {wdtOpen && <WdtModal setWdtOpen={setWdtOpen} wdtStep={wdtStep} setWdtStep={setWdtStep} wdtAnswers={wdtAnswers} setWdtAnswers={setWdtAnswers} COLORS={COLORS} panelStyle={panelStyle} ANCHORS={ANCHORS} setAnchorChoice={setAnchorChoice} />}
+        {wdtOpen && <WdtModal setWdtOpen={setWdtOpen} wdtStep={wdtStep} setWdtStep={setWdtStep} wdtAnswers={wdtAnswers} setWdtAnswers={setWdtAnswers} COLORS={COLORS} panelStyle={panelStyle} ANCHORS={ANCHORS} setAnchorChoice={setAnchorChoice} captainProfile={captainProfile} setCaptainProfile={setCaptainProfile} saveCaptainProfile={saveCaptainProfile} shipNameInput={shipNameInput} setShipNameInput={setShipNameInput} setShipName={setShipName} />}
         {/* CAPTAIN PROFILE & COSMETICS MODAL */}
         {profileOpen && <ProfileModal setProfileOpen={setProfileOpen} captainProfile={captainProfile} setCaptainProfile={setCaptainProfile} cosmeticsProfile={cosmeticsProfile} COLORS={COLORS} panelStyle={panelStyle} ANCHORS={ANCHORS} shipNameInput={shipNameInput} setShipNameInput={setShipNameInput} saveCaptainProfile={saveCaptainProfile} setShipName={setShipName} />}
         {/* GLOBAL ARCADE LEADERBOARD CABINET MODAL */}
@@ -2314,3 +3093,4 @@ export default function TheFracturePlaytest() {
     </div>
   );
 }
+ 

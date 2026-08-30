@@ -176,11 +176,33 @@ const htmlTemplate = `<!DOCTYPE html>
 </html>
 `;
 
+function safeWriteFileSync(filePath, content) {
+  const tempPath = filePath + ".tmp";
+  try {
+    fs.writeFileSync(tempPath, content, "utf-8");
+    if (fs.existsSync(filePath)) {
+      try {
+        fs.unlinkSync(filePath);
+      } catch (e) {}
+    }
+    fs.renameSync(tempPath, filePath);
+  } catch (err) {
+    // Fallback to direct write if temp/rename fails
+    fs.writeFileSync(filePath, content, "utf-8");
+  } finally {
+    try {
+      if (fs.existsSync(tempPath)) {
+        fs.unlinkSync(tempPath);
+      }
+    } catch (_) {}
+  }
+}
+
 const outputPath = path.join(__dirname, "index.html");
-fs.writeFileSync(outputPath, htmlTemplate, "utf-8");
+safeWriteFileSync(outputPath, htmlTemplate);
 console.log(`Successfully generated standalone HTML at: ${outputPath}`);
 
 const rootOutputPath = path.join(__dirname, "../../../index.html");
-fs.writeFileSync(rootOutputPath, htmlTemplate, "utf-8");
+safeWriteFileSync(rootOutputPath, htmlTemplate);
 console.log(`Successfully synced root HTML at: ${rootOutputPath}`);
 

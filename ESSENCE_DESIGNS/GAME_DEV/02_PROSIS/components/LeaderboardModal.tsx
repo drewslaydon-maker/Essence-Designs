@@ -1,5 +1,50 @@
 import { X } from "lucide-react";
 
+const DEFAULT_HIGH_SCORES = [
+  {
+    id: "default_1",
+    shipName: "USSC THESEUS",
+    captainCallsign: "VANCE",
+    score: 48500,
+    rounds: 30,
+    sector: 3,
+    morale: 85,
+    entropy: 10,
+    anchorPersona: "ricky",
+    hullSkin: "titanium",
+    equippedRuneIds: [],
+    timestamp: new Date(Date.now() - 3600000 * 24 * 10).toISOString(),
+  },
+  {
+    id: "default_2",
+    shipName: "USSC PROMETHEUS",
+    captainCallsign: "JAX",
+    score: 39200,
+    rounds: 25,
+    sector: 3,
+    morale: 60,
+    entropy: 35,
+    anchorPersona: "maude",
+    hullSkin: "titanium",
+    equippedRuneIds: [],
+    timestamp: new Date(Date.now() - 3600000 * 24 * 5).toISOString(),
+  },
+  {
+    id: "default_3",
+    shipName: "USSC ENDEAVOUR",
+    captainCallsign: "ROOK",
+    score: 24100,
+    rounds: 18,
+    sector: 2,
+    morale: 45,
+    entropy: 40,
+    anchorPersona: "dez",
+    hullSkin: "titanium",
+    equippedRuneIds: [],
+    timestamp: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),
+  }
+];
+
 export function LeaderboardModal({ setLeaderboardOpen, leaderboardFilter, setLeaderboardFilter, highScoresList, COLORS, panelStyle, ANCHORS }: any) {
   return (
     <div id="leaderboardModal" style={{ position: "fixed", inset: 0, backgroundColor: "rgba(5, 8, 14, 0.92)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
@@ -39,7 +84,8 @@ export function LeaderboardModal({ setLeaderboardOpen, leaderboardFilter, setLea
         {/* Leaderboard List */}
         <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 360, overflowY: "auto" }}>
           {(() => {
-            const filtered = highScoresList.filter((entry: any) => {
+            const scoresToRender = (highScoresList && highScoresList.length > 0) ? highScoresList : DEFAULT_HIGH_SCORES;
+            const filtered = scoresToRender.filter((entry: any) => {
               if (leaderboardFilter === "All") return true;
               return entry.anchorPersona === leaderboardFilter;
             }).slice(0, 10);

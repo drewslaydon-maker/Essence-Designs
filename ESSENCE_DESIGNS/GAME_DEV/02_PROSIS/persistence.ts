@@ -389,3 +389,14 @@ export function clearCosmeticsProfile(): void {
   removeItem(COSMETICS_KEY);
 }
 
+export function resetAllData(): void {
+  clearRunState();
+  clearRunHistory();
+  clearCaptainsManifest();
+  clearUnlockedLore();
+  clearAchievements();
+  clearHighScores();
+  clearCaptainProfile();
+  clearCosmeticsProfile();
+}
+

@@ -65,6 +65,7 @@ class ProceduralAudioEngine {
   masterGain: GainNode | null = null;
   padGain: GainNode | null = null;
   padOscs: OscillatorNode[] = [];
+  padFilter: BiquadFilterNode | null = null;
   lfoOsc: OscillatorNode | null = null;
   padActive = false;
 
@@ -87,6 +88,13 @@ class ProceduralAudioEngine {
     }
   }
 
+  ensureAudioContext() {
+    this.initCtx();
+    if (this.ctx && this.ctx.state === "suspended") {
+      this.ctx.resume().catch(() => {});
+    }
+  }
+
   startAmbientPad() {
     this.initCtx();
     if (!this.ctx || !this.masterGain) return;
@@ -101,9 +109,9 @@ class ProceduralAudioEngine {
       this.padGain = this.ctx.createGain();
       this.padGain.gain.value = 0.15;
 
-      const filter = this.ctx.createBiquadFilter();
-      filter.type = "lowpass";
-      filter.frequency.value = 350;
+      this.padFilter = this.ctx.createBiquadFilter();
+      this.padFilter.type = "lowpass";
+      this.padFilter.frequency.value = 350;
 
       // C minor 7 harmonic frequencies: C3, Eb3, G3, Bb3
       const freqs = [130.81, 155.56, 196.00, 233.08];
@@ -111,7 +119,7 @@ class ProceduralAudioEngine {
         const osc = this.ctx!.createOscillator();
         osc.type = i % 2 === 0 ? "sawtooth" : "sine";
         osc.frequency.value = f;
-        osc.connect(filter);
+        osc.connect(this.padFilter!);
         osc.start();
         return osc;
       });
@@ -124,7 +132,7 @@ class ProceduralAudioEngine {
       lfoGain.connect(this.padGain.gain);
       this.lfoOsc.start();
 
-      filter.connect(this.padGain);
+      this.padFilter.connect(this.padGain);
       this.padGain.connect(this.masterGain);
       this.padActive = true;
     } catch {
@@ -145,6 +153,10 @@ class ProceduralAudioEngine {
         this.lfoOsc.disconnect();
         this.lfoOsc = null;
       }
+      if (this.padFilter) {
+        this.padFilter.disconnect();
+        this.padFilter = null;
+      }
       this.padActive = false;
     } catch {
       // Fallback
@@ -157,9 +169,66 @@ class ProceduralAudioEngine {
     saveAudioPrefs({ muted: newMuted });
 
     if (this.masterGain && this.ctx) {
-      this.masterGain.gain.value = newMuted ? 0 : prefs.volume;
+      this.masterGain.gain.setValueAtTime(newMuted ? 0 : prefs.volume, this.ctx.currentTime);
     }
     return newMuted;
+  }
+
+  setVolume(volume: number) {
+    saveAudioPrefs({ volume });
+    if (this.masterGain && this.ctx) {
+      const prefs = getAudioPrefs();
+      if (!prefs.muted) {
+        this.masterGain.gain.setValueAtTime(volume, this.ctx.currentTime);
+      }
+    }
+  }
+
+  updatePadState(entropy: number, isPressure: boolean, persona: string) {
+    if (!this.ctx || !this.padActive) return;
+
+    try {
+      const now = this.ctx.currentTime;
+
+      // Lowpass frequency adjustment
+      let cutoff = 350 + (entropy / 100) * 450;
+      if (isPressure) {
+        cutoff += 250;
+      }
+      cutoff = Math.min(2000, Math.max(100, cutoff));
+
+      if (this.padFilter) {
+        this.padFilter.frequency.setTargetAtTime(cutoff, now, 0.3);
+      }
+
+      // Base pitches based on persona
+      // Maude (default stable): C minor 7 [130.81, 155.56, 196.00, 233.08]
+      // Ricky (risky high-tension): transposing up to D minor 7
+      // Dez (low tension/compounding): transposing down to Bb minor 7
+      let freqs = [130.81, 155.56, 196.00, 233.08];
+      if (persona === "ricky") {
+        freqs = [146.83, 174.61, 220.00, 261.63];
+      } else if (persona === "dez") {
+        freqs = [116.54, 138.59, 174.61, 207.65];
+      }
+
+      if (this.padOscs.length === freqs.length) {
+        freqs.forEach((baseFreq, idx) => {
+          const osc = this.padOscs[idx];
+          if (osc) {
+            // Apply slight pitch shift depending on entropy
+            const targetFreq = baseFreq * (1 + (entropy / 100) * 0.05);
+            osc.frequency.setTargetAtTime(targetFreq, now, 0.4);
+
+            // Detuning under pressure for phasey chaotic resonance
+            const detuneAmt = isPressure ? (idx % 2 === 0 ? 15 : -15) : 0;
+            osc.detune.setTargetAtTime(detuneAmt, now, 0.4);
+          }
+        });
+      }
+    } catch {
+      // Fallback
+    }
   }
 
   isMuted(): boolean {
@@ -186,7 +255,7 @@ class ProceduralAudioEngine {
         osc.type = "sine";
         osc.frequency.setValueAtTime(120, now);
         osc.frequency.exponentialRampToValueAtTime(480, now + 0.4);
-        sfxGain.gain.setValueAtTime(0.2, now);
+        sfxGain.gain.setValueAtTime(0.05, now);
         sfxGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
 
         osc.connect(sfxGain);
@@ -194,24 +263,53 @@ class ProceduralAudioEngine {
         osc.start(now);
         osc.stop(now + 0.4);
       } else if (type === "ui_click") {
-        const osc = this.ctx.createOscillator();
-        const sfxGain = this.ctx.createGain();
-        osc.type = "triangle";
-        osc.frequency.setValueAtTime(800, now);
-        sfxGain.gain.setValueAtTime(0.1, now);
-        sfxGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        // Redesigned: Bandpass-filtered white noise + low frequency drop (130Hz -> 60Hz)
+        const bufferSize = this.ctx.sampleRate * 0.15; // 150ms
+        const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          output[i] = Math.random() * 2 - 1;
+        }
 
-        osc.connect(sfxGain);
-        sfxGain.connect(this.masterGain);
-        osc.start(now);
-        osc.stop(now + 0.05);
+        const noiseNode = this.ctx.createBufferSource();
+        noiseNode.buffer = noiseBuffer;
+
+        const noiseFilter = this.ctx.createBiquadFilter();
+        noiseFilter.type = "bandpass";
+        noiseFilter.frequency.setValueAtTime(250, now);
+        noiseFilter.Q.setValueAtTime(2.0, now);
+
+        const noiseGain = this.ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.03, now);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+        noiseNode.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(this.masterGain);
+
+        const sineOsc = this.ctx.createOscillator();
+        const sineGain = this.ctx.createGain();
+        sineOsc.type = "sine";
+        sineOsc.frequency.setValueAtTime(130, now);
+        sineOsc.frequency.linearRampToValueAtTime(60, now + 0.15);
+
+        sineGain.gain.setValueAtTime(0.04, now);
+        sineGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+        sineOsc.connect(sineGain);
+        sineGain.connect(this.masterGain);
+
+        noiseNode.start(now);
+        noiseNode.stop(now + 0.15);
+        sineOsc.start(now);
+        sineOsc.stop(now + 0.15);
       } else if (type === "alert_threat") {
         const osc = this.ctx.createOscillator();
         const sfxGain = this.ctx.createGain();
         osc.type = "sawtooth";
         osc.frequency.setValueAtTime(220, now);
         osc.frequency.setValueAtTime(180, now + 0.1);
-        sfxGain.gain.setValueAtTime(0.15, now);
+        sfxGain.gain.setValueAtTime(0.04, now);
         sfxGain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
 
         osc.connect(sfxGain);
@@ -226,7 +324,7 @@ class ProceduralAudioEngine {
           const startTime = now + idx * 0.06;
           osc.type = "sine";
           osc.frequency.value = f;
-          sfxGain.gain.setValueAtTime(0.1, startTime);
+          sfxGain.gain.setValueAtTime(0.04, startTime);
           sfxGain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.2);
 
           osc.connect(sfxGain);
@@ -261,5 +359,17 @@ export function isMuted(): boolean {
 
 export function playSFX(type: "warp_transit" | "ui_click" | "alert_threat" | "barrier_claim" | string): void {
   engine.playSFX(type);
+}
+
+export function setVolume(volume: number): void {
+  engine.setVolume(volume);
+}
+
+export function updatePadState(entropy: number, isPressure: boolean, persona: string): void {
+  engine.updatePadState(entropy, isPressure, persona);
+}
+
+export function ensureAudioContext(): void {
+  engine.ensureAudioContext();
 }
 

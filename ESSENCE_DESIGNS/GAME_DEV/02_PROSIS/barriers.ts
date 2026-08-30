@@ -15,6 +15,8 @@ import {
  */
 export function tickBankGrowth(entry: BankEntry): BankEntry {
   const roundsHeld = entry.roundsHeld + 1;
+  const isQuickBarrier = ["suppress", "overclock", "patch_job"].includes(entry.abilityId);
+  if (isQuickBarrier) return { ...entry, roundsHeld };
   if (roundsHeld > BANK_GROWTH_CAP_ROUNDS) return { ...entry, roundsHeld };
   return { ...entry, banked: entry.banked * (1 + BANK_GROWTH_RATE), roundsHeld };
 }
