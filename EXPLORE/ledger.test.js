@@ -105,11 +105,12 @@ check("pads row lists the four canonical documents with mtimes", () => {
   }
 });
 
-check("git reads the freshly-staged repo honestly", () => {
+check("git reads the repo honestly (post-seed)", () => {
   const d = buildDomain();
   assert.strictEqual(typeof d.git.hasCommits, "boolean");
-  assert.strictEqual(d.git.hasCommits, false);
-  assert.ok(Number.isInteger(d.git.dirtyCount) && d.git.dirtyCount > 0);
+  assert.strictEqual(d.git.hasCommits, true);
+  assert.ok(typeof d.git.shortHash === "string" && d.git.shortHash.length > 0, "shortHash");
+  assert.ok(Number.isInteger(d.git.dirtyCount) && d.git.dirtyCount >= 0, "dirtyCount");
 });
 
 check("LAG gate runner degrades gracefully with valid shape", () => {
