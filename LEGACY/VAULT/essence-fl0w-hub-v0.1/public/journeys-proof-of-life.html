@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ESSENCE FL0W - v0.1 Unified Proof of Life</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body { 
+            margin: 0; 
+            background: #0a0a0a; 
+            display: flex; 
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            height: 100dvh;
+            color: #fff; 
+            font-family: monospace;
+            overflow: hidden;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        canvas { 
+            background: #111; 
+            border: 1px solid #333; 
+            box-shadow: 0 0 24px rgba(0, 255, 136, 0.12);
+            max-width: 96vw;
+            max-height: 80vh;
+            border-radius: 6px;
+        }
+        #ui { 
+            position: absolute; 
+            top: 16px; 
+            left: 20px; 
+            color: #888; 
+            pointer-events: none;
+            font-size: 13px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 1px solid #222;
+        }
+        #telemetry {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            color: #00ff88;
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #00ff8833;
+            pointer-events: none;
+        }
+        /* Mobile Touch Controls */
+        #mobile-controls {
+            display: none;
+            position: absolute;
+            bottom: 24px;
+            width: 90vw;
+            max-width: 600px;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: auto;
+        }
+        @media (max-width: 900px) {
+            #mobile-controls {
+                display: flex;
+            }
+        }
+        .touch-btn {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            color: #fff;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            font-weight: bold;
+            touch-action: none;
+        }
+        .touch-btn:active {
+            background: rgba(0, 255, 136, 0.3);
+            border-color: #00ff88;
+        }
+    </style>
+</head>
+<body>
+    <div id="ui">
+        <span style="color:#00ff88;font-weight:bold;">JOURNEYS UNTO</span> • WASD / ARROWS to Move. SPACE to Jump.
+    </div>
+    <div id="telemetry">
+        FPS: <span id="fps-val">60</span> | X: <span id="x-val">400</span> Y: <span id="y-val">100</span> | GND: <span id="gnd-val">false</span>
+    </div>
+
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+    <div id="mobile-controls">
+        <div style="display:flex;gap:10px;">
+            <button class="touch-btn" id="btn-left">◀ A</button>
+            <button class="touch-btn" id="btn-right">D ▶</button>
+        </div>
+        <button class="touch-btn" id="btn-jump" style="padding:14px 28px;background:rgba(0,255,136,0.15);border-color:#00ff88;">JUMP (SPACE) ▲</button>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. KINEMATIC CONTROLLER (Inlined for Sandbox)
+        // ==========================================
+        class KinematicController {
+            constructor() {
+                this.transform = { x: 0.0, y: 0.0 };
+                this.velocity = { x: 0.0, y: 0.0 };
+                this.acceleration = { x: 0.0, y: 0.0 };
+                
+                this.config = {
+                    mass: 1.0,
+                    gravity: 980.0,
+                    terminal_velocity: 1200.0,
+                    ground_damping: 0.05,
+                    air_damping: 0.85,
+                    max_dt: 0.1
+                };
+                
+                this.flags = {
+                    is_grounded: false,
+                    is_frozen: false
+                };
+            }
+
+            _isValidNumber(value) {
+                return typeof value === 'number' && !Number.isNaN(value) && Number.isFinite(value);
+            }
+
+            applyForce(fx, fy) {
+                if (this._isValidNumber(fx) && this._isValidNumber(fy)) {
+                    this.acceleration.x += fx / this.config.mass;
+                    this.acceleration.y += fy / this.config.mass;
+                }
+            }
+
+            applyImpulse(ix, iy) {
+                if (this._isValidNumber(ix) && this._isValidNumber(iy)) {
+                    this.velocity.x += ix / this.config.mass;
+                    this.velocity.y += iy / this.config.mass;
+                }
+            }
+
+            setGrounded(isGrounded) {
+                this.flags.is_grounded = Boolean(isGrounded);
+                if (this.flags.is_grounded && this.velocity.y > 0) {
+                    this.velocity.y = 0.0;
+                }
+            }
+
+            teleport(x, y) {
+                if (this._isValidNumber(x) && this._isValidNumber(y)) {
+                    this.transform.x = x;
+                    this.transform.y = y;
+                    this.velocity.x = 0.0;
+                    this.velocity.y = 0.0;
+                    this.acceleration.x = 0.0;
+                    this.acceleration.y = 0.0;
+                }
+            }
+
+            update(dt) {
+                if (this.flags.is_frozen === true) return;
+
+                const safeDt = Math.min(dt, this.config.max_dt);
+
+                if (!this.flags.is_grounded) {
+                    this.velocity.y += this.config.gravity * safeDt;
+                }
+
+                this.velocity.x += this.acceleration.x * safeDt;
+                this.velocity.y += this.acceleration.y * safeDt;
+
+                if (this.flags.is_grounded) {
+                    if (this.velocity.y > 0) this.velocity.y = 0.0;
+                } else {
+                    this.velocity.y = Math.max(
+                        -this.config.terminal_velocity, 
+                        Math.min(this.config.terminal_velocity, this.velocity.y)
+                    );
+                }
+
+                const friction = Math.pow(
+                    this.flags.is_grounded ? this.config.ground_damping : this.config.air_damping, 
+                    safeDt
+                );
+                this.velocity.x *= friction;
+
+                if (Math.abs(this.velocity.x) < 0.05) {
+                    this.velocity.x = 0.0;
+                }
+
+                this.transform.x += this.velocity.x * safeDt;
+                this.transform.y += this.velocity.y * safeDt;
+
+                const isCorrupted = (
+                    !this._isValidNumber(this.transform.x) || 
+                    !this._isValidNumber(this.transform.y) ||
+                    !this._isValidNumber(this.velocity.x) || 
+                    !this._isValidNumber(this.velocity.y)
+                );
+
+                if (isCorrupted) {
+                    console.warn("[KinematicController] Numerical corruption detected. Resetting.");
+                    if (!this._isValidNumber(this.transform.x)) this.transform.x = 0.0;
+                    if (!this._isValidNumber(this.transform.y)) this.transform.y = 0.0;
+                    if (!this._isValidNumber(this.velocity.x)) this.velocity.x = 0.0;
+                    if (!this._isValidNumber(this.velocity.y)) this.velocity.y = 0.0;
+                }
+
+                this.acceleration.x = 0.0;
+                this.acceleration.y = 0.0;
+            }
+        }
+
+        // ==========================================
+        // 2. GAME LOOP & RENDERER (Proof of Life)
+        // ==========================================
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const fpsVal = document.getElementById('fps-val');
+        const xVal = document.getElementById('x-val');
+        const yVal = document.getElementById('y-val');
+        const gndVal = document.getElementById('gnd-val');
+        
+        const player = new KinematicController();
+        player.teleport(400, 100);
+
+        // Input Handling
+        const keys = { ArrowLeft: false, ArrowRight: false, ArrowUp: false, Space: false, KeyA: false, KeyD: false, KeyW: false };
+        window.addEventListener('keydown', e => { 
+            if(e.code in keys) {
+                keys[e.code] = true; 
+                if (e.code === 'Space' || e.code.startsWith('Arrow')) e.preventDefault();
+            }
+        });
+        window.addEventListener('keyup', e => { 
+            if(e.code in keys) keys[e.code] = false; 
+        });
+
+        // Touch Listeners
+        const btnLeft = document.getElementById('btn-left');
+        const btnRight = document.getElementById('btn-right');
+        const btnJump = document.getElementById('btn-jump');
+
+        if (btnLeft && btnRight && btnJump) {
+            btnLeft.addEventListener('touchstart', (e) => { e.preventDefault(); keys.KeyA = true; });
+            btnLeft.addEventListener('touchend', (e) => { e.preventDefault(); keys.KeyA = false; });
+            btnRight.addEventListener('touchstart', (e) => { e.preventDefault(); keys.KeyD = true; });
+            btnRight.addEventListener('touchend', (e) => { e.preventDefault(); keys.KeyD = false; });
+            btnJump.addEventListener('touchstart', (e) => { e.preventDefault(); keys.Space = true; });
+            btnJump.addEventListener('touchend', (e) => { e.preventDefault(); keys.Space = false; });
+        }
+
+        let lastTime = performance.now();
+        let frameCount = 0;
+        let lastFpsUpdate = performance.now();
+        const FLOOR_Y = 500;
+
+        function loop(time) {
+            const dt = (time - lastTime) / 1000;
+            lastTime = time;
+
+            frameCount++;
+            if (time - lastFpsUpdate > 400) {
+                if (fpsVal) fpsVal.innerText = Math.round((frameCount * 1000) / (time - lastFpsUpdate));
+                frameCount = 0;
+                lastFpsUpdate = time;
+            }
+
+            // Step 1: Input Mapping -> Forces
+            if (keys.ArrowLeft || keys.KeyA) player.applyForce(-4000, 0);
+            if (keys.ArrowRight || keys.KeyD) player.applyForce(4000, 0);
+            
+            if ((keys.ArrowUp || keys.Space || keys.KeyW) && player.flags.is_grounded) {
+                player.applyImpulse(0, -500);
+                keys.ArrowUp = keys.Space = keys.KeyW = false; // Prevent hold-bouncing
+            }
+
+            // Step 2: State Resolution (Mock Collision)
+            if (player.transform.y >= FLOOR_Y) {
+                player.transform.y = FLOOR_Y;
+                player.setGrounded(true);
+            } else {
+                player.setGrounded(false);
+            }
+
+            // Step 3: Integration
+            player.update(dt);
+
+            // Update Telemetry UI
+            if (xVal) xVal.innerText = Math.round(player.transform.x);
+            if (yVal) yVal.innerText = Math.round(player.transform.y);
+            if (gndVal) {
+                gndVal.innerText = player.flags.is_grounded ? 'TRUE' : 'FALSE';
+                gndVal.style.color = player.flags.is_grounded ? '#00ff88' : '#f59e0b';
+            }
+
+            // Step 4: Render
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw Floor
+            ctx.fillStyle = '#222';
+            ctx.fillRect(0, FLOOR_Y, canvas.width, canvas.height - FLOOR_Y);
+            ctx.strokeStyle = '#444';
+            ctx.beginPath();
+            ctx.moveTo(0, FLOOR_Y);
+            ctx.lineTo(canvas.width, FLOOR_Y);
+            ctx.stroke();
+
+            // Draw Player (Origin mapped to bottom-center)
+            ctx.fillStyle = '#00ff88';
+            ctx.fillRect(player.transform.x - 16, player.transform.y - 32, 32, 32);
+
+            requestAnimationFrame(loop);
+        }
+        
+        // Initialize Loop
+        requestAnimationFrame(loop);
+    </script>
+</body>
+</html>

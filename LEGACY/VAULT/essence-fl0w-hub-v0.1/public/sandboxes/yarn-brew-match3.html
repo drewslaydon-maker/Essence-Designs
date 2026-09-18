@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Tavern Brew Refinement & Foraging • Match-3 Proving Ground</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #080c14;
+      color: #e2e8f0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow: hidden;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    #sandbox-container {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      height: 92vh;
+      max-height: 780px;
+      background: #0f172a;
+      border: 1px solid #f43f5e;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(244, 63, 94, 0.25);
+    }
+    header {
+      padding: 10px 16px;
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid rgba(244, 63, 94, 0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    h1 { font-size: 13px; font-weight: 700; color: #fb7185; letter-spacing: 0.5px; }
+    .badge { font-size: 10px; background: #881337; color: #fecdd3; padding: 2px 8px; border-radius: 12px; border: 1px solid #e11d48; }
+    #stats-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 16px;
+      background: rgba(30, 41, 59, 0.6);
+      font-size: 11px;
+    }
+    canvas {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      background: #140810;
+      display: block;
+      touch-action: none;
+    }
+    footer {
+      padding: 10px 16px;
+      background: rgba(15, 23, 42, 0.95);
+      border-top: 1px solid rgba(244, 63, 94, 0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .btn {
+      padding: 8px 14px;
+      background: #1e293b;
+      border: 1px solid #475569;
+      color: #cbd5e1;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .btn:active { background: #f43f5e; color: #fff; }
+  </style>
+</head>
+<body>
+  <div id="sandbox-container">
+    <header>
+      <div>
+        <h1>🧶 TAVERN BREW REFINEMENT & FORAGING</h1>
+        <div style="font-size: 10px; color: #94a3b8;">Match-3 Ingredient Cascade Engine (Yarn Game Adapter)</div>
+      </div>
+      <span class="badge">PROVING GROUND</span>
+    </header>
+
+    <div id="stats-row">
+      <span>Brew Potency: <strong id="val-score" style="color: #fb7185;">0</strong></span>
+      <span>Ingredients Refined: <strong id="val-cleared" style="color: #38bdf8;">0</strong></span>
+      <span>Moves: <strong id="val-moves" style="color: #f59e0b;">20</strong></span>
+    </div>
+
+    <canvas id="matchCanvas"></canvas>
+
+    <footer>
+      <span>Swipe or tap adjacent ingredients to match 3+</span>
+      <button class="btn" id="btnShuffle">🔀 SHUFFLE</button>
+    </footer>
+  </div>
+
+  <script>
+    let audioCtx = null;
+    function ensureAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+    function playTone(freq, type='sine', dur=0.15, vol=0.2) {
+      if (!audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        g.gain.setValueAtTime(vol, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+        osc.connect(g);
+        g.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + dur);
+      } catch(e) {}
+    }
+
+    const INGREDIENTS = [
+      { id: 0, name: 'Moon Cask Yeast', emoji: '🌙', color: '#e0e7ff', border: '#818cf8' },
+      { id: 1, name: 'Delain Pier Hops', emoji: '🌿', color: '#86efac', border: '#22c55e' },
+      { id: 2, name: 'Merino Wool Spool', emoji: '🧶', color: '#f472b6', border: '#ec4899' },
+      { id: 3, name: 'Amber Malt Grain', emoji: '🌾', color: '#fde047', border: '#eab308' },
+      { id: 4, name: 'Navy Rum Molasses', emoji: '🍯', color: '#fdba74', border: '#f97316' },
+      { id: 5, name: 'Crystal Sugar Shard', emoji: '💎', color: '#67e8f9', border: '#06b6d4' }
+    ];
+
+    const GRID = 6;
+    const canvas = document.getElementById('matchCanvas');
+    const ctx = canvas.getContext('2d');
+    let width, height, tileSize, startX, startY;
+
+    function resize() {
+      width = canvas.width = canvas.clientWidth * window.devicePixelRatio;
+      height = canvas.height = canvas.clientHeight * window.devicePixelRatio;
+      tileSize = Math.floor(Math.min(width, height) / (GRID + 1));
+      startX = Math.floor((width - tileSize * GRID) / 2);
+      startY = Math.floor((height - tileSize * GRID) / 2);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    let grid = [];
+    let score = 0;
+    let clearedCount = 0;
+    let moves = 20;
+    let selected = null;
+
+    function initGrid() {
+      grid = [];
+      for (let r = 0; r < GRID; r++) {
+        grid[r] = [];
+        for (let c = 0; c < GRID; c++) {
+          let type = Math.floor(Math.random() * INGREDIENTS.length);
+          while (
+            (r >= 2 && grid[r-1][c] === type && grid[r-2][c] === type) ||
+            (c >= 2 && grid[r][c-1] === type && grid[r][c-2] === type)
+          ) {
+            type = Math.floor(Math.random() * INGREDIENTS.length);
+          }
+          grid[r][c] = type;
+        }
+      }
+    }
+    initGrid();
+
+    function findMatches() {
+      const matches = new Set();
+      // Horizontal
+      for (let r = 0; r < GRID; r++) {
+        for (let c = 0; c < GRID - 2; c++) {
+          const t = grid[r][c];
+          if (t !== -1 && t === grid[r][c+1] && t === grid[r][c+2]) {
+            matches.add(`${r},${c}`);
+            matches.add(`${r},${c+1}`);
+            matches.add(`${r},${c+2}`);
+          }
+        }
+      }
+      // Vertical
+      for (let c = 0; c < GRID; c++) {
+        for (let r = 0; r < GRID - 2; r++) {
+          const t = grid[r][c];
+          if (t !== -1 && t === grid[r+1][c] && t === grid[r+2][c]) {
+            matches.add(`${r},${c}`);
+            matches.add(`${r+1},${c}`);
+            matches.add(`${r+2},${c}`);
+          }
+        }
+      }
+      return Array.from(matches).map(pos => {
+        const [r, c] = pos.split(',').map(Number);
+        return { r, c };
+      });
+    }
+
+    function removeMatches(matches) {
+      if (matches.length === 0) return;
+      ensureAudio();
+      playTone(550 + matches.length * 30, 'triangle', 0.2, 0.25);
+
+      matches.forEach(m => {
+        grid[m.r][m.c] = -1;
+      });
+
+      score += matches.length * 20;
+      clearedCount += matches.length;
+      document.getElementById('val-score').innerText = score;
+      document.getElementById('val-cleared').innerText = clearedCount;
+
+      // Drop down
+      for (let c = 0; c < GRID; c++) {
+        let emptyRow = GRID - 1;
+        for (let r = GRID - 1; r >= 0; r--) {
+          if (grid[r][c] !== -1) {
+            if (r !== emptyRow) {
+              grid[emptyRow][c] = grid[r][c];
+              grid[r][c] = -1;
+            }
+            emptyRow--;
+          }
+        }
+        for (let r = emptyRow; r >= 0; r--) {
+          grid[r][c] = Math.floor(Math.random() * INGREDIENTS.length);
+        }
+      }
+
+      // Check cascade
+      setTimeout(() => {
+        const cascades = findMatches();
+        if (cascades.length > 0) removeMatches(cascades);
+      }, 180);
+    }
+
+    function swap(r1, c1, r2, c2) {
+      const temp = grid[r1][c1];
+      grid[r1][c1] = grid[r2][c2];
+      grid[r2][c2] = temp;
+
+      const m = findMatches();
+      if (m.length > 0) {
+        moves--;
+        document.getElementById('val-moves').innerText = moves;
+        removeMatches(m);
+      } else {
+        // Revert
+        grid[r2][c2] = grid[r1][c1];
+        grid[r1][c1] = temp;
+        playTone(200, 'sawtooth', 0.1, 0.15);
+      }
+    }
+
+    canvas.addEventListener('pointerdown', (e) => {
+      ensureAudio();
+      const rect = canvas.getBoundingClientRect();
+      const px = (e.clientX - rect.left) * window.devicePixelRatio;
+      const py = (e.clientY - rect.top) * window.devicePixelRatio;
+
+      const c = Math.floor((px - startX) / tileSize);
+      const r = Math.floor((py - startY) / tileSize);
+
+      if (r < 0 || r >= GRID || c < 0 || c >= GRID) return;
+
+      if (!selected) {
+        selected = { r, c };
+        playTone(440, 'sine', 0.1, 0.15);
+      } else {
+        const isAdj = (Math.abs(selected.r - r) === 1 && selected.c === c) || (Math.abs(selected.c - c) === 1 && selected.r === r);
+        if (isAdj) {
+          swap(selected.r, selected.c, r, c);
+          selected = null;
+        } else {
+          selected = { r, c };
+          playTone(440, 'sine', 0.1, 0.15);
+        }
+      }
+    });
+
+    document.getElementById('btnShuffle').addEventListener('click', () => {
+      ensureAudio();
+      playTone(660, 'sine', 0.25, 0.2);
+      initGrid();
+    });
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw Grid Tiles
+      for (let r = 0; r < GRID; r++) {
+        for (let c = 0; c < GRID; c++) {
+          const x = startX + c * tileSize;
+          const y = startY + r * tileSize;
+          const type = grid[r][c];
+
+          // Tile back
+          ctx.fillStyle = '#1e1622';
+          ctx.fillRect(x + 2, y + 2, tileSize - 4, tileSize - 4);
+          ctx.strokeStyle = '#3b1d2e';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(x + 2, y + 2, tileSize - 4, tileSize - 4);
+
+          if (type !== -1) {
+            const ing = INGREDIENTS[type];
+            ctx.fillStyle = ing.color;
+            ctx.beginPath();
+            ctx.arc(x + tileSize / 2, y + tileSize / 2, (tileSize - 12) / 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = ing.border;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.font = `${Math.floor(tileSize * 0.44)}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(ing.emoji, x + tileSize / 2, y + tileSize / 2 + 1);
+          }
+
+          if (selected && selected.r === r && selected.c === c) {
+            ctx.strokeStyle = '#fb7185';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(x + 1, y + 1, tileSize - 2, tileSize - 2);
+          }
+        }
+      }
+
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+  </script>
+</body>
+</html>

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Zozog Sparring • Proving Ground Sandbox</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #080c14;
+      color: #e2e8f0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 10px 8px 24px 8px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      touch-action: pan-y;
+      -webkit-overflow-scrolling: touch;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    #top-nav {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      margin-bottom: 8px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 10px;
+    }
+    .nav-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #1e293b;
+      color: #34d399;
+      border: 1px solid #10b981;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .nav-back-btn:active {
+      background: #10b981;
+      color: #000;
+    }
+    .scroll-hint {
+      font-size: 10px;
+      color: #94a3b8;
+    }
+    #sandbox-container {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      height: 82vh;
+      min-height: 480px;
+      max-height: 740px;
+      background: #0f172a;
+      border: 1px solid #10b981;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(16, 185, 129, 0.2);
+      touch-action: pan-y;
+    }
+    header {
+      padding: 10px 16px;
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    h1 { font-size: 13px; font-weight: 700; color: #10b981; letter-spacing: 0.5px; }
+    .badge { font-size: 10px; background: #064e3b; color: #6ee7b7; padding: 2px 8px; border-radius: 12px; border: 1px solid #059669; }
+    canvas {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      background: #140e0a;
+      display: block;
+      touch-action: none;
+    }
+    #controls {
+      padding: 14px 16px;
+      background: rgba(15, 23, 42, 0.95);
+      border-top: 1px solid rgba(16, 185, 129, 0.3);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .btn-action {
+      flex: 1;
+      padding: 16px 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      text-align: center;
+      touch-action: manipulation;
+      transition: transform 0.05s ease;
+      user-select: none;
+    }
+    .btn-strike {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #fff;
+      border: 1px solid #38bdf8;
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+    }
+    .btn-strike:active { transform: scale(0.96); background: #38bdf8; color: #000; }
+    .btn-block {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      color: #fff;
+      border: 1px solid #f59e0b;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+    .btn-block.active, .btn-block:active {
+      background: #f59e0b;
+      color: #000;
+      transform: scale(0.96);
+    }
+    #hud-top {
+      position: absolute;
+      top: 54px;
+      left: 12px;
+      right: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      pointer-events: none;
+      font-size: 11px;
+    }
+    .bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid #334155;
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+    .meter { flex: 1; height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden; }
+    .meter-fill { height: 100%; transition: width 0.1s ease; }
+  </style>
+</head>
+<body>
+  <div id="top-nav">
+    <button class="nav-back-btn" onclick="handleReturnToApp()">
+      ← Return to Essence Fl0w Hub
+    </button>
+    <div class="scroll-hint">↕ Swipe outside box to scroll</div>
+  </div>
+
+  <div id="sandbox-container">
+    <header>
+      <div>
+        <h1>🥊 ZOZOG SPARRING PROVING GROUND</h1>
+        <div style="font-size: 10px; color: #94a3b8;">Strictly 2-Verb Brawling: STRIKE / BLOCK • Parries & Combos</div>
+      </div>
+      <span class="badge">BOUT <span id="bout-num">1</span> / 3</span>
+    </header>
+
+    <div id="hud-top">
+      <div class="bar-wrap">
+        <span style="color: #ef4444; width: 64px;">Zozog Poise:</span>
+        <div class="meter"><div class="meter-fill" id="zozog-meter" style="width: 100%; background: #ef4444;"></div></div>
+      </div>
+      <div class="bar-wrap">
+        <span style="color: #10b981; width: 64px;">Bozog Stam:</span>
+        <div class="meter"><div class="meter-fill" id="player-meter" style="width: 100%; background: #10b981;"></div></div>
+      </div>
+    </div>
+
+    <canvas id="sparCanvas"></canvas>
+
+    <div id="controls">
+      <button class="btn-action btn-block" id="btnBlock">🛡️ BLOCK [X]</button>
+      <button class="btn-action btn-strike" id="btnStrike">💥 STRIKE [Z]</button>
+    </div>
+  </div>
+
+  <script>
+    let audioCtx = null;
+    function ensureAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+    function playTone(freq, type='sine', dur=0.15, vol=0.2) {
+      if (!audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        g.gain.setValueAtTime(vol, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+        osc.connect(g);
+        g.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + dur);
+      } catch(e) {}
+    }
+
+    const canvas = document.getElementById('sparCanvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+
+    function resize() {
+      width = canvas.width = canvas.clientWidth * window.devicePixelRatio;
+      height = canvas.height = canvas.clientHeight * window.devicePixelRatio;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Brawling State Machine
+    let bout = 1;
+    let playerStamina = 100;
+    let zozogPoise = 100;
+    let isBlocking = false;
+    let zozogState = 'IDLE'; // IDLE, TELEGRAPH, ACTIVE_ATTACK, STUNNED, RECOVERY
+    let zozogTimer = 1.0;
+    let telegraphTime = 0;
+    let stunnedTime = 0;
+    let combo = 0;
+    let bannerText = "Tap STRIKE to hit. Hold BLOCK to parry telegraphed attacks!";
+    let bannerColor = "#10b981";
+
+    let sparkAnim = 0;
+
+    function update() {
+      if (zozogState === 'IDLE') {
+        zozogTimer -= 0.016;
+        if (zozogTimer <= 0) {
+          zozogState = 'TELEGRAPH';
+          telegraphTime = 0.65 - bout * 0.08;
+          ensureAudio();
+          playTone(220, 'sawtooth', 0.25, 0.15); // Audio windup cue
+        }
+      } else if (zozogState === 'TELEGRAPH') {
+        telegraphTime -= 0.016;
+        if (telegraphTime <= 0) {
+          zozogState = 'ACTIVE_ATTACK';
+          // Check for block immediately
+          if (isBlocking) {
+            // PERFECT PARRY!
+            zozogState = 'STUNNED';
+            stunnedTime = 1.6;
+            combo = 0;
+            bannerText = "⚡ PERFECT PARRY! Zozog Stunned! PUNISH NOW!";
+            bannerColor = "#38bdf8";
+            sparkAnim = 1.0;
+            ensureAudio();
+            playTone(880, 'square', 0.3, 0.3);
+          } else {
+            // Player hit
+            playerStamina = Math.max(0, playerStamina - 20);
+            bannerText = "OUCH! Zozog landed a heavy hook! (-20)";
+            bannerColor = "#ef4444";
+            ensureAudio();
+            playTone(150, 'sawtooth', 0.2, 0.25);
+            zozogState = 'RECOVERY';
+            zozogTimer = 0.8;
+            if (playerStamina <= 0) {
+              bannerText = "Knocked out! Resetting bout...";
+              setTimeout(resetBout, 1500);
+            }
+          }
+          updateBars();
+        }
+      } else if (zozogState === 'STUNNED') {
+        stunnedTime -= 0.016;
+        if (stunnedTime <= 0) {
+          zozogState = 'IDLE';
+          zozogTimer = 1.0;
+        }
+      } else if (zozogState === 'RECOVERY') {
+        zozogTimer -= 0.016;
+        if (zozogTimer <= 0) {
+          zozogState = 'IDLE';
+          zozogTimer = 0.8;
+        }
+      }
+
+      if (sparkAnim > 0) sparkAnim -= 0.05;
+    }
+
+    function doStrike() {
+      ensureAudio();
+      if (zozogState === 'STUNNED') {
+        combo++;
+        const dmg = 25 + combo * 5;
+        zozogPoise = Math.max(0, zozogPoise - dmg);
+        bannerText = `💥 COMBO x${combo}! Punishing Blow (-${dmg})!`;
+        bannerColor = "#f59e0b";
+        playTone(400 + combo * 80, 'triangle', 0.15, 0.25);
+        if (zozogPoise <= 0) {
+          boutWon();
+        }
+      } else if (zozogState === 'RECOVERY') {
+        zozogPoise = Math.max(0, zozogPoise - 12);
+        bannerText = "Quick Jab into recovery! (-12)";
+        bannerColor = "#10b981";
+        playTone(350, 'sine', 0.12, 0.2);
+        if (zozogPoise <= 0) {
+          boutWon();
+        }
+      } else {
+        bannerText = "DEFLECTED! Zozog is guarding. Wait for a parry stun!";
+        bannerColor = "#94a3b8";
+        playTone(180, 'sine', 0.08, 0.15);
+      }
+      updateBars();
+    }
+
+    function boutWon() {
+      ensureAudio();
+      playTone(660, 'sine', 0.4, 0.3);
+      if (bout < 3) {
+        bannerText = `🏆 BOUT ${bout} CLEARED! Ready for next bout!`;
+        bannerColor = "#10b981";
+        bout++;
+        document.getElementById('bout-num').innerText = bout;
+        setTimeout(resetBout, 1500);
+      } else {
+        bannerText = "👑 MASTER BRAWLER! Zozog yields to your power!";
+        bannerColor = "#f59e0b";
+        zozogState = 'STUNNED';
+      }
+    }
+
+    function resetBout() {
+      playerStamina = 100;
+      zozogPoise = 100;
+      zozogState = 'IDLE';
+      zozogTimer = 1.2;
+      combo = 0;
+      updateBars();
+    }
+
+    function updateBars() {
+      document.getElementById('zozog-meter').style.width = `${zozogPoise}%`;
+      document.getElementById('player-meter').style.width = `${playerStamina}%`;
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+
+      const cx = width / 2;
+      const cy = height * 0.45;
+      const scale = width / 500;
+
+      // Sawdust sparring ring
+      ctx.beginPath();
+      ctx.ellipse(cx, cy + 60 * scale, 160 * scale, 70 * scale, 0, 0, Math.PI * 2);
+      ctx.fillStyle = '#27180c';
+      ctx.fill();
+      ctx.strokeStyle = '#78350f';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Zozog (Opponent Orc Brawler)
+      ctx.save();
+      ctx.translate(cx, cy);
+
+      // Telegraph glow
+      if (zozogState === 'TELEGRAPH') {
+        ctx.beginPath();
+        ctx.arc(0, -30 * scale, 50 * scale, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(239, 68, 68, 0.35)';
+        ctx.fill();
+      }
+
+      // Body
+      ctx.fillStyle = zozogState === 'STUNNED' ? '#475569' : '#065f46';
+      ctx.fillRect(-35 * scale, -50 * scale, 70 * scale, 80 * scale);
+
+      // Head
+      ctx.beginPath();
+      ctx.arc(0, -70 * scale, 26 * scale, 0, Math.PI * 2);
+      ctx.fillStyle = '#047857';
+      ctx.fill();
+
+      // Tusks
+      ctx.fillStyle = '#fef08a';
+      ctx.beginPath();
+      ctx.moveTo(-10 * scale, -60 * scale); ctx.lineTo(-15 * scale, -75 * scale); ctx.lineTo(-6 * scale, -65 * scale);
+      ctx.moveTo(10 * scale, -60 * scale); ctx.lineTo(15 * scale, -75 * scale); ctx.lineTo(6 * scale, -65 * scale);
+      ctx.fill();
+
+      // Arms / Guard
+      if (zozogState === 'TELEGRAPH') {
+        // Cocked fist
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.arc(45 * scale, -70 * scale, 18 * scale, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (zozogState === 'STUNNED') {
+        // Dazed stars
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = `${16 * scale}px sans-serif`;
+        ctx.fillText("💫 💫 💫", -30 * scale, -100 * scale);
+      } else {
+        // Guard stance
+        ctx.fillStyle = '#065f46';
+        ctx.fillRect(-45 * scale, -40 * scale, 20 * scale, 40 * scale);
+        ctx.fillRect(25 * scale, -40 * scale, 20 * scale, 40 * scale);
+      }
+
+      ctx.restore();
+
+      // Player Guard Shield Overlay
+      if (isBlocking) {
+        ctx.beginPath();
+        ctx.arc(cx, cy + 30 * scale, 65 * scale, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(245, 158, 11, 0.25)';
+        ctx.fill();
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+      }
+
+      // Banner text
+      ctx.fillStyle = bannerColor;
+      ctx.font = `bold ${12 * scale}px monospace`;
+      ctx.textAlign = 'center';
+      ctx.fillText(bannerText, cx, height - 24);
+
+      requestAnimationFrame(() => {
+        update();
+        draw();
+      });
+    }
+
+    requestAnimationFrame(() => {
+      update();
+      draw();
+    });
+
+    // Button Controls
+    const btnStrike = document.getElementById('btnStrike');
+    btnStrike.addEventListener('click', () => { doStrike(); });
+
+    const btnBlock = document.getElementById('btnBlock');
+    btnBlock.addEventListener('pointerdown', () => { ensureAudio(); isBlocking = true; btnBlock.classList.add('active'); });
+    btnBlock.addEventListener('pointerup', () => { isBlocking = false; btnBlock.classList.remove('active'); });
+    window.addEventListener('pointerup', () => { isBlocking = false; btnBlock.classList.remove('active'); });
+
+    // Keyboard fallback: [Z] Strike, [X] Block
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'KeyZ' || e.code === 'Space') doStrike();
+      if (e.code === 'KeyX') { isBlocking = true; btnBlock.classList.add('active'); }
+    });
+    window.addEventListener('keyup', (e) => {
+      if (e.code === 'KeyX') { isBlocking = false; btnBlock.classList.remove('active'); }
+    });
+  </script>
+</body>
+</html>

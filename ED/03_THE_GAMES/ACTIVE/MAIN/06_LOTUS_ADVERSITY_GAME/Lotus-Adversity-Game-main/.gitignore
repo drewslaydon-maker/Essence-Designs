@@ -1,0 +1,7 @@
+.DS_Store
+node_modules/
+repo_temp/
+dist/
+*.log
+.env
+*.local

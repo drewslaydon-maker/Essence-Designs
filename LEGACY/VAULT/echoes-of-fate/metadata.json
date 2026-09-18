@@ -1,0 +1,6 @@
+{
+  "name": "Interstice: Echoes of the Rift",
+  "description": "A mobile-first top-down adventure RPG featuring dual-realm Interstice exploration, mechanical action combat, dungeon puzzles, multi-tier unlocks, and consequential narrative boss resolutions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

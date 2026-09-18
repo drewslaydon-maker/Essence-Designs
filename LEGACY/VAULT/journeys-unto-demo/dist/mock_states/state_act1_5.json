@@ -1,0 +1,48 @@
+{
+  "party": [
+    {
+      "id": "bozog",
+      "name": "Bozog",
+      "hp": 43,
+      "maxHp": 43,
+      "primary": "STR",
+      "abilities": { "Smash": "dmg", "Cleave": "aoe_dmg", "Protect": "guard_ally" },
+      "sprite": { "width": 48, "height": 48, "color": "0x004d00" }
+    },
+    {
+      "id": "matchstick",
+      "name": "Matchstick",
+      "hp": 32,
+      "maxHp": 32,
+      "primary": "QCK/WIS",
+      "abilities": { "ReflectiveBeam": "dmg_and_interact", "SummonClone": "spawn_entity", "Swap": "teleport" },
+      "sprite": { "width": 32, "height": 48, "color": "0xdc143c" }
+    },
+    {
+      "id": "kairon",
+      "name": "Kairon",
+      "hp": 32,
+      "maxHp": 32,
+      "primary": "PER/LUK",
+      "abilities": { "Inspire": "buff_ally_next", "Jeer": "debuff_enemy", "Focus": "buff_self" },
+      "sprite": { "width": 48, "height": 48, "color": "0xffd700" }
+    },
+    {
+      "id": "atreyu",
+      "name": "Atreyu",
+      "hp": 32,
+      "maxHp": 32,
+      "primary": "SPR/WIS",
+      "abilities": { "Moonbeam": "dmg", "QuickHeal": "heal", "CrystalBlast": "heavy_dmg", "Barrier": "buff_ac" },
+      "sprite": { "width": 48, "height": 48, "color": "0x3399ff" }
+    }
+  ],
+  "flags": {
+    "hasPassedLanding": false,
+    "hasSeenVista": false,
+    "hasMetCompanion": true,
+    "companionForm": "oil",
+    "hasDefeatedWarden": false
+  },
+  "activeCharacterId": "bozog"
+}

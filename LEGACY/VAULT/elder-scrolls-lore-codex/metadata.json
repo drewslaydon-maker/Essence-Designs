@@ -1,0 +1,6 @@
+{
+  "name": "Elder Scrolls Lore Codex",
+  "description": "An Elder Scrolls lore codex centered on Lord Vivec's god-man duality, metaphysical lore, pantheons, races, and an accessible Cyrodiil guide.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

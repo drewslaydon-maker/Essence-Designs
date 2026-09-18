@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>JOURNEYS UNTO • The Greedy Greens (Delain Docks Prologue)</title>
+  <meta name="description" content="ESSENCE FL0W v0.1 - Journeys Top-Down RPG: The Greedy Greens (Bozog Solo Start, Atreyu Drinking Contest, Black Knights Ambush, JRN-204 AABB Sliding).">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #06090e;
+      color: #e2e8f0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow: hidden;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      aspect-ratio: 4 / 3;
+      max-height: 85vh;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      aspect-ratio: 4 / 3;
+      background: #140e09;
+      border: 1px solid #78350f;
+      border-radius: 12px;
+      box-shadow: 0 0 35px rgba(245, 158, 11, 0.15), 0 20px 40px rgba(0, 0, 0, 0.8);
+      display: block;
+    }
+    #hud-top {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .hud-chip {
+      background: rgba(15, 10, 6, 0.88);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 11px;
+      color: #cbd5e1;
+      backdrop-filter: blur(6px);
+    }
+    .hud-chip strong { color: #f59e0b; font-weight: bold; }
+    #hud-telemetry {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(15, 10, 6, 0.88);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 11px;
+      color: #10b981;
+      backdrop-filter: blur(6px);
+      pointer-events: none;
+      z-index: 10;
+    }
+    #interaction-banner {
+      position: absolute;
+      top: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(69, 26, 3, 0.92);
+      border: 1px solid #f59e0b;
+      color: #fef08a;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+      display: none;
+      z-index: 15;
+      animation: pulse 1.5s infinite;
+      cursor: pointer;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.9; transform: translateX(-50%) scale(1); }
+      50% { opacity: 1; transform: translateX(-50%) scale(1.03); }
+    }
+    #dialogue-box {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      background: rgba(10, 7, 5, 0.95);
+      border: 1px solid #f59e0b;
+      border-radius: 10px;
+      padding: 12px 16px;
+      z-index: 30;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+      display: none;
+    }
+    #dialogue-speaker {
+      font-size: 13px;
+      font-weight: bold;
+      color: #f59e0b;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    #dialogue-text {
+      font-size: 12px;
+      line-height: 1.5;
+      color: #f1f5f9;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    #drinking-contest-panel {
+      position: absolute;
+      top: 50px;
+      right: 16px;
+      width: 280px;
+      background: rgba(15, 10, 6, 0.95);
+      border: 1px solid #f59e0b;
+      border-radius: 12px;
+      padding: 12px;
+      z-index: 25;
+      display: none;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+    }
+    .contest-bar-bg {
+      width: 100%;
+      height: 12px;
+      background: #1e293b;
+      border-radius: 6px;
+      overflow: hidden;
+      margin: 8px 0;
+      border: 1px solid #475569;
+    }
+    .contest-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #f59e0b, #10b981);
+      transition: width 0.05s linear;
+    }
+    #mash-button {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(135deg, #d97706, #b45309);
+      color: #000;
+      font-weight: 900;
+      font-size: 13px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+      user-select: none;
+    }
+    #mash-button:active {
+      transform: scale(0.96);
+      background: #f59e0b;
+    }
+    #standoff-modal {
+      position: absolute;
+      inset: 20px;
+      background: rgba(5, 5, 10, 0.96);
+      border: 2px solid #ef4444;
+      border-radius: 14px;
+      padding: 20px;
+      z-index: 40;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+      box-shadow: 0 0 50px rgba(239, 68, 68, 0.4);
+    }
+    .standoff-option {
+      background: rgba(30, 15, 15, 0.85);
+      border: 1px solid #7f1d1d;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      text-align: left;
+      color: #fecaca;
+      transition: all 0.2s;
+    }
+    .standoff-option:hover {
+      background: rgba(127, 29, 29, 0.5);
+      border-color: #ef4444;
+      transform: translateX(4px);
+    }
+    #mobile-dpad {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      display: none;
+      grid-template-columns: repeat(3, 44px);
+      grid-template-rows: repeat(3, 44px);
+      gap: 4px;
+      z-index: 20;
+    }
+    #mobile-actions {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 20;
+    }
+    .touch-btn {
+      background: rgba(45, 25, 15, 0.85);
+      border: 1px solid #78350f;
+      color: #fef08a;
+      font-weight: bold;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+    }
+    .touch-btn:active {
+      background: #f59e0b;
+      color: #000;
+      transform: scale(0.95);
+    }
+    .action-btn {
+      width: 104px;
+      height: 44px;
+      font-size: 11px;
+    }
+    @media (max-width: 768px) {
+      body {
+        padding: 4px;
+        justify-content: flex-start;
+      }
+      #game-container {
+        width: 100%;
+        max-width: 100%;
+        aspect-ratio: 4 / 3;
+        height: auto;
+        min-height: 280px;
+        max-height: 85vh;
+        max-height: 85dvh;
+      }
+      #mobile-dpad {
+        display: grid;
+        bottom: 8px;
+        left: 8px;
+        touch-action: none;
+      }
+      #mobile-actions {
+        display: flex;
+        bottom: 8px;
+        right: 8px;
+        touch-action: none;
+      }
+      #dialogue-box {
+        bottom: 110px;
+        left: 8px;
+        right: 8px;
+      }
+      #drinking-contest-panel {
+        top: 36px;
+        left: 8px;
+        right: 8px;
+        width: auto;
+        max-width: 320px;
+        margin: 0 auto;
+      }
+      .hud-chip {
+        font-size: 9px;
+        padding: 3px 6px;
+      }
+      #hud-telemetry {
+        font-size: 9px;
+        padding: 3px 6px;
+      }
+      .touch-btn {
+        touch-action: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+    <div id="hud-top">
+      <div class="hud-chip">
+        <span>VENUE:</span> <strong>THE GREEDY GREENS</strong>
+      </div>
+      <div class="hud-chip">
+        <span>AVATAR:</span> <strong style="color:#10b981">BOZOG (SOLO)</strong>
+      </div>
+      <div class="hud-chip">
+        <span>PHYSICS:</span> <strong style="color:#38bdf8">JRN-204 AABB</strong>
+      </div>
+      <div class="hud-chip" style="cursor:pointer; pointer-events:auto; background:rgba(127,29,29,0.7); border-color:#ef4444;" onclick="window.resetGameState()">
+        <span style="color:#fca5a5; font-weight:bold;">RESET [R]</span>
+      </div>
+    </div>
+
+    <div id="hud-telemetry">
+      <span id="fpsVal">60</span> FPS | <span id="posVal">X: 340 Y: 340</span> | <span id="partyVal">Solo</span>
+    </div>
+
+    <div id="interaction-banner" onclick="window.triggerActiveInteraction()">
+      INTERACT: [Z] / [SPACE]
+    </div>
+
+    <!-- 3-Round Drinking Contest Panel -->
+    <div id="drinking-contest-panel">
+      <div style="display:flex; justify-content:space-between; font-size:12px; color:#f59e0b; font-weight:bold;">
+        <span id="contest-round-lbl">ROUND 1: WARMUP ALE</span>
+        <span id="contest-tension-lbl">0%</span>
+      </div>
+      <div class="contest-bar-bg">
+        <div class="contest-bar-fill" id="contest-bar"></div>
+      </div>
+      <p id="contest-talk" style="font-size:11px; color:#cbd5e1; font-family:sans-serif; margin-bottom:8px; font-style:italic; min-height:28px;">
+        Atreyu: "Pacing yourself, tavern keeper?"
+      </p>
+      <button id="mash-button">MASH [Z] / CHUG!</button>
+      <button id="yield-button" onclick="window.closeDrinkingContest()" style="width:100%; margin-top:6px; background:#1e293b; color:#94a3b8; border:none; padding:4px; font-size:10px; border-radius:4px; cursor:pointer;">
+        Yield / Close
+      </button>
+    </div>
+
+    <!-- Black Knight Standoff Matrix Modal -->
+    <div id="standoff-modal">
+      <div style="font-size:14px; font-weight:bold; color:#ef4444; text-transform:uppercase; letter-spacing:1px;">
+        ⚠️ THE INCITING AMBUSH • 4 CORNERS TACTICAL MATRIX
+      </div>
+      <p style="font-size:12px; color:#e2e8f0; font-family:sans-serif; line-height:1.5; margin:0;">
+        Black Knights smash through the south oak doors! "By order of the High Citadel, The Greedy Greens is confiscated! Surrender your weapons!"
+      </p>
+      <div style="font-size:11px; color:#f59e0b; font-weight:bold; margin-top:2px;">
+        STEP 1: SELECT ARCHETYPE STANCE • STEP 2: CONFIRM PACT
+      </div>
+      
+      <div style="display:flex; flex-direction:column; gap:6px; margin-top:4px;">
+        <button id="opt-bozog" class="standoff-option" onclick="window.selectStandoff('bozog')">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>[ROAR & DRAW GREATAXE]</strong>
+            <span style="font-size:9px; color:#f59e0b;">SOUTH • BRUTE FORCE</span>
+          </div>
+          <div style="font-size:11px; color:#94a3b8; margin-top:2px;">Bozog cleaves the lead Black Knight's shield into kindling; demands blood restitution.</div>
+        </button>
+
+        <button id="opt-atreyu" class="standoff-option" onclick="window.selectStandoff('atreyu')">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>[INVOKE MOONLIGHT SANCTUARY]</strong>
+            <span style="font-size:9px; color:#e0e7ff;">WEST • LUNAR DISCIPLINE</span>
+          </div>
+          <div style="font-size:11px; color:#94a3b8; margin-top:2px;">Atreyu channels silver lunar wards, neutralizing knight crossfire.</div>
+        </button>
+
+        <button id="opt-kairon" class="standoff-option" onclick="window.selectStandoff('kairon')">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>[MOCK & CAST DISSONANCE]</strong>
+            <span style="font-size:9px; color:#c084fc;">EAST • SONIC CHAOS</span>
+          </div>
+          <div style="font-size:11px; color:#94a3b8; margin-top:2px;">Kairon rips a shrieking chord to blow out crystal audio-visors.</div>
+        </button>
+
+        <button id="opt-matchstick" class="standoff-option" onclick="window.selectStandoff('matchstick')">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>[FADE INTO THE SHADOWS]</strong>
+            <span style="font-size:9px; color:#38bdf8;">NORTH • MIRROR FLANK</span>
+          </div>
+          <div style="font-size:11px; color:#94a3b8; margin-top:2px;">Matchstick blinds with pocket mirror; slips into their rear blindspot.</div>
+        </button>
+      </div>
+
+      <!-- Explicit Confirmation Action -->
+      <button id="confirm-standoff-btn" onclick="window.confirmStandoff()" style="width:100%; margin-top:6px; padding:8px 12px; background:linear-gradient(to right, #d97706, #f59e0b); color:#020617; border:none; border-radius:6px; font-weight:bold; font-size:12px; font-family:'Cinzel', serif; cursor:pointer; box-shadow:0 0 15px rgba(245,158,11,0.4);">
+        ✓ CONFIRM TACTICAL INITIATIVE
+      </button>
+    </div>
+
+    <!-- Dialogue Parchment Box -->
+    <div id="dialogue-box">
+      <div id="dialogue-speaker">
+        <span id="speaker-name">Speaker</span>
+        <button onclick="window.dismissDialogue()" style="background:none; border:none; color:#64748b; font-size:11px; cursor:pointer;">[ESC]</button>
+      </div>
+      <div id="dialogue-text">Dialogue text goes here...</div>
+    </div>
+
+    <!-- Mobile On-Screen 8-Way D-Pad -->
+    <div id="mobile-dpad">
+      <div></div>
+      <button class="touch-btn" id="btn-up">▲</button>
+      <div></div>
+      <button class="touch-btn" id="btn-left">◀</button>
+      <button class="touch-btn" id="btn-center">●</button>
+      <button class="touch-btn" id="btn-right">▶</button>
+      <div></div>
+      <button class="touch-btn" id="btn-down">▼</button>
+      <div></div>
+    </div>
+
+    <div id="mobile-actions">
+      <button class="touch-btn action-btn" id="btn-action" style="background:#b45309; border-color:#f59e0b; color:#000; font-weight:900;">INTERACT [Z]</button>
+      <button class="touch-btn action-btn" id="btn-dash">DASH [SPACE]</button>
+      <button class="touch-btn action-btn" id="btn-reset" onclick="window.resetGameState()" style="background:#4c0519; border-color:#f43f5e; color:#ffe4e6; font-weight:bold;">RESET [R]</button>
+      <button class="touch-btn action-btn" id="btn-ambush" style="background:#7f1d1d; border-color:#ef4444; color:#fecaca;">AMBUSH!</button>
+    </div>
+
+    <!-- Point of No Return Door Progression Confirmation Modal Prompt -->
+    <div id="door-progression-modal" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:90%; max-width:480px; background:rgba(9,13,22,0.98); border:2px solid #f59e0b; border-radius:16px; padding:20px; z-index:60; box-shadow:0 0 60px rgba(245,158,11,0.5); backdrop-filter:blur(12px);">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(245,158,11,0.4); padding-bottom:8px; margin-bottom:12px;">
+        <strong style="color:#fde68a; font-size:13px; font-family:'Cinzel', serif;">⚠️ WARNING: POINT OF NO RETURN</strong>
+        <span style="font-size:10px; background:#78350f; color:#fef3c7; padding:3px 8px; border-radius:4px; font-weight:bold; font-family:monospace;">CONFIRM PROGRESSION</span>
+      </div>
+      <p style="font-size:12px; color:#e2e8f0; font-family:sans-serif; line-height:1.5; margin-bottom:8px;">
+        Unbarring or inspecting the reinforced harbor doors will incite the Black Knights' raid.
+      </p>
+      <p style="font-size:12px; color:#cbd5e1; font-family:sans-serif; line-height:1.5; margin-bottom:14px;">
+        <strong>This will stop you from accessing other things in the tavern</strong> (such as challenging Atreyu to the drinking contest, speaking with Matchstick in the booth, or listening to Kairon's stage riffs) once the ambush begins.
+      </p>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <button onclick="window.confirmDoorProgression()" style="padding:10px; background:linear-gradient(to right, #dc2626, #f97316); color:#000; border:none; border-radius:8px; font-weight:900; font-size:11px; cursor:pointer; font-family:'Cinzel', serif;">
+          ⛔ LOCK & CONFIRM [Z]
+        </button>
+        <button onclick="window.cancelDoorProgression()" style="padding:10px; background:#1e293b; color:#e2e8f0; border:1px solid #475569; border-radius:8px; font-weight:bold; font-size:11px; cursor:pointer; font-family:'Cinzel', serif;">
+          STAY IN TAVERN [X]
+        </button>
+      </div>
+    </div>
+
+    <!-- Progression Wall Dead State Modal Prompt -->
+    <div id="progression-wall-modal" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:90%; max-width:480px; background:rgba(9,13,22,0.98); border:2px solid #ef4444; border-radius:16px; padding:20px; z-index:60; box-shadow:0 0 60px rgba(239,68,68,0.6); backdrop-filter:blur(12px);">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(239,68,68,0.4); padding-bottom:8px; margin-bottom:12px;">
+        <strong style="color:#fca5a5; font-size:13px; font-family:'Cinzel', serif;">⛔ PROGRESSION WALL (PROGWALL) • CHAPTER 0 CONCLUDED</strong>
+        <span style="font-size:10px; background:#7f1d1d; color:#fecaca; padding:3px 8px; border-radius:4px; font-weight:bold; font-family:monospace;">DEAD STATE</span>
+      </div>
+      <p style="font-size:12px; color:#e2e8f0; font-family:sans-serif; line-height:1.5; margin-bottom:14px;">
+        The Black Knights' breach has been decisively met. <strong>Bozog</strong>, <strong>Atreyu (High Moon Priestess)</strong>, <strong>Kairon</strong>, and <strong>Matchstick</strong> have united in 4-man battle formation and sealed their mutual restitution pact. The vertical slice stops here—story progression is capped at this dead state.
+      </p>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <button onclick="window.resetGameState()" style="padding:10px; background:linear-gradient(to right, #dc2626, #f97316); color:#000; border:none; border-radius:8px; font-weight:900; font-size:11px; cursor:pointer; font-family:'Cinzel', serif;">
+          🔄 RESTART ZERO STATE [R]
+        </button>
+        <button onclick="document.getElementById('progression-wall-modal').style.display='none'" style="padding:10px; background:#1e293b; color:#e2e8f0; border:1px solid #475569; border-radius:8px; font-weight:bold; font-size:11px; cursor:pointer; font-family:'Cinzel', serif;">
+          INSPECT TAVERN SQUAD →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    // --- SPATIAL WORLD CLASS (JRN-204) ---
+    class SpatialWorld {
+      constructor() {
+        this.colliders = [];
+      }
+      addCollider(box) {
+        const id = box.id || `box_${this.colliders.length}`;
+        const c = { id, x: box.x, y: box.y, w: box.w, h: box.h, color: box.color || '#334155', label: box.label || '' };
+        this.colliders.push(c);
+        return c;
+      }
+      queryOverlap(A) {
+        for (let i = 0; i < this.colliders.length; i++) {
+          const B = this.colliders[i];
+          if (A.x < B.x + B.w && A.x + A.w > B.x && A.y < B.y + B.h && A.y + A.h > B.y) {
+            return B;
+          }
+        }
+        return null;
+      }
+    }
+
+    // --- KINEMATIC CONTROLLER (JRN-204) ---
+    class KinematicController {
+      constructor(config = {}) {
+        this.mass = config.mass || 1.2;
+        this.air_damping = config.air_damping !== undefined ? config.air_damping : 0.00001; // Zero-drift snap
+        this.footprint = { w: 24.0, h: 12.0, offsetX: 0.0, offsetY: 0.0 };
+        this.transform = { x: 340.0, y: 340.0 };
+        this.velocity = { x: 0.0, y: 0.0 };
+        this.forces = { x: 0.0, y: 0.0 };
+        this.spatialWorld = config.spatialWorld || null;
+      }
+      applyForce(fx, fy) {
+        this.forces.x += fx;
+        this.forces.y += fy;
+      }
+      teleport(x, y) {
+        this.transform.x = x;
+        this.transform.y = y;
+        this.velocity.x = 0;
+        this.velocity.y = 0;
+      }
+      update(dt) {
+        const safeDt = Math.min(Math.max(0, dt), 0.1);
+        if (safeDt <= 0) return;
+
+        const invMass = 1.0 / Math.max(0.0001, this.mass);
+        this.velocity.x += (this.forces.x * invMass) * safeDt;
+        this.velocity.y += (this.forces.y * invMass) * safeDt;
+        this.forces.x = 0;
+        this.forces.y = 0;
+
+        const friction = Math.pow(this.air_damping, safeDt);
+        this.velocity.x *= friction;
+        this.velocity.y *= friction;
+        if (Math.abs(this.velocity.x) < 0.05) this.velocity.x = 0;
+        if (Math.abs(this.velocity.y) < 0.05) this.velocity.y = 0;
+
+        const world = this.spatialWorld;
+
+        // Phase X (Axis-Separated Euler)
+        this.transform.x += this.velocity.x * safeDt;
+        if (world) {
+          const candX = {
+            x: this.transform.x + this.footprint.offsetX,
+            y: this.transform.y + this.footprint.offsetY,
+            w: this.footprint.w,
+            h: this.footprint.h
+          };
+          const boxBX = world.queryOverlap(candX);
+          if (boxBX) {
+            if (this.velocity.x > 0) {
+              this.transform.x = boxBX.x - this.footprint.offsetX - this.footprint.w - 0.01;
+            } else if (this.velocity.x < 0) {
+              this.transform.x = boxBX.x + boxBX.w - this.footprint.offsetX + 0.01;
+            }
+            this.velocity.x = 0.0;
+          }
+        }
+
+        // Phase Y (Axis-Separated Euler)
+        this.transform.y += this.velocity.y * safeDt;
+        if (world) {
+          const candY = {
+            x: this.transform.x + this.footprint.offsetX,
+            y: this.transform.y + this.footprint.offsetY,
+            w: this.footprint.w,
+            h: this.footprint.h
+          };
+          const boxBY = world.queryOverlap(candY);
+          if (boxBY) {
+            if (this.velocity.y > 0) {
+              this.transform.y = boxBY.y - this.footprint.offsetY - this.footprint.h - 0.01;
+            } else if (this.velocity.y < 0) {
+              this.transform.y = boxBY.y + boxBY.h - this.footprint.offsetY + 0.01;
+            }
+            this.velocity.y = 0.0;
+          }
+        }
+      }
+    }
+
+    // --- SETUP THE GREEDY GREENS SPATIAL WORLD ---
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const world = new SpatialWorld();
+
+    // Perimeter Walls (800x600)
+    world.addCollider({ x: 0, y: 0, w: 800, h: 28, label: 'North Weathered Oak Wall', color: '#181109' });
+    world.addCollider({ x: 0, y: 572, w: 320, h: 28, label: 'South Wall Left', color: '#181109' });
+    world.addCollider({ x: 480, y: 572, w: 320, h: 28, label: 'South Wall Right', color: '#181109' });
+    const southDoorCollider = world.addCollider({ x: 320, y: 576, w: 160, h: 24, label: 'Reinforced South Doors', color: '#451a03' });
+    world.addCollider({ x: 0, y: 28, w: 28, h: 544, label: 'West Wall (Docks)', color: '#181109' });
+    world.addCollider({ x: 772, y: 28, w: 28, h: 544, label: 'East Wall', color: '#181109' });
+
+    // Setpiece 1: West Mahogany Bar Counter (Atreyu)
+    world.addCollider({ x: 44, y: 120, w: 76, h: 280, color: '#2e1065', label: 'Main Bar Counter' });
+
+    // Setpiece 2: Ramshackle Stage (Kairon)
+    world.addCollider({ x: 480, y: 44, w: 260, h: 120, color: '#1e1b4b', label: 'Ramshackle Stage' });
+
+    // Setpiece 3: Shadowed Corner Booth (Matchstick)
+    world.addCollider({ x: 130, y: 44, w: 120, h: 80, color: '#0f172a', label: 'Corner Booth' });
+
+    // Tables & Casks
+    world.addCollider({ x: 280, y: 200, w: 70, h: 70, color: '#291811', label: 'Tavern Table 1' });
+    world.addCollider({ x: 440, y: 280, w: 70, h: 70, color: '#291811', label: 'Tavern Table 2' });
+    world.addCollider({ x: 620, y: 380, w: 60, h: 60, color: '#291811', label: 'Tavern Table 3' });
+    world.addCollider({ x: 690, y: 480, w: 60, h: 60, color: '#172554', label: 'Grog Barrels' });
+
+    const player = new KinematicController({ spatialWorld: world });
+
+    // --- GAME STATE ---
+    let partyUnlocked = false;
+    const trailBuffer = [];
+    let isContestActive = false;
+    let isContestWon = false;
+    let contestRound = 1;
+    let contestTension = 15;
+    let contestPhase = 'mashing'; // 'mashing' | 'round_cleared' | 'victory'
+    let isAmbushActive = false;
+    let ambushTrauma = 0;
+    let isProgressionLocked = false;
+
+    const DRINKING_ROUNDS = [
+      {
+        round: 1,
+        drink: 'Warmup Ale',
+        decayRate: 15,
+        challengePrompt: 'Atreyu: "A simple flagon of Delain harbor grog. Show me your dwarven constitution, tavern keeper!"',
+        roundClearedDialogue: 'Atreyu wipes foam from his chin with an appreciative grunt: "Bah! Warmup ale is child\'s play for a berserker. But let us see how your iron stomach handles 90-proof Docks Navy Rum!"',
+        bozogCheer: 'Bozog: "Warmup ale going down smooth as Delain spring water!"',
+      },
+      {
+        round: 2,
+        drink: 'Docks Navy Rum',
+        decayRate: 26,
+        challengePrompt: 'Atreyu: "Double-distilled molasses spirits! This dark rum has laid low armored corsairs—pace your breathing, Bozog!"',
+        roundClearedDialogue: 'Atreyu sways slightly against the counter, eyes widening with grudging awe: "By the silver crescent... you drink like a sea dragon! But Moon-Cask Spirit was brewed for temple guardians—this next draught will test your immortal soul!"',
+        bozogCheer: 'Bozog: "Hot as dragonfire, but my gullet was forged in dwarven kilns!"',
+      },
+      {
+        round: 3,
+        drink: 'Moon-Cask Spirit',
+        decayRate: 38,
+        challengePrompt: 'Atreyu: "Silver-distilled in lunar cloisters! The crescent tide decides who rules this harbor—drink or yield, berserker!"',
+        roundClearedDialogue: 'Atreyu slams both hands onto the counter, laughing breathlessly as he waves a white bar-cloth: "Enough! My vision is swimming in double-moons. The Greedy Greens has its undisputed champion... I yield!"',
+        bozogCheer: 'Bozog: "MY TAVERN, MY GROG! DRINK TO FREEDOM!"',
+      },
+    ];
+
+    // --- INPUT MANAGEMENT ---
+    const keys = {};
+    window.addEventListener('keydown', (e) => {
+      keys[e.code] = true;
+      if (e.code === 'KeyR') {
+        window.resetGameState();
+        return;
+      }
+      const doorModal = document.getElementById('door-progression-modal');
+      const isDoorModalOpen = doorModal && doorModal.style.display !== 'none';
+      if (isDoorModalOpen) {
+        if (e.code === 'KeyZ' || e.code === 'Enter' || e.code === 'Space') {
+          window.confirmDoorProgression();
+          return;
+        }
+        if (e.code === 'Escape' || e.code === 'KeyX') {
+          window.cancelDoorProgression();
+          return;
+        }
+      }
+
+      if (e.code === 'KeyZ' || e.code === 'Enter') {
+        if (isContestActive) {
+          mashDrink();
+        } else {
+          executeInteraction();
+        }
+      }
+      if (e.code === 'Escape') {
+        window.dismissDialogue();
+      }
+    });
+    window.addEventListener('keyup', (e) => {
+      keys[e.code] = false;
+    });
+
+    // Touch Bindings
+    function bindTouch(id, code) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const start = (e) => { e.preventDefault(); keys[code] = true; };
+      const end = (e) => { e.preventDefault(); keys[code] = false; };
+      el.addEventListener('touchstart', start, { passive: false });
+      el.addEventListener('touchend', end, { passive: false });
+      el.addEventListener('touchcancel', end, { passive: false });
+      el.addEventListener('mousedown', start);
+      el.addEventListener('mouseup', end);
+      el.addEventListener('mouseleave', end);
+    }
+    bindTouch('btn-up', 'KeyW');
+    bindTouch('btn-down', 'KeyS');
+    bindTouch('btn-left', 'KeyA');
+    bindTouch('btn-right', 'KeyD');
+    bindTouch('btn-dash', 'Space');
+
+    document.getElementById('btn-action')?.addEventListener('click', () => {
+      if (isContestActive) mashDrink();
+      else executeInteraction();
+    });
+    document.getElementById('btn-ambush')?.addEventListener('click', () => triggerAmbush());
+    document.getElementById('mash-button')?.addEventListener('click', () => mashDrink());
+
+    // Proximity Detection
+    let currentTarget = null;
+    function checkProximity() {
+      const px = player.transform.x;
+      const py = player.transform.y;
+
+      const banner = document.getElementById('interaction-banner');
+
+      // 1. Atreyu at West Bar
+      if (Math.hypot(px - 130, py - 240) < 65) {
+        currentTarget = 'atreyu';
+        banner.textContent = '🌙 DRINK WITH ATREYU: [Z] / [SPACE]';
+        banner.style.display = 'block';
+        return;
+      }
+      // 2. Kairon on Stage
+      if (Math.hypot(px - 580, py - 110) < 75) {
+        currentTarget = 'kairon';
+        banner.textContent = '🎸 LISTEN TO KAIRON\'S RIFF: [Z]';
+        banner.style.display = 'block';
+        return;
+      }
+      // 3. Matchstick in Booth
+      if (Math.hypot(px - 200, py - 90) < 65) {
+        currentTarget = 'matchstick';
+        banner.textContent = '🪞 SPEAK WITH MATCHSTICK: [Z]';
+        banner.style.display = 'block';
+        return;
+      }
+      // 4. South Door
+      if (Math.hypot(px - 400, py - 560) < 70) {
+        currentTarget = 'door';
+        banner.textContent = '🚪 INSPECT DELAIN PIERS / TRIGGER RAID: [Z]';
+        banner.style.display = 'block';
+        return;
+      }
+
+      currentTarget = null;
+      banner.style.display = 'none';
+    }
+
+    function showDialogue(speaker, text, color = '#f59e0b') {
+      const box = document.getElementById('dialogue-box');
+      document.getElementById('speaker-name').textContent = speaker;
+      document.getElementById('speaker-name').style.color = color;
+      document.getElementById('dialogue-text').textContent = text;
+      box.style.display = 'block';
+    }
+
+    window.dismissDialogue = function() {
+      document.getElementById('dialogue-box').style.display = 'none';
+    };
+
+    window.triggerActiveInteraction = function() {
+      executeInteraction();
+    };
+
+    function executeInteraction() {
+      if (!currentTarget) return;
+
+      if (currentTarget === 'atreyu') {
+        if (isContestWon) {
+          showDialogue(
+            'Atreyu (High Moon Priestess)',
+            'Atreyu nurses her aching temple with a rueful grin, setting down her drained pewter chalice in salute. "By the silver crescent, Bozog... three flagons of Moon-Cask spirit and you are still standing like an iron colossus. You have earned my respect—and my lunar ward, should the harbor garrison march on Delain."',
+            '#818cf8'
+          );
+          return;
+        }
+
+        showDialogue(
+          'Atreyu (High Moon Priestess)',
+          'Atreyu rests her silver chalice on the polished mahogany, her posture serene and sober. "A berserker who drinks like a dwarf and talks like an outlaw. I have not tasted a single drop yet, Bozog—if you think you can stomach three flagons of Moon-Cask grog without hitting the sawdust, take a stool and prove your constitution!"',
+          '#818cf8'
+        );
+        startDrinkingContest();
+      } else if (currentTarget === 'kairon') {
+        showDialogue(
+          'Kairon the Eternal',
+          '*Strikes a screaming discordant riff* "Three hundred years ago, the Citadel banned the 7th harmonic because it disrupted their geometry. Glorious chaos, Bozog!"',
+          '#c084fc'
+        );
+      } else if (currentTarget === 'matchstick') {
+        showDialogue(
+          'Matchstick (Scout)',
+          '*Twirls silver pocket mirror* "Two squads of Black Order scouts were inspecting the pier fish-crates an hour ago, Bozog. They aren\'t here for contraband fish. Keep your axe loose."',
+          '#38bdf8'
+        );
+      } else if (currentTarget === 'door') {
+        if (!isAmbushActive) {
+          const doorModal = document.getElementById('door-progression-modal');
+          if (doorModal) doorModal.style.display = 'block';
+        } else {
+          showDialogue(
+            'The Greedy Greens Entrance',
+            'The oak doors are splintered by the Black Knights\' battering ram. Cold salty sea mist rushes into the tavern.',
+            '#ef4444'
+          );
+        }
+      }
+    }
+
+    window.confirmDoorProgression = function() {
+      const doorModal = document.getElementById('door-progression-modal');
+      if (doorModal) doorModal.style.display = 'none';
+      triggerAmbush();
+    };
+
+    window.cancelDoorProgression = function() {
+      const doorModal = document.getElementById('door-progression-modal');
+      if (doorModal) doorModal.style.display = 'none';
+    };
+
+    // Drinking Contest System (Phased, Readable, Gold Standard)
+    function startDrinkingContest() {
+      isContestActive = true;
+      contestRound = 1;
+      contestTension = 15;
+      contestPhase = 'mashing';
+      document.getElementById('drinking-contest-panel').style.display = 'block';
+      updateContestUI();
+    }
+
+    function mashDrink() {
+      if (!isContestActive) return;
+
+      if (contestPhase === 'round_cleared') {
+        advanceNextRound();
+        return;
+      }
+      if (contestPhase === 'victory') {
+        claimContestVictory();
+        return;
+      }
+
+      // Sweet Spot Bonus: 65% - 85% grants +18% instead of standard +14%
+      const inSweetSpot = contestTension >= 65 && contestTension <= 85;
+      const gain = inSweetSpot ? 18 : 14;
+      contestTension = Math.min(100, contestTension + gain);
+
+      if (contestTension >= 100) {
+        if (contestRound < 3) {
+          contestPhase = 'round_cleared';
+          contestTension = 100;
+        } else {
+          contestPhase = 'victory';
+          isContestWon = true;
+          contestTension = 100;
+          const progItem = document.getElementById('prog-atreyu');
+          if (progItem) {
+            progItem.style.color = '#10b981';
+            progItem.textContent = '✓ Atreyu (Moon Priestess) - Drinking Contest Champion';
+          }
+        }
+      }
+
+      updateContestUI();
+    }
+
+    function advanceNextRound() {
+      contestRound++;
+      contestPhase = 'mashing';
+      contestTension = 15;
+      updateContestUI();
+    }
+
+    function claimContestVictory() {
+      window.closeDrinkingContest();
+      isContestWon = true;
+      const progItem = document.getElementById('prog-atreyu');
+      if (progItem) {
+        progItem.style.color = '#10b981';
+        progItem.textContent = '✓ Atreyu (Moon Priestess) - Champion';
+      }
+      showDialogue(
+        'Atreyu (High Moon Priestess)',
+        'Atreyu bows low over her drained chalice: "Unmatched constitution, Bozog. The Moon Temple owes you a boon. When the black sails unfurl, I stand with The Greedy Greens."',
+        '#818cf8'
+      );
+    }
+
+    function updateContestUI() {
+      const roundData = DRINKING_ROUNDS[contestRound - 1];
+      const titles = ['ROUND 1: WARMUP ALE', 'ROUND 2: DOCKS NAVY RUM', 'ROUND 3: MOON-CASK SPIRIT'];
+      document.getElementById('contest-round-lbl').textContent = titles[contestRound - 1] || 'CONTEST';
+      document.getElementById('contest-tension-lbl').textContent = `${Math.round(contestTension)}%`;
+      document.getElementById('contest-bar').style.width = `${contestTension}%`;
+
+      const mashBtn = document.getElementById('mash-button');
+      const yieldBtn = document.getElementById('yield-button');
+      const talkEl = document.getElementById('contest-talk');
+
+      if (contestPhase === 'mashing') {
+        if (mashBtn) mashBtn.textContent = 'MASH [Z] / CHUG!';
+        if (yieldBtn) yieldBtn.style.display = 'block';
+        if (talkEl && roundData) {
+          talkEl.innerHTML = `<span style="color:#e0e7ff;">${roundData.challengePrompt}</span>`;
+        }
+      } else if (contestPhase === 'round_cleared') {
+        if (mashBtn) mashBtn.textContent = `PROCEED TO ROUND ${contestRound + 1} [Z] →`;
+        if (yieldBtn) yieldBtn.style.display = 'none';
+        if (talkEl && roundData) {
+          talkEl.innerHTML = `<span style="color:#a5b4fc; font-weight:bold;">${roundData.roundClearedDialogue}</span><br/><span style="color:#34d399; font-size:10px;">${roundData.bozogCheer}</span>`;
+        }
+      } else if (contestPhase === 'victory') {
+        if (mashBtn) mashBtn.textContent = '🏆 CLAIM VICTORY & CLOSE [Z]';
+        if (yieldBtn) yieldBtn.style.display = 'none';
+        if (talkEl) {
+          const finalRound = DRINKING_ROUNDS[2];
+          talkEl.innerHTML = `<span style="color:#6ee7b7; font-weight:bold;">${finalRound.roundClearedDialogue}</span><br/><span style="color:#fbbf24; font-size:10px; font-weight:bold;">${finalRound.bozogCheer}</span>`;
+        }
+      }
+    }
+
+    window.closeDrinkingContest = function() {
+      isContestActive = false;
+      contestPhase = 'mashing';
+      document.getElementById('drinking-contest-panel').style.display = 'none';
+    };
+
+    // Ambush System (Quadratic Camera Shake)
+    function triggerAmbush() {
+      isAmbushActive = true;
+      ambushTrauma = 1.0;
+      document.getElementById('standoff-modal').style.display = 'flex';
+      window.selectStandoff('bozog');
+    }
+
+    // Follower squad dynamic state (replaces tight particle train with organic group movement)
+    let selectedStandoff = 'bozog';
+    let leaderHeading = 0;
+    let squadFollowers = [
+      { id: 'matchstick', name: 'Matchstick', avatar: '🪞', color: '#38bdf8', x: 200, y: 90, vx: 0, vy: 0, targetDist: 40, lateralOffset: -22, stopRadius: 24, stepPhase: 0 },
+      { id: 'atreyu', name: 'Atreyu', avatar: '🌙', color: '#e0e7ff', x: 130, y: 240, vx: 0, vy: 0, targetDist: 44, lateralOffset: 24, stopRadius: 24, stepPhase: 1.5 },
+      { id: 'kairon', name: 'Kairon', avatar: '🎸', color: '#c084fc', x: 580, y: 110, vx: 0, vy: 0, targetDist: 72, lateralOffset: 0, stopRadius: 28, stepPhase: 3.0 }
+    ];
+
+    window.selectStandoff = function(choice) {
+      selectedStandoff = choice;
+      ['bozog', 'atreyu', 'kairon', 'matchstick'].forEach(id => {
+        const btn = document.getElementById('opt-' + id);
+        if (btn) {
+          if (id === choice) {
+            btn.style.borderColor = '#f59e0b';
+            btn.style.background = 'rgba(245, 158, 11, 0.2)';
+          } else {
+            btn.style.borderColor = '#475569';
+            btn.style.background = '#0f172a';
+          }
+        }
+      });
+      const confirmBtn = document.getElementById('confirm-standoff-btn');
+      if (confirmBtn) {
+        confirmBtn.textContent = '✓ CONFIRM: ' + choice.toUpperCase() + ' INITIATIVE';
+      }
+    };
+
+    window.confirmStandoff = function() {
+      document.getElementById('standoff-modal').style.display = 'none';
+      partyUnlocked = true;
+      document.getElementById('partyVal').textContent = '4-Man Squad Formation';
+
+      // Snap followers near player for cohesive initial formation
+      squadFollowers.forEach((fol, i) => {
+        fol.x = player.transform.x - 30 - i * 15;
+        fol.y = player.transform.y + (i % 2 === 0 ? 18 : -18);
+        fol.vx = 0;
+        fol.vy = 0;
+      });
+
+      if (selectedStandoff === 'bozog') {
+        showDialogue(
+          'Bozog the Berserker',
+          'Bozog roars, vaults the bar counter, and cleaves the vanguard leader\'s shield into kindling! "YOU TRASH MY TAVERN, YOU PAY IN BLOOD!" The pact is sealed!',
+          '#10b981'
+        );
+      } else if (selectedStandoff === 'atreyu') {
+        showDialogue(
+          'Atreyu (High Moon Priestess)',
+          'Atreyu raises her crescent staff, bathing the shattered doorway in silver warding moonlight! The knights\' crossfire is harmlessly deflected!',
+          '#e0e7ff'
+        );
+      } else if (selectedStandoff === 'kairon') {
+        showDialogue(
+          'Kairon the Eternal',
+          'Kairon rips a screaming harmonic solo from his tuned lute, overloading the knights\' audio-crystal visors into white static! "Order is so utterly derivative, boys!"',
+          '#c084fc'
+        );
+      } else {
+        showDialogue(
+          'Matchstick',
+          'Matchstick flicks his silver mirror; the lantern flare blinds the raid squad, and he slips into their blind flank! "Angle acquired."',
+          '#38bdf8'
+        );
+      }
+
+      // Lock progression to dead state after standoff is decided
+      isProgressionLocked = true;
+      const wallModal = document.getElementById('progression-wall-modal');
+      if (wallModal) wallModal.style.display = 'block';
+    };
+
+    window.resetGameState = function() {
+      // 1. Reset kinematics & clear key inputs
+      player.teleport(340, 340);
+      player.velocity.x = 0;
+      player.velocity.y = 0;
+      player.acceleration.x = 0;
+      player.acceleration.y = 0;
+      for (const k in keys) keys[k] = false;
+
+      // 2. Reset followers to initial positions
+      squadFollowers = [
+        { id: 'matchstick', name: 'Matchstick', avatar: '🪞', color: '#38bdf8', x: 200, y: 90, vx: 0, vy: 0, targetDist: 38, lateralOffset: -16, stopRadius: 18, stepPhase: 0 },
+        { id: 'atreyu', name: 'Atreyu', avatar: '🌙', color: '#e0e7ff', x: 130, y: 240, vx: 0, vy: 0, targetDist: 64, lateralOffset: 18, stopRadius: 22, stepPhase: 0 },
+        { id: 'kairon', name: 'Kairon', avatar: '🎸', color: '#a855f7', x: 580, y: 110, vx: 0, vy: 0, targetDist: 90, lateralOffset: -4, stopRadius: 26, stepPhase: 0 }
+      ];
+
+      // 3. Reset party formation
+      partyUnlocked = false;
+      const partyVal = document.getElementById('partyVal');
+      if (partyVal) partyVal.textContent = 'Solo';
+
+      // 4. Reset drinking contest & Atreyu state
+      isContestActive = false;
+      isContestWon = false;
+      contestRound = 1;
+      contestPhase = 'mashing';
+      contestTension = 15;
+      const contestPanel = document.getElementById('drinking-contest-panel');
+      if (contestPanel) contestPanel.style.display = 'none';
+      const progAtreyu = document.getElementById('prog-atreyu');
+      if (progAtreyu) {
+        progAtreyu.style.color = '#94a3b8';
+        progAtreyu.textContent = '🌙 Atreyu (West Bar Counter)';
+      }
+
+      // 5. Reset Ambush & Standoff
+      isAmbushActive = false;
+      ambushTrauma = 0;
+      const standoffModal = document.getElementById('standoff-modal');
+      if (standoffModal) standoffModal.style.display = 'none';
+      selectedStandoff = 'bozog';
+
+      // 6. Reset Progression Wall & Dead State
+      isProgressionLocked = false;
+      const wallModal = document.getElementById('progression-wall-modal');
+      if (wallModal) wallModal.style.display = 'none';
+      const doorModal = document.getElementById('door-progression-modal');
+      if (doorModal) doorModal.style.display = 'none';
+
+      // 7. Reset Dialogue & Active Interaction Banner
+      window.dismissDialogue();
+      const banner = document.getElementById('interaction-banner');
+      if (banner) banner.style.display = 'none';
+    };
+
+    // --- GAME LOOP ---
+    let lastTime = performance.now();
+    let frameCount = 0;
+    let fps = 60;
+    let lastFpsUpdate = performance.now();
+
+    function loop(now) {
+      const dt = Math.min((now - lastTime) / 1000, 0.05);
+      lastTime = now;
+
+      frameCount++;
+      if (now - lastFpsUpdate > 500) {
+        fps = Math.round((frameCount * 1000) / (now - lastFpsUpdate));
+        frameCount = 0;
+        lastFpsUpdate = now;
+        document.getElementById('fpsVal').textContent = fps;
+      }
+
+      // Contest Decay (Active ONLY during mashing phase)
+      if (isContestActive && contestPhase === 'mashing' && !isContestWon) {
+        const decayRate = contestRound === 1 ? 15 : contestRound === 2 ? 26 : 38;
+        contestTension = Math.max(0, contestTension - decayRate * dt);
+        updateContestUI();
+      }
+
+      // Camera Trauma Shake Decay: offset = max_angle * (trauma^2) * sin(time)
+      let shakeX = 0, shakeY = 0;
+      if (ambushTrauma > 0) {
+        ambushTrauma = Math.max(0, ambushTrauma - 1.2 * dt);
+        const intensity = ambushTrauma * ambushTrauma;
+        shakeX = (Math.random() * 2 - 1) * 14 * intensity;
+        shakeY = (Math.random() * 2 - 1) * 14 * intensity;
+      }
+
+      // Input Force - Locked during drinking contest & progression wall dead state
+      let fx = 0, fy = 0;
+      if (!isContestActive && !isProgressionLocked) {
+        if (keys['KeyW'] || keys['ArrowUp']) fy -= 1;
+        if (keys['KeyS'] || keys['ArrowDown']) fy += 1;
+        if (keys['KeyA'] || keys['ArrowLeft']) fx -= 1;
+        if (keys['KeyD'] || keys['ArrowRight']) fx += 1;
+
+        if (fx !== 0 && fy !== 0) {
+          const invLen = 1 / Math.SQRT2;
+          fx *= invLen;
+          fy *= invLen;
+        }
+
+        const moveForce = keys['Space'] ? 19000 : 10500;
+        player.applyForce(fx * moveForce, fy * moveForce);
+      }
+      player.update(dt);
+
+      // Squad Escort Kinematics: Update Follower Positions
+      const leaderSpeed = Math.hypot(player.velocity.x, player.velocity.y);
+      if (leaderSpeed > 10) {
+        leaderHeading = Math.atan2(player.velocity.y, player.velocity.x);
+      }
+      const backAngle = leaderHeading + Math.PI;
+      const perpAngle = leaderHeading + Math.PI / 2;
+      const leaderCenterX = player.transform.x + 12;
+      const leaderCenterY = player.transform.y + 6;
+
+      if (partyUnlocked) {
+        squadFollowers.forEach((fol, idx) => {
+          const slotX = leaderCenterX + Math.cos(backAngle) * fol.targetDist + Math.cos(perpAngle) * fol.lateralOffset;
+          const slotY = leaderCenterY + Math.sin(backAngle) * fol.targetDist + Math.sin(perpAngle) * fol.lateralOffset;
+          const dx = slotX - fol.x;
+          const dy = slotY - fol.y;
+          const dist = Math.hypot(dx, dy);
+
+          if (dist > fol.stopRadius) {
+            const desiredSpeed = Math.min(dist * 3.4, leaderSpeed > 140 ? 210 : 150);
+            const targetVx = (dx / dist) * desiredSpeed;
+            const targetVy = (dy / dist) * desiredSpeed;
+            fol.vx += (targetVx - fol.vx) * 0.16;
+            fol.vy += (targetVy - fol.vy) * 0.16;
+            fol.stepPhase += dt * 8.5;
+          } else {
+            fol.vx *= 0.82;
+            fol.vy *= 0.82;
+          }
+
+          // Flocking separation
+          for (let j = 0; j < squadFollowers.length; j++) {
+            if (idx !== j) {
+              const other = squadFollowers[j];
+              const sDx = fol.x - other.x;
+              const sDy = fol.y - other.y;
+              const sDist = Math.hypot(sDx, sDy);
+              if (sDist < 26 && sDist > 0.01) {
+                const push = (26 - sDist) * 1.6;
+                fol.vx += (sDx / sDist) * push;
+                fol.vy += (sDy / sDist) * push;
+              }
+            }
+          }
+
+          fol.x = Math.max(36, Math.min(755, fol.x + fol.vx * dt));
+          fol.y = Math.max(36, Math.min(555, fol.y + fol.vy * dt));
+        });
+      }
+
+      checkProximity();
+
+      // Render
+      render(shakeX, shakeY);
+      requestAnimationFrame(loop);
+    }
+
+    function render(shakeX, shakeY) {
+      ctx.save();
+      ctx.translate(shakeX, shakeY);
+
+      // Floor (Tavern Oak Planks)
+      ctx.fillStyle = '#140e09';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = '#22150d';
+      ctx.lineWidth = 1;
+      for (let y = 0; y < canvas.height; y += 32) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+
+        for (let x = (y % 64 === 0 ? 0 : 40); x < canvas.width; x += 80) {
+          ctx.fillStyle = '#2d1c12';
+          ctx.fillRect(x, y - 2, 2, 4);
+        }
+      }
+
+      // Ambient Lantern Lighting
+      function drawLantern(lx, ly, radius) {
+        const rad = ctx.createRadialGradient(lx, ly, 10, lx, ly, radius);
+        rad.addColorStop(0, 'rgba(245, 158, 11, 0.18)');
+        rad.addColorStop(0.6, 'rgba(217, 119, 6, 0.05)');
+        rad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = rad;
+        ctx.beginPath();
+        ctx.arc(lx, ly, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.arc(lx, ly, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      drawLantern(90, 200, 160);
+      drawLantern(600, 110, 180);
+      drawLantern(190, 80, 130);
+      drawLantern(400, 520, 170);
+
+      // Colliders
+      const colliders = world.colliders;
+      for (let i = 0; i < colliders.length; i++) {
+        const c = colliders[i];
+        ctx.fillStyle = c.color || '#261a10';
+        ctx.fillRect(c.x, c.y, c.w, c.h);
+
+        ctx.strokeStyle = 'rgba(245, 158, 11, 0.25)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(c.x, c.y, c.w, c.h);
+
+        ctx.fillStyle = 'rgba(255,255,255,0.06)';
+        ctx.fillRect(c.x, c.y, c.w, 3);
+      }
+
+      // Bar counter labels
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = '10px monospace';
+      ctx.fillText('MOON CASKS', 48, 134);
+
+      // Stage label
+      ctx.fillStyle = '#c084fc';
+      ctx.fillText('♪ KAIRON & THE DISSIDENTS ♪', 510, 56);
+
+      // South Door Status
+      if (isAmbushActive) {
+        ctx.fillStyle = '#ef4444';
+        ctx.fillText('⚠️ BREACHED BY BLACK KNIGHTS OF ORDER', 280, 560);
+        // Draw 3 Black Knights
+        function drawKnight(kx, ky) {
+          ctx.fillStyle = '#0f172a';
+          ctx.fillRect(kx - 10, ky - 18, 20, 26);
+          ctx.fillStyle = '#38bdf8';
+          ctx.fillRect(kx - 7, ky - 12, 14, 3);
+          ctx.fillStyle = '#e2e8f0';
+          ctx.fillRect(kx - 4, ky - 6, 8, 10);
+        }
+        drawKnight(360, 545);
+        drawKnight(400, 530);
+        drawKnight(440, 545);
+
+        // Render Progression Wall
+        if (isProgressionLocked) {
+          ctx.save();
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+          ctx.fillRect(230, 516, 340, 54);
+          ctx.strokeStyle = '#ef4444';
+          ctx.lineWidth = 2.5;
+          ctx.strokeRect(230, 516, 340, 54);
+
+          ctx.fillStyle = 'rgba(239, 68, 68, 0.22)';
+          for (let sx = 235; sx < 565; sx += 24) {
+            ctx.beginPath();
+            ctx.moveTo(sx, 570);
+            ctx.lineTo(sx + 12, 516);
+            ctx.lineTo(sx + 22, 516);
+            ctx.lineTo(sx + 10, 570);
+            ctx.closePath();
+            ctx.fill();
+          }
+
+          ctx.fillStyle = '#fef08a';
+          ctx.font = 'bold 11px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText('⛔ [ PROGRESSION WALL • CHAPTER 0 CONCLUDED ] ⛔', 400, 538);
+          ctx.fillStyle = '#fca5a5';
+          ctx.font = '10px monospace';
+          ctx.fillText('STANDOFF RESOLVED • DEAD STATE LOCKED • PRESS [R] TO RESET', 400, 555);
+          ctx.restore();
+        }
+      } else {
+        ctx.fillStyle = '#d97706';
+        ctx.fillText('DELAIN PIERS [BARRED OAK]', 334, 590);
+      }
+
+      // Render NPCs or Vacated Stations
+      if (!partyUnlocked) {
+        // Atreyu (West Bar)
+        ctx.fillStyle = '#e0e7ff';
+        ctx.beginPath();
+        ctx.arc(130, 240, 11, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.arc(130, 240, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#e0e7ff';
+        ctx.fillText('🌙 Atreyu', 110, 260);
+
+        // Kairon (Stage)
+        ctx.fillStyle = '#a855f7';
+        ctx.beginPath();
+        ctx.arc(580, 110, 12, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(572, 102); ctx.lineTo(566, 92);
+        ctx.moveTo(588, 102); ctx.lineTo(594, 92);
+        ctx.stroke();
+        ctx.fillStyle = '#c084fc';
+        ctx.fillText('🎸 Kairon', 560, 130);
+
+        // Matchstick (Booth)
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.arc(200, 90, 10, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(206, 88, 4, 4);
+        ctx.fillStyle = '#7dd3fc';
+        ctx.fillText('🪞 Matchstick', 170, 110);
+      } else {
+        ctx.fillStyle = '#64748b';
+        ctx.fillText('🍺 [Bar Vacated]', 95, 255);
+        ctx.fillText('🎸 [Stage Vacated]', 540, 125);
+        ctx.fillText('🕯️ [Booth Vacated]', 160, 105);
+
+        // Render Escort Squad Followers
+        squadFollowers.forEach((fol) => {
+          const isWalking = Math.hypot(fol.vx, fol.vy) > 8;
+          const bob = isWalking ? Math.sin(fol.stepPhase) * 1.8 : 0;
+
+          // Shadow
+          ctx.beginPath();
+          ctx.ellipse(fol.x, fol.y + 7, 7, 3.5, 0, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(0,0,0,0.45)';
+          ctx.fill();
+
+          ctx.fillStyle = fol.color;
+          ctx.beginPath();
+          ctx.arc(fol.x, fol.y + bob, 8.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = fol.color;
+          ctx.font = '9px monospace';
+          ctx.fillText(fol.name + ' ' + fol.avatar, fol.x - 20, fol.y - 12 + bob);
+        });
+      }
+
+      // Render Player: Bozog the Berserker
+      const fp = player.footprint;
+      const px = player.transform.x;
+      const py = player.transform.y;
+
+      // Shadow
+      ctx.beginPath();
+      ctx.ellipse(px + fp.offsetX + fp.w / 2, py + fp.offsetY + fp.h / 2, fp.w / 2, fp.h / 2, 0, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fill();
+
+      // Orc Body
+      const bodyX = px;
+      const bodyY = py - 14;
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(bodyX + 12, bodyY + 12, 13, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Red Bandana
+      ctx.fillStyle = '#ef4444';
+      ctx.fillRect(bodyX + 2, bodyY + 4, 20, 4);
+
+      // Twin Tusks
+      ctx.fillStyle = '#fef08a';
+      ctx.fillRect(bodyX + 7, bodyY + 15, 2.5, 4);
+      ctx.fillRect(bodyX + 15, bodyY + 15, 2.5, 4);
+
+      // Greataxe
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(bodyX + 22, bodyY - 2);
+      ctx.lineTo(bodyX + 4, bodyY + 24);
+      ctx.stroke();
+
+      ctx.fillStyle = '#cbd5e1';
+      ctx.fillRect(bodyX + 20, bodyY - 5, 6, 6);
+
+      ctx.fillStyle = '#6ee7b7';
+      ctx.font = 'bold 10px monospace';
+      ctx.fillText('Bozog 🪓', bodyX - 4, bodyY - 4);
+
+      ctx.restore();
+
+      // DOM Telemetry
+      document.getElementById('posVal').textContent = `X: ${px.toFixed(1)} Y: ${py.toFixed(1)}`;
+    }
+
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "name": "EVA-066: Fly Brain Mecha Pilot",
+  "description": "Piloting an Evangelion bio-mecha using an authentic Drosophila fruit fly spiking connectome simulation to battle predatory Angels and train looming reflexes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

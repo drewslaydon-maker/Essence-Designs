@@ -1,0 +1,108 @@
+{
+  "tones": {
+    "purple": "#4A2E7A",
+    "plum": "#6B3FA0",
+    "gold": "#E8B943",
+    "slate": "#2E2E38"
+  },
+  "glyphOnDark": "#F2C75C",
+  "glyphOnGold": "#2A1A4A",
+  "icons": [
+    { "id": "seedling", "tone": "plum", "g": [
+      { "t": "path", "d": "M12 21v-7" },
+      { "t": "path", "d": "M12 14C12 8 12 5 6 5c0 6 0 9 6 9zM12 11c0-4.5 2-7 6-7 0 4.5-2 7-6 7z" } ] },
+    { "id": "gem", "tone": "plum", "g": [
+      { "t": "path", "d": "M7 3h10l4 5-9 13L3 8l4-5z" },
+      { "t": "path", "d": "M3 8h18M9.5 8l2.5 13M14.5 8l-2.5 13" } ] },
+    { "id": "streams", "tone": "purple", "g": [
+      { "t": "path", "d": "M3 6c3 0 3 3 6 3s3-3 6-3 3 3 6 3M3 12c3 0 3-3 6-3s3 3 6 3 3-3 6-3M3 18c3 0 3-3 6-3s3 3 6 3 3-3 6-3" } ] },
+    { "id": "blueprint", "tone": "purple", "g": [
+      { "t": "rect", "x": 4, "y": 3, "w": 16, "h": 18, "r": 2 },
+      { "t": "path", "d": "M8 7h8M8 11h8M8 15h5" } ] },
+    { "id": "compass", "tone": "purple", "g": [
+      { "t": "circle", "cx": 12, "cy": 12, "r": 9 },
+      { "t": "path", "d": "M15.5 8.5l-2.2 4.8L8.5 15.5l2.2-4.8 4.8-2.2z" } ] },
+    { "id": "key", "tone": "purple", "g": [
+      { "t": "circle", "cx": 8, "cy": 15, "r": 3.2 },
+      { "t": "path", "d": "M10.4 12.6L20 3M17 5l2 2M14.5 7.5l2 2" } ] },
+    { "id": "star", "tone": "purple", "g": [
+      { "t": "path", "d": "M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3z" } ] },
+    { "id": "ticket", "tone": "purple", "g": [
+      { "t": "path", "d": "M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8z" },
+      { "t": "path", "d": "M14 6v12" } ] },
+    { "id": "logbook", "tone": "purple", "g": [
+      { "t": "path", "d": "M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4z" },
+      { "t": "path", "d": "M8 20V8h10M8 12h7M8 16h7" } ] },
+    { "id": "calendar", "tone": "purple", "g": [
+      { "t": "rect", "x": 3, "y": 5, "w": 18, "h": 16, "r": 2 },
+      { "t": "path", "d": "M3 9h18M8 3v4M16 3v4" } ] },
+    { "id": "film", "tone": "purple", "g": [
+      { "t": "rect", "x": 3, "y": 4, "w": 18, "h": 16, "r": 2 },
+      { "t": "path", "d": "M3 9h18M3 15h18M7 4v16M17 4v16" } ] },
+    { "id": "broadcast", "tone": "purple", "g": [
+      { "t": "circle", "cx": 12, "cy": 12, "r": 2, "fill": true },
+      { "t": "path", "d": "M7.8 7.8a6 6 0 0 0 0 8.4M16.2 16.2a6 6 0 0 0 0-8.4M5 5a10 10 0 0 0 0 14M19 19a10 10 0 0 0 0-14" } ] },
+    { "id": "heart", "tone": "purple", "g": [
+      { "t": "path", "d": "M12 20s-7-4.5-9-9a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 4.5-9 9-9 9z" } ] },
+    { "id": "chalk", "tone": "purple", "g": [
+      { "t": "rect", "x": 4, "y": 4, "w": 16, "h": 13, "r": 1.5 },
+      { "t": "path", "d": "M8 9h8M8 12.5h5M12 21h8M12 17v4" } ] },
+    { "id": "dice", "tone": "purple", "g": [
+      { "t": "rect", "x": 4, "y": 4, "w": 16, "h": 16, "r": 3 },
+      { "t": "circle", "cx": 9, "cy": 9, "r": 1.1, "fill": true },
+      { "t": "circle", "cx": 15, "cy": 15, "r": 1.1, "fill": true },
+      { "t": "circle", "cx": 15, "cy": 9, "r": 1.1, "fill": true } ] },
+    { "id": "flame", "tone": "purple", "g": [
+      { "t": "path", "d": "M12 21a5 5 0 0 0 5-5c0-3.5-5-6-5-13-3 4-6 6-6 10a5 5 0 0 0 6 8z" },
+      { "t": "path", "d": "M12 21a2.5 2.5 0 0 0 2.5-2.5c0-2-2.5-3.5-2.5-6-1.5 2-3 3.5-3 5.5A2.5 2.5 0 0 0 12 21z" } ] },
+    { "id": "crown", "tone": "purple", "g": [
+      { "t": "path", "d": "M4 18h16l1-10-4.5 3.5L12 6 7.5 11.5 3 8l1 10z" },
+      { "t": "path", "d": "M5 20h14" } ] },
+    { "id": "wheel", "tone": "gold", "g": [
+      { "t": "circle", "cx": 12, "cy": 12, "r": 8 },
+      { "t": "circle", "cx": 12, "cy": 12, "r": 3 },
+      { "t": "path", "d": "M12 4v3M12 17v3M4 12h3M17 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" } ] },
+    { "id": "pillar", "tone": "purple", "g": [
+      { "t": "path", "d": "M7 3h10M6 21h12M8 6h8M8 18h8M9 6v12M15 6v12" } ] },
+    { "id": "shard", "tone": "purple", "g": [
+      { "t": "path", "d": "M8 3h8l3 16-5 2-2-7-3 5-3-2L8 3z" },
+      { "t": "path", "d": "M8.5 17l3-7 3 5" } ] },
+    { "id": "stack", "tone": "purple", "g": [
+      { "t": "path", "d": "M5 8l7 3 7-3-7-3-7 3z" },
+      { "t": "path", "d": "M5 12l7 3 7-3M5 16l7 3 7-3" } ] },
+    { "id": "leaf", "tone": "purple", "g": [
+      { "t": "path", "d": "M6 20C6 11 10 5 19 5c0 9-6 13-13 15z" },
+      { "t": "path", "d": "M6 20c3-6 7-10 11-12" } ] },
+    { "id": "anvil", "tone": "purple", "g": [
+      { "t": "path", "d": "M5 17h14v3H5z" },
+      { "t": "path", "d": "M7 17c0-3 2-4.5 5-5V9H8V6h9v3h-4v3c3 .5 5 2 5 5" } ] },
+    { "id": "telescope", "tone": "purple", "g": [
+      { "t": "path", "d": "M14 3l7 4-8 9-4-2 5-11z" },
+      { "t": "path", "d": "M9 14l4 3M6 21l3-5M13 19l-2-3" } ] },
+    { "id": "map", "tone": "plum", "g": [
+      { "t": "path", "d": "M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z" },
+      { "t": "path", "d": "M9 4v14M15 6v14" } ] },
+    { "id": "vault", "tone": "slate", "g": [
+      { "t": "path", "d": "M5 21V8a7 7 0 0 1 14 0v13H5z" },
+      { "t": "circle", "cx": 12, "cy": 11, "r": 2.5 },
+      { "t": "path", "d": "M12 13.5V17" } ] },
+    { "id": "crate", "tone": "slate", "g": [
+      { "t": "path", "d": "M4 7l8-3 8 3v10l-8 3-8-3V7z" },
+      { "t": "path", "d": "M4 7l8 3 8-3M12 10v10" } ] },
+    { "id": "orb", "tone": "slate", "g": [
+      { "t": "circle", "cx": 12, "cy": 12, "r": 7 },
+      { "t": "path", "d": "M5 12h14M12 5c2.5 4 2.5 10 0 14M12 5c-2.5 4-2.5 10 0 14" } ] },
+    { "id": "tome", "tone": "slate", "g": [
+      { "t": "path", "d": "M5 4h9a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4z" },
+      { "t": "path", "d": "M8 20V8h9M5 4h9" } ] },
+    { "id": "gear", "tone": "slate", "g": [
+      { "t": "circle", "cx": 12, "cy": 12, "r": 3.2 },
+      { "t": "path", "d": "M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1" } ] },
+    { "id": "tombstone", "tone": "slate", "g": [
+      { "t": "path", "d": "M7 21V10a5 5 0 0 1 10 0v11" },
+      { "t": "path", "d": "M4 21h16M12 7v6M10 9h4" } ] },
+    { "id": "stone", "tone": "slate", "g": [
+      { "t": "path", "d": "M7 5h10l3 6-3 8H7l-3-8 3-6z" },
+      { "t": "path", "d": "M4 11h16M9 11l-1 8M15 11l1 8" } ] }
+  ]
+}

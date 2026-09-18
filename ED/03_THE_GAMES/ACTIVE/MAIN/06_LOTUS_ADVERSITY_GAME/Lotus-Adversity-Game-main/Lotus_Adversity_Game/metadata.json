@@ -1,0 +1,8 @@
+{
+  "name": "Remix Adversity - Warped Pantheon \u0026 Armor Lore",
+  "description": "A classic OSRS and Morrowind inspired RPG design suite featuring The Broken RingWheel cosmology, the 5 Warped Ascendants, dual True vs Corrupted sacred armor symbols, the 15-Spoke Wheel of Adversity, and deterministic combat mitigation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

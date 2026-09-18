@@ -1,0 +1,6 @@
+{
+  "name": "ESSENCE FL0W HUB v0.1",
+  "description": "The sovereign game studio and sanctuary tailored for Drew, Juju, and Mom, featuring Journeys Unto tavern RPG, Ball Break simulator, goal tracking, task completion, and architectural reasoning.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Guardians of the Rift",
+  "description": "A solo strategy minigame inspired by OSRS Guardians of the Rift, balancing rune crafting, barrier defense, and guardian summons against waves of abyssal creatures.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

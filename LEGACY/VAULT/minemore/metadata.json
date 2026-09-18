@@ -1,0 +1,6 @@
+{
+  "name": "MineMore",
+  "description": "Appalachian-inspired subterranean mining RPG set in Mountain Town. Explore the abandoned hub, read the Miner Issue newspaper, venture into Big Cave aboard The Digger, rescue lost miners, and cook minerals and cavern fauna to sustain sanity and delve deeper.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

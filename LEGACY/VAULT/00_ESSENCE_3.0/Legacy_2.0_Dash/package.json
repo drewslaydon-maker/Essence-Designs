@@ -1,0 +1,19 @@
+{
+  "name": "essence-designs-workspace",
+  "version": "1.0.0",
+  "description": "ESSENCE DESIGNS Workspace Monorepo Root",
+  "main": "scripts/healthcheck.js",
+  "scripts": {
+    "start": "node scripts/command-server.js",
+    "test": "node scripts/healthcheck.js",
+    "test:nen": "node ../../GAME_DEV/12_HEAVENS_NEN/test-engine.js",
+    "sim:nen": "node ../../GAME_DEV/12_HEAVENS_NEN/sim-engine.js",
+    "test:prosis": "npm --prefix ../../GAME_DEV/02_PROSIS test",
+    "healthcheck": "node scripts/healthcheck.js"
+  },
+  "author": "Drew Slaydon / ESSENCE DESIGNS",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

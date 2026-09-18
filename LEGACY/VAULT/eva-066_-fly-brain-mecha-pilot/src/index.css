@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Share Tech Mono', monospace, ui-monospace, monospace;
+    background-color: #050608;
+    color: #00ffcc;
+  }
+}
+
+.font-teko {
+  font-family: 'Teko', sans-serif;
+}
+
+.font-mono-tech {
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.font-jp {
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+}
+
+/* CRT and Evangelion HUD effects */
+.scanlines {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.4) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.03),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.03)
+  );
+  background-size: 100% 3px, 6px 100%;
+  pointer-events: none;
+}
+
+.hud-grid {
+  background-size: 24px 24px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 255, 180, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 255, 180, 0.05) 1px, transparent 1px);
+}
+
+.hex-pattern {
+  background-color: transparent;
+  background-image: radial-gradient(rgba(255, 102, 0, 0.12) 1px, transparent 0);
+  background-size: 16px 16px;
+}
+
+/* Glow filters */
+.glow-nerv-red {
+  text-shadow: 0 0 8px rgba(255, 40, 0, 0.7), 0 0 16px rgba(255, 0, 0, 0.4);
+}
+
+.glow-nerv-orange {
+  text-shadow: 0 0 8px rgba(255, 140, 0, 0.7), 0 0 16px rgba(255, 100, 0, 0.4);
+}
+
+.glow-nerv-green {
+  text-shadow: 0 0 8px rgba(0, 255, 180, 0.7), 0 0 16px rgba(0, 255, 150, 0.4);
+}
+
+.glow-eva-purple {
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.8), 0 0 20px rgba(147, 51, 234, 0.5);
+}
+
+@keyframes radar-sweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-radar {
+  animation: radar-sweep 4s linear infinite;
+}
+
+@keyframes pulse-emergency {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.55; }
+}
+
+.animate-emergency-strobe {
+  animation: pulse-emergency 1s ease-in-out infinite;
+}

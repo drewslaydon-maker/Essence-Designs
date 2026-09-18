@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BREW the WORLD — Project Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Karla:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1109;
+    --bg-panel: #171911;
+    --bg-card: #1c1f16;
+    --ink: #e9e4d4;
+    --ink-dim: #9c9686;
+    --line: #33362a;
+    --botanical: #6b9b6e;
+    --botanical-dim: #2a3a2a;
+    --food: #d1a13e;
+    --food-dim: #3a3122;
+    --animal: #b0794a;
+    --animal-dim: #362a1e;
+    --elemental: #8a7a72;
+    --elemental-dim: #2e2924;
+    --gold: #e0a020;
+    --swing: #cc7a2e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    background-image: radial-gradient(ellipse at top, #1a1d12 0%, #0f1109 60%);
+    color: var(--ink);
+    font-family: 'Karla', sans-serif;
+    min-height: 100vh;
+  }
+  header {
+    padding: 48px 32px 24px;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+  }
+  h1 {
+    font-family: 'Spectral', serif;
+    font-weight: 600;
+    font-size: clamp(28px, 5vw, 44px);
+    letter-spacing: 0.02em;
+    margin: 0 0 6px;
+    color: var(--gold);
+  }
+  .subtitle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  .controls {
+    max-width: 1100px;
+    margin: 28px auto 0;
+    padding: 0 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+  .chip {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--bg-panel);
+    color: var(--ink-dim);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+  }
+  .chip:hover { border-color: var(--gold); color: var(--ink); }
+  .chip.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #1a1400;
+    font-weight: 500;
+  }
+  .search {
+    font-family: 'Karla', sans-serif;
+    font-size: 14px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--bg-panel);
+    color: var(--ink);
+    width: 200px;
+  }
+  .search:focus { outline: none; border-color: var(--gold); }
+  .search::placeholder { color: var(--ink-dim); }
+
+  #gen-sections { max-width: 1400px; margin: 0 auto; padding: 24px 32px 80px; }
+  .gen-block { margin-bottom: 56px; }
+  .gen-title {
+    font-family: 'Spectral', serif;
+    font-style: italic;
+    font-size: 20px;
+    color: var(--ink-dim);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 10px;
+    margin-bottom: 24px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 18px;
+  }
+
+  .card {
+    position: relative;
+    aspect-ratio: 5 / 7.5;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 12px 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 1px solid currentColor;
+    opacity: 0.35;
+    border-radius: 9px;
+    pointer-events: none;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.4);
+  }
+  .card.cat-botanical { color: var(--botanical); }
+  .card.cat-food { color: var(--food); }
+  .card.cat-animal { color: var(--animal); }
+  .card.cat-elemental { color: var(--elemental); }
+  .card.cat-botanical { border-color: var(--botanical-dim); }
+  .card.cat-food { border-color: var(--food-dim); }
+  .card.cat-animal { border-color: var(--animal-dim); }
+  .card.cat-elemental { border-color: var(--elemental-dim); }
+  .card:hover.cat-botanical { border-color: var(--botanical); }
+  .card:hover.cat-food { border-color: var(--food); }
+  .card:hover.cat-animal { border-color: var(--animal); }
+  .card:hover.cat-elemental { border-color: var(--elemental); }
+
+  .card-symbol { font-size: 22px; opacity: 0.8; line-height: 1; }
+  .card-portrait {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    margin-bottom: 6px;
+    display: block;
+  }
+  .detail-portrait {
+    width: 100%;
+    max-height: 320px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  /* Image drop zones */
+  .drop-zone {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    overflow: hidden;
+  }
+  .drop-zone:not(.has-image) {
+    border: 1.5px dashed var(--line);
+    background: rgba(255,255,255,0.02);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .drop-zone:not(.has-image):hover,
+  .drop-zone.drag-over {
+    border-color: var(--gold);
+    background: rgba(224,160,32,0.08);
+  }
+  .drop-zone-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8.5px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    text-align: center;
+    line-height: 1.5;
+    pointer-events: none;
+  }
+  .drop-zone.has-image { border: 1px solid var(--line); }
+  .drop-zone.has-image .card-portrait { margin-bottom: 0; height: 100%; border: none; border-radius: 0; }
+  .drop-zone-overlay {
+    position: absolute; inset: 0;
+    background: rgba(5,6,3,0.72);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--ink);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    pointer-events: none;
+  }
+  .drop-zone.has-image:hover .drop-zone-overlay,
+  .drop-zone.has-image.drag-over .drop-zone-overlay { opacity: 1; }
+  .remove-image-btn {
+    position: absolute; top: 4px; right: 4px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: rgba(5,6,3,0.85); border: 1px solid var(--line);
+    color: var(--ink); font-size: 11px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; z-index: 2;
+    opacity: 0; transition: opacity 0.15s ease;
+  }
+  .drop-zone.has-image:hover .remove-image-btn { opacity: 1; }
+  .remove-image-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  .detail-drop-zone {
+    aspect-ratio: 16 / 9;
+    max-height: 320px;
+  }
+
+  .toolbar {
+    max-width: 1100px;
+    margin: 16px auto 0;
+    padding: 0 24px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+  .toolbar-hint {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-dim);
+    text-align: center;
+  }
+  .toolbar-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--gold);
+    background: transparent;
+    color: var(--gold);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .toolbar-btn:hover { background: var(--gold); color: #1a1400; }
+  .toolbar-btn.ghost { border-color: var(--line); color: var(--ink-dim); }
+  .toolbar-btn.ghost:hover { border-color: var(--ink-dim); background: transparent; color: var(--ink); }
+  .card-name {
+    font-family: 'Spectral', serif;
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--ink);
+    margin-top: 8px;
+  }
+  .card-role {
+    font-size: 11px;
+    color: var(--ink-dim);
+    line-height: 1.35;
+    margin-top: 4px;
+    flex-grow: 1;
+    overflow: hidden;
+  }
+  .card-tags {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.03em;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.06);
+    color: var(--ink-dim);
+  }
+  .tag.swing { background: var(--swing); color: #1a1000; font-weight: 500; }
+  .card-tarot-note {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: currentColor;
+    opacity: 0.75;
+    margin-top: auto;
+    padding-top: 6px;
+    border-top: 1px dashed currentColor;
+  }
+
+  /* Modal */
+  #overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(5,6,3,0.82);
+    backdrop-filter: blur(3px);
+    z-index: 50;
+    padding: 40px 20px;
+    overflow-y: auto;
+  }
+  #overlay.open { display: flex; justify-content: center; align-items: flex-start; }
+  .detail {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    max-width: 640px;
+    width: 100%;
+    padding: 32px 36px 36px;
+    position: relative;
+  }
+  .detail-close {
+    position: absolute; top: 18px; right: 20px;
+    font-family: 'IBM Plex Mono', monospace;
+    background: none; border: 1px solid var(--line); color: var(--ink-dim);
+    width: 32px; height: 32px; border-radius: 50%;
+    cursor: pointer; font-size: 16px;
+  }
+  .detail-close:hover { color: var(--ink); border-color: var(--gold); }
+  .detail-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .detail-name {
+    font-family: 'Spectral', serif; font-weight: 600;
+    font-size: 32px; margin: 4px 0 2px; color: var(--ink);
+  }
+  .detail-role { color: var(--ink-dim); font-size: 14px; margin-bottom: 20px; }
+  .detail-tarot {
+    font-family: 'Spectral', serif; font-style: italic;
+    font-size: 14px; color: var(--gold); margin-bottom: 20px;
+    padding: 10px 14px; border: 1px dashed var(--gold); border-radius: 8px;
+    background: rgba(224,160,32,0.06);
+  }
+  .field { margin-bottom: 18px; }
+  .field-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-dim);
+    display: flex; align-items: center; gap: 8px; margin-bottom: 5px;
+  }
+  .field-text { font-size: 14.5px; line-height: 1.55; }
+  .badge-static, .badge-dynamic {
+    font-family: 'IBM Plex Mono', monospace; font-size: 9px;
+    padding: 1px 6px; border-radius: 3px;
+  }
+  .badge-static { background: rgba(255,255,255,0.07); color: var(--ink-dim); }
+  .badge-dynamic { background: var(--swing); color: #1a1000; }
+  .connections { display: flex; flex-direction: column; gap: 8px; }
+  .connection {
+    font-size: 13px; line-height: 1.45; padding: 8px 12px;
+    background: rgba(255,255,255,0.03); border-left: 2px solid var(--line); border-radius: 4px;
+  }
+  .connection b { color: var(--ink); }
+  .inspiration {
+    font-size: 13px; font-style: italic; color: var(--ink-dim);
+    line-height: 1.5;
+  }
+  .placeholder-note {
+    font-size: 12px; color: var(--ink-dim); font-style: italic;
+  }
+
+  /* Project hub nav + doc styling */
+  .hub-nav {
+    max-width: 1300px;
+    margin: 20px auto 0;
+    padding: 0 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 16px;
+  }
+  .hub-tab {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.03em;
+    padding: 9px 15px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--ink-dim);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .hub-tab:hover { color: var(--ink); border-color: var(--line); }
+  .hub-tab.active {
+    background: var(--bg-panel);
+    border-color: var(--gold);
+    color: var(--gold);
+    font-weight: 500;
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  .doc-wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 36px 32px 90px;
+  }
+  .doc-wrap.wide { max-width: 1200px; }
+  .doc-intro {
+    font-family: 'Spectral', serif;
+    font-size: 15px;
+    color: var(--ink-dim);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  .doc-h1 {
+    font-family: 'Spectral', serif;
+    font-weight: 600;
+    font-size: 26px;
+    color: var(--gold);
+    margin: 0 0 18px;
+  }
+  .doc-h2 {
+    font-family: 'Spectral', serif;
+    font-weight: 600;
+    font-size: 19px;
+    color: var(--ink);
+    margin: 34px 0 12px;
+  }
+  .doc-h2:first-child { margin-top: 0; }
+  .doc-h3 {
+    font-family: 'Spectral', serif;
+    font-weight: 600;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--food);
+    margin: 24px 0 8px;
+  }
+  .doc-p {
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--ink);
+    margin: 0 0 12px;
+  }
+  .doc-p strong, .doc-ul strong, .doc-table strong { color: var(--gold); font-weight: 600; }
+  .doc-em-note {
+    font-family: 'Spectral', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-dim);
+    margin: 0 0 12px;
+  }
+  .doc-hr {
+    border: none;
+    border-top: 1px dashed var(--line);
+    margin: 22px 0;
+  }
+  .doc-ul { margin: 0 0 14px; padding-left: 20px; }
+  .doc-ul li { font-size: 14.5px; line-height: 1.6; margin-bottom: 7px; color: var(--ink); }
+  .doc-table-wrap { overflow-x: auto; margin: 0 0 18px; border: 1px solid var(--line); border-radius: 8px; }
+  .doc-table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+  .doc-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--ink-dim); text-align: left; padding: 8px 12px;
+    background: var(--bg-panel); border-bottom: 1px solid var(--line);
+    position: sticky; top: 0;
+  }
+  .doc-table td {
+    padding: 9px 12px; border-bottom: 1px solid var(--line);
+    vertical-align: top; line-height: 1.5; color: var(--ink);
+  }
+  .doc-table tr:last-child td { border-bottom: none; }
+  .doc-table code, .doc-p code {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.9em;
+    background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px;
+  }
+  .char-link {
+    cursor: pointer; text-decoration: underline dotted var(--ink-dim); text-underline-offset: 3px;
+  }
+  .char-link:hover { color: var(--gold) !important; }
+  .doc-map-jump {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--gold);
+    cursor: pointer; text-decoration: underline dotted;
+  }
+  .mermaid-shell {
+    background: var(--bg-card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 20px; overflow: auto; max-width: 1200px; margin: 0 auto;
+  }
+  .kickoff-box {
+    width: 100%; min-height: 340px; background: var(--bg-card); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 8px; padding: 16px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px; line-height: 1.55;
+    resize: vertical;
+  }
+  .copy-btn {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: 0.03em;
+    padding: 7px 16px; border-radius: 999px; border: 1px solid var(--gold);
+    background: transparent; color: var(--gold); cursor: pointer; margin-top: 10px;
+  }
+  .copy-btn:hover { background: var(--gold); color: #1a1400; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>BREW the WORLD</h1>
+  <div class="subtitle">Project hub — cast, bibles, plans &amp; systems, all in one place</div>
+</header>
+
+<nav class="hub-nav" id="hub-nav">
+  <button class="hub-tab active" data-tab="codex">Cast codex</button>
+  <button class="hub-tab" data-tab="overview">Overview &amp; goals</button>
+  <button class="hub-tab" data-tab="castbible">Cast bible</button>
+  <button class="hub-tab" data-tab="stylebible">Style bible</button>
+  <button class="hub-tab" data-tab="macro">Macro structure</button>
+  <button class="hub-tab" data-tab="vs">Vertical slice</button>
+  <button class="hub-tab" data-tab="combat">Combat system</button>
+  <button class="hub-tab" data-tab="relationships">Relationship map</button>
+  <button class="hub-tab" data-tab="buildref">Build reference</button>
+</nav>
+
+<div class="tab-panel active" data-tab="codex" id="tab-codex">
+<div class="toolbar">
+  <span class="toolbar-hint">Drag an image onto any card's portrait (or click it) to add a picture</span>
+  <span class="toolbar-hint" id="image-progress">0 of 0 characters have a portrait</span>
+  <button class="toolbar-btn" id="save-btn" type="button">⬇ Save codex with images</button>
+  <button class="toolbar-btn ghost" id="clear-images-btn" type="button">Clear all images</button>
+</div>
+<div class="controls" id="controls"></div>
+<div id="gen-sections"></div>
+</div>
+
+
+<div class="tab-panel" data-tab="overview" id="tab-overview">
+  <div class="doc-wrap">
+    <h2 class="doc-h2">Title & World Logic</h2>
+<p class="doc-p"><strong>Title:</strong> <em>BREW the WORLD</em> — deliberate double-read. "Brew the world" (make/concoct) with "save the world" ghosted underneath, unspoken. The gap between the title's implied promise and what the game actually delivers stays implicit — never spelled out in-game.</p>
+<p class="doc-p"><strong>Nation:</strong> The Fields</p>
+<p class="doc-p"><strong>Ruling party:</strong> The Orchard</p>
+<p class="doc-p"><strong>Resistance:</strong> The Weeds (a dismissive Orchard term, reclaimed)</p>
+<p class="doc-p"><strong>The war:</strong> "The Last War" — Orchard propaganda framing (the war that ends war, oxymoronic and self-aware). Lands, weapons, and specifics are deliberately never named — the Orchard's entire point is that the specifics don't matter, only the war's continued existence does.</p>
+<p class="doc-p"><strong>Magic:</strong> Rare, belief-powered force usable by either side.</p>
+<p class="doc-p"><strong>Naming convention:</strong> Botanical names are reserved for family and major narrative-carrying characters. Everyone else uses a food / animal / elemental scheme — a naming signal that tells an attentive player who's carrying real weight before the story does.</p>
+<p class="doc-p"><strong>Governing thesis:</strong> The Orchard sells the player a false, singular crisis — the war, framed as inevitable and un-endable. The true path available to the player the entire time is unglamorous: talk to, respect, and fight for the people who make up and sustain the village. Some outside "hemmer and locker" doesn't get to decide that for them. Unity, not the war, is the actual answer the game is hiding in plain sight — the Orchard's "inevitable victory" framing only holds if the player never notices what's already structurally connected around them.</p>
+<p class="doc-p"><strong>The Hollows:</strong> Victims of the Orchard's Picker process. The process takes their voice — the Hollows cannot speak — and visibly disfigures them past casual recognition as human. This is the game's core monster-encounter type. Their humanity isn't legible on sight; recovering it is work the player has to do, the same gap the governing thesis asks the player to close everywhere else. Three angles on the same mechanic: Barley makes them (institutional, dutiful — his one broken protocol was pulling Lemon out before the process finished), Lemon is one, named and individuated (the personal, spared exception), and Fox has killed them without knowing — or without letting himself know — what they used to be (the unwitting outsider, violence at a remove).</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">The Chain of Power (top-down)</h2>
+<p class="doc-p"><strong>THE ORCHARD</strong> (the state)</p>
+<p class="doc-p">↓</p>
+<p class="doc-p"><strong>HEMLOCK</strong> — former teacher/scholar, now the doctrine's living enforcement. Shaped Fennel's gift from a distance, years before she could place him. Wants total, willing devotion — completion, not mere obedience.</p>
+<p class="doc-p">↓ (chain-of-command — confirmed for Cedar, recruited in person; still unconfirmed for Barley and Kirkwood)</p>
+<p class="doc-p"><strong>CEDAR</strong> (quartermaster) · <strong>BARLEY</strong> (Picker enforcer) · <strong>KIRKWOOD</strong> (if state-ward)</p>
+<p class="doc-p">↓</p>
+<p class="doc-p"><strong>THE VILLAGE</strong> — every remaining character either serves this chain, resists it, or is caught in the middle of it without knowing which.</p>
+<h2 class="doc-h2">The Chain of Resistance (bottom-up)</h2>
+<p class="doc-p"><strong>SAGE</strong> (active Weeds operative) ↔ <strong>MARIGOLD</strong> (cover, community anchor, web crux)</p>
+<p class="doc-p">↓</p>
+<p class="doc-p"><strong>OWL</strong> (hides texts) · <strong>SPARROW</strong> (smuggles messages) · <strong>FLINT</strong> (hides people/goods) · <strong>BADGER</strong> (repairs under cover) · <strong>LOAM</strong> (skims yield)</p>
+<p class="doc-p">↓</p>
+<p class="doc-p"><strong>FOX</strong> (reciprocity-based outsider) · swing-capable: <strong>WEASEL, CRICKET, KIRKWOOD, CEDAR, BARLEY</strong></p>
+<p class="doc-p"><strong>FENNEL</strong> sits at the convergence of both chains — daughter of a state functionary and an operative, unknowingly cultivated by the man at the top of the state chain, in daily contact with nearly every node in the resistance chain through the shop counter. She is the point where "inevitable" and "assemblable" meet.</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Generations</h2>
+<p class="doc-p"><strong>The Trifecta (elder)</strong> — Pine (now Hemlock), Owl, Marigold. Founded the village together. Pine's departure — the transformation into the doctrine, into Hemlock — is the fracture that broke the trio, and then broke Owl and Marigold's own marriage on top of it: Owl turned to his books, trying to hold what was lost by cataloguing it; Marigold turned to the community, trying to replace what was lost by holding everyone else together instead. Two different answers to the same wound, incompatible enough to end a marriage even between two people who'd both stayed loyal to each other and to the village. <strong>Yew and Ivy are the same generation, adjacent to the trio rather than part of it</strong> — two more answers to the same fracture. Yew turned outward, into the wilds, becoming the first person to see the Hollows as people rather than casualties. Ivy turned toward the leadership vacuum Pine left, carrying alone the fact that she knows exactly who he became — a secret neither Owl nor Marigold know she's holding.</p>
+<p class="doc-p"><strong>The Established (middle)</strong> — Cedar, Sage, confirmed anchors of this tier: married across the state/resistance divide, the origin tension the whole family sits on. Badger and Nessa belong here too — married, same generation, already load-bearing before Fennel's story starts. Stag, Loam, and Weasel are now confirmed here as well: each carries a relationship to the founding generation or the Established couples that predates Fennel entirely (Stag as Cedar's old comrade, Weasel as Sage's past, Loam's provision role already established before Fennel took over the shop). Butter is deliberately left out of this tier — nothing ties him to the founding era; he reads as a contemporary of Fennel's own generation who simply took the easier path early.</p>
+<p class="doc-p"><strong>Fennel's Generation</strong> — Fennel, Kirkwood, Clover, Daisy, Mugwort, Fox, Coal, Ash, Ember, Falcon, Millet, Ferret, Rose, Branch, and likely Cricket and Sparrow by age. Butter sits here too, by elimination from the Established tier above. Mostly unaware of the world before Fennel, or aware only in fragments passed down by the Trifecta and Established tiers. Mugwort belongs here specifically as ongoing, not historical, proof that Pine/Hemlock's doctrine still can't replicate what she does — his failure isn't a past event, it's still failing in real time, generation after generation. Clover and Daisy are both by-design blank on want/fear, but for different reasons: Clover is the family's stake in general, unclaimed by any single relationship; Daisy is Robin's specifically — the uncomplicated warmth his fear is about losing. Falcon is one of the children split between Owl and Marigold post-divorce — not the only one; a sibling may exist later, unnamed for now. Coal, Millet, and Ferret complete the set of "craft-family" peers — the next generation of the three trade domains (Badger's craft, Loam's provisions, Weasel's ledgers), each a direct friend of Fennel's, each carrying a piece of their parent's arc forward without fully understanding it yet. Rose and Branch use botanical names despite not being blood-family to Fennel — a deliberate exception, same logic as Mugwort: the naming scheme signals real weight, and both carry it.</p>
+<hr class="doc-hr">
+    <h2 class="doc-h2">Project goals (standing, not new)</h2>
+<ul class="doc-ul">
+<li>Ship a vertical slice: shop interior + market square + treeline foraging path, full harvest → brew → sell loop, one Hollow encounter proving the combat pipeline.</li>
+<li>Keep the governing thesis mechanically true, not just narratively stated: the Orchard sells one manufactured crisis; the real path is unity, and it's already structurally present in the cast web, unassembled.</li>
+<li>Hold the line on the core visual/UI principle across every system: the interface never announces wrongness. Horror lives in what's shown, never in how it's shown.</li>
+</ul>
+    <h2 class="doc-h2">Document map</h2>
+    <p class="doc-p">Click any row to jump straight to that section.</p>
+    <div class="doc-table-wrap"><table class="doc-table"><thead><tr><th>Doc</th><th>What it's for</th></tr></thead><tbody><tr><td><span class="doc-map-jump" onclick="switchTab('castbible')">Cast bible</span></td><td>Full 33-character cast — role, category, want/fear/secret, relationship web, tarot spread.</td></tr><tr><td><span class="doc-map-jump" onclick="switchTab('stylebible')">Style bible</span></td><td>Visual identity — color language, silhouette grammar, UI/HUD rules, lighting.</td></tr><tr><td><span class="doc-map-jump" onclick="switchTab('macro')">Macro structure</span></td><td>Six-act skeleton (Harvest/Brew/Sell × 2 acts each).</td></tr><tr><td><span class="doc-map-jump" onclick="switchTab('vs')">Vertical slice plan</span></td><td>Locked VS scope, Day 1 roster, bridge-relationship pattern.</td></tr><tr><td><span class="doc-map-jump" onclick="switchTab('combat')">Combat &amp; encounter system</span></td><td>Scythe, repurposed-tool spellcasting, reasoning window, diegetic outcomes.</td></tr><tr><td><span class="doc-map-jump" onclick="switchTab('relationships')">Relationship map</span></td><td>Color-coded diagram of the full cast web.</td></tr><tr><td><span class="doc-map-jump" onclick="switchTab('buildref')">Build reference</span></td><td>VS quick-ref sheet, image-suggestion notes, and the build kickoff prompt.</td></tr></tbody></table></div>
+  </div>
+</div>
+
+<div class="tab-panel" data-tab="castbible" id="tab-castbible">
+  <div class="doc-wrap wide">
+    <h1 class="doc-h1">Cast bible</h1>
+    <p class="doc-intro">Full 33-character cast, want/fear/secret per character, relationship web, tarot spread, sphere-swing mechanic. Character names in the table below are clickable — they jump to that character's card in the codex.</p>
+    <p class="doc-em-note"><em>Working reference document. Compiled from ongoing design sessions. Audit pass applied — see changelog at bottom.</em></p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Title & World Logic</h2>
+<p class="doc-p"><strong>Title:</strong> <em>BREW the WORLD</em> — deliberate double-read. "Brew the world" (make/concoct) with "save the world" ghosted underneath, unspoken. The gap between the title's implied promise and what the game actually delivers stays implicit — never spelled out in-game.</p>
+<p class="doc-p"><strong>Nation:</strong> The Fields</p>
+<p class="doc-p"><strong>Ruling party:</strong> The Orchard</p>
+<p class="doc-p"><strong>Resistance:</strong> The Weeds (a dismissive Orchard term, reclaimed)</p>
+<p class="doc-p"><strong>The war:</strong> "The Last War" — Orchard propaganda framing (the war that ends war, oxymoronic and self-aware). Lands, weapons, and specifics are deliberately never named — the Orchard's entire point is that the specifics don't matter, only the war's continued existence does.</p>
+<p class="doc-p"><strong>Magic:</strong> Rare, belief-powered force usable by either side.</p>
+<p class="doc-p"><strong>Naming convention:</strong> Botanical names are reserved for family and major narrative-carrying characters. Everyone else uses a food / animal / elemental scheme — a naming signal that tells an attentive player who's carrying real weight before the story does.</p>
+<p class="doc-p"><strong>Governing thesis:</strong> The Orchard sells the player a false, singular crisis — the war, framed as inevitable and un-endable. The true path available to the player the entire time is unglamorous: talk to, respect, and fight for the people who make up and sustain the village. Some outside "hemmer and locker" doesn't get to decide that for them. Unity, not the war, is the actual answer the game is hiding in plain sight — the Orchard's "inevitable victory" framing only holds if the player never notices what's already structurally connected around them.</p>
+<p class="doc-p"><strong>The Hollows:</strong> Victims of the Orchard's Picker process. The process takes their voice — the Hollows cannot speak — and visibly disfigures them past casual recognition as human. This is the game's core monster-encounter type. Their humanity isn't legible on sight; recovering it is work the player has to do, the same gap the governing thesis asks the player to close everywhere else. Three angles on the same mechanic: Barley makes them (institutional, dutiful — his one broken protocol was pulling Lemon out before the process finished), Lemon is one, named and individuated (the personal, spared exception), and Fox has killed them without knowing — or without letting himself know — what they used to be (the unwitting outsider, violence at a remove).</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">The Chain of Power (top-down)</h2>
+<p class="doc-p"><strong>THE ORCHARD</strong> (the state)</p>
+<p class="doc-p">↓</p>
+<p class="doc-p"><strong>HEMLOCK</strong> — former teacher/scholar, now the doctrine's living enforcement. Shaped Fennel's gift from a distance, years before she could place him. Wants total, willing devotion — completion, not mere obedience.</p>
+<p class="doc-p">↓ (chain-of-command — confirmed for Cedar, recruited in person; still unconfirmed for Barley and Kirkwood)</p>
+<p class="doc-p"><strong>CEDAR</strong> (quartermaster) · <strong>BARLEY</strong> (Picker enforcer) · <strong>KIRKWOOD</strong> (if state-ward)</p>
+<p class="doc-p">↓</p>
+<p class="doc-p"><strong>THE VILLAGE</strong> — every remaining character either serves this chain, resists it, or is caught in the middle of it without knowing which.</p>
+<h2 class="doc-h2">The Chain of Resistance (bottom-up)</h2>
+<p class="doc-p"><strong>SAGE</strong> (active Weeds operative) ↔ <strong>MARIGOLD</strong> (cover, community anchor, web crux)</p>
+<p class="doc-p">↓</p>
+<p class="doc-p"><strong>OWL</strong> (hides texts) · <strong>SPARROW</strong> (smuggles messages) · <strong>FLINT</strong> (hides people/goods) · <strong>BADGER</strong> (repairs under cover) · <strong>LOAM</strong> (skims yield)</p>
+<p class="doc-p">↓</p>
+<p class="doc-p"><strong>FOX</strong> (reciprocity-based outsider) · swing-capable: <strong>WEASEL, CRICKET, KIRKWOOD, CEDAR, BARLEY</strong></p>
+<p class="doc-p"><strong>FENNEL</strong> sits at the convergence of both chains — daughter of a state functionary and an operative, unknowingly cultivated by the man at the top of the state chain, in daily contact with nearly every node in the resistance chain through the shop counter. She is the point where "inevitable" and "assemblable" meet.</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Generations</h2>
+<p class="doc-p"><strong>The Trifecta (elder)</strong> — Pine (now Hemlock), Owl, Marigold. Founded the village together. Pine's departure — the transformation into the doctrine, into Hemlock — is the fracture that broke the trio, and then broke Owl and Marigold's own marriage on top of it: Owl turned to his books, trying to hold what was lost by cataloguing it; Marigold turned to the community, trying to replace what was lost by holding everyone else together instead. Two different answers to the same wound, incompatible enough to end a marriage even between two people who'd both stayed loyal to each other and to the village. <strong>Yew and Ivy are the same generation, adjacent to the trio rather than part of it</strong> — two more answers to the same fracture. Yew turned outward, into the wilds, becoming the first person to see the Hollows as people rather than casualties. Ivy turned toward the leadership vacuum Pine left, carrying alone the fact that she knows exactly who he became — a secret neither Owl nor Marigold know she's holding.</p>
+<p class="doc-p"><strong>The Established (middle)</strong> — Cedar, Sage, confirmed anchors of this tier: married across the state/resistance divide, the origin tension the whole family sits on. Badger and Nessa belong here too — married, same generation, already load-bearing before Fennel's story starts. Stag, Loam, and Weasel are now confirmed here as well: each carries a relationship to the founding generation or the Established couples that predates Fennel entirely (Stag as Cedar's old comrade, Weasel as Sage's past, Loam's provision role already established before Fennel took over the shop). Butter is deliberately left out of this tier — nothing ties him to the founding era; he reads as a contemporary of Fennel's own generation who simply took the easier path early.</p>
+<p class="doc-p"><strong>Fennel's Generation</strong> — Fennel, Kirkwood, Clover, Daisy, Mugwort, Fox, Coal, Ash, Ember, Falcon, Millet, Ferret, Rose, Branch, and likely Cricket and Sparrow by age. Butter sits here too, by elimination from the Established tier above. Mostly unaware of the world before Fennel, or aware only in fragments passed down by the Trifecta and Established tiers. Mugwort belongs here specifically as ongoing, not historical, proof that Pine/Hemlock's doctrine still can't replicate what she does — his failure isn't a past event, it's still failing in real time, generation after generation. Clover and Daisy are both by-design blank on want/fear, but for different reasons: Clover is the family's stake in general, unclaimed by any single relationship; Daisy is Robin's specifically — the uncomplicated warmth his fear is about losing. Falcon is one of the children split between Owl and Marigold post-divorce — not the only one; a sibling may exist later, unnamed for now. Coal, Millet, and Ferret complete the set of "craft-family" peers — the next generation of the three trade domains (Badger's craft, Loam's provisions, Weasel's ledgers), each a direct friend of Fennel's, each carrying a piece of their parent's arc forward without fully understanding it yet. Rose and Branch use botanical names despite not being blood-family to Fennel — a deliberate exception, same logic as Mugwort: the naming scheme signals real weight, and both carry it.</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Full Cast Reference</h2>
+<div class="doc-table-wrap"><table class="doc-table">
+<thead><tr><th>Character</th><th>Role</th><th>Category</th><th>Want</th><th>Fear</th><th>Secret</th></tr></thead>
+<tbody>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Fennel')" tabindex="0" role="button">Fennel</strong></td><td>Protagonist</td><td>Botanical</td><td>Keep shop/family alive without becoming Cedar</td><td>Complicity past no-return</td><td>Unknowing literal supply engine for the war</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Kirkwood')" tabindex="0" role="button">Kirkwood</strong></td><td>Brother, broadcaster, returned from military service</td><td>Botanical, sphere-swing</td><td>To matter — to tell what actually happened, not the Orchard's version</td><td>Fading to nobody; that what he saw over there traces back to what Fennel's own shop supplied</td><td>Knows more than he says about the platform; carries what service really looked like, filtered into what airs. Owl taught him young — preserve truth before erasure — before the war and the platform got to him first; the want he's built his whole broadcasting career on is Owl's, arrived at secondhand and now pulling against Hemlock's patronage. The swing trigger: a live segment that would require naming, or carefully not naming, the exact supply chain that runs back to Fennel's own shop — the thing neither sibling has said aloud. Wakes people means saying it. Lulls them means reading the safe version and protecting her, himself, and Hemlock's patronage a little longer</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Cedar')" tabindex="0" role="button">Cedar</strong></td><td>Father, quartermaster</td><td>Botanical, sphere-swing</td><td>Protect family via compliance</td><td>Repeating what broke him</td><td>Recruited by Hemlock in person, at the same bedside where Sage was nursing him — has never told her which man got there first. Sage nursed him back after the border skirmish that broke Stag the same day — same wound, opposite outcomes</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Sage')" tabindex="0" role="button">Sage</strong></td><td>Mother, resistance healer</td><td>Botanical</td><td>Undo harm at the root</td><td>Losing another child to the machine</td><td>Full active Weeds operative; trained under Marigold as a healer's apprentice — that's the clinic where she first treated Cedar and Stag after a border skirmish, before the war had a name. Loved Weasel before Cedar, left the security-through-power path for this one</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Clover')" tabindex="0" role="button">Clover</strong></td><td>Younger sibling</td><td>Botanical</td><td>Simple, present-tense things</td><td>— (by design)</td><td>None (by design)</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Daisy')" tabindex="0" role="button">Daisy</strong></td><td>Younger sibling, sweetheart tone</td><td>Botanical</td><td>— (by design)</td><td>— (by design)</td><td>Tonal opposite of Hemlock's thorn; Fennel could mentor/influence. What Robin is trying to protect — the uncomplicated warmth at stake in whatever happens with Sparrow</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Hemlock')" tabindex="0" role="button">Hemlock</strong></td><td>Antagonist/benefactor; formerly Pine, village co-founder and hero alongside Owl and Marigold</td><td>Botanical</td><td>Total willing devotion — to matter again the way Pine once did, unprompted</td><td>Irrelevance to his own cause; that no one says "Pine" anymore, only "Hemlock"</td><td>Cultivated Fennel's gift from a distance; is the forgotten hero the village still lives by the legacy of, now poisoning the nation he once saved. Recruited Cedar in person, at the exact bedside where Sage was nursing him back from the wound that also broke Stag, offering the same total compliance he's now angling for with Fennel. Cedar isn't chain-of-command by implication; he's Hemlock's first finished work</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Marigold')" tabindex="0" role="button">Marigold</strong></td><td>Town healer, web crux, village co-founder</td><td>Botanical</td><td>Keep the whole town alive — the community she rebuilt instead of the trio she lost</td><td>The day cover & reality can't reconcile</td><td>Holds Sage's, Fennel's, and Hemlock's secrets at once; ex-wife of Owl, both broke over what Pine became. Trained Sage as her healing apprentice — the clinic where Sage first met Cedar</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Robin')" tabindex="0" role="button">Robin</strong></td><td>Neighbor-as-found-family, musician/social artist</td><td>Non-botanical (animal)</td><td>Normalcy, closeness, being needed</td><td>Found-family lost to politics — made literal: the hand that marks him may be the one that loves him</td><td>Small hidden loyalty (covered for Sage once); doesn't know he's the test of Sparrow's breaking point. Owl taught him too — not books, but what to carry in song; Robin's the register of Owl's truth that answers to no institution at all</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Fox')" tabindex="0" role="button">Fox</strong></td><td>Hunter/adventurer customer; a struggler shaped by loss, not chosen freedom; hunting-party first recruit; unsaid tension with Fennel</td><td>Non-botanical (animal)</td><td>Freedom, autonomy</td><td>The wild weaponized/closed off — that the free life he chose was already conscripted by what he lost</td><td>Brings back more than declared goods; has killed Hollows before he knew, or let himself know, what they used to be. Lemon was his — the person he was building a life with before the Picker process took her. He doesn't recognize her now, and calling what followed "freedom" is how he's survived not looking at it directly</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Loam')" tabindex="0" role="button">Loam</strong></td><td>Farmer/market vendor, provisioning the village since before Fennel's shop</td><td>Non-botanical (elemental)</td><td>Keep feeding people — actually feeding them, not just clearing the quota</td><td>Quotas past survivability — watching it happen again, the way it did once already</td><td>Skims yield under quota law; started the season she reported honestly and lost someone to it. Never reported honestly again</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Weasel')" tabindex="0" role="button">Weasel</strong></td><td>Moneylender/requisition clerk</td><td>Non-botanical (animal), sphere-swing</td><td>Security through proximity to power</td><td>Wrong side of the ledger</td><td>Quietly lenient with Fennel — for Sage's sake, the life he didn't get to keep. Handles enough of the shop's books to see what Fennel doesn't: that her ledgers are the war's literal supply chain. Whether he surfaces that or buries it deeper is the loosened chain vs. bondage swing</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Cricket')" tabindex="0" role="button">Cricket</strong></td><td>Broadcast-crier</td><td>Non-botanical (animal), sphere-swing (tonal/minor)</td><td>Stay useful, employed, safe</td><td>Saying the wrong thing on air</td><td>No longer believes what he reads; Owl quietly feeds him fragments of truth to slip into the scripted broadcast — a faster, riskier cousin of hiding texts for Sage</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Butter')" tabindex="0" role="button">Butter</strong></td><td>Chose "them" already</td><td>Non-botanical (food)</td><td>Comfort, not thinking too hard</td><td>Suppressed, not absent</td><td>Knows what the comfort cost — the numbed-out foil to Fox's outward run; same wartime pressure, opposite coping mechanism</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Stag')" tabindex="0" role="button">Stag</strong></td><td>Wounded veteran</td><td>Non-botanical (animal)</td><td>Meaning after being emptied out</td><td>Being discarded, no longer useful</td><td>Knows what the war actually costs — the same hands that healed Cedar into compliance couldn't heal him into anything but the wound</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Owl')" tabindex="0" role="button">Owl</strong></td><td>Codex/lorekeeper, village co-founder</td><td>Non-botanical (animal)</td><td>Preserve truth before erasure — cataloguing what the fracture took</td><td>Irrelevance/erasure of knowledge</td><td>Corroborates Marigold's account of Pine; turned to books when the founding trio broke, where she turned to people. Taught three students, in three registers: Mugwort as a girl, in person — she outgrew what he could hold in a book; Kirkwood as a boy, in private — that teaching now reaches the whole nation through the broadcast, filtered and diffused past any credit back to Owl; Robin — not books but what to carry in song, the register that answers to no institution at all</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Badger')" tabindex="0" role="button">Badger</strong></td><td>Blacksmith/dockworker</td><td>Non-botanical (animal)</td><td>Dignity through craft</td><td>Craft fully absorbed into war economy</td><td>Repairs/forges for the Weeds under cover</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Sparrow')" tabindex="0" role="button">Sparrow</strong></td><td>Tailor, sphere-swing</td><td>Non-botanical (animal), sphere-swing</td><td>Recognized for skill, not just utility</td><td>Being ordered to mark Robin — and finding out which she'll choose</td><td>Hides resistance messages in linings; will be ordered to mark someone she loves</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Flint')" tabindex="0" role="button">Flint</strong></td><td>Carpenter</td><td>Non-botanical (elemental/mineral)</td><td>Build things that last</td><td>What he builds turned against Branch, his own child, who delivers half of it without knowing what's inside</td><td>Builds hidden compartments for the Weeds</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Barley')" tabindex="0" role="button">Barley</strong></td><td>Picker enforcer</td><td>Non-botanical (food), sphere-swing</td><td>Believes what he does is mercy</td><td>Being wrong — that it's extermination</td><td>Once spared Lemon before the process completed; told no one — accept it and guide toward a better future, cleanse it and lock the dark one, or simply watch the cleansing happen (full sphere-swing, three-path). Doesn't know Fox — who has unknowingly killed others he made — was the one she left behind</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Lemon')" tabindex="0" role="button">Lemon</strong></td><td>Ally, humanizing-route; a named Hollow</td><td>Non-botanical (food)</td><td>Proof-of-personhood for monster/victim content</td><td>—</td><td>Same character, opposite use by player sphere; the one Barley spared — and the person Fox lost, before he called leaving "freedom"</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Mugwort')" tabindex="0" role="button">Mugwort</strong></td><td>Wild-belief specialist, village edge; Fennel's closest friend — stunted but gifted, anxious yet unshakeably loyal</td><td>Botanical (non-family)</td><td>To keep practicing without anyone's permission or witness</td><td>Being studied/formalized — becoming a second Hemlock-origin-story</td><td>She's the reason Hemlock's doctrine exists — and its proof of failure. Owl taught her to read and catalog as a child; she outgrew what he could hold in a book, and that's the exact shape her fear of formalization takes now</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Nessa')" tabindex="0" role="button">Nessa</strong></td><td>Badger's wife, fisherwoman captain</td><td>Non-botanical (animal, married-in)</td><td>Keep crew and family afloat under quota pressure</td><td>Losing one to the sea before the state gets the other</td><td>Ferries Badger's forged pieces out under cover of the catch — the sea half of the operation whose land half is Badger's forge</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Ash')" tabindex="0" role="button">Ash</strong></td><td>Badger & Nessa's oldest, soldier/fighter, sphere-swing</td><td>Non-botanical (elemental), sphere-swing</td><td>Prove himself, matter through strength</td><td>Becoming what he's trained to destroy — a second Barley</td><td>Undecided which way he leans, Weeds or Picker — that's the swing. The trigger is close to home: if he ever learns what Badger actually forges under cover, reporting it is the fastest path to becoming his own fear — a second Barley, turned on his own family. Burying it is the fastest path to Weeds</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Ember')" tabindex="0" role="button">Ember</strong></td><td>Badger & Nessa's daughter, cook/homemaker, family connector</td><td>Non-botanical (elemental)</td><td>Hold the family together before the war forces a side</td><td>Being the one who has to choose between them</td><td>Already suspects which way Ash is leaning; hasn't told Nessa or Badger</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Coal')" tabindex="0" role="button">Coal</strong></td><td>Badger's son, different mother than Ash/Ember; apprentice smith, Fennel's friend, carries Badger's legacy</td><td>Non-botanical (elemental)</td><td>Live up to his father's craft</td><td>Discovering what that craft has actually been used for</td><td>Doesn't yet know Badger forges for the Weeds under cover</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Falcon')" tabindex="0" role="button">Falcon</strong></td><td>Owl & Marigold's child, hunting-party scout, Fennel's generation friend</td><td>Non-botanical (animal)</td><td>To be trusted with something real, not just tolerated as the quiet one</td><td>Getting caught carrying a message on an ordinary trip — dragging Fox and Fennel into it</td><td>Already running resistance routes along the same paths the hunting party uses</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Millet')" tabindex="0" role="button">Millet</strong></td><td>Loam's child, works the market stall, Fennel's friend</td><td>Non-botanical (food)</td><td>To be trusted with real responsibility, not just harvest chores</td><td>Repeating the season that broke her mother — an honest count costing someone again</td><td>Already quietly rounding numbers in her own favor, without Loam knowing — the skim passed down without ever being taught</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Ferret')" tabindex="0" role="button">Ferret</strong></td><td>Weasel's child, runs his errands, Fennel's friend</td><td>Non-botanical (animal)</td><td>To matter to his father as something other than useful</td><td>Becoming exactly what Weasel is — mistaking proximity to power for love</td><td>Is the one Weasel actually sends to "deal with things" — errands that are more than errands, and he doesn't fully understand yet what he's carrying</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Yew')" tabindex="0" role="button">Yew</strong></td><td>Hermit of the wilds; turned away entirely when Pine became Hemlock</td><td>Botanical (non-family)</td><td>To protect what the village already gave up on</td><td>That the wild isn't actually separate from the war — only a matter of time before it's reached too</td><td>Was likely the first person, ever, to recognize a Hollow as still a person — has been quietly allying with them in the wilds since before anyone else thought to</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Ivy')" tabindex="0" role="button">Ivy</strong></td><td>Village elder who filled the leadership vacuum Pine's disappearance left, sphere-swing</td><td>Botanical (non-family), sphere-swing</td><td>To hold the community together without ever becoming what Pine became</td><td>That she's already doing it — accumulating the same quiet authority, just slower and more carefully</td><td>Knows Hemlock is Pine. Has never told Owl or Marigold. Whether she finally tells someone, and who, before the truth surfaces on its own, or keeps carrying it alone until it's forced into the open, is the swing (full sphere-swing)</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Rose')" tabindex="0" role="button">Rose</strong></td><td>Stag's daughter, born out of the same conflict that wounded him</td><td>Botanical (major narrative-carrying)</td><td>To give her father a reason that has nothing to do with the war</td><td>Becoming one more thing the war gets to take from him</td><td>Her mother's identity and fate — open, undecided</td></tr>
+<tr><td><strong class="char-link" onclick="jumpToCharacter('Branch')" tabindex="0" role="button">Branch</strong></td><td>Flint's child, delivers and installs his father's work throughout the village</td><td>Botanical (major narrative-carrying)</td><td>To be trusted with the full trade, not just the visible parts</td><td>Disappointing his father; not being seen as ready</td><td>Has carried hidden compartments to half the village without knowing what's inside them — the same hands his father's fear is about</td></tr>
+</tbody></table></div>
+<hr class="doc-hr">
+<h2 class="doc-h2">Cross-Connections (not routed through Fennel)</h2>
+<ul class="doc-ul">
+<li>Cedar ↔ Sage — married across the state/resistance divide, the origin tension; they met years earlier, when apprentice-healer Sage treated him for a border wound</li>
+<li>Cedar ↔ Hemlock — recruited him in person, at the same bedside Sage was nursing him at; the completed version of what he's now attempting with Fennel</li>
+<li>Cedar ↔ Stag — old comrades, wounded together in the same skirmish, healed by the same hands (Sage), diverged into opposite outcomes from there</li>
+<li>Cedar ↔ Flint — requisition contracts, quiet tension</li>
+<li>Cedar ↔ Weasel — quiet professional respect that's also a rivalry, both rooted in Sage: two men who each had a claim on her, still nodding at each other over requisition forms and never saying why</li>
+<li>Sage ↔ Marigold — resistance cover partners, and teacher/student before that — Sage trained under her as a healer first, which is how Sage met Cedar</li>
+<li>Sage ↔ Weasel — loved him before Cedar; she left the security-through-power path he still walks. His leniency toward Fennel is for her sake, not policy</li>
+<li>Marigold ↔ Hemlock — she remembers him as Pine, co-founder and hero, not just "the teacher"</li>
+<li>Marigold ↔ Owl — corroborating sources on who Pine was, before he became Hemlock; also ex-spouses — the marriage broke on the same fracture that broke the trio</li>
+<li>Marigold ↔ Flint — hidden compartments under cover of repairs</li>
+<li>Marigold ↔ Barley — sphere-lenient version tips her off before sweeps</li>
+<li>Owl ↔ Sage/Weeds — hides banned texts</li>
+<li>Kirkwood ↔ Cricket — mirrored broadcaster altitudes; Kirkwood may not know how much risk Cricket's actually taking on air beside him — watching him risk it live is what finally pushes Kirkwood toward his own swing</li>
+<li>Kirkwood ↔ Hemlock — patron pattern if state-ward, in quiet tension with Owl's earlier, unclaimed influence</li>
+<li>Cricket ↔ Owl — Owl feeds him fragments of truth to slip into the scripted broadcast, a riskier cousin of hiding texts for Sage</li>
+<li>Owl ↔ Robin — taught him what to carry in song, not in a book; the one register of Owl's truth that answers to no institution at all</li>
+<li>Daisy ↔ Robin — what he's trying to protect; the uncomplicated warmth at stake in his dilemma with Sparrow</li>
+<li>Owl ↔ Mugwort — taught her to read and catalog as a child; she outgrew what he could hold in a book, living proof his cataloguing has a ceiling</li>
+<li>Owl ↔ Kirkwood — taught him young, in private, before the war and the platform got him; Owl's private mission to preserve truth now reaches the whole nation through Kirkwood's broadcast, diffused past recognition</li>
+<li>Fox ↔ Weasel — freedom/leverage axis friction</li>
+<li>Fox ↔ Badger — tool/weapon upkeep</li>
+<li>Fox ↔ Barley — different hands, same institutional violence: Fox has unknowingly killed Hollows Barley made</li>
+<li>Fox ↔ Lemon — she was his, before the process; he doesn't recognize her now</li>
+<li>Barley ↔ Fox — unknowing double mercy: Barley spared Lemon once; Fox has been living the loss of her ever since, and neither knows the other's stake in it</li>
+<li>Loam ↔ Butter — the shared past is the same loss: they were both there the season the honest count wasn't enough. Loam decided never again and has been skimming since; Butter decided the safest thing was to stop feeling it</li>
+<li>Butter ↔ Fox — foils: same wartime pressure, opposite coping — numbness vs. flight</li>
+<li>Loam ↔ Badger — mirrored resistance-under-risk, grain vs. metal</li>
+<li>Stag ↔ Hemlock — possible source of true info on Hemlock</li>
+<li>Stag ↔ Barley — past tie/mirror</li>
+<li>Sparrow ↔ Weasel — paperwork intersects who gets marked</li>
+<li>Weasel ↔ Fennel — handles enough of the shop's books to see what she doesn't: that her ledgers are the war's literal supply chain. Whether he surfaces that or buries it deeper for her sake is the loosened chain vs. bondage swing</li>
+<li>Sparrow ↔ Robin — romance; she is ordered to mark him, and whether she does is shaped by the player's accumulated choices — breaks against the state (chooses him over utility) or breaks for it (becomes the weapon she feared)</li>
+<li>Badger ↔ Flint — craft-contrast, two philosophies of building</li>
+<li>Mugwort ↔ Hemlock — she is the origin he tried and failed to systematize; his doctrine's unspoken source and living proof of its failure</li>
+<li>Mugwort ↔ Marigold — two generations of "woman who holds the town's real knowledge," different registers (Marigold works within cover, Mugwort refuses cover entirely)</li>
+<li>Barley ↔ Lemon — the crux: accept the sparing and guide toward humanization, cleanse it and lock dehumanization, or watch it happen and change nothing. Fox has a stake in this neither he nor Barley knows about yet</li>
+<li>Badger ↔ Nessa — married; craft and sea, two trades under the same quota pressure. Nessa ferries what Badger forges, disguised as catch — his craft and her boat are one operation split across two trades. Ash and Ember are theirs</li>
+<li>Ash ↔ Barley — mirror risk: what Ash could become if he leans Picker</li>
+<li>Ash ↔ Badger — if he ever learns what his father actually forges under cover, that discovery is the swing trigger itself: report it and become the mirror in the line above, bury it and he's already Weeds</li>
+<li>Coal ↔ Fennel — peer friendship, Fennel's generation</li>
+<li>Ember ↔ Coal — not blood-siblings, different mother, but Ember treats him as hers to protect anyway (Emporio/Jolyne register — more caretaker than peer)</li>
+<li>Falcon ↔ Owl — father; the archive and the routes aren't as separate as Owl thinks</li>
+<li>Falcon ↔ Marigold — mother; the sociability that makes the hunting party work at all comes from her side</li>
+<li>Falcon ↔ Fox, Mugwort, Fennel — the hunting party; Fox first, Mugwort and Falcon filling out the trio</li>
+<li>Millet ↔ Loam — mother; doesn't know her own daughter learned the skim without being taught it</li>
+<li>Millet ↔ Fennel — market-stall friendship, craft-family peer alongside Coal and Ferret</li>
+<li>Ferret ↔ Weasel — father; the one actually sent to "deal with things," the thread finally has a name attached</li>
+<li>Ferret ↔ Sage — indirect: doesn't know his father once loved her, or why he's sometimes sent somewhere and told not to write it down</li>
+<li>Yew ↔ Mugwort — kindred recognition, not teacher and student; two people who arrived at the same true thing independently</li>
+<li>Yew ↔ Hollows — allied with them in the wilds before anyone in the village thought to see them as people</li>
+<li>Ivy ↔ Hemlock — knows exactly who he is; the knowledge that shapes her entire approach to leadership</li>
+<li>Ivy ↔ Owl, Marigold — carries the secret of Pine alone; has never told either of them she knows</li>
+<li>Rose ↔ Stag — daughter; the blessing that came out of impossible circumstance</li>
+<li>Branch ↔ Flint — son; delivers his father's work without knowing what half of it actually carries — the literal answer to Flint's oldest unresolved fear</li>
+<li>Ember ↔ Ash — she suspects his lean before it's spoken aloud</li>
+<li>Fennel ↔ Kirkwood — her shop is the literal supply engine for the war he served and returned changed from; neither of them has said this out loud yet — the material his broadcast swing eventually forces into the open, one way or the other</li>
+</ul>
+<p class="doc-p"><strong>Key structural insight:</strong> The cast now stands at 33 named characters, with <strong>7 confirmed full sphere-swing characters</strong> — Cedar, Kirkwood, Weasel, Sparrow, Barley, Ash, and Ivy — plus <strong>Cricket carrying a tonal/minor swing</strong> (Eight of Swords: "trapped in script vs. cutting loose," distinct from the three-path full swings). A full recount of how many carry <em>any</em> Weeds tie or resistance lean (not just full swings) is overdue given how much the roster has grown since the last tally — worth a dedicated audit pass rather than an estimated number here. What's held steady throughout: only <strong>Hemlock and Butter</strong> read as purely, uncomplicated Orchard-loyal with no swing potential at all. The coalition the game needs already exists in the web — it just isn't assembled yet.</p>
+<p class="doc-p"><strong>Mugwort is the deliberate exception to that insight</strong> — she carries no Weeds tie and no Orchard tie. She sits entirely outside both chains by design, which is itself the point: unity doesn't require enlistment in either structure, and her belief-power proves that a third path — neither state doctrine nor organized resistance — was viable the whole time.</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Tarot Spread — "THE BREW"</h2>
+<p class="doc-p">Twenty positions, sequenced like potion-making, upright/reversed tied to sphere-swings where applicable.</p>
+<div class="doc-table-wrap"><table class="doc-table">
+<thead><tr><th>Position</th><th>Character</th><th>Card</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td>The Root</td><td>Fennel</td><td>The Magician</td><td>Creation vs. manipulation</td></tr>
+<tr><td>The Water</td><td>Sage</td><td>Temperance</td><td>Balance vs. extremity</td></tr>
+<tr><td>The Heat</td><td>Cedar</td><td>The Emperor</td><td>Order vs. smothering (sphere-swing)</td></tr>
+<tr><td>The Old Recipe</td><td>Hemlock</td><td>The Hierophant</td><td>Teacher vs. corrupted doctrine</td></tr>
+<tr><td>The Threshold</td><td>Marigold</td><td>The High Priestess</td><td>Guarding truth vs. withheld harm</td></tr>
+<tr><td>The Kitchen Table</td><td>Robin</td><td>Ten of Cups</td><td>Warmth interrupted by war</td></tr>
+<tr><td>The Foraged</td><td>Fox</td><td>The Chariot</td><td>Freedom won vs. spent</td></tr>
+<tr><td>The Harvest</td><td>Loam</td><td>The Empress</td><td>Provision vs. barrenness</td></tr>
+<tr><td>The Toll</td><td>Weasel</td><td>The Devil</td><td>Bondage vs. loosened chain (sphere-swing)</td></tr>
+<tr><td>The Steam</td><td>Kirkwood</td><td>Judgement</td><td>Wakes people vs. lulls them (full sphere-swing)</td></tr>
+<tr><td>The Echo</td><td>Cricket</td><td>Eight of Swords</td><td>Trapped in script vs. cutting loose (smaller swing)</td></tr>
+<tr><td>The Set</td><td>Butter</td><td>Four of Cups</td><td>Apathy amid plenty</td></tr>
+<tr><td>The Dregs</td><td>Stag</td><td>The Hanged Man</td><td>Wisdom paid for vs. stuck in the wound</td></tr>
+<tr><td><strong>The Cull</strong></td><td><strong>Barley</strong></td><td><strong>Justice</strong></td><td><strong>Accept & guide, cleanse & lock, or watch and change nothing (full sphere-swing, three-path)</strong></td></tr>
+<tr><td>The Seed Kept</td><td>Clover</td><td>The Sun</td><td>No reversal by design</td></tr>
+<tr><td>The Undoctored</td><td>Mugwort</td><td>The Star</td><td>Faith/hope/guidance untouched by dogma; no reversal by design, direct answer to Hemlock's Hierophant</td></tr>
+<tr><td>The Stitch</td><td>Sparrow</td><td>The Lovers</td><td>Duty vs. devotion — mark him or choose him (full sphere-swing)</td></tr>
+<tr><td>The Marginalia</td><td>Owl</td><td>The Hermit</td><td>Solitary keeper of truth, teaching in secret registers no institution can claim — no reversal, his teaching is already out in the world, past taking back</td></tr>
+<tr><td>The Temper</td><td>Ash</td><td>Strength</td><td>Restraint over the trained instinct to destroy (full sphere-swing)</td></tr>
+<tr><td>The Undergrowth</td><td>Ivy</td><td>The Moon</td><td>What grows hidden beneath the surface — tell, or keep carrying it alone (full sphere-swing)</td></tr>
+</tbody></table></div>
+<p class="doc-em-note"><em>Justice chosen over Judgement for Barley to avoid overlap with Kirkwood's card — Justice's weighing/scales imagery maps directly onto the three-path accept/cleanse/watch structure, where Kirkwood's Judgement is specifically about a single binary reveal-or-conceal moment on air.</em></p>
+<hr class="doc-hr">
+<p class="doc-em-note"><em>Compiled reference — carries forward alongside Claude's memory of this project.</em></p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Changelog — this pass</h2>
+<p class="doc-p">1. <strong>Swing count corrected.</strong> "8 confirmed full sphere-swing characters" (which wrongly folded Cricket in) split into 7 full + Cricket's tonal/minor swing, matching his own cast entry and tarot note.</p>
+<p class="doc-p">2. <strong>Barley added to the tarot spread</strong> as <strong>The Cull</strong> (Justice) — previously the only full sphere-swing character with no tarot position.</p>
+<p class="doc-p">3. <strong>Header count fixed</strong> — "Eighteen positions" → "Twenty positions," now accurate to the table (19 original rows + Barley).</p>
+<p class="doc-p">4. <strong>Dropped the stale "Mugwort is the 20th character" ordinal</strong> — cast has grown past that count; the substantive point (she's the deliberate exception to the coalition insight) is preserved.</p>
+  </div>
+</div>
+
+<div class="tab-panel" data-tab="stylebible" id="tab-stylebible">
+  <div class="doc-wrap">
+    <h1 class="doc-h1">Style bible</h1>
+    <p class="doc-intro">Visual identity, color language, sprite silhouette grammar, UI/HUD rules, lighting/atmosphere rules.</p>
+    <p class="doc-em-note"><em>Working reference document. Visual direction, tone, UI language. Companion to the cast bible.</em></p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Core Design Principle</h2>
+<p class="doc-p"><strong>The UI never announces wrongness. The player does the noticing, or doesn't — the same failure every complicit villager in the story makes.</strong> No creeping corruption in the menus, no darkening chrome, no glitch effects as guilt accrues. The interface is stable and warm from the first frame to the last. Horror lives entirely in what's shown — environment, sprite detail, dialogue, consequence — never in how it's shown. This governs every section below; when in doubt, push the discomfort into the art, not the frame around it.</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Reference Touchstones</h2>
+<p class="doc-p"><strong>Primary anchors:</strong></p>
+<ul class="doc-ul">
+<li><strong>Octopath Traveler (HD-2D)</strong> — detailed pixel sprites inside 3D dioramas, dramatic directional lighting, bloom, depth-of-field vignetting. The load-bearing quality to borrow isn't the tech, it's the <em>diorama effect</em>: everything looks composed, curated, a little too perfect — a snow globe. That serves the thesis directly. The village should look gorgeous in a way that's quietly suspicious.</li>
+<li><strong>Classic FF (FF6-era specifically)</strong> — the sharper reference for theme, not just look. Imperial/Vector spaces vs. rural/natural spaces render in starkly different palettes using the same engine, no UI change. Structurally a cheerful-looking RPG that becomes an apocalypse story without the interface ever flinching — direct precedent for the core design principle above.</li>
+</ul>
+<p class="doc-p"><strong>Secondary, worth pulling from selectively:</strong></p>
+<ul class="doc-ul">
+<li><strong>Live A Live</strong> — same HD-2D register as Octopath, proof the art style doesn't cap how dark content can go.</li>
+<li><strong>Moonlighter / Potion Permit</strong> — weaker visual fidelity, but the closer genre cousins for shop-ledger and inventory UI, since Octopath has no comparable shopkeeping loop.</li>
+</ul>
+<hr class="doc-hr">
+<h2 class="doc-h2">Visual Identity Overview</h2>
+<p class="doc-p"><strong>Rendering approach:</strong> True HD-2D — pixel-art sprites rendered inside real 3D environments, with a custom shader pipeline driving bloom, depth-of-field, and dynamic directional lighting. Not an approximation of Octopath's look; the actual technique. This is a real engine commitment (Unity or Unreal, custom shader work) to carry into the step 6 tooling decision — noted here so it isn't a surprise later, not re-litigated now.</p>
+<p class="doc-p"><strong>Sprite scale & detail:</strong> Character sprites detailed enough to read individually at shopkeeping-sim conversation distance — closer and more legible than Octopath's typical overworld scale, since BREW lives in dialogue and counter-interactions far more than exploration. Full idle/walk/gesture animation sets per named character; the 25-character cast is the reason this line item matters, not decoration — every one of them needs to be readable as a person in a two-line dialogue exchange, not just a sprite passing through.</p>
+<p class="doc-p"><strong>Environments:</strong> Modeled 3D dioramas per location, lit and lensed like Octopath's — tilt-shift depth of field, warm directional light in village/shop spaces, colder or harsher light where Orchard presence intrudes. Palette does the tonal work FF6 proved out; the lighting engine does the mood work Octopath proved out. Neither ever touches the UI layer.</p>
+<p class="doc-p"><strong>Camera:</strong> Mostly fixed, dramatic angles per scene (not free-roaming 3D camera) — closer to Octopath's per-location camera setups than a true 3D game's camera freedom. Reserve tighter vignette framing for dialogue-critical beats and the sphere-swing moments specifically (Sparrow's choice, Barley's crux, Kirkwood's broadcast) — those get the camera language a battle transition would get in a JRPG, without needing an actual battle system to justify it.</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Color Language</h2>
+<p class="doc-p"><strong>Core principle:</strong> Every character's color identity is drawn from the literal real-world referent of their name — not an assigned "hero blue / villain red" scheme, but grounded, motivated color. This makes the palette an extension of the naming convention rather than a separate signaling system: the same attentive player who clocks that a name is botanical gets rewarded again when they notice the color is doing the same work. This lives entirely in character/environment art — sprite palettes, portrait lighting, scene dressing. It never touches UI chrome, per the core design principle.</p>
+<p class="doc-p"><strong>Botanical (family / major-narrative-carrying):</strong> Drawn straight from the actual plant. Because most of these plants are medicinal-or-toxic (sage, hemlock, mugwort, clover), the palette carries a built-in beautiful/dangerous duality that needs no extra design work — it's already true of the plants themselves. These characters also get the gentlest, most painterly lighting treatment in the HD-2D pipeline, since they're the emotional center — which means Hemlock, of all people, gets rendered as tenderly as Fennel. That's not an error, it's the point.</p>
+<ul class="doc-ul">
+<li>Fennel — feathery yellow-green</li>
+<li>Sage — dusty grey-green (the name already is the color)</li>
+<li>Cedar — warm reddish wood-brown against evergreen</li>
+<li>Marigold — saturated gold-orange, hearth-warm</li>
+<li>Clover — plain bright grass-green</li>
+<li>Daisy — white and yellow, legibly the "purity" palette</li>
+<li>Mugwort — silvery-green, faintly otherworldly, matching The Undoctored's Star card</li>
+<li><strong>Hemlock</strong> — pale flower-white against poison-green stem. Critically: this personal palette stays warm and organic even when he's standing in cold Orchard-institutional environments (see below). It's Pine's color, not the doctrine's, and it never fully leaves him. The visual proof his fear names directly — the man and the doctrine are still in tension, on screen, every time he's on it.</li>
+</ul>
+<p class="doc-p"><strong>Food (everyday village life, often closest to the Hollows thesis):</strong> Warm, saturated, appetite-coded tones — Barley's warm wheat-gold, Butter's pale creamy yellow, Lemon's bright citrus. Deliberately the "nourishment" palette, which is not incidental: Barley and Lemon are the two characters carrying the humanize/dehumanize crux, and nourishment-colors on characters wrestling with whether people get treated as human or as resource is a cheap, durable irony.</p>
+<p class="doc-p"><strong>Animal (instinct, camouflage, resistance-adjacent):</strong> Earthier, muted, naturalistic — Fox's rust-orange, Owl's mottled grey-brown, Sparrow's soft unassuming brown (hidden in plain sight, same as her actual role), Badger's black-and-white banding read literally into his design as a visual for his double life. These read as "blends into the village" colors, same job the animal-naming tier already does narratively.</p>
+<p class="doc-p"><strong>Elemental (craft, land, raw material):</strong> Harder-edged, more graphic than the organic botanical palette — Flint's spark-orange against grey stone, Loam's rich earth-brown, and Ash/Ember/Coal as a literal forge-toned trio (pale soot-grey, glowing orange-red, black-with-ember-undertone) that visually binds Badger's family together as a unit even independent of the blood-relation complexity already on the page.</p>
+<p class="doc-p"><strong>Orchard vs. village overlay:</strong> The FF6 trick sits underneath all of the above — Orchard/institutional spaces render colder, harsher, more saturated-but-artificial; village/organic spaces render warm and naturalistic. Character palettes (above) hold constant across both; only the environment shifts. This is what makes Hemlock's scenes read as dissonant without any UI or dialogue telling the player to feel that — his color is village-warm, his surroundings are Orchard-cold, every time.</p>
+<p class="doc-p"><strong>The Hollows:</strong> Rendered desaturated — grey, drained, at or near monochrome. The mechanism is direct: named characters get color born from their name; the Hollows, stripped of voice and (mostly) stripped of name, are stripped of color too. <strong>Lemon is the deliberate exception</strong> — a faint bleed of her original food-category yellow shows through the grey, visible proof that her personhood is recoverable, not gone. That flicker of color is doing the same job the "same character, opposite use by player sphere" mechanic already does in the cast bible, just at the pixel level instead of the dialogue level.</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Character Sprite Design Language</h2>
+<p class="doc-p"><strong>Core principle:</strong> The naming-scheme logic extends past color into silhouette and costume. Each category gets a distinct shape grammar, readable at HD-2D conversation distance before a player reads a single line of dialogue — the same "who's carrying weight" signal the names already send, now legible at a glance.</p>
+<p class="doc-p"><strong>Botanical (family / major-narrative-carrying):</strong> Flowing, organic silhouettes — soft drape, layered robes and shawls, actual embroidered plant motifs at collar/cuff/hem specific to the character's own plant (marigold blooms worked into Marigold's shawl, sage sprigs at Sage's collar). Heirloom-quality fabric and visible tailoring, distinct from the plainer utilitarian cut everyone else wears — narrative weight reads as literal craftsmanship. Fennel, despite being a working shopkeeper, keeps a botanical embroidery detail on her apron that marks her tier even inside a mundane occupation. <strong>Hemlock is the deliberate exception to the softness rule:</strong> his hemlock-flower motifs are real and botanical-accurate, but forced into a rigid, structured, near-military cut — organic pattern under imposed order, the silhouette itself performing "doctrine over devotion" without a word of dialogue.</p>
+<p class="doc-p"><strong>Food (everyday village life):</strong> Round, soft, practical shapes — aprons, rolled sleeves, simple smocks. The "salt of the earth" utilitarian tier. Barley is the interesting case: an Orchard-issue enforcer's uniform cut, but food-category softness underneath in texture and color — visual proof he hasn't fully hardened into the role, worn exactly where Barley's whole arc lives.</p>
+<p class="doc-p"><strong>Animal (instinct, camouflage, resistance-adjacent):</strong> Costuming pulls literal features from the actual animal — Owl in layered, feather-textured cloaks; Badger's black-and-white banding rendered as a literal striped forge apron and gloves; Fox in weathered leather and fur-trim wraps, built for the outdoors over the shop counter; Sparrow in neat, practical tailor's dress with a single feather-pin, small and easy to overlook — which is the whole point of her. Weasel breaks from the rural register entirely: sleek, fitted, a vest-and-ledger silhouette that reads as office-work dropped into a farming village, matching "slippery" and "proximity to power" at a glance.</p>
+<p class="doc-p"><strong>Elemental (craft, land, raw material):</strong> Harder, more angular shapes than the organic botanical curve — tool-belts, leather work-aprons, visible wear and soot. Loam in sturdy, soil-toned farmwear. Flint dusted grey with a literal stone-and-metal tool-belt. Ash, Ember, and Coal share a visual family unit independent of the blood complexity already on the page — matching soot-marked smith aprons and small metal-band accessories (rings, cuffs) standing in for the ribbon-or-fabric family motif the other tiers might use, since metal is their shared language instead.</p>
+<p class="doc-p"><strong>Swing characters:</strong> One costume element per swing character reads as genuinely ambiguous — worn in a way that could be read as compliance or as quiet resistance, never confirmed by the art itself. Cedar's requisition coat could be sharply maintained (order) or just slightly too careful, like a man hiding fraying at the seams (repeating what broke him). This stays subtle enough not to spoil the mechanic, but rewards a second look once a player already suspects someone's a swing.</p>
+<p class="doc-p"><strong>The Hollows:</strong> No category motif at all. Not animal, not food, not elemental — the naming-scheme visual language requires a name to hang off of, and the Hollows have had theirs taken. Their silhouettes are deliberately generic, stripped of the tailoring/texture specificity every named character gets, matching the desaturation from the color language section. Lemon carries a single food-category detail surviving underneath — the same recoverable-personhood signal as her color bleed, now doubled at the silhouette level.</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Environment & World Dressing</h2>
+<p class="doc-p"><strong>Core principle:</strong> The Orchard/village palette split from the color language section isn't just "two zones with two color grades." Propaganda and state presence physically intrude <em>into</em> the warm spaces — that's the actual design ask. A fully cold, institutional space is easy; the harder and more thesis-relevant work is the Orchard's fingerprints sitting quietly inside a scene that still reads as cozy.</p>
+<p class="doc-p"><strong>Fennel's shop:</strong> The warmest space in the game, and deliberately where the most damning environmental evidence lives, in plain sight. Ingredient crates stamped with Orchard requisition codes she's stopped seeing. A mandatory "Orchard-Approved Supplier" placard by the door, small and unremarkable. Paperwork on the counter that's just paperwork — until an attentive player reads what it's actually authorizing. None of this is hidden. It's ambient, the way her own secret is ambient to her. The shop should be a space a player wants to linger in and only gradually realizes they've been reading the evidence the whole time.</p>
+<p class="doc-p"><strong>The village square:</strong> The diorama at its warmest — and the site of a statue or plaque to <strong>Pine</strong>, moss-softened, a little overgrown, mostly walked past without a glance. This is the single most direct physical version of Hemlock's fear: a monument nobody connects to the man standing in front of them. Worth treating as a recurring background element across multiple scenes rather than a one-time reveal beat, so its ordinariness is earned rather than staged.</p>
+<p class="doc-p"><strong>Propaganda intrusion motifs:</strong> Orchard posters and notices rendered in the <em>village's</em> warm color grading, not the Orchard's cold one — the point isn't that propaganda looks alien here, it's that it's been fully absorbed into the visual normalcy of the place. Picker patrol presence at the edges of otherwise cozy market scenes; a requisition checkpoint dressed like just another market stall until a player looks at what's actually being checked.</p>
+<p class="doc-p"><strong>State-adjacent and resistance-adjacent workspaces, by character:</strong></p>
+<ul class="doc-ul">
+<li><strong>Weasel's requisition office</strong> — cold, institutional, by-the-book — except for one incongruous warm detail that doesn't belong there: something personal, a small object tied to Sage, never explained in the room itself.</li>
+<li><strong>Marigold's clinic</strong> — village-warm on the surface, but dressed with the specific tension her Fear names: cover and reality that can't quite reconcile, visible in small inconsistencies a returning player would eventually notice (supplies that don't match what she's officially treating people for).</li>
+<li><strong>Owl's archive</strong> — dense, cluttered, warm lamplight, deliberately the most "lived-in scholar" space in the game — and the one place that visually explains his Fear (irrelevance/erasure) just by existing: too many books for too few visitors.</li>
+<li><strong>Badger's forge / Nessa's docks</strong> — treated as one continuous space split across two trades, per their cast-bible connection — visual continuity (matching soot/salt textures, shared color accents) between the forge and the boat that's doing more narrative work than either location individually.</li>
+</ul>
+<p class="doc-p"><strong>The village edge:</strong> Mugwort's wild garden is the one space with zero Orchard signage of any kind — no requisition stamps, no propaganda, nothing state-touched. Overgrown, untamed, visually the single space in the game that hasn't been normalized by anything. The fields and treeline beyond the village proper are the transition zone into threat — where Picker sweeps happen and Hollows appear, palette sliding from village-warm toward the desaturated grey established for the Hollows themselves, with no hard cut between them.</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">UI/HUD Design</h2>
+<p class="doc-p"><strong>The one rule that governs everything below:</strong> no visible relationship, trust, or reputation meters. No hearts, no friendship points, no numeric bar that fills as a character warms to Fennel. This is a genre norm worth naming explicitly because it's the one most games in this space break by default (Stardew's hearts, most cozy-sim relationship systems) — and breaking it here would directly undercut the core design principle. Sparrow's swing, Ash's swing, Kirkwood's swing all depend on accumulated player choices, and none of that accumulation is allowed to surface as a number. The player has to read it the way they'd read a real person: through what NPCs say, how a scene plays differently than it would have, never through a UI telling them where they stand.</p>
+<p class="doc-p"><strong>Dialogue box:</strong> Warm wood-and-parchment texture, a light botanical vine-and-leaf border — but the box itself stays visually identical regardless of who's speaking. Character-specific color and silhouette language lives in the portrait art (per the sprite design section), never in the box chrome. This keeps the UI genuinely stable rather than quietly becoming another place the naming-scheme visual system leaks into "the frame," which would blur the line the core principle depends on.</p>
+<p class="doc-p"><strong>Brewing interface:</strong> The central loop, and the single most thematically loaded screen if it's handled wrong. It has to feel exactly as cozy, tactile, and low-stakes as any crafting screen in a comfort game — ingredient slots, a cauldron, warm steam animation — with zero visual differentiation between a recipe that stays local and one that quietly becomes war supply. No red flag, no warning tint, no "restricted ingredient" badge. That absence is the design. The chill is supposed to come later, retroactively, when a player realizes they've been making the same interface work for both the whole time.</p>
+<p class="doc-p"><strong>Shop ledger:</strong> Directly downstream of Fennel's central secret and Weasel's connection to it. Deliberately unremarkable — columns, quantities, standard bookkeeping-sim presentation, nothing visually distinct from any other management screen. Critically: no automatic tagging of which ingredients or sales trace back to the war. If a player wants to know what their ledger actually represents, that has to come from dialogue, from world context, from paying attention — never from a UI label doing the work for them.</p>
+<p class="doc-p"><strong>Map/navigation:</strong> Light-touch given vertical-slice scope — simple wayfinding within a single zone, nothing elaborate needed until the slice expands past one area. Not worth over-designing now.</p>
+<p class="doc-p"><strong>Open question, not yet decided:</strong> whether the tarot spread ever surfaces as actual in-game content — a character codex/journal screen using the card framing — versus staying purely a design-document tool that never appears on screen. That's new scope either way, so I'd flag it for a real decision rather than assume it into the bible.</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Lighting & Atmosphere</h2>
+<p class="doc-p"><strong>Resolving the open question from the top of this document:</strong> yes, the <em>world</em> is allowed to darken — lighting, weather, seasonal color grading — even though the UI never does. That's not a contradiction of the core principle, it's the principle's natural completion: if horror has to live entirely in what's shown, the world needs somewhere to actually carry that weight, and lighting/atmosphere is where it goes instead of the interface.</p>
+<p class="doc-p"><strong>Seasonal arc as the primary escalation vehicle:</strong> Given the shop's harvest→brew→sell loop, the calendar is already diegetic — no need to invent a separate "darkness meter." Open the game in late summer/harvest abundance, warm and gold, and let the season itself turn colder and starker as complicity deepens. This is the single most natural, already-motivated way to darken the world, because an agrarian village visibly changing with the seasons needs no justification at all.</p>
+<p class="doc-p"><strong>Day/night as the two-chains split, made atmospheric:</strong> Daytime carries the Chain of Power's visible normalcy — shop hours, customers, Orchard presence in daylight. Night carries the Chain of Resistance — Sage's real work, smuggling, the conversations that don't happen at the counter. This maps the lore's existing structure directly onto lighting without adding anything new to track.</p>
+<p class="doc-p"><strong>Weather — use sparingly:</strong> Rain and overcast for tension, clear skies for the version of normalcy the Orchard sells. This is a genre-standard tool and it's easy to overuse into unintentional pathetic fallacy that starts functioning like a UI tell ("it's raining, something bad is about to happen"). Reserve it for a handful of specific beats rather than a constant mood-setter — the sphere-swing moments (Sparrow's choice, Barley's crux) are candidates, not everyday scenes.</p>
+<p class="doc-p"><strong>HD-2D-specific techniques:</strong> Bloom on warm light sources — hearth fires, lanterns, brewing steam — contrasted against the harder-edged cold light already established for Orchard spaces. God-rays and light-shaft treatment reserved for hope-coded beats specifically; Mugwort's scenes are the clearest candidate given her Star-card tarot position, and it should stay rare enough to mean something when it happens. The village-square Pine monument is worth a deliberate lighting arc of its own — softer and easier to miss early, colder and harder to ignore as the Hemlock reveal approaches — the same "recurring background element, not a staged reveal" treatment already established for it in the environment section.</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Typography & Text Presentation</h2>
+<p class="doc-p"><strong>Dialogue text:</strong> A single, consistent, warm humanist typeface for all spoken dialogue across the entire cast — no per-character fonts. With 25 named characters, font-switching per speaker would be production overhead with diminishing returns; character voice should come from writing (word choice, rhythm, what each person says and doesn't) rather than typographic gimmick. This is also just consistent with the core UI principle — the dialogue box stays neutral chrome regardless of who's speaking, and the text inside it should too.</p>
+<p class="doc-p"><strong>The one place typography <em>is</em> allowed to carry thematic weight:</strong> in-world documents, rendered as diegetic objects in the environment rather than surfaced through any UI codex. Two registers, directly extending the institutional/personal split already established in color and environment:</p>
+<ul class="doc-ul">
+<li><strong>Institutional text</strong> — Orchard propaganda, requisition forms, official notices — stamped, stenciled, uniform. Bureaucratic and impersonal by design, matching the cold-Orchard palette wherever it physically appears.</li>
+<li><strong>Personal/hidden text</strong> — Owl's marginalia, Sparrow's messages hidden in linings, handwritten notes, banned texts — warmer, varied, visibly human-made, matching the village-warm palette even when its content is dangerous.</li>
+</ul>
+<p class="doc-p">This means a banned text hidden in a lining and a requisition stamp on a crate are legible as opposed registers <em>before</em> a player reads either one — the same "attentive player gets rewarded early" logic the naming scheme, color language, and sprite design have all been running this whole session. And critically, these documents are readable <em>in the world</em>, not summarized or flagged by any UI — finding and actually reading one is the same noticing-work every other system in this bible has been protecting.</p>
+<hr class="doc-hr">
+<p class="doc-em-note"><em>Compiled reference — carries forward alongside Claude's memory of this project.</em></p>
+  </div>
+</div>
+
+<div class="tab-panel" data-tab="macro" id="tab-macro">
+  <div class="doc-wrap">
+    <h1 class="doc-h1">Macro narrative structure</h1>
+    <p class="doc-em-note"><em>Working reference document. High-altitude only — acts and major turn points, not scene-by-scene. Companion to the cast bible and style bible.</em></p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Structural Logic</h2>
+<p class="doc-p">Six acts, built as two acts per movement of the core loop — Harvest, Brew, Sell — rather than three even acts. This keeps the loop's own thematic architecture (harvest → brew → sell, the title's own pun) as the backbone while giving each movement room to actually breathe across two acts instead of being flattened into one.</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Act 1 — Harvest I: The Surface</h2>
+<p class="doc-p">Pure skeleton-building. Establish the shop, the family, Fennel's generation, and the wider village at full cozy strength — Orchard presence ambient and unremarked, exactly as warm as the color language and environment sections describe. No swings trigger here. This act's job is to make the diorama-pretty normalcy real enough that its later cracking actually costs something.</p>
+<p class="doc-p"><strong>Closing beat:</strong> a small, deniable unease — Weasel's leniency toward Fennel reads as slightly odd to an attentive player, with no explanation offered yet.</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Act 2 — Harvest II: First Weight</h2>
+<p class="doc-p">The player starts actually <em>seeing</em> what Act 1 normalized — the requisition stamps, the placard by the door, the paperwork that's just paperwork until it isn't. Introduce Mugwort's garden as the one Orchard-free space in the world, the visible "third path." Barley enters as an enforcer who genuinely believes what he does is mercy — not yet tested.</p>
+<p class="doc-p"><strong>Closing beat — the Harvest movement's climax:</strong> an unmistakably war-adjacent order comes through the counter, and Fennel has to actually brew it and hand it over. Not inference anymore. The first non-deniable weight.</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Act 3 — Brew I: Heat Rising</h2>
+<p class="doc-p">Complications compound. Lower-stakes swings start trending without fully resolving — Cricket takes bigger risks on air as Owl keeps feeding him fragments of truth; the pressure on Sparrow to mark someone starts becoming concrete rather than hypothetical; Weasel reveals more of what the ledgers actually represent. This act is relationships under rising pressure, not revelations.</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Act 4 — Brew II: The Old Recipe</h2>
+<p class="doc-p">The centerpiece act. The Hemlock/Pine reveal lands here — village co-founder, forgotten hero, living doctrine — surfaced through Owl and Marigold. The village-square monument's lighting arc reaches its "hard to ignore" phase. Cedar's own recruitment (the bedside skirmish, Hemlock's first finished work) comes to light. Fox learns, or nearly learns, the truth about Lemon. Barley's crux with Lemon comes to a head.</p>
+<p class="doc-p"><strong>Closing beat — the Brew movement's climax:</strong> Kirkwood's broadcast swing. Not "Fennel realizes" — the actual mechanical and narrative pivot already built into his tarot card (Judgement: wakes people vs. lulls them). Whether he names the supply chain on air is what forces the shop's secret from ambient to public, for the whole village, not just the player. This is the hinge the entire back half depends on.</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Act 5 — Sell I: Consequences</h2>
+<p class="doc-p">Immediate fallout from Kirkwood's choice. The village reacts, Hemlock reacts, the Orchard tightens or the resistance emboldens depending on what went public. Remaining swings resolve here: Ash's final lean (especially if Badger's secret hasn't triggered it yet), Sparrow's mark-or-choose moment with Robin, Weasel's final surface-or-bury call on the ledger. The coalition — or its absence — becomes visible: how many of the swing-capable characters actually tipped toward unity is legible to the player for the first time.</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Act 6 — Sell II: The Reckoning</h2>
+<p class="doc-p">Endgame. Hemlock and Fennel, direct — his ambition to finish what he started with Cedar, tested against everything the player has built or failed to build across the first five acts. Multiple endings, gated by the aggregate of accumulated swing outcomes, not a single final choice. Per the standing design rule: the "successful" ending — shop thriving, full absorption, Fennel completing what Cedar became — is explicitly the worst one. The real win looks smaller: the coalition holds, unity chosen over the Orchard's manufactured crisis, nothing flashy about it. Coda resolves what's left of Fennel's family relationships based on everything accumulated, not a single epilogue slide.</p>
+<hr class="doc-hr">
+<p class="doc-em-note"><em>Skeleton locked as a loose outline — approved. Specific beats, scene-level detail, and exact placement of individual swing moments within acts get adjusted during the flesh pass, not now.</em></p>
+  </div>
+</div>
+
+<div class="tab-panel" data-tab="vs" id="tab-vs">
+  <div class="doc-wrap">
+    <h1 class="doc-h1">Vertical slice plan</h1>
+    <p class="doc-em-note"><em>Working reference document. Scope, cast roster, and the bridge-relationship pattern for characters not physically present early. Companion to the cast bible, style bible, and macro structure.</em></p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Scope (locked)</h2>
+<ul class="doc-ul">
+<li><strong>Zone:</strong> Shop interior + attached market square + a short foraging path at the treeline edge — one contiguous space.</li>
+<li><strong>Loop:</strong> Full harvest → brew → sell, no shortcuts.</li>
+<li><strong>Monster encounter:</strong> One Hollow, encountered while foraging. Systems/combat demo only — the humanizing reveal is reserved for Barley/Lemon/Fox content much later. Day 1 shows the surface, not the tragedy underneath it.</li>
+<li><strong>Relationship beat:</strong> Weasel's leniency toward Fennel — already scripted as Act 1's actual closing beat in the macro structure, so this is real shipped content, not demo-only material.</li>
+<li><strong>Day:</strong> Day 1 of the actual game. Nothing built for the slice is throwaway — it's the real opening.</li>
+</ul>
+<hr class="doc-hr">
+<h2 class="doc-h2">Design Goal: Chosen Family Mirrors Blood Family, From Day 1</h2>
+<p class="doc-p">Fennel's hunting party — Fox, Mugwort, Falcon — needs to read as her chosen family with the same immediacy her blood family does, from the first time the player meets them. Introduced day one, not built up to. This is a deliberate structural choice: the same "unity was already there, unassembled" thesis that runs through the whole cast web applies to Fennel's own inner circle, not just the village at large.</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">VS Cast Roster — Day 1</h2>
+<p class="doc-p"><strong>Blood family (home life):</strong></p>
+<p class="doc-p">Fennel, Cedar, Sage, Kirkwood, Clover, Daisy — all present and interactive from the start.</p>
+<p class="doc-p"><strong>Chosen family (hunting party — mirrors blood family):</strong></p>
+<p class="doc-p">Fox, Mugwort, Falcon — introduced with the same weight and immediacy as the blood family above, not treated as a secondary or later-unlocked group.</p>
+<p class="doc-p"><strong>Craft-family peers (the next generation of the three trade domains):</strong></p>
+<p class="doc-p">Coal (Badger's craft), Millet (Loam's provisions), Ferret (Weasel's ledgers) — Fennel's direct friends, each carrying a piece of their parent's arc forward without fully understanding it yet.</p>
+<p class="doc-p"><strong>Craft-family faces (the adults Fennel actually transacts with):</strong></p>
+<p class="doc-p">Badger, Loam, Weasel — present as working village adults Fennel interacts with directly through the shop and market, distinct from their kids' friendship-tier relationship to her.</p>
+<p class="doc-p"><strong>Ambient/background presence (seen, not deeply engaged yet):</strong></p>
+<p class="doc-p">Marigold, Barley — visible and consistent with the macro structure's Act 1 rule (Orchard presence ambient, unremarked; Barley present as an enforcer who believes what he does is mercy, not yet tested).</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">The Bridge-Relationship Pattern</h2>
+<p class="doc-p">Some characters don't appear physically until much later acts, but the <em>player</em> should be able to feel their presence in the web from Day 1 through someone who is on screen. A bridge character carries the absent one's weight into early scenes without requiring the absent character to be modeled, voiced, or scheduled that early — this is what actually protects scope while keeping the web feeling complete.</p>
+<p class="doc-p"><strong>Confirmed bridges:</strong></p>
+<ul class="doc-ul">
+<li><strong>Owl</strong> (physically absent until Act 3) — bridged through <strong>Falcon</strong>, his child. Falcon's relationship to Owl is itself distant (Owl's reclusiveness is the reason, not a plot contrivance), which means the bridge can carry real texture — Falcon talking about a father who's hard to reach is doing double duty, establishing both Owl's eventual arrival and Falcon's own want (to be trusted with something real, including by his own father).</li>
+<li><strong>Hemlock/Pine</strong> (full reveal in Act 4) — already bridged two ways: through <strong>Cedar</strong> (recruited by him, chain-of-command implication) and <strong>Kirkwood</strong> (patron pattern, if state-ward). No new work needed here, just worth naming as the same pattern already in place.</li>
+</ul>
+<p class="doc-p"><strong>Worth auditing before this goes further:</strong> Stag's appearance timing isn't pinned down yet — his tarot position (The Dregs / Hanged Man) reads as mid-to-late game, which would make him a third candidate for this pattern, likely bridged through Cedar given their existing "old comrades, opposite outcomes" connection. Not locked — flagging it as the next open question if this pattern gets extended further.</p>
+<hr class="doc-hr">
+<p class="doc-em-note"><em>Draft — scope and roster locked for planning purposes; bridge pattern established as a reusable design tool, not exhausted yet.</em></p>
+  </div>
+</div>
+
+<div class="tab-panel" data-tab="combat" id="tab-combat">
+  <div class="doc-wrap">
+    <h1 class="doc-h1">Combat &amp; encounter system</h1>
+    <p class="doc-em-note"><em>Working reference document. Fills the gap flagged in the VS blocker check — nothing on combat existed in the current codex before this pass. Companion to the cast bible, style bible, macro structure, and vertical slice plan.</em></p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Core Design Principle</h2>
+<p class="doc-p"><strong>A fight is never the first option — it's what happens after the reasoning window closes without resolution.</strong> This is the combat system's version of the same governing thesis running through everything else in this codex: the Orchard sells the player a singular, inevitable crisis; the true path is always relational first. Monsters in this game are not spawns, they're consequences — Hollows are citizens the Picker process broke, state-produced trauma made manifest — and the system has to treat them that way mechanically, not just narratively. If combat played identically to a generic RPG encounter, the UI-never-announces-wrongness principle from the style bible would be doing all the moral work alone. It shouldn't have to. The encounter structure itself should already be arguing the thesis before a single line of dialogue does.</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Fennel's Weapon: The Scythe</h2>
+<p class="doc-p">Fennel fights with a <strong>scythe</strong> — a harvesting tool, not a weapon designed for combat. This is the load-bearing detail, not flavor: every fight is visibly, physically an extension of her actual job. She's not trained for violence; she's doing the only physical motion she knows at a larger, more desperate scale. The harvest/brew/sell loop that structures the whole game structures her one combat tool too — nothing in her kit exists outside the shopkeeping logic the rest of the game runs on.</p>
+<p class="doc-p"><strong>Combat framing implications:</strong></p>
+<ul class="doc-ul">
+<li>No separate "combat stance" animation set that reads as trained or practiced. Her scythe swings should carry the same motion-language as her harvesting animations, just faster and more strained.</li>
+<li>The scythe is never upgraded into something more weapon-like (no blade swaps, no "war scythe" skin) — visual escalation happens through wear and damage to the same tool, not through it becoming a different, more combat-legitimate object. If it changes at all across acts, it should look more used, not more lethal.</li>
+</ul>
+<hr class="doc-hr">
+<h2 class="doc-h2">Spellcasting: Repurposed Tools, Not Trained Magic</h2>
+<p class="doc-p">Fennel's magic is <strong>belief-powered</strong>, per the world logic, and it manifests through her as improvised repurposing of shop tools and brewing ingredients — never as a discrete "spell" cast from a menu of trained abilities. Closest touchstone: Isaac Clarke in <em>Dead Space</em> — engineering tools weaponized under pressure, not a soldier's arsenal. Fennel's version is the potion-shop equivalent: a ladle becomes a parry, a sachet of something volatile becomes a thrown consumable, a preservation charm meant for ingredients gets flung at a Hollow mid-fight because it's the only thing in her hands.</p>
+<p class="doc-p"><strong>Why this matters structurally:</strong> it keeps combat legible as an extension of the brewing interface rather than a separate system bolted on. The style bible is explicit that the brewing screen has zero visual differentiation between a recipe that stays local and one that becomes war supply — that "no red flag" logic should hold in combat too. A thrown ingredient doesn't get a combat-specific icon or rarity glow that a shop ingredient wouldn't also have. Same visual language, same object, just deployed under different stakes.</p>
+<p class="doc-p"><strong>Practical framing for build:</strong></p>
+<ul class="doc-ul">
+<li>Every combat "ability" should map to a named shop or brewing object that already exists (or plausibly could) in Fennel's inventory — not an invented magical implement.</li>
+<li>No spell-menu UI with cooldown timers or mana bars if it can be avoided — closer to "what's in her hands/satchel right now" than a prepared loadout. (Full inventory-as-loadout system can be scoped more precisely once the VS is in engine; the constraint to hold onto is that it never looks like a wizard's spellbook.)</li>
+</ul>
+<hr class="doc-hr">
+<h2 class="doc-h2">The Reasoning Window</h2>
+<p class="doc-p"><strong>Every Hollow encounter opens with a non-combat window before combat becomes available at all.</strong> This is the mechanical enactment of the game's whole "the true path is talking to people" thesis, applied to the one enemy type the game has.</p>
+<ul class="doc-ul">
+<li>On encountering a Hollow, the player is dropped into a reasoning/observation beat first — reading the Hollow's behavior, environment details, remaining fragments of what they used to be (posture, a half-recognizable object they're carrying, a repeated gesture). No combat input is available during this window.</li>
+<li>The window can resolve multiple ways depending on what the player notices and does: de-escalation, retreat, or the Hollow disengaging on its own. Combat is not the "correct" resolution — it's the fallback state, mechanically framed as a failure to find another way, not a neutral first option sitting alongside the others.</li>
+<li>Once combat is entered (because the window closed without another resolution, or the Hollow attacks first), it plays like a real, sometimes-necessary fight — not a punishment or a game-over-adjacent state. The point isn't to make combat feel bad to engage in; it's to make sure the player had to walk past a door marked "try something else" to get there.</li>
+</ul>
+<p class="doc-p"><strong>VS-specific note:</strong> the vertical slice's one Hollow encounter is explicitly scoped as <strong>systems/combat demo only</strong> — the reasoning window still gates entry into combat mechanically (so the system is real and tested), but the actual humanizing reveal (recognizing who a Hollow used to be, the Lemon/Fox/Barley content) is reserved for much later. Day 1's Hollow should feel like a genuine unknown the player is cautiously reading, not yet a specific tragedy — the window does real mechanical work without the narrative payload landing yet.</p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Outcome Tracking: Diegetic, Not a Meter</h2>
+<p class="doc-p">Per the standing UI/HUD rule (no visible relationship, trust, or reputation meters — this document extends that rule to combat outcomes specifically): <strong>how the player handles Hollow encounters is never scored, tallied, or surfaced as a number anywhere in the interface.</strong></p>
+<ul class="doc-ul">
+<li>Consequences surface through what NPCs say and do differently later — a villager who heard how a Hollow encounter went reacts accordingly, dialogue options shift, a character mentions something in passing. No combat-log summary screen, no "mercy" or "aggression" stat.</li>
+<li>This mirrors exactly how Sparrow's, Ash's, and Kirkwood's swings already work per the macro structure — accumulated player choice that the player has to read like they'd read a real person's shifting trust, not track like a resource bar. Combat outcomes should feed into the same invisible accumulation logic, not a separate, parallel system.</li>
+<li>Practically for the VS: even in the single demo encounter, resist the urge to add a placeholder score or debug counter that's meant to be removed "later." If it's visible once, cutting it before ship is easy to forget. Build it invisible from day one, even in a systems demo.</li>
+</ul>
+<hr class="doc-hr">
+<h2 class="doc-h2">What This Doesn't Cover Yet (flagging, not scoping now)</h2>
+<ul class="doc-ul">
+<li>Exact input/animation-frame combat feel (turn-based vs. real-time vs. hybrid) — not decided, and not a VS blocker since the slice only needs one encounter to prove the reasoning-window-into-combat pipeline, not a fully tuned combat system.</li>
+<li>Full inventory-as-loadout mapping (which specific shop objects become which specific combat tools) — worth a dedicated pass once the VS's actual ingredient/tool roster is locked in the harvest/brew build.</li>
+<li>Whether other characters (Fox, Ash, Barley) ever fight alongside or against the player, and whether they'd use this same scythe/repurposed-tool language or their own combat identity — deferred; not needed for a single-player Day 1 slice.</li>
+</ul>
+<p class="doc-p">None of these block tomorrow's build. The three locked pieces above — scythe as harvesting tool, spells as repurposed objects, reasoning window before combat, diegetic-only outcomes — are enough to implement the one VS Hollow encounter end to end.</p>
+<hr class="doc-hr">
+<p class="doc-em-note"><em>Compiled reference — carries forward alongside Claude's memory of this project.</em></p>
+  </div>
+</div>
+
+<div class="tab-panel" data-tab="relationships" id="tab-relationships">
+  <div class="doc-wrap wide">
+    <h1 class="doc-h1">Relationship map</h1>
+    <p class="doc-intro">Color-coded chain of connection across the full cast. Solid arrows route through Fennel or a direct hierarchy; dashed lines are cross-connections; dotted-border nodes mark characters outside both the Orchard and Weeds chains.</p>
+    <div class="mermaid-shell">
+      <div class="mermaid" id="relationship-graph">
+graph TD
+    ORCHARD[["THE ORCHARD"]]:::state
+    HEMLOCK[Hemlock]:::state
+    FENNEL((Fennel)):::hub
+    CEDAR[Cedar]:::swing
+    SAGE[Sage]:::resistance
+    MARIGOLD[Marigold]:::crux
+    KIRKWOOD[Kirkwood]:::swing
+    CRICKET[Cricket]:::swing
+    WEASEL[Weasel]:::swing
+    BARLEY[Barley]:::swing
+    STAG[Stag]:::cost
+    OWL[Owl]:::resistance
+    BADGER[Badger]:::resistance
+    SPARROW[Sparrow]:::swing
+    FLINT[Flint]:::resistance
+    FOX[Fox]:::resistance
+    LOAM[Loam]:::resistance
+    BUTTER[Butter]:::foil
+    ROBIN[Robin]:::family
+    CLOVER[Clover]:::family
+    DAISY[Daisy]:::family
+    LEMON[Lemon]:::ally
+    MUGWORT[Mugwort]:::outsider
+    NESSA[Nessa]:::family
+    ASH[Ash]:::swing
+    EMBER[Ember]:::family
+    COAL[Coal]:::family
+    FALCON[Falcon]:::resistance
+    MILLET[Millet]:::family
+    FERRET[Ferret]:::swing
+
+    ORCHARD --> HEMLOCK
+    HEMLOCK -. unknowing shaping .-> FENNEL
+    HEMLOCK -- recruited him at Sage's bedside --> CEDAR
+    HEMLOCK -. patron if state-ward .-> KIRKWOOD
+    HEMLOCK -. reports up .-> BARLEY
+    HEMLOCK -. possible source of wound .-> STAG
+    OWL -. remembers who Pine was, co-founder .-> HEMLOCK
+    MARIGOLD -. remembers him as Pine, co-founder .-> HEMLOCK
+    OWL -. ex-spouses, broke on the same fracture .-> MARIGOLD
+    OWL --> FALCON
+    MARIGOLD --> FALCON
+    LOAM --> MILLET
+    WEASEL --> FERRET
+    FERRET -. doesn't know his father loved her .-> SAGE
+
+    CEDAR --> FENNEL
+    CEDAR --> KIRKWOOD
+    CEDAR --> CLOVER
+    CEDAR --> DAISY
+    CEDAR -. wounded together, healed by Sage, diverged .-> STAG
+    CEDAR -. requisition contracts .-> FLINT
+    CEDAR -. professional respect, rivalry rooted in Sage .-> WEASEL
+
+    SAGE --> FENNEL
+    SAGE --> MARIGOLD
+    MARIGOLD -. trained her as healer's apprentice .-> SAGE
+    SAGE -. treated him for a border wound, where they met .-> CEDAR
+    SAGE -. loved him before Cedar, left the path he still walks .-> WEASEL
+
+    MARIGOLD -. corroborates Hemlock's past .-> OWL
+    MARIGOLD -. hidden compartments .-> FLINT
+    MARIGOLD -. tipped off before sweeps .-> BARLEY
+
+    OWL -. hides banned texts .-> SAGE
+    SPARROW -. smuggled linings .-> SAGE
+    SPARROW -. paperwork intersects .-> WEASEL
+    SPARROW -. love, mark him or choose him .-> ROBIN
+
+    FLINT -. hidden rooms .-> SAGE
+    FLINT -. craft contrast .-> BADGER
+    BADGER -. tool upkeep .-> FOX
+    BADGER -. mirrored risk .-> LOAM
+    FOX -. unknowingly killed what he made .-> BARLEY
+    FOX -. she was his, before the process .-> LEMON
+    BADGER --- NESSA
+    NESSA -. ferries the forged pieces, disguised as catch .-> SAGE
+    NESSA --> ASH
+    NESSA --> EMBER
+    BADGER --> COAL
+    ASH -. mirror, what he could become .-> BARLEY
+    BADGER -. if he learns the secret, that's the swing trigger .-> ASH
+    EMBER -. suspects his lean first .-> ASH
+    EMBER -. not blood, hers to protect anyway .-> COAL
+    COAL -. doesn't know the craft's real use .-> BADGER
+
+    BARLEY -. accept, cleanse, or watch .-> LEMON
+
+    LOAM -. same loss, opposite response, skim vs numb .-> BUTTER
+    BUTTER -. same wound, opposite coping .-> FOX
+    FOX -. friction .-> WEASEL
+
+    KIRKWOOD -. watching him risk it live is the spark .-> CRICKET
+    OWL -. feeds him truth fragments .-> CRICKET
+    OWL -. taught him what to carry in song .-> ROBIN
+
+    MUGWORT -. origin he tried & failed to replicate .-> HEMLOCK
+    MUGWORT -. two registers of real knowledge .-> MARIGOLD
+    OWL -. taught her as a child, she outgrew the book .-> MUGWORT
+    OWL -. taught him young, now a nationwide beacon of it .-> KIRKWOOD
+
+    FENNEL --> ROBIN
+    ROBIN -. what he's protecting .-> DAISY
+    FENNEL --> OWL
+    FENNEL --> BADGER
+    FENNEL --> SPARROW
+    FENNEL --> FLINT
+    FENNEL -. direct contact w/ state violence .-> BARLEY
+    FENNEL --> FOX
+    FENNEL --> LOAM
+    FENNEL --> WEASEL
+    WEASEL -. sees what her ledgers really are .-> FENNEL
+    FENNEL --> BUTTER
+    FENNEL --> STAG
+    FENNEL -. unsaid shared truth, his swing trigger .-> KIRKWOOD
+    FENNEL --> LEMON
+    FENNEL --> COAL
+    FENNEL --> MILLET
+    FENNEL --> FERRET
+    FENNEL -. unsaid .-> FOX
+    FENNEL -.-> FALCON
+    FOX --- MUGWORT
+    FOX --- FALCON
+    MUGWORT --- FALCON
+    FENNEL -. watches, doesn't learn from .-> MUGWORT
+
+    classDef state fill:#3a1f1f,stroke:#a33,color:#eee
+    classDef resistance fill:#1f2e1f,stroke:#4a4,color:#eee
+    classDef swing fill:#332a1a,stroke:#c93,color:#eee
+    classDef family fill:#1f2530,stroke:#68a,color:#eee
+    classDef hub fill:#3a2f1a,stroke:#e0a020,color:#fff
+    classDef crux fill:#2a1f33,stroke:#a4a,color:#eee
+    classDef cost fill:#2a2a2a,stroke:#888,color:#eee
+    classDef foil fill:#33291f,stroke:#aa8,color:#eee
+    classDef ally fill:#1f332e,stroke:#4aa,color:#eee
+    classDef outsider fill:#1a2818,stroke:#e0a020,color:#fff,stroke-dasharray: 5 5
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-panel" data-tab="buildref" id="tab-buildref">
+  <div class="doc-wrap">
+    <h1 class="doc-h1">Build reference</h1>
+    <p class="doc-intro">Day-1-scoped companion sheets, plus the kickoff prompt for a fresh build session.</p>
+    <h2 class="doc-h2">Build kickoff prompt</h2>
+    <p class="doc-p">Paste this at the start of a build session (Claude Code or a fresh chat) to orient an instance with zero context on this project.</p>
+    <textarea class="kickoff-box" id="kickoff-text" readonly># BREW the WORLD — Build Session Kickoff Prompt
+
+*Paste this at the start of tomorrow&#x27;s build session (Claude Code or a fresh Claude chat, whichever you&#x27;re using for the actual build work). It orients a Claude instance that has none of this session&#x27;s context.*
+
+---
+
+I&#x27;m building the vertical slice for **BREW the WORLD**, a narrative cozy-shopkeeper game with a dark structural irony underneath: the protagonist, Fennel, unknowingly runs a potion shop that supplies a totalitarian war state (The Orchard) while the game&#x27;s real, always-available path is unity with the people around her, not the war the state insists is inevitable.
+
+I have five reference documents that are the source of truth for this project. Read all five before writing anything:
+
+1. **`brew-the-world-cast-bible.md`** — full 33-character cast, want/fear/secret per character, relationship web, tarot spread, sphere-swing mechanic
+2. **`brew-the-world-style-bible.md`** — visual identity, color language, sprite silhouette grammar, UI/HUD rules, lighting/atmosphere rules
+3. **`brew-the-world-macro-structure.md`** — six-act structure (Harvest/Brew/Sell, two acts each)
+4. **`brew-the-world-vertical-slice-plan.md`** — locked VS scope: shop + market square + treeline foraging path, full harvest→brew→sell loop, one Hollow encounter, Weasel&#x27;s leniency beat, bridge-relationship pattern for absent characters
+5. **`brew-the-world-combat-encounter-system.md`** — scythe as harvesting tool, spells as repurposed shop objects (not a spellbook), reasoning-window-before-combat mechanic, diegetic-only outcome tracking (no meters)
+
+Two supplementary docs, use as needed rather than reading cover-to-cover first:
+- **`brew-the-world-vs-quickref.md`** — pulls just the 17 Day 1 characters (blood family, hunting party, craft-family peers/faces, ambient presence) into one sheet
+- **`brew-the-world-vs-image-suggestions.md`** — visual reference notes per VS character; I&#x27;m adding art by hand, this is just direction notes, not something you need to act on
+
+## What I need from you today
+
+Building the vertical slice: shop interior + market square + treeline foraging path as one contiguous space, the full harvest → brew → sell loop, and the single Hollow encounter demonstrating the reasoning-window-into-combat pipeline.
+
+I already have an interactive UI prototype built for the harvest loop (zone selection + Resident Evil-style grid inventory) from an earlier session — ask me for it if it&#x27;s not already in front of you, rather than rebuilding that piece from scratch.
+
+## Non-negotiable constraints, pulled from the docs above — don&#x27;t relitigate these, just build inside them:
+
+- **No visible relationship/trust/reputation meters, anywhere, including in a systems demo.** Not even a debug placeholder meant to be removed later — per the style bible, if it&#x27;s visible once it&#x27;s easy to forget to cut. Consequences surface through dialogue and NPC behavior, never a number.
+- **The UI never announces wrongness.** No corruption-coded chrome, no red flags on morally loaded ingredients or recipes, no restricted-item badges. Horror lives in what&#x27;s shown, never in how it&#x27;s shown.
+- **Fennel&#x27;s combat kit is diegetic.** Scythe as a harvesting tool, not a redesigned weapon. Spells map to shop/brewing objects already in her inventory, not an invented magic system with cooldowns or a spellbook UI.
+- **Every Hollow encounter opens with a non-combat reasoning window** before combat becomes available at all. Combat is the fallback state, not a neutral first option.
+- **Color and silhouette are character-coded per the style bible&#x27;s category grammar** (botanical/food/animal/elemental) — check the style bible before styling any UI or character-facing element, don&#x27;t improvise a new visual system.
+- **Day 1&#x27;s Hollow encounter is systems/combat demo only** — no humanizing reveal, no Lemon/Fox/Barley content. It should read as a genuine unknown, not yet a specific tragedy.
+
+## How I like to work, in case it&#x27;s useful context
+
+I move fast and iterate. I&#x27;d rather you propose a complete approach with brief rationale than ask me a lot of open questions up front — I&#x27;ll redirect quickly if something&#x27;s off. Surface the next logical piece to tackle once something&#x27;s working rather than waiting for me to direct every step.
+
+Start by telling me what you&#x27;d tackle first given the scope above, and I&#x27;ll confirm or redirect.
+</textarea>
+    <button class="copy-btn" id="copy-kickoff-btn" type="button">Copy prompt</button>
+    <hr class="doc-hr">
+    <h2 class="doc-h2">VS quick-reference (Day 1 cast)</h2>
+    <p class="doc-em-note"><em>Pulled from the full cast bible + style bible so you're not scrolling all 33 for tomorrow's build. Covers exactly the roster locked in the Vertical Slice Plan: blood family, chosen family, craft-family peers, craft-family faces, and ambient presence. 17 characters.</em></p>
+<hr class="doc-hr">
+<h2 class="doc-h2">Blood Family (home life — present & interactive)</h2>
+<h3 class="doc-h3">Fennel — Protagonist · Botanical</h3>
+<ul class="doc-ul">
+<li><strong>Want:</strong> Keep shop/family alive without becoming Cedar</li>
+<li><strong>Fear:</strong> Complicity past no-return</li>
+<li><strong>Secret:</strong> Unknowing literal supply engine for the war</li>
+<li><strong>Color:</strong> Feathery yellow-green</li>
+<li><strong>Silhouette:</strong> Botanical grammar (flowing, organic) — but as a working shopkeeper, scaled down to a single botanical embroidery detail on her apron, not full robes. Marks her tier inside a mundane occupation.</li>
+</ul>
+<h3 class="doc-h3">Cedar — Father, quartermaster · Botanical, sphere-swing (full — The Heat, The Emperor)</h3>
+<ul class="doc-ul">
+<li><strong>Want:</strong> Protect family via compliance</li>
+<li><strong>Fear:</strong> Repeating what broke him</li>
+<li><strong>Secret:</strong> Recruited by Hemlock in person at Sage's bedside — never told her which man got there first</li>
+<li><strong>Color:</strong> Warm reddish wood-brown against evergreen</li>
+<li><strong>Silhouette:</strong> Botanical grammar, but the swing-ambiguity costume tell lives here specifically — requisition coat either sharply maintained (order) or slightly too careful, like hiding fraying at the seams (repeating what broke him). Worth playing deliberately ambiguous even in the VS.</li>
+</ul>
+<h3 class="doc-h3">Sage — Mother, resistance healer · Botanical</h3>
+<ul class="doc-ul">
+<li><strong>Want:</strong> Undo harm at the root</li>
+<li><strong>Fear:</strong> Losing another child to the machine</li>
+<li><strong>Secret:</strong> Full active Weeds operative; trained under Marigold; loved Weasel before Cedar</li>
+<li><strong>Color:</strong> Dusty grey-green (the name already is the color)</li>
+<li><strong>Silhouette:</strong> Botanical grammar — flowing, layered, sage-sprig embroidery at collar.</li>
+</ul>
+<h3 class="doc-h3">Kirkwood — Brother, broadcaster · Botanical, sphere-swing (full — The Steam, Judgement)</h3>
+<ul class="doc-ul">
+<li><strong>Want:</strong> To matter — to tell what actually happened</li>
+<li><strong>Fear:</strong> Fading to nobody; that his war supply chain traces to Fennel's shop</li>
+<li><strong>Secret:</strong> Owl's protégé, secondhand; carries what service really looked like filtered into what airs</li>
+<li><strong>Color:</strong> Not yet individually specified — flag for style-bible follow-up before he needs full sprite treatment (later act, not Day 1-critical)</li>
+<li><strong>Silhouette:</strong> Botanical grammar (general) — no individual sprite notes locked yet.</li>
+</ul>
+<h3 class="doc-h3">Clover — Younger sibling · Botanical</h3>
+<ul class="doc-ul">
+<li><strong>Want:</strong> Simple, present-tense things</li>
+<li><strong>Fear / Secret:</strong> None, by design</li>
+<li><strong>Color:</strong> Plain bright grass-green</li>
+<li><strong>Silhouette:</strong> Botanical grammar.</li>
+</ul>
+<h3 class="doc-h3">Daisy — Younger sibling, sweetheart tone · Botanical</h3>
+<ul class="doc-ul">
+<li><strong>Want / Fear:</strong> None, by design</li>
+<li><strong>Secret:</strong> What Robin is trying to protect — the uncomplicated warmth at stake in his Sparrow dilemma</li>
+<li><strong>Color:</strong> White and yellow, legibly the "purity" palette</li>
+<li><strong>Silhouette:</strong> Botanical grammar.</li>
+</ul>
+<hr class="doc-hr">
+<h2 class="doc-h2">Chosen Family — Hunting Party (introduced Day 1, full weight, not a later unlock)</h2>
+<h3 class="doc-h3">Fox — Hunter/adventurer · Animal</h3>
+<ul class="doc-ul">
+<li><strong>Want:</strong> Freedom, autonomy</li>
+<li><strong>Fear:</strong> The wild weaponized/closed off — that his "free" life was already conscripted by loss</li>
+<li><strong>Secret:</strong> Has unknowingly killed Hollows; Lemon was his before the Picker process</li>
+<li><strong>Color:</strong> Rust-orange</li>
+<li><strong>Silhouette:</strong> Weathered leather, fur-trim wraps — built for outdoors over the shop counter.</li>
+</ul>
+<h3 class="doc-h3">Mugwort — Wild-belief specialist, Fennel's closest friend · Botanical (non-family)</h3>
+<ul class="doc-ul">
+<li><strong>Want:</strong> To keep practicing without anyone's permission or witness</li>
+<li><strong>Fear:</strong> Being studied/formalized — becoming a second Hemlock-origin-story</li>
+<li><strong>Secret:</strong> The unspoken reason Hemlock's doctrine exists — and its proof of failure</li>
+<li><strong>Color:</strong> Silvery-green, faintly otherworldly</li>
+<li><strong>Silhouette:</strong> Botanical grammar (non-family exception, same as Rose/Branch/Yew) — flowing, embroidered, her own plant motif.</li>
+</ul>
+<h3 class="doc-h3">Falcon — Owl & Marigold's child, hunting-party scout · Animal</h3>
+<ul class="doc-ul">
+<li><strong>Want:</strong> To be trusted with something real, not just tolerated as the quiet one</li>
+<li><strong>Fear:</strong> Getting caught carrying a message, dragging Fox and Fennel into it</li>
+<li><strong>Secret:</strong> Already running resistance routes along hunting-party paths</li>
+<li><strong>Color:</strong> Not individually specified — animal-category general (earthier, muted, naturalistic)</li>
+<li><strong>Silhouette:</strong> Animal grammar (general) — no individual sprite notes locked yet.</li>
+<li><strong>Note:</strong> Falcon is the confirmed <strong>bridge character for Owl</strong> (physically absent until Act 3) — his distant relationship to his reclusive father is itself the texture, not a gap to fill.</li>
+</ul>
+<hr class="doc-hr">
+<h2 class="doc-h2">Craft-Family Peers (Fennel's direct friends, next generation of the three trades)</h2>
+<h3 class="doc-h3">Coal — Badger's son, apprentice smith · Elemental</h3>
+<ul class="doc-ul">
+<li><strong>Want:</strong> Live up to his father's craft</li>
+<li><strong>Fear:</strong> Discovering what that craft has actually been used for</li>
+<li><strong>Secret:</strong> Doesn't yet know Badger forges for the Weeds under cover</li>
+<li><strong>Color:</strong> Part of the Ash/Ember/Coal forge trio — black-with-ember-undertone</li>
+<li><strong>Silhouette:</strong> Elemental grammar — matching soot-marked smith apron, metal-band accessory (ring/cuff) standing in for family motif.</li>
+</ul>
+<h3 class="doc-h3">Millet — Loam's child, works the market stall · Food</h3>
+<ul class="doc-ul">
+<li><strong>Want:</strong> To be trusted with real responsibility, not just harvest chores</li>
+<li><strong>Fear:</strong> Repeating the season that broke her mother</li>
+<li><strong>Secret:</strong> Already quietly rounding numbers in her own favor, unbeknownst to Loam — the skim passed down without being taught</li>
+<li><strong>Color:</strong> Not individually specified — food-category general (warm, saturated, appetite-coded)</li>
+<li><strong>Silhouette:</strong> Food grammar (general) — no individual sprite notes locked yet.</li>
+</ul>
+<h3 class="doc-h3">Ferret — Weasel's child, runs his errands · Animal</h3>
+<ul class="doc-ul">
+<li><strong>Want:</strong> To matter to his father as something other than useful</li>
+<li><strong>Fear:</strong> Becoming exactly what Weasel is</li>
+<li><strong>Secret:</strong> The one Weasel actually sends to "deal with things" — doesn't fully understand what he's carrying</li>
+<li><strong>Color:</strong> Not individually specified — animal-category general</li>
+<li><strong>Silhouette:</strong> Animal grammar (general) — no individual sprite notes locked yet.</li>
+</ul>
+<hr class="doc-hr">
+<h2 class="doc-h2">Craft-Family Faces (the adults Fennel transacts with directly)</h2>
+<h3 class="doc-h3">Badger — Blacksmith/dockworker · Animal</h3>
+<ul class="doc-ul">
+<li><strong>Want:</strong> Dignity through craft</li>
+<li><strong>Fear:</strong> Craft fully absorbed into war economy</li>
+<li><strong>Secret:</strong> Repairs/forges for the Weeds under cover</li>
+<li><strong>Color:</strong> Black-and-white banding, read literally into design</li>
+<li><strong>Silhouette:</strong> Animal grammar — striped forge apron and gloves as the literal banding motif.</li>
+</ul>
+<h3 class="doc-h3">Loam — Farmer/market vendor · Elemental</h3>
+<ul class="doc-ul">
+<li><strong>Want:</strong> Keep feeding people — actually feeding them, not just clearing the quota</li>
+<li><strong>Fear:</strong> Quotas past survivability — watching it happen again</li>
+<li><strong>Secret:</strong> Skims yield under quota law; stopped reporting honestly after losing someone to an honest count</li>
+<li><strong>Color:</strong> Rich earth-brown</li>
+<li><strong>Silhouette:</strong> Elemental grammar — sturdy, soil-toned farmwear.</li>
+</ul>
+<h3 class="doc-h3">Weasel — Moneylender/requisition clerk · Animal, sphere-swing (full — The Toll, The Devil)</h3>
+<ul class="doc-ul">
+<li><strong>Want:</strong> Security through proximity to power</li>
+<li><strong>Fear:</strong> Wrong side of the ledger</li>
+<li><strong>Secret:</strong> Quietly lenient with Fennel for Sage's sake; sees that her ledgers are the war's literal supply chain</li>
+<li><strong>Color:</strong> Not individually specified — breaks the rural animal-earthtone register entirely per the silhouette note below; likely warrants an office/institutional-toned color rather than a natural one, worth deciding before his ledger scenes matter more</li>
+<li><strong>Silhouette:</strong> Breaks from the animal grammar's naturalism — sleek, fitted, vest-and-ledger silhouette, office-work dropped into a farming village. Matches "slippery"/"proximity to power" at a glance.</li>
+</ul>
+<hr class="doc-hr">
+<h2 class="doc-h2">Ambient / Background Presence (seen, not deeply engaged yet — per Act 1 rule)</h2>
+<h3 class="doc-h3">Marigold — Town healer, web crux, village co-founder · Botanical</h3>
+<ul class="doc-ul">
+<li><strong>Want:</strong> Keep the whole town alive — the community she rebuilt instead of the trio she lost</li>
+<li><strong>Fear:</strong> The day cover & reality can't reconcile</li>
+<li><strong>Secret:</strong> Holds Sage's, Fennel's, and Hemlock's secrets at once</li>
+<li><strong>Color:</strong> Saturated gold-orange, hearth-warm</li>
+<li><strong>Silhouette:</strong> Botanical grammar — flowing robes, marigold-bloom embroidery at collar/cuff.</li>
+</ul>
+<h3 class="doc-h3">Barley — Picker enforcer · Food, sphere-swing (full — The Cull, Justice — new this pass)</h3>
+<ul class="doc-ul">
+<li><strong>Want:</strong> Believes what he does is mercy</li>
+<li><strong>Fear:</strong> Being wrong — that it's extermination</li>
+<li><strong>Secret:</strong> Once spared Lemon before the process completed</li>
+<li><strong>Color:</strong> Warm wheat-gold</li>
+<li><strong>Silhouette:</strong> Orchard-issue enforcer uniform cut, but food-category softness underneath in texture/color — visual proof he hasn't fully hardened into the role. <strong>Per Act 1 / VS scope: present as an enforcer who genuinely believes what he does is mercy — not yet tested.</strong> None of the Lemon crux surfaces on Day 1.</li>
+</ul>
+<hr class="doc-hr">
+<h2 class="doc-h2">Open flags surfaced by building this sheet</h2>
+<ul class="doc-ul">
+<li><strong>Kirkwood, Falcon, Millet, Ferret</strong> have no individually locked color yet — they're currently riding their category's general palette description. Not a blocker for Day 1 (Kirkwood's swing is Act 4, Falcon/Millet/Ferret are peer-tier, lower sprite priority than the front-facing adults), but worth a dedicated color pass before any of them needs a close-up dialogue portrait.</li>
+<li><strong>Weasel's color</strong> is genuinely unaddressed even at the category level, since his whole design point is breaking the animal-category naturalism. Might need its own one-off decision rather than inheriting the animal tier's "earthier, muted" logic — flagging for you rather than assuming an answer.</li>
+</ul>
+<hr class="doc-hr">
+<p class="doc-em-note"><em>Companion to <code>brew-the-world-cast-bible.md</code>. Pulled for VS build reference — not a replacement for the full bible.</em></p>
+    <hr class="doc-hr">
+    <h2 class="doc-h2">VS image suggestions</h2>
+    <p class="doc-em-note"><em>For the codex image pass. Not final art direction — reference points and framing notes to guide what you pick or commission for each Day 1 character. Ties back to the style bible's color language, sprite silhouette grammar, and lighting rules so anything you add stays consistent with what's already locked. Covers the same 17-character VS roster as the quick-reference sheet.</em></p>
+<hr class="doc-hr">
+<h2 class="doc-h2">General reminders before picking images</h2>
+<ul class="doc-ul">
+<li><strong>Diorama effect, not portrait realism.</strong> Per the style bible's Octopath anchor — everything should read as composed, a little too perfect, gorgeous in a way that's quietly suspicious. Avoid references that read as gritty/realistic; lean toward warm, curated, slightly theatrical staging even for "plain" characters like Loam or Millet.</li>
+<li><strong>Botanical tier gets the gentlest, most painterly light</strong> — even in flat reference images, favor soft directional warmth over harsh contrast for Fennel, Cedar, Sage, Kirkwood, Clover, Daisy, Marigold, Mugwort. This is the tier where lighting <em>is</em> characterization.</li>
+<li><strong>Category silhouette grammar first, individual detail second.</strong> If you're stuck choosing between two reference images for a food/animal/elemental character, pick whichever one more clearly reads its category shape language (round-and-soft for food, literal-animal-feature for animal, angular-and-tool-worn for elemental) over one that's just prettier.</li>
+<li><strong>Color is locked for most of this roster</strong> — see each entry below. For the four still-open colors (Kirkwood, Falcon, Millet, Ferret) and Weasel's deliberately-unresolved one, proposals are marked accordingly; treat those as adjustable, not final, when you're picking references.</li>
+<li><strong>The swing-ambiguous costume detail matters for sphere-swing characters</strong> — Cedar, Kirkwood, Weasel, Barley all have (or should get) one wearable element that could read two ways. Worth looking for reference images with <em>some</em> asymmetry or wear rather than a pristine, single-note outfit.</li>
+</ul>
+<hr class="doc-hr">
+<h2 class="doc-h2">Blood Family</h2>
+<h3 class="doc-h3">Fennel</h3>
+<ul class="doc-ul">
+<li><strong>Look for:</strong> feathery, soft yellow-green botanical references (fennel fronds specifically — the actual plant's wispy texture is the whole visual idea)</li>
+<li><strong>Pose/expression to capture:</strong> mid-task, not posed — hands busy at the counter or with the scythe mid-swing, caught between domestic and dangerous. Her tension is "capable and about to be in over her head," not heroic.</li>
+<li><strong>Framing:</strong> warmest light in the game, per style bible — she should look like she belongs in every space she's in, which is part of what makes her secret land later.</li>
+<li><strong>Locked costume detail:</strong> single botanical embroidery motif on an otherwise plain shopkeeper's apron — look for reference where one small ornamental detail interrupts an otherwise utilitarian outfit.</li>
+</ul>
+<h3 class="doc-h3">Cedar</h3>
+<ul class="doc-ul">
+<li><strong>Look for:</strong> cedar wood grain against evergreen — warm reddish-brown wood tones, not a generic brown.</li>
+<li><strong>Pose/expression:</strong> something held very carefully — not stiff-at-attention, but a controlled stillness that could read as discipline or as someone bracing.</li>
+<li><strong>Framing:</strong> botanical warm light, but consider slightly cooler/harder shadow at the edges — same "Orchard cold intruding on village warm" logic the style bible uses for Hemlock, just subtler, since Cedar's compliance is the quieter version of the same idea.</li>
+<li><strong>Locked costume detail:</strong> the requisition coat — deliberately ambiguous, sharply maintained <em>or</em> slightly too careful/fraying. Pick a reference that could plausibly be read either way.</li>
+</ul>
+<h3 class="doc-h3">Sage</h3>
+<ul class="doc-ul">
+<li><strong>Look for:</strong> dusty grey-green — actual sage leaf color, muted rather than vibrant.</li>
+<li><strong>Pose/expression:</strong> hands-focused, mid-remedy — healer's competence, warmth with an edge of watchfulness.</li>
+<li><strong>Framing:</strong> botanical warm light.</li>
+<li><strong>Locked costume detail:</strong> sage-sprig embroidery at the collar.</li>
+</ul>
+<h3 class="doc-h3">Kirkwood</h3>
+<ul class="doc-ul">
+<li><strong>Look for:</strong> no literal plant referent exists for this name (it's a compound, not a species) — proposal is weathered driftwood-grey-brown, warmer at the core (collar/inner layers), paling outward. Look for wood-tone references with a visible warm-to-pale gradient rather than a flat single tone.</li>
+<li><strong>Pose/expression:</strong> broadcaster posture — practiced ease that doesn't quite reach his eyes. Something performative layered over something not performed at all.</li>
+<li><strong>Framing:</strong> botanical-tier warm light, but he's the character most likely to physically appear in a colder Orchard-adjacent space (the broadcast platform) — worth having one reference in warm village light and one in a harder institutional light to see how the gradient color idea reads in both.</li>
+<li><strong>Note:</strong> color is a proposal, not locked — flag any reference that makes this idea click or fall flat.</li>
+</ul>
+<h3 class="doc-h3">Clover</h3>
+<ul class="doc-ul">
+<li><strong>Look for:</strong> plain, bright grass-green — literally clover-colored, no complexity needed by design.</li>
+<li><strong>Pose/expression:</strong> present-tense, unguarded — she's the one character allowed to just look like a kid.</li>
+<li><strong>Framing:</strong> botanical warm light, simplest treatment in the family tier.</li>
+</ul>
+<h3 class="doc-h3">Daisy</h3>
+<ul class="doc-ul">
+<li><strong>Look for:</strong> white-and-yellow, "purity" palette per style bible — actual daisy coloring.</li>
+<li><strong>Pose/expression:</strong> sweetheart tone — soft, open, uncomplicated warmth (this is literally what Robin's fear is about losing, so the image should earn that stakes).</li>
+<li><strong>Framing:</strong> botanical warm light.</li>
+</ul>
+<hr class="doc-hr">
+<h2 class="doc-h2">Chosen Family — Hunting Party</h2>
+<h3 class="doc-h3">Fox</h3>
+<ul class="doc-ul">
+<li><strong>Look for:</strong> rust-orange, actual fox coloring.</li>
+<li><strong>Pose/expression:</strong> outdoor-capable ease with a guardedness underneath — freedom that's costing him something he won't name.</li>
+<li><strong>Framing:</strong> less interior-warm than the family tier — he belongs more to the treeline/foraging-path environment than the shop.</li>
+<li><strong>Locked costume detail:</strong> weathered leather, fur-trim wraps, built for outdoors over the shop counter.</li>
+</ul>
+<h3 class="doc-h3">Mugwort</h3>
+<ul class="doc-ul">
+<li><strong>Look for:</strong> silvery-green, faintly otherworldly — actual mugwort has that silvery underside quality, worth leaning into.</li>
+<li><strong>Pose/expression:</strong> unselfconscious practice — caught mid-ritual or mid-focus, not performing for anyone, since "without anyone's permission or witness" is her entire want.</li>
+<li><strong>Framing:</strong> god-ray/light-shaft treatment reserved specifically for her scenes per the style bible (Star-card tarot position) — if you can find or stage a reference with a soft light-shaft quality, it'll match the intended treatment better than flat lighting.</li>
+<li><strong>Locked costume detail:</strong> botanical grammar despite non-family status (same exception as Rose/Branch/Yew) — flowing, embroidered, her own plant motif.</li>
+</ul>
+<h3 class="doc-h3">Falcon</h3>
+<ul class="doc-ul">
+<li><strong>Look for:</strong> proposal is slate blue-grey back, rust/copper breast accent — actual peregrine falcon coloring. Not locked; flag if a reference changes your mind.</li>
+<li><strong>Pose/expression:</strong> watchful stillness, scout posture — someone used to being the quiet one who notices everything.</li>
+<li><strong>Framing:</strong> animal-tier earthier, muted, naturalistic light — no special treatment yet, he's a Day 1 background-weight character relative to Fox/Mugwort in the trio.</li>
+</ul>
+<hr class="doc-hr">
+<h2 class="doc-h2">Craft-Family Peers</h2>
+<h3 class="doc-h3">Coal</h3>
+<ul class="doc-ul">
+<li><strong>Look for:</strong> part of the Ash/Ember/Coal forge trio — black with ember-undertone specifically (the trio splits pale soot-grey / glowing orange-red / black-ember across the three siblings).</li>
+<li><strong>Pose/expression:</strong> apprentice concentration — trying hard, a little unsure, proud of small competence.</li>
+<li><strong>Framing:</strong> elemental-tier harder light, forge environment cues if possible (soot, warm ember glow against grey).</li>
+<li><strong>Locked costume detail:</strong> soot-marked smith apron, small metal-band accessory (ring/cuff) as the family motif instead of fabric/ribbon.</li>
+</ul>
+<h3 class="doc-h3">Millet</h3>
+<ul class="doc-ul">
+<li><strong>Look for:</strong> proposal is pale, dusty grain-gold — lighter and drier than Barley's wheat-gold, since millet the grain is smaller/paler than barley. Not locked.</li>
+<li><strong>Pose/expression:</strong> market-stall competence trying to look like more than chores — she wants responsibility, so give her something slightly beyond her current role in posture.</li>
+<li><strong>Framing:</strong> food-tier warm, appetite-coded light.</li>
+</ul>
+<h3 class="doc-h3">Ferret</h3>
+<ul class="doc-ul">
+<li><strong>Look for:</strong> proposal is warm sable-brown with a cream underbelly accent — actual ferret coloring. Not locked.</li>
+<li><strong>Pose/expression:</strong> eager-to-please, slightly too available — someone used to being sent places and telling himself the errands are just errands.</li>
+<li><strong>Framing:</strong> animal-tier earthier, muted light.</li>
+</ul>
+<hr class="doc-hr">
+<h2 class="doc-h2">Craft-Family Faces</h2>
+<h3 class="doc-h3">Badger</h3>
+<ul class="doc-ul">
+<li><strong>Look for:</strong> black-and-white banding, read literally — actual badger stripe pattern.</li>
+<li><strong>Pose/expression:</strong> working-hands competence, dignity through craft — mid-forge, not posed for a portrait.</li>
+<li><strong>Framing:</strong> animal-tier light, forge environment.</li>
+<li><strong>Locked costume detail:</strong> striped forge apron and gloves as the literal banding motif.</li>
+</ul>
+<h3 class="doc-h3">Loam</h3>
+<ul class="doc-ul">
+<li><strong>Look for:</strong> rich earth-brown, actual soil/loam tone.</li>
+<li><strong>Pose/expression:</strong> provider's tiredness that doesn't quite show — someone doing more math in their head than their face lets on (the skim secret).</li>
+<li><strong>Framing:</strong> elemental-tier harder light, market/farmwork environment.</li>
+<li><strong>Locked costume detail:</strong> sturdy, soil-toned farmwear.</li>
+</ul>
+<h3 class="doc-h3">Weasel</h3>
+<ul class="doc-ul">
+<li><strong>Look for:</strong> proposal is slate-grey/ink-black base with a thin gold ledger-line accent — deliberately breaking the animal tier's natural earthtone rule, since his whole silhouette point is "office-work dropped into a farming village." Look for cold, non-natural, money-adjacent reference images rather than anything literally weasel-colored.</li>
+<li><strong>Pose/expression:</strong> composed, transactional — but look for one reference with a flicker of something warmer underneath (Sage), since his leniency toward Fennel is the crack in an otherwise cold presentation.</li>
+<li><strong>Framing:</strong> the one character who should look slightly wrong in the village-warm environment grading — worth a reference where the lighting doesn't quite match the surroundings.</li>
+<li><strong>Locked costume detail:</strong> sleek, fitted, vest-and-ledger silhouette.</li>
+</ul>
+<hr class="doc-hr">
+<h2 class="doc-h2">Ambient / Background Presence</h2>
+<h3 class="doc-h3">Marigold</h3>
+<ul class="doc-ul">
+<li><strong>Look for:</strong> saturated gold-orange, hearth-warm — actual marigold coloring.</li>
+<li><strong>Pose/expression:</strong> whole-town competence — the person everyone brings problems to, visibly carrying more than she shows.</li>
+<li><strong>Framing:</strong> botanical warm light, clinic environment (per style bible, dressed with small inconsistencies a returning player would notice — worth a reference with something <em>slightly</em> off in an otherwise cozy healer's space).</li>
+<li><strong>Locked costume detail:</strong> flowing robes, marigold-bloom embroidery at collar/cuff.</li>
+</ul>
+<h3 class="doc-h3">Barley</h3>
+<ul class="doc-ul">
+<li><strong>Look for:</strong> warm wheat-gold, actual barley coloring.</li>
+<li><strong>Pose/expression:</strong> <strong>Day 1 specific — present him as an enforcer who genuinely believes what he does is mercy, not yet tested.</strong> No crux content should leak into his VS-stage reference; look for calm, procedural, even kind-seeming rather than menacing.</li>
+<li><strong>Framing:</strong> the one place food-tier softness and Orchard-institutional coldness should visibly collide — his uniform cut is Orchard-issue, but texture/color underneath is food-tier soft. Worth a reference where the uniform silhouette and the warmer coloring feel slightly at odds with each other.</li>
+<li><strong>Locked costume detail:</strong> Orchard enforcer uniform cut with food-category softness underneath — visual proof he hasn't fully hardened into the role.</li>
+</ul>
+<hr class="doc-hr">
+<p class="doc-em-note"><em>Companion to <code>brew-the-world-vs-quickref.md</code> and the style bible. Use alongside the mermaid diagram and full cast bible when adding images to the interactive codex.</em></p>
+  </div>
+</div>
+
+
+<div id="overlay">
+  <div class="detail" id="detail-content"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>
+mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+</script>
+
+<script>
+const CHARACTERS = {"Fennel": {"name": "Fennel", "role": "Protagonist", "category": "Botanical", "want": "Keep shop/family alive without becoming Cedar", "fear": "Complicity past no-return", "secret": "Unknowing literal supply engine for the war", "tarot": {"position": "The Root", "card": "The Magician", "note": "Creation vs. manipulation"}, "connections": [{"with": "Weasel", "desc": "handles enough of the shop's books to see what she doesn't: that her ledgers are the war's literal supply chain. Whether he surfaces that or buries it deeper for her sake is the loosened chain vs. bondage swing"}, {"with": "Coal", "desc": "peer friendship, Fennel's generation"}, {"with": "Millet", "desc": "market-stall friendship, craft-family peer alongside Coal and Ferret"}, {"with": "Kirkwood", "desc": "her shop is the literal supply engine for the war he served and returned changed from; neither of them has said this out loud yet \u2014 the material his broadcast swing eventually forces into the open, one way or the other"}], "generation": "Fennel's Generation", "is_swing": false, "inspiration": "Demeter \u2014 harvest, provision, cyclical loss and abundance \u2014 crossed with a cutesy-anime-protagonist visual register. Warmth and approachability on the surface, myth-weight underneath; the game's whole cozy/horror thesis applied directly to her own design."}, "Kirkwood": {"name": "Kirkwood", "role": "Brother, broadcaster, returned from military service", "category": "Botanical, sphere-swing", "want": "To matter \u2014 to tell what actually happened, not the Orchard's version", "fear": "Fading to nobody; that what he saw over there traces back to what Fennel's own shop supplied", "secret": "Knows more than he says about the platform; carries what service really looked like, filtered into what airs. Owl taught him young \u2014 preserve truth before erasure \u2014 before the war and the platform got to him first; the want he's built his whole broadcasting career on is Owl's, arrived at secondhand and now pulling against Hemlock's patronage. The swing trigger: a live segment that would require naming, or carefully not naming, the exact supply chain that runs back to Fennel's own shop \u2014 the thing neither sibling has said aloud. Wakes people means saying it. Lulls them means reading the safe version and protecting her, himself, and Hemlock's patronage a little longer", "tarot": {"position": "The Steam", "card": "Judgement", "note": "Wakes people vs. lulls them (full sphere-swing)"}, "connections": [{"with": "Cricket", "desc": "mirrored broadcaster altitudes; Kirkwood may not know how much risk Cricket's actually taking on air beside him \u2014 watching him risk it live is what finally pushes Kirkwood toward his own swing"}, {"with": "Hemlock", "desc": "patron pattern if state-ward, in quiet tension with Owl's earlier, unclaimed influence"}, {"with": "Owl", "desc": "taught him young, in private, before the war and the platform got him; Owl's private mission to preserve truth now reaches the whole nation through Kirkwood's broadcast, diffused past recognition"}, {"with": "Fennel", "desc": "her shop is the literal supply engine for the war he served and returned changed from; neither of them has said this out loud yet \u2014 the material his broadcast swing eventually forces into the open, one way or the other"}], "generation": "Fennel's Generation", "is_swing": true}, "Cedar": {"name": "Cedar", "role": "Father, quartermaster", "category": "Botanical, sphere-swing", "want": "Protect family via compliance", "fear": "Repeating what broke him", "secret": "Recruited by Hemlock in person, at the same bedside where Sage was nursing him \u2014 has never told her which man got there first. Sage nursed him back after the border skirmish that broke Stag the same day \u2014 same wound, opposite outcomes", "tarot": {"position": "The Heat", "card": "The Emperor", "note": "Order vs. smothering (sphere-swing)"}, "connections": [{"with": "Sage", "desc": "married across the state/resistance divide, the origin tension; they met years earlier, when apprentice-healer Sage treated him for a border wound"}, {"with": "Hemlock", "desc": "recruited him in person, at the same bedside Sage was nursing him at; the completed version of what he's now attempting with Fennel"}, {"with": "Stag", "desc": "old comrades, wounded together in the same skirmish, healed by the same hands (Sage), diverged into opposite outcomes from there"}, {"with": "Flint", "desc": "requisition contracts, quiet tension"}, {"with": "Weasel", "desc": "quiet professional respect that's also a rivalry, both rooted in Sage: two men who each had a claim on her, still nodding at each other over requisition forms and never saying why"}], "generation": "Established (middle)", "is_swing": true}, "Sage": {"name": "Sage", "role": "Mother, resistance healer", "category": "Botanical", "want": "Undo harm at the root", "fear": "Losing another child to the machine", "secret": "Full active Weeds operative; trained under Marigold as a healer's apprentice \u2014 that's the clinic where she first treated Cedar and Stag after a border skirmish, before the war had a name. Loved Weasel before Cedar, left the security-through-power path for this one", "tarot": {"position": "The Water", "card": "Temperance", "note": "Balance vs. extremity"}, "connections": [{"with": "Cedar", "desc": "married across the state/resistance divide, the origin tension; they met years earlier, when apprentice-healer Sage treated him for a border wound"}, {"with": "Marigold", "desc": "resistance cover partners, and teacher/student before that \u2014 Sage trained under her as a healer first, which is how Sage met Cedar"}, {"with": "Weasel", "desc": "loved him before Cedar; she left the security-through-power path he still walks. His leniency toward Fennel is for her sake, not policy"}, {"with": "Ferret", "desc": "indirect: doesn't know his father once loved her, or why he's sometimes sent somewhere and told not to write it down"}], "generation": "Established (middle)", "is_swing": false}, "Clover": {"name": "Clover", "role": "Younger sibling", "category": "Botanical", "want": "Simple, present-tense things", "fear": "\u2014 (by design)", "secret": "None (by design)", "tarot": {"position": "The Seed Kept", "card": "The Sun", "note": "No reversal by design"}, "connections": [], "generation": "Fennel's Generation", "is_swing": false}, "Daisy": {"name": "Daisy", "role": "Younger sibling, sweetheart tone", "category": "Botanical", "want": "\u2014 (by design)", "fear": "\u2014 (by design)", "secret": "Tonal opposite of Hemlock's thorn; Fennel could mentor/influence. What Robin is trying to protect \u2014 the uncomplicated warmth at stake in whatever happens with Sparrow", "connections": [{"with": "Robin", "desc": "what he's trying to protect; the uncomplicated warmth at stake in his dilemma with Sparrow"}], "generation": "Fennel's Generation", "is_swing": false}, "Hemlock": {"name": "Hemlock", "role": "Antagonist/benefactor; formerly Pine, village co-founder and hero alongside Owl and Marigold", "category": "Botanical", "want": "Total willing devotion \u2014 to matter again the way Pine once did, unprompted", "fear": "Irrelevance to his own cause; that no one says \"Pine\" anymore, only \"Hemlock\"", "secret": "Cultivated Fennel's gift from a distance; is the forgotten hero the village still lives by the legacy of, now poisoning the nation he once saved. Recruited Cedar in person, at the exact bedside where Sage was nursing him back from the wound that also broke Stag \u2014 offering the same total compliance he's now angling for with Fennel. Cedar isn't chain-of-command by implication; he's Hemlock's first finished work", "tarot": {"position": "The Old Recipe", "card": "The Hierophant", "note": "Teacher vs. corrupted doctrine"}, "connections": [{"with": "Cedar", "desc": "recruited him in person, at the same bedside Sage was nursing him at; the completed version of what he's now attempting with Fennel"}, {"with": "Marigold", "desc": "she remembers him as Pine, co-founder and hero, not just \"the teacher\""}, {"with": "Kirkwood", "desc": "patron pattern if state-ward, in quiet tension with Owl's earlier, unclaimed influence"}, {"with": "Stag", "desc": "possible source of true info on Hemlock"}, {"with": "Mugwort", "desc": "she is the origin he tried and failed to systematize; his doctrine's unspoken source and living proof of its failure"}, {"with": "Ivy", "desc": "knows exactly who he is; the knowledge that shapes her entire approach to leadership"}], "generation": "Trifecta (elder)", "is_swing": false, "inspiration": "Hans Landa-inspired antagonist register \u2014 charming surface over doctrine, performs warmth as a tool"}, "Marigold": {"name": "Marigold", "role": "Town healer, web crux, village co-founder", "category": "Botanical", "want": "Keep the whole town alive \u2014 the community she rebuilt instead of the trio she lost", "fear": "The day cover & reality can't reconcile", "secret": "Holds Sage's, Fennel's, and Hemlock's secrets at once; ex-wife of Owl, both broke over what Pine became. Trained Sage as her healing apprentice \u2014 the clinic where Sage first met Cedar", "tarot": {"position": "The Threshold", "card": "The High Priestess", "note": "Guarding truth vs. withheld harm"}, "connections": [{"with": "Sage", "desc": "resistance cover partners, and teacher/student before that \u2014 Sage trained under her as a healer first, which is how Sage met Cedar"}, {"with": "Hemlock", "desc": "she remembers him as Pine, co-founder and hero, not just \"the teacher\""}, {"with": "Owl", "desc": "corroborating sources on who Pine was, before he became Hemlock; also ex-spouses \u2014 the marriage broke on the same fracture that broke the trio"}, {"with": "Flint", "desc": "hidden compartments under cover of repairs"}, {"with": "Barley", "desc": "sphere-lenient version tips her off before sweeps"}, {"with": "Mugwort", "desc": "two generations of \"woman who holds the town's real knowledge,\" different registers (Marigold works within cover, Mugwort refuses cover entirely)"}, {"with": "Falcon", "desc": "mother; the sociability that makes the hunting party work at all comes from her side"}], "generation": "Trifecta (elder)", "is_swing": false}, "Robin": {"name": "Robin", "role": "Neighbor-as-found-family, musician/social artist", "category": "Non-botanical (animal)", "want": "Normalcy, closeness, being needed", "fear": "Found-family lost to politics \u2014 made literal: the hand that marks him may be the one that loves him", "secret": "Small hidden loyalty (covered for Sage once); doesn't know he's the test of Sparrow's breaking point. Owl taught him too \u2014 not books, but what to carry in song; Robin's the register of Owl's truth that answers to no institution at all", "tarot": {"position": "The Kitchen Table", "card": "Ten of Cups", "note": "Warmth interrupted by war"}, "connections": [{"with": "Owl", "desc": "taught him what to carry in song, not in a book; the one register of Owl's truth that answers to no institution at all"}, {"with": "Daisy", "desc": "what he's trying to protect; the uncomplicated warmth at stake in his dilemma with Sparrow"}, {"with": "Sparrow", "desc": "romance; she is ordered to mark him, and whether she does is shaped by the player's accumulated choices \u2014 breaks against the state (chooses him over utility) or breaks for it (becomes the weapon she feared)"}], "generation": "Fennel's Generation", "is_swing": false}, "Fox": {"name": "Fox", "role": "Hunter/adventurer customer; a struggler shaped by loss, not chosen freedom; hunting-party first recruit; unsaid tension with Fennel", "category": "Non-botanical (animal)", "want": "Freedom, autonomy", "fear": "The wild weaponized/closed off \u2014 that the free life he chose was already conscripted by what he lost", "secret": "Brings back more than declared goods; has killed Hollows before he knew, or let himself know, what they used to be. Lemon was his \u2014 the person he was building a life with before the Picker process took her. He doesn't recognize her now, and calling what followed \"freedom\" is how he's survived not looking at it directly", "tarot": {"position": "The Foraged", "card": "The Chariot", "note": "Freedom won vs. spent"}, "connections": [{"with": "Weasel", "desc": "freedom/leverage axis friction"}, {"with": "Badger", "desc": "tool/weapon upkeep"}, {"with": "Barley", "desc": "different hands, same institutional violence: Fox has unknowingly killed Hollows Barley made"}, {"with": "Lemon", "desc": "she was his, before the process; he doesn't recognize her now"}, {"with": "Barley", "desc": "unknowing double mercy: Barley spared Lemon once; Fox has been living the loss of her ever since, and neither knows the other's stake in it"}, {"with": "Butter", "desc": "foils: same wartime pressure, opposite coping \u2014 numbness vs. flight"}], "generation": "Fennel's Generation", "is_swing": false, "inspiration": "Cloud Strife (FF7) / Guts (Berserk) \u2014 a struggler shaped by loss, not chosen freedom"}, "Loam": {"name": "Loam", "role": "Farmer/market vendor, provisioning the village since before Fennel's shop", "category": "Non-botanical (elemental)", "want": "Keep feeding people \u2014 actually feeding them, not just clearing the quota", "fear": "Quotas past survivability \u2014 watching it happen again, the way it did once already", "secret": "Skims yield under quota law; started the season she reported honestly and lost someone to it. Never reported honestly again", "tarot": {"position": "The Harvest", "card": "The Empress", "note": "Provision vs. barrenness"}, "connections": [{"with": "Butter", "desc": "the shared past is the same loss: they were both there the season the honest count wasn't enough. Loam decided never again and has been skimming since; Butter decided the safest thing was to stop feeling it"}, {"with": "Badger", "desc": "mirrored resistance-under-risk, grain vs. metal"}, {"with": "Millet", "desc": "mother; doesn't know her own daughter learned the skim without being taught it"}], "generation": "Established (middle)", "is_swing": false}, "Weasel": {"name": "Weasel", "role": "Moneylender/requisition clerk", "category": "Non-botanical (animal), sphere-swing", "want": "Security through proximity to power", "fear": "Wrong side of the ledger", "secret": "Quietly lenient with Fennel \u2014 for Sage's sake, the life he didn't get to keep. Handles enough of the shop's books to see what Fennel doesn't: that her ledgers are the war's literal supply chain. Whether he surfaces that or buries it deeper is the loosened chain vs. bondage swing", "tarot": {"position": "The Toll", "card": "The Devil", "note": "Bondage vs. loosened chain (sphere-swing)"}, "connections": [{"with": "Cedar", "desc": "quiet professional respect that's also a rivalry, both rooted in Sage: two men who each had a claim on her, still nodding at each other over requisition forms and never saying why"}, {"with": "Sage", "desc": "loved him before Cedar; she left the security-through-power path he still walks. His leniency toward Fennel is for her sake, not policy"}, {"with": "Fox", "desc": "freedom/leverage axis friction"}, {"with": "Sparrow", "desc": "paperwork intersects who gets marked"}, {"with": "Fennel", "desc": "handles enough of the shop's books to see what she doesn't: that her ledgers are the war's literal supply chain. Whether he surfaces that or buries it deeper for her sake is the loosened chain vs. bondage swing"}, {"with": "Ferret", "desc": "father; the one actually sent to \"deal with things,\" the thread finally has a name attached"}], "generation": "Established (middle)", "is_swing": true}, "Cricket": {"name": "Cricket", "role": "Broadcast-crier", "category": "Non-botanical (animal), sphere-swing (tonal)", "want": "Stay useful, employed, safe", "fear": "Saying the wrong thing on air", "secret": "No longer believes what he reads; Owl quietly feeds him fragments of truth to slip into the scripted broadcast \u2014 a faster, riskier cousin of hiding texts for Sage", "tarot": {"position": "The Echo", "card": "Eight of Swords", "note": "Trapped in script vs. cutting loose (smaller swing)"}, "connections": [{"with": "Kirkwood", "desc": "mirrored broadcaster altitudes; Kirkwood may not know how much risk Cricket's actually taking on air beside him \u2014 watching him risk it live is what finally pushes Kirkwood toward his own swing"}, {"with": "Owl", "desc": "Owl feeds him fragments of truth to slip into the scripted broadcast, a riskier cousin of hiding texts for Sage"}], "generation": "Fennel's Generation", "is_swing": true}, "Butter": {"name": "Butter", "role": "Chose \"them\" already", "category": "Non-botanical (food)", "want": "Comfort, not thinking too hard", "fear": "Suppressed, not absent", "secret": "Knows what the comfort cost \u2014 the numbed-out foil to Fox's outward run; same wartime pressure, opposite coping mechanism", "tarot": {"position": "The Set", "card": "Four of Cups", "note": "Apathy amid plenty"}, "connections": [{"with": "Loam", "desc": "the shared past is the same loss: they were both there the season the honest count wasn't enough. Loam decided never again and has been skimming since; Butter decided the safest thing was to stop feeling it"}, {"with": "Fox", "desc": "foils: same wartime pressure, opposite coping \u2014 numbness vs. flight"}], "generation": "Fennel's Generation", "is_swing": false}, "Stag": {"name": "Stag", "role": "Wounded veteran", "category": "Non-botanical (animal)", "want": "Meaning after being emptied out", "fear": "Being discarded, no longer useful", "secret": "Knows what the war actually costs \u2014 the same hands that healed Cedar into compliance couldn't heal him into anything but the wound", "tarot": {"position": "The Dregs", "card": "The Hanged Man", "note": "Wisdom paid for vs. stuck in the wound"}, "connections": [{"with": "Cedar", "desc": "old comrades, wounded together in the same skirmish, healed by the same hands (Sage), diverged into opposite outcomes from there"}, {"with": "Hemlock", "desc": "possible source of true info on Hemlock"}, {"with": "Barley", "desc": "past tie/mirror"}, {"with": "Rose", "desc": "daughter; the blessing that came out of impossible circumstance"}], "generation": "Established (middle)", "is_swing": false}, "Owl": {"name": "Owl", "role": "Codex/lorekeeper, village co-founder", "category": "Non-botanical (animal)", "want": "Preserve truth before erasure \u2014 cataloguing what the fracture took", "fear": "Irrelevance/erasure of knowledge", "secret": "Corroborates Marigold's account of Pine; turned to books when the founding trio broke, where she turned to people. Taught three students, in three registers: Mugwort as a girl, in person \u2014 she outgrew what he could hold in a book; Kirkwood as a boy, in private \u2014 that teaching now reaches the whole nation through the broadcast, filtered and diffused past any credit back to Owl; Robin \u2014 not books but what to carry in song, the register that answers to no institution at all", "tarot": {"position": "The Marginalia", "card": "The Hermit", "note": "Solitary keeper of truth, teaching in secret registers no institution can claim \u2014 no reversal, his teaching is already out in the world, past taking back"}, "connections": [{"with": "Marigold", "desc": "corroborating sources on who Pine was, before he became Hemlock; also ex-spouses \u2014 the marriage broke on the same fracture that broke the trio"}, {"with": "Sage/Weeds", "desc": "hides banned texts"}, {"with": "Cricket", "desc": "Owl feeds him fragments of truth to slip into the scripted broadcast, a riskier cousin of hiding texts for Sage"}, {"with": "Robin", "desc": "taught him what to carry in song, not in a book; the one register of Owl's truth that answers to no institution at all"}, {"with": "Mugwort", "desc": "taught her to read and catalog as a child; she outgrew what he could hold in a book, living proof his cataloguing has a ceiling"}, {"with": "Kirkwood", "desc": "taught him young, in private, before the war and the platform got him; Owl's private mission to preserve truth now reaches the whole nation through Kirkwood's broadcast, diffused past recognition"}, {"with": "Falcon", "desc": "father; the archive and the routes aren't as separate as Owl thinks"}], "generation": "Trifecta (elder)", "is_swing": false}, "Badger": {"name": "Badger", "role": "Blacksmith/dockworker", "category": "Non-botanical (animal)", "want": "Dignity through craft", "fear": "Craft fully absorbed into war economy", "secret": "Repairs/forges for the Weeds under cover", "connections": [{"with": "Fox", "desc": "tool/weapon upkeep"}, {"with": "Loam", "desc": "mirrored resistance-under-risk, grain vs. metal"}, {"with": "Flint", "desc": "craft-contrast, two philosophies of building"}, {"with": "Nessa", "desc": "married; craft and sea, two trades under the same quota pressure. Nessa ferries what Badger forges, disguised as catch \u2014 his craft and her boat are one operation split across two trades. Ash and Ember are theirs"}, {"with": "Ash", "desc": "if he ever learns what his father actually forges under cover, that discovery is the swing trigger itself: report it and become the mirror in the line above, bury it and he's already Weeds"}], "generation": "Established (middle)", "is_swing": false}, "Sparrow": {"name": "Sparrow", "role": "Tailor, sphere-swing", "category": "Non-botanical (animal), sphere-swing", "want": "Recognized for skill, not just utility", "fear": "Being ordered to mark Robin \u2014 and finding out which she'll choose", "secret": "Hides resistance messages in linings; will be ordered to mark someone she loves", "tarot": {"position": "The Stitch", "card": "The Lovers", "note": "Duty vs. devotion \u2014 mark him or choose him (full sphere-swing)"}, "connections": [{"with": "Weasel", "desc": "paperwork intersects who gets marked"}, {"with": "Robin", "desc": "romance; she is ordered to mark him, and whether she does is shaped by the player's accumulated choices \u2014 breaks against the state (chooses him over utility) or breaks for it (becomes the weapon she feared)"}], "generation": "Fennel's Generation", "is_swing": true}, "Flint": {"name": "Flint", "role": "Carpenter", "category": "Non-botanical (elemental/mineral)", "want": "Build things that last", "fear": "What he builds turned against Branch, his own child, who delivers half of it without knowing what's inside", "secret": "Builds hidden compartments for the Weeds", "connections": [{"with": "Cedar", "desc": "requisition contracts, quiet tension"}, {"with": "Marigold", "desc": "hidden compartments under cover of repairs"}, {"with": "Badger", "desc": "craft-contrast, two philosophies of building"}, {"with": "Branch", "desc": "son; delivers his father's work without knowing what half of it actually carries \u2014 the literal answer to Flint's oldest unresolved fear"}], "generation": "Established (middle)", "is_swing": false}, "Barley": {"name": "Barley", "role": "Picker enforcer", "category": "Non-botanical (food), sphere-swing", "want": "Believes what he does is mercy", "fear": "Being wrong \u2014 that it's extermination", "secret": "Once spared Lemon before the process completed; told no one \u2014 accept it and guide toward a better future, cleanse it and lock the dark one, or simply watch the cleansing happen (full sphere-swing, three-path). Doesn't know Fox \u2014 who has unknowingly killed others he made \u2014 was the one she left behind", "tarot": {"position": "The Cull", "card": "Justice", "note": "Accept & guide, cleanse & lock, or watch and change nothing (full sphere-swing, three-path)"}, "connections": [{"with": "Marigold", "desc": "sphere-lenient version tips her off before sweeps"}, {"with": "Fox", "desc": "different hands, same institutional violence: Fox has unknowingly killed Hollows Barley made"}, {"with": "Fox", "desc": "unknowing double mercy: Barley spared Lemon once; Fox has been living the loss of her ever since, and neither knows the other's stake in it"}, {"with": "Stag", "desc": "past tie/mirror"}, {"with": "Lemon", "desc": "the crux: accept the sparing and guide toward humanization, cleanse it and lock dehumanization, or watch it happen and change nothing. Fox has a stake in this neither he nor Barley knows about yet"}, {"with": "Ash", "desc": "mirror risk: what Ash could become if he leans Picker"}], "generation": "Established (middle)", "is_swing": true}, "Lemon": {"name": "Lemon", "role": "Ally, humanizing-route; a named Hollow", "category": "Non-botanical (food)", "want": "Proof-of-personhood for monster/victim content", "fear": "\u2014", "secret": "Same character, opposite use by player sphere; the one Barley spared \u2014 and the person Fox lost, before he called leaving \"freedom\"", "connections": [{"with": "Fox", "desc": "she was his, before the process; he doesn't recognize her now"}, {"with": "Barley", "desc": "the crux: accept the sparing and guide toward humanization, cleanse it and lock dehumanization, or watch it happen and change nothing. Fox has a stake in this neither he nor Barley knows about yet"}], "generation": "N/A \u2014 a Hollow", "is_swing": false}, "Mugwort": {"name": "Mugwort", "role": "Wild-belief specialist, village edge; Fennel's closest friend \u2014 stunted but gifted, anxious yet unshakeably loyal", "category": "Botanical (non-family)", "want": "To keep practicing without anyone's permission or witness", "fear": "Being studied/formalized \u2014 becoming a second Hemlock-origin-story", "secret": "She's the reason Hemlock's doctrine exists \u2014 and its proof of failure. Owl taught her to read and catalog as a child; she outgrew what he could hold in a book, and that's the exact shape her fear of formalization takes now", "tarot": {"position": "The Undoctored", "card": "The Star", "note": "Faith/hope/guidance untouched by dogma; no reversal by design, direct answer to Hemlock's Hierophant"}, "connections": [{"with": "Owl", "desc": "taught her to read and catalog as a child; she outgrew what he could hold in a book, living proof his cataloguing has a ceiling"}, {"with": "Hemlock", "desc": "she is the origin he tried and failed to systematize; his doctrine's unspoken source and living proof of its failure"}, {"with": "Marigold", "desc": "two generations of \"woman who holds the town's real knowledge,\" different registers (Marigold works within cover, Mugwort refuses cover entirely)"}, {"with": "Yew", "desc": "kindred recognition, not teacher and student; two people who arrived at the same true thing independently"}], "generation": "Fennel's Generation", "is_swing": false, "inspiration": "Alphys (Undertale) / Ralsei (Deltarune) \u2014 stunted but gifted, anxious yet unshakeably loyal"}, "Nessa": {"name": "Nessa", "role": "Badger's wife, fisherwoman captain", "category": "Non-botanical (animal, married-in)", "want": "Keep crew and family afloat under quota pressure", "fear": "Losing one to the sea before the state gets the other", "secret": "Ferries Badger's forged pieces out under cover of the catch \u2014 the sea half of the operation whose land half is Badger's forge", "connections": [{"with": "Badger", "desc": "married; craft and sea, two trades under the same quota pressure. Nessa ferries what Badger forges, disguised as catch \u2014 his craft and her boat are one operation split across two trades. Ash and Ember are theirs"}], "generation": "Established (middle)", "is_swing": false}, "Ash": {"name": "Ash", "role": "Badger & Nessa's oldest, soldier/fighter, sphere-swing", "category": "Non-botanical (elemental), sphere-swing", "want": "Prove himself, matter through strength", "fear": "Becoming what he's trained to destroy \u2014 a second Barley", "secret": "Undecided which way he leans, Weeds or Picker \u2014 that's the swing. The trigger is close to home: if he ever learns what Badger actually forges under cover, reporting it is the fastest path to becoming his own fear \u2014 a second Barley, turned on his own family. Burying it is the fastest path to Weeds", "tarot": {"position": "The Temper", "card": "Strength", "note": "Restraint over the trained instinct to destroy (full sphere-swing)"}, "connections": [{"with": "Barley", "desc": "mirror risk: what Ash could become if he leans Picker"}, {"with": "Badger", "desc": "if he ever learns what his father actually forges under cover, that discovery is the swing trigger itself: report it and become the mirror in the line above, bury it and he's already Weeds"}, {"with": "Ember", "desc": "she suspects his lean before it's spoken aloud"}], "generation": "Fennel's Generation", "is_swing": true}, "Ember": {"name": "Ember", "role": "Badger & Nessa's daughter, cook/homemaker, family connector", "category": "Non-botanical (elemental)", "want": "Hold the family together before the war forces a side", "fear": "Being the one who has to choose between them", "secret": "Already suspects which way Ash is leaning; hasn't told Nessa or Badger", "connections": [{"with": "Coal", "desc": "not blood-siblings, different mother, but Ember treats him as hers to protect anyway (Emporio/Jolyne register \u2014 more caretaker than peer)"}, {"with": "Ash", "desc": "she suspects his lean before it's spoken aloud"}], "generation": "Fennel's Generation", "is_swing": false, "inspiration": "Emporio/Jolyne dynamic (JoJo's Stone Ocean) \u2014 not blood-related to Coal, but hers to protect anyway"}, "Coal": {"name": "Coal", "role": "Badger's son, different mother than Ash/Ember; apprentice smith, Fennel's friend, carries Badger's legacy", "category": "Non-botanical (elemental)", "want": "Live up to his father's craft", "fear": "Discovering what that craft has actually been used for", "secret": "Doesn't yet know Badger forges for the Weeds under cover", "connections": [{"with": "Fennel", "desc": "peer friendship, Fennel's generation"}, {"with": "Ember", "desc": "not blood-siblings, different mother, but Ember treats him as hers to protect anyway (Emporio/Jolyne register \u2014 more caretaker than peer)"}], "generation": "Fennel's Generation", "is_swing": false}, "Falcon": {"name": "Falcon", "role": "Owl & Marigold's child, hunting-party scout, Fennel's generation friend", "category": "Non-botanical (animal)", "want": "To be trusted with something real, not just tolerated as the quiet one", "fear": "Getting caught carrying a message on an ordinary trip \u2014 dragging Fox and Fennel into it", "secret": "Already running resistance routes along the same paths the hunting party uses", "connections": [{"with": "Owl", "desc": "father; the archive and the routes aren't as separate as Owl thinks"}, {"with": "Marigold", "desc": "mother; the sociability that makes the hunting party work at all comes from her side"}, {"with": "Fox, Mugwort, Fennel", "desc": "the hunting party; Fox first, Mugwort and Falcon filling out the trio"}], "generation": "Fennel's Generation", "is_swing": false}, "Millet": {"name": "Millet", "role": "Loam's child, works the market stall, Fennel's friend", "category": "Non-botanical (food)", "want": "To be trusted with real responsibility, not just harvest chores", "fear": "Repeating the season that broke her mother \u2014 an honest count costing someone again", "secret": "Already quietly rounding numbers in her own favor, without Loam knowing \u2014 the skim passed down without ever being taught", "connections": [{"with": "Loam", "desc": "mother; doesn't know her own daughter learned the skim without being taught it"}, {"with": "Fennel", "desc": "market-stall friendship, craft-family peer alongside Coal and Ferret"}], "generation": "Fennel's Generation", "is_swing": false}, "Ferret": {"name": "Ferret", "role": "Weasel's child, runs his errands, Fennel's friend", "category": "Non-botanical (animal)", "want": "To matter to his father as something other than useful", "fear": "Becoming exactly what Weasel is \u2014 mistaking proximity to power for love", "secret": "Is the one Weasel actually sends to \"deal with things\" \u2014 errands that are more than errands, and he doesn't fully understand yet what he's carrying", "connections": [{"with": "Weasel", "desc": "father; the one actually sent to \"deal with things,\" the thread finally has a name attached"}, {"with": "Sage", "desc": "indirect: doesn't know his father once loved her, or why he's sometimes sent somewhere and told not to write it down"}], "generation": "Fennel's Generation", "is_swing": false}, "Yew": {"name": "Yew", "role": "Hermit of the wilds; turned away entirely when Pine became Hemlock", "category": "Botanical (non-family)", "want": "To protect what the village already gave up on", "fear": "That the wild isn't actually separate from the war \u2014 only a matter of time before it's reached too", "secret": "Was likely the first person, ever, to recognize a Hollow as still a person \u2014 has been quietly allying with them in the wilds since before anyone else thought to", "connections": [{"with": "Mugwort", "desc": "kindred recognition, not teacher and student; two people who arrived at the same true thing independently"}, {"with": "Hollows", "desc": "allied with them in the wilds before anyone in the village thought to see them as people"}], "generation": "Trifecta (elder)", "is_swing": false, "inspiration": "Lorax-archetype (voice-of-nature hermit) \u2014 not a visual reference, just the \"speaks for what has no voice\" function"}, "Ivy": {"name": "Ivy", "role": "Village elder who filled the leadership vacuum Pine's disappearance left, sphere-swing", "category": "Botanical (non-family), sphere-swing", "want": "To hold the community together without ever becoming what Pine became", "fear": "That she's already doing it \u2014 accumulating the same quiet authority, just slower and more carefully", "secret": "Knows Hemlock is Pine. Has never told Owl or Marigold. Whether she finally tells someone, and who, before the truth surfaces on its own, or keeps carrying it alone until it's forced into the open, is the swing (full sphere-swing)", "tarot": {"position": "The Undergrowth", "card": "The Moon", "note": "What grows hidden beneath the surface \u2014 tell, or keep carrying it alone (full sphere-swing)"}, "connections": [{"with": "Hemlock", "desc": "knows exactly who he is; the knowledge that shapes her entire approach to leadership"}, {"with": "Owl, Marigold", "desc": "carries the secret of Pine alone; has never told either of them she knows"}], "generation": "Trifecta (elder)", "is_swing": true}, "Rose": {"name": "Rose", "role": "Stag's daughter, born out of the same conflict that wounded him", "category": "Botanical (major narrative-carrying)", "want": "To give her father a reason that has nothing to do with the war", "fear": "Becoming one more thing the war gets to take from him", "secret": "Her mother's identity and fate \u2014 open, undecided", "connections": [{"with": "Stag", "desc": "daughter; the blessing that came out of impossible circumstance"}], "generation": "Fennel's Generation", "is_swing": false}, "Branch": {"name": "Branch", "role": "Flint's child, delivers and installs his father's work throughout the village", "category": "Botanical (major narrative-carrying)", "want": "To be trusted with the full trade, not just the visible parts", "fear": "Disappointing his father; not being seen as ready", "secret": "Has carried hidden compartments to half the village without knowing what's inside them \u2014 the same hands his father's fear is about", "connections": [{"with": "Flint", "desc": "son; delivers his father's work without knowing what half of it actually carries \u2014 the literal answer to Flint's oldest unresolved fear"}], "generation": "Fennel's Generation", "is_swing": false}};
+
+const CATEGORY_SYMBOL = {
+  'Botanical': '\u2698',
+  'Food': '\u2740',
+  'Animal': '\u25B3',
+  'Elemental': '\u25C6'
+};
+function categoryClass(catStr) {
+  const c = catStr.toLowerCase();
+  if (c.includes('food')) return 'food';
+  if (c.includes('animal')) return 'animal';
+  if (c.includes('elemental')) return 'elemental';
+  if (c.includes('botanical')) return 'botanical';
+  return 'elemental';
+}
+function categorySymbol(catStr) {
+  const cls = categoryClass(catStr);
+  return {botanical:'\u2698', food:'\u2740', animal:'\u25B3', elemental:'\u25C6'}[cls];
+}
+
+const GEN_ORDER = ['Trifecta (elder)', 'Established (middle)', "Fennel's Generation", 'N/A — a Hollow'];
+
+let state = { generation: 'All', category: 'All', swingOnly: false, search: '' };
+let uploadedImages = {};
+let currentDetailName = null;
+
+function getImage(name) {
+  return uploadedImages[name] || (CHARACTERS[name] && CHARACTERS[name].image) || null;
+}
+
+const MAX_IMAGE_DIM = 640;
+const IMAGE_QUALITY = 0.82;
+
+function compressImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(reader.error);
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('Could not read image'));
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > MAX_IMAGE_DIM || height > MAX_IMAGE_DIM) {
+          if (width >= height) {
+            height = Math.round(height * (MAX_IMAGE_DIM / width));
+            width = MAX_IMAGE_DIM;
+          } else {
+            width = Math.round(width * (MAX_IMAGE_DIM / height));
+            height = MAX_IMAGE_DIM;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', IMAGE_QUALITY));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function handleImageFile(name, file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  compressImage(file).then((dataUrl) => {
+    uploadedImages[name] = dataUrl;
+    render();
+    if (currentDetailName === name) openDetail(name);
+  }).catch(() => {
+    alert('Could not process that image — try a different file.');
+  });
+}
+
+function removeImage(name) {
+  delete uploadedImages[name];
+  if (CHARACTERS[name]) delete CHARACTERS[name].image;
+  render();
+  if (currentDetailName === name) openDetail(name);
+}
+
+function imageCount() {
+  const names = Object.keys(CHARACTERS);
+  return names.filter(n => getImage(n)).length;
+}
+
+function updateProgress() {
+  const el = document.getElementById('image-progress');
+  if (!el) return;
+  const total = Object.keys(CHARACTERS).length;
+  el.textContent = `${imageCount()} of ${total} characters have a portrait`;
+}
+
+function hasUnsavedImages() {
+  return JSON.stringify(uploadedImages) !== lastSavedSnapshot;
+}
+
+let lastSavedSnapshot = JSON.stringify(uploadedImages);
+
+window.addEventListener('beforeunload', (e) => {
+  if (hasUnsavedImages()) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+
+function wireDropZone(zone) {
+  const name = zone.dataset.name;
+  const input = zone.querySelector('.file-input');
+  zone.addEventListener('click', (e) => {
+    if (e.target.closest('.remove-image-btn')) return;
+    input.click();
+  });
+  zone.addEventListener('keydown', (e) => {
+    if (e.target.closest('.remove-image-btn')) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      input.click();
+    }
+  });
+  input.addEventListener('click', (e) => e.stopPropagation());
+  input.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) handleImageFile(name, file);
+  });
+  zone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    zone.classList.add('drag-over');
+  });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (file) handleImageFile(name, file);
+  });
+}
+
+function dropZoneHTML(name, extraClass, sym) {
+  const img = getImage(name);
+  const removeBtn = img ? `<div class="remove-image-btn" title="Remove image" role="button" tabindex="0" aria-label="Remove image for ${name}" onclick="event.stopPropagation(); removeImage('${name}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();removeImage('${name}')}">&times;</div>` : '';
+  const inner = img
+    ? `<img class="card-portrait" src="${img}" alt="${name}"><div class="drop-zone-overlay">Change image</div>${removeBtn}`
+    : `<div class="card-symbol">${sym}</div><div class="drop-zone-label">Drop image<br>or click</div>`;
+  return `
+    <div class="drop-zone ${extraClass || ''} ${img ? 'has-image' : ''}" data-name="${name}" role="button" tabindex="0" aria-label="${img ? 'Change' : 'Add'} portrait image for ${name}" onclick="event.stopPropagation()">
+      ${inner}
+      <input type="file" accept="image/*" class="file-input" style="display:none" aria-hidden="true" tabindex="-1">
+    </div>
+  `;
+}
+
+function buildControls() {
+  const el = document.getElementById('controls');
+  const gens = ['All', ...GEN_ORDER];
+  const cats = ['All', 'Botanical', 'Food', 'Animal', 'Elemental'];
+  el.innerHTML = `
+    <input class="search" id="search" placeholder="Search cast...">
+    ${gens.map(g => `<div class="chip gen-chip ${g==='All'?'active':''}" data-gen="${g}">${g}</div>`).join('')}
+    ${cats.map(c => `<div class="chip cat-chip" data-cat="${c}">${c}</div>`).join('')}
+    <div class="chip" id="swing-chip">Swing only</div>
+  `;
+  document.querySelectorAll('.gen-chip').forEach(chip => {
+    chip.onclick = () => {
+      document.querySelectorAll('.gen-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      state.generation = chip.dataset.gen;
+      render();
+    };
+  });
+  document.querySelectorAll('.cat-chip').forEach(chip => {
+    chip.onclick = () => {
+      const isActive = chip.classList.contains('active');
+      document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+      if (!isActive) { chip.classList.add('active'); state.category = chip.dataset.cat; }
+      else state.category = 'All';
+      render();
+    };
+  });
+  document.getElementById('swing-chip').onclick = (e) => {
+    state.swingOnly = !state.swingOnly;
+    e.target.classList.toggle('active');
+    render();
+  };
+  document.getElementById('search').oninput = (e) => {
+    state.search = e.target.value.toLowerCase();
+    render();
+  };
+}
+
+function cardHTML(name, c) {
+  const cls = categoryClass(c.category);
+  const sym = categorySymbol(c.category);
+  const tarotNote = c.tarot ? `${c.tarot.position} — ${c.tarot.card}` : '';
+  const topVisual = dropZoneHTML(name, '', sym);
+  return `
+    <div class="card cat-${cls}" data-name="${name}">
+      ${topVisual}
+      <div class="card-name">${name}</div>
+      <div class="card-role">${c.role}</div>
+      <div class="card-tags">
+        ${c.is_swing ? '<span class="tag swing">SWING</span>' : ''}
+        <span class="tag">${c.generation.split(' (')[0]}</span>
+      </div>
+      ${tarotNote ? `<div class="card-tarot-note">${tarotNote}</div>` : ''}
+    </div>
+  `;
+}
+
+function render() {
+  const container = document.getElementById('gen-sections');
+  const entries = Object.entries(CHARACTERS).filter(([name, c]) => {
+    if (state.generation !== 'All' && c.generation !== state.generation) return false;
+    if (state.category !== 'All' && categoryClass(c.category) !== state.category.toLowerCase()) return false;
+    if (state.swingOnly && !c.is_swing) return false;
+    if (state.search) {
+      const hay = (name + c.role + c.want + c.fear + c.secret).toLowerCase();
+      if (!hay.includes(state.search)) return false;
+    }
+    return true;
+  });
+
+  if (state.generation !== 'All') {
+    container.innerHTML = `<div class="gen-block"><div class="grid">${entries.map(([n,c]) => cardHTML(n,c)).join('')}</div></div>`;
+  } else {
+    container.innerHTML = GEN_ORDER.map(gen => {
+      const genEntries = entries.filter(([n,c]) => c.generation === gen);
+      if (!genEntries.length) return '';
+      return `
+        <div class="gen-block">
+          <div class="gen-title">${gen}</div>
+          <div class="grid">${genEntries.map(([n,c]) => cardHTML(n,c)).join('')}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  document.querySelectorAll('.card').forEach(card => {
+    card.onclick = () => openDetail(card.dataset.name);
+  });
+  document.querySelectorAll('.drop-zone').forEach(wireDropZone);
+  updateProgress();
+}
+
+function openDetail(name) {
+  currentDetailName = name;
+  const c = CHARACTERS[name];
+  const cls = categoryClass(c.category);
+  const sym = categorySymbol(c.category);
+  const tarotBlock = c.tarot ? `
+    <div class="detail-tarot">${c.tarot.position} — ${c.tarot.card}<br>${c.tarot.note}</div>
+  ` : '';
+  const secretBadge = c.is_swing ? '<span class="badge-dynamic">DYNAMIC — player-determined</span>' : '<span class="badge-static">STATIC — locked lore</span>';
+  const connHTML = c.connections.length ? c.connections.map(conn =>
+    `<div class="connection"><b>${conn.with}</b> — ${conn.desc}</div>`
+  ).join('') : '<div class="placeholder-note">No cross-connections beyond direct family/story ties.</div>';
+  const inspHTML = c.inspiration ? `<div class="inspiration">${c.inspiration}</div>` : '<div class="placeholder-note">Not yet assigned — open for this character.</div>';
+
+  const detailPortrait = dropZoneHTML(name, 'detail-drop-zone', sym);
+  document.getElementById('detail-content').innerHTML = `
+    <button class="detail-close" onclick="closeDetail()">&times;</button>
+    ${detailPortrait}
+    <div class="detail-eyebrow" style="color:var(--${cls})">${c.category.replace(', sphere-swing', '')} ${c.is_swing ? '· SWING' : ''} · ${c.generation}</div>
+    <div class="detail-name">${name}</div>
+    <div class="detail-role">${c.role}</div>
+    ${tarotBlock}
+    <div class="field">
+      <div class="field-label">Want</div>
+      <div class="field-text">${c.want}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Fear</div>
+      <div class="field-text">${c.fear}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Secret ${secretBadge}</div>
+      <div class="field-text">${c.secret}</div>
+    </div>
+    <div class="field">
+      <div class="field-label">Inspiration / Reference</div>
+      ${inspHTML}
+    </div>
+    <div class="field">
+      <div class="field-label">Connections</div>
+      <div class="connections">${connHTML}</div>
+    </div>
+  `;
+  document.getElementById('overlay').classList.add('open');
+  document.querySelectorAll('#detail-content .drop-zone').forEach(wireDropZone);
+}
+function closeDetail() {
+  document.getElementById('overlay').classList.remove('open');
+  currentDetailName = null;
+}
+document.getElementById('overlay').onclick = (e) => {
+  if (e.target.id === 'overlay') closeDetail();
+};
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('overlay').classList.contains('open')) {
+    closeDetail();
+  }
+});
+
+function exportHTML() {
+  closeDetail();
+  switchTab('codex');
+
+  const merged = {};
+  for (const [name, c] of Object.entries(CHARACTERS)) {
+    merged[name] = Object.assign({}, c);
+    const img = getImage(name);
+    if (img) merged[name].image = img;
+    else delete merged[name].image;
+  }
+
+  let html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  const marker = '\n\nconst CATEGORY_SYMBOL';
+  const idx = html.indexOf(marker);
+  const startTag = 'const CHARACTERS = ';
+  const startIdx = html.indexOf(startTag);
+  if (startIdx === -1 || idx === -1) {
+    alert('Could not export automatically — please save this page as-is via your browser instead.');
+    return;
+  }
+  const newHtml = html.slice(0, startIdx) + startTag + JSON.stringify(merged) + ';' + html.slice(idx);
+
+  const blob = new Blob([newHtml], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'brew-the-world-project-hub.html';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  lastSavedSnapshot = JSON.stringify(uploadedImages);
+}
+
+document.getElementById('save-btn').onclick = exportHTML;
+document.getElementById('clear-images-btn').onclick = () => {
+  if (!confirm('Remove all uploaded images from every card?')) return;
+  uploadedImages = {};
+  Object.values(CHARACTERS).forEach(c => delete c.image);
+  lastSavedSnapshot = JSON.stringify(uploadedImages);
+  render();
+  if (currentDetailName) openDetail(currentDetailName);
+};
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => {
+    p.classList.toggle('active', p.dataset.tab === tab);
+  });
+  document.querySelectorAll('.hub-tab').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === tab);
+  });
+  window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+}
+document.querySelectorAll('.hub-tab').forEach(btn => {
+  btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+});
+
+function jumpToCharacter(name) {
+  switchTab('codex');
+  state = { generation: 'All', category: 'All', swingOnly: false, search: '' };
+  buildControls();
+  render();
+  openDetail(name);
+}
+
+const copyBtn = document.getElementById('copy-kickoff-btn');
+if (copyBtn) {
+  copyBtn.addEventListener('click', () => {
+    const text = document.getElementById('kickoff-text').value;
+    navigator.clipboard.writeText(text).then(() => {
+      copyBtn.textContent = 'Copied';
+      setTimeout(() => { copyBtn.textContent = 'Copy prompt'; }, 1800);
+    }).catch(() => {
+      const ta = document.getElementById('kickoff-text');
+      ta.select();
+      document.execCommand('copy');
+      copyBtn.textContent = 'Copied';
+      setTimeout(() => { copyBtn.textContent = 'Copy prompt'; }, 1800);
+    });
+  });
+}
+
+buildControls();
+render();
+</script>
+</body>
+</html>

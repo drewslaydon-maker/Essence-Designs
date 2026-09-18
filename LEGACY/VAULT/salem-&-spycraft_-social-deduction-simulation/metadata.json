@@ -1,0 +1,6 @@
+{
+  "name": "Salem & Spycraft: Social Deduction Simulation",
+  "description": "An offline social deduction and intrigue game blending Town of Salem trials, Trouble in Terrorist Town secret roles, and Spy Party behavioral tells.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

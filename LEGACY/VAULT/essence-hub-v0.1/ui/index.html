@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESSENCE HUB</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .terminal {
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col font-sans">
+    <header class="bg-gray-800 p-4 shadow-md flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-blue-400">ESSENCE HUB</h1>
+    </header>
+
+    <main class="flex-1 p-4 flex flex-col md:flex-row gap-4 max-w-7xl mx-auto w-full">
+        <!-- Control Panel -->
+        <div class="flex-1 flex flex-col gap-4">
+            <!-- Tabs -->
+            <div class="flex gap-2 border-b border-gray-700 pb-2">
+                <button id="tab-thinker" class="px-4 py-2 bg-blue-600 rounded-t-md font-semibold text-white focus:outline-none transition-colors">THINKER</button>
+                <button id="tab-doer" class="px-4 py-2 bg-gray-700 rounded-t-md font-semibold text-gray-300 hover:bg-gray-600 focus:outline-none transition-colors">DOER</button>
+            </div>
+
+            <!-- Thinker UI -->
+            <div id="ui-thinker" class="flex flex-col gap-4 bg-gray-800 p-4 rounded-b-md rounded-tr-md shadow-md">
+                <h2 class="text-xl font-semibold text-blue-300">Thinker Agent</h2>
+                <textarea id="thinker-input" rows="4" class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white focus:border-blue-500 focus:outline-none" placeholder="Enter your strategic request here..."></textarea>
+                <button id="btn-thinker" class="bg-blue-600 hover:bg-blue-500 py-2 px-4 rounded font-semibold self-end transition-colors w-full sm:w-auto">Ask Thinker</button>
+                <div id="thinker-result" class="terminal mt-4 p-4 bg-gray-900 rounded border border-gray-700 min-h-[100px] text-green-400 hidden overflow-y-auto max-h-64"></div>
+            </div>
+
+            <!-- Doer UI -->
+            <div id="ui-doer" class="flex flex-col gap-4 bg-gray-800 p-4 rounded-b-md rounded-tr-md shadow-md hidden">
+                <h2 class="text-xl font-semibold text-red-300">Doer Agent</h2>
+                <textarea id="doer-input" rows="4" class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white focus:border-red-500 focus:outline-none" placeholder="Enter objective for execution..."></textarea>
+                <button id="btn-doer" class="bg-red-600 hover:bg-red-500 py-2 px-4 rounded font-semibold self-end transition-colors w-full sm:w-auto">Execute Doer</button>
+            </div>
+        </div>
+
+        <!-- Terminal Window -->
+        <div class="flex-1 flex flex-col bg-black rounded-md border border-gray-700 shadow-md h-96 md:h-auto min-h-[300px]">
+            <div class="bg-gray-800 p-2 border-b border-gray-700 flex justify-between items-center rounded-t-md">
+                <span class="font-semibold text-gray-300 text-sm">Agent Log (Real-time)</span>
+                <span id="stream-status" class="w-3 h-3 bg-red-500 rounded-full" title="Disconnected"></span>
+            </div>
+            <div id="terminal-window" class="terminal p-4 flex-1 overflow-y-auto text-green-500 text-sm">
+                Connecting to stream...
+            </div>
+        </div>
+    </main>
+
+    <script>
+
+        const tabThinker = document.getElementById('tab-thinker');
+        const tabDoer = document.getElementById('tab-doer');
+        const uiThinker = document.getElementById('ui-thinker');
+        const uiDoer = document.getElementById('ui-doer');
+
+        tabThinker.addEventListener('click', () => {
+            tabThinker.classList.replace('bg-gray-700', 'bg-blue-600');
+            tabThinker.classList.replace('text-gray-300', 'text-white');
+            tabDoer.classList.replace('bg-red-600', 'bg-gray-700');
+            tabDoer.classList.replace('text-white', 'text-gray-300');
+            uiThinker.classList.remove('hidden');
+            uiDoer.classList.add('hidden');
+        });
+
+        tabDoer.addEventListener('click', () => {
+            tabDoer.classList.replace('bg-gray-700', 'bg-red-600');
+            tabDoer.classList.replace('text-gray-300', 'text-white');
+            tabThinker.classList.replace('bg-blue-600', 'bg-gray-700');
+            tabThinker.classList.replace('text-white', 'text-gray-300');
+            uiDoer.classList.remove('hidden');
+            uiThinker.classList.add('hidden');
+        });
+
+        document.getElementById('btn-thinker').addEventListener('click', async () => {
+            const prompt = document.getElementById('thinker-input').value.trim();
+            if (!prompt) return;
+            const btn = document.getElementById('btn-thinker');
+            const resultDiv = document.getElementById('thinker-result');
+            
+            btn.disabled = true;
+            btn.textContent = 'Thinking...';
+            resultDiv.classList.remove('hidden');
+            resultDiv.textContent = 'Analyzing request...';
+
+            try {
+                const res = await fetch('/api/thinker', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt })
+                });
+                const data = await res.json();
+                resultDiv.textContent = data.result || data.error;
+            } catch (err) {
+                resultDiv.textContent = 'Error: ' + err.message;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Ask Thinker';
+            }
+        });
+
+        document.getElementById('btn-doer').addEventListener('click', async () => {
+            const objective = document.getElementById('doer-input').value.trim();
+            if (!objective) return;
+            const btn = document.getElementById('btn-doer');
+            
+            btn.disabled = true;
+            btn.textContent = 'Executing...';
+
+            try {
+                await fetch('/api/doer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ objective })
+                });
+                document.getElementById('doer-input').value = '';
+            } catch (err) {
+                console.error(err);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Execute Doer';
+            }
+        });
+
+        const terminalWindow = document.getElementById('terminal-window');
+        const streamStatus = document.getElementById('stream-status');
+        
+        function connectSSE() {
+            const evtSource = new EventSource('/stream');
+            
+            evtSource.onopen = () => {
+                streamStatus.classList.replace('bg-red-500', 'bg-green-500');
+                streamStatus.title = "Connected";
+            };
+
+            evtSource.onmessage = (event) => {
+                const logs = JSON.parse(event.data);
+                terminalWindow.textContent = logs;
+                terminalWindow.scrollTop = terminalWindow.scrollHeight;
+            };
+
+            evtSource.onerror = () => {
+                streamStatus.classList.replace('bg-green-500', 'bg-red-500');
+                streamStatus.title = "Disconnected";
+                evtSource.close();
+                setTimeout(connectSSE, 5000);
+            };
+        }
+
+        connectSSE();
+    </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+[
+  {
+    "id": "deliv1",
+    "text": "Deconstruct and modularize the-fracture-playtest.tsx",
+    "checked": true
+  },
+  {
+    "id": "deliv2",
+    "text": "Extract 5 dedicated React modal components into components/",
+    "checked": true
+  },
+  {
+    "id": "deliv3",
+    "text": "Establish SVG ProsisBlackHoleLogo with orbital animation",
+    "checked": true
+  },
+  {
+    "id": "deliv4",
+    "text": "Implement optional chaining and defensive GTL radar math loops",
+    "checked": true
+  },
+  {
+    "id": "deliv5",
+    "text": "Update build-html.js build pipeline to auto-sync index.html",
+    "checked": true
+  },
+  {
+    "id": "deliv6",
+    "text": "Execute Trello sync to mirror local status",
+    "checked": false
+  },
+  {
+    "id": "deliv7",
+    "text": "Deliver playable Prosis playtest package to Phil",
+    "checked": false
+  }
+]

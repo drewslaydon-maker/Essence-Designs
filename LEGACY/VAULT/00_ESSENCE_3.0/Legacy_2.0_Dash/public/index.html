@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ESSENCE Command Dashboard</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"Fira Code"', 'monospace'],
+          },
+          colors: {
+            panelBg: '#121214',
+            accentGlow: '#00ff66',
+            dangerGlow: '#ef4444',
+            warningGlow: '#f59e0b',
+            bone: '#e4e4e7',
+            darker: '#0a0a0c',
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    body {
+      background-color: #060608;
+      color: #e4e4e7;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .glow-border {
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.05);
+      border: 1px solid rgba(0, 255, 102, 0.15);
+    }
+    .glow-border-danger {
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .hazard-stripe {
+      background: repeating-linear-gradient(
+        -45deg,
+        #ef4444,
+        #ef4444 10px,
+        #0f172a 10px,
+        #0f172a 20px
+      );
+    }
+    .terminal-scrollbar::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .terminal-scrollbar::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.3);
+    }
+    .terminal-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(0, 255, 102, 0.3);
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body class="p-4 max-w-md mx-auto min-h-screen flex flex-col pb-12 bg-black text-zinc-300">
+  <div id="app-content">
+    <!-- Lockdown / Killed Screen -->
+    <div id="lockdown-overlay" class="hidden fixed inset-0 z-50 flex flex-col items-center justify-center bg-black p-6 text-center">
+      <div class="hazard-stripe h-6 w-full absolute top-0 left-0"></div>
+      <div class="hazard-stripe h-6 w-full absolute bottom-0 left-0"></div>
+      <div class="w-20 h-20 bg-red-600/10 rounded-full flex items-center justify-center animate-ping absolute"></div>
+      <i data-lucide="shield-alert" class="w-16 h-16 text-red-500 mb-4 animate-bounce"></i>
+      <h1 class="text-3xl font-extrabold text-red-500 tracking-wider mb-2 font-mono">EMERGENCY HALT</h1>
+      <p class="text-sm text-gray-400 max-w-sm mb-6 leading-relaxed">
+        All agent runtimes and background scripts have been forcefully terminated. An immutable kill stack is active in the workspace.
+      </p>
+      <div class="border border-red-500/30 bg-red-950/20 px-4 py-2 rounded text-xs font-mono text-red-400">
+        C:\Users\Andrew\Projects\.agent_kill [PLANTED]
+      </div>
+    </div>
+
+    <!-- Header -->
+    <header class="flex justify-between items-center mb-5 pb-4 border-b border-zinc-800">
+      <div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <h1 class="text-lg font-extrabold tracking-tight font-mono text-emerald-500">ESSENCE BRIDGE</h1>
+        </div>
+        <p class="text-[10px] text-zinc-500 tracking-wider uppercase">Mobile Command Hub</p>
+      </div>
+      <div class="text-right font-mono">
+        <span class="text-xs text-zinc-400" id="uptime-display">Uptime: --</span>
+        <p class="text-[9px] text-zinc-500" id="server-time">2026-08-29</p>
+      </div>
+    </header>
+
+    <!-- Main Dashboard Content -->
+    <main class="space-y-4 flex-1">
+      <!-- CARD 1: Current Objective -->
+      <section class="bg-zinc-950 p-4 rounded-xl glow-border">
+        <div class="flex items-center gap-2 mb-2 text-emerald-500">
+          <i data-lucide="target" class="w-4 h-4"></i>
+          <h2 class="text-xs font-bold uppercase tracking-wider font-mono">Current Objective</h2>
+        </div>
+        <div class="text-sm text-zinc-300 font-medium leading-relaxed whitespace-pre-wrap border-l-2 border-emerald-500/30 pl-3 py-1 bg-emerald-950/5 rounded" id="objective-text">
+          Loading sprint objectives...
+        </div>
+      </section>
+
+      <!-- CARD 2: Expected Deliverables -->
+      <section class="bg-zinc-950 p-4 rounded-xl glow-border">
+        <div class="flex items-center justify-between mb-3 text-emerald-500">
+          <div class="flex items-center gap-2">
+            <i data-lucide="list-todo" class="w-4 h-4"></i>
+            <h2 class="text-xs font-bold uppercase tracking-wider font-mono">Expected Deliverables</h2>
+          </div>
+          <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-mono" id="deliverables-count">0/0</span>
+        </div>
+        
+        <ul class="space-y-2 mb-3 max-h-56 overflow-y-auto terminal-scrollbar pr-1" id="deliverables-list">
+          <!-- Dynamic Checklist Items -->
+        </ul>
+
+        <form id="add-deliverable-form" class="flex gap-2 border-t border-zinc-900 pt-3 mt-3">
+          <input type="text" id="new-deliverable-input" placeholder="Add custom task..." 
+                 class="bg-zinc-900 border border-zinc-800 text-xs rounded-lg px-3 py-2 flex-1 text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50">
+          <button type="submit" class="bg-emerald-600 text-black text-xs font-bold rounded-lg px-3 py-2 flex items-center justify-center hover:bg-emerald-500 transition-colors">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+          </button>
+        </form>
+      </section>
+      
+      <!-- CARD 3: Agent Pulse & Tools Control -->
+      <section class="bg-zinc-950 p-4 rounded-xl glow-border space-y-3">
+        <div class="flex items-center justify-between text-emerald-500">
+          <div class="flex items-center gap-2">
+            <i data-lucide="activity" class="w-4 h-4 animate-pulse"></i>
+            <h2 class="text-xs font-bold uppercase tracking-wider font-mono">Agent Pulse</h2>
+          </div>
+          <span class="text-[10px] text-zinc-400 font-mono" id="pulse-git-state">GIT: --</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="triggerBuild()" id="btn-build" class="flex flex-col items-center justify-center p-3 rounded-lg border border-zinc-800 bg-zinc-900/40 hover:bg-zinc-900 transition-all text-center">
+            <i data-lucide="package" class="w-5 h-5 text-zinc-400 mb-1" id="icon-build"></i>
+            <span class="text-[10px] font-bold text-zinc-300">Trigger Build</span>
+            <span class="text-[8px] text-zinc-500 font-mono" id="status-build">02_PROSIS</span>
+          </button>
+          <button onclick="triggerHealthcheck()" id="btn-health" class="flex flex-col items-center justify-center p-3 rounded-lg border border-zinc-800 bg-zinc-900/40 hover:bg-zinc-900 transition-all text-center">
+            <i data-lucide="terminal" class="w-5 h-5 text-zinc-400 mb-1" id="icon-health"></i>
+            <span class="text-[10px] font-bold text-zinc-300">Run Diagnostics</span>
+            <span class="text-[8px] text-zinc-500 font-mono" id="status-health">Health Suite</span>
+          </button>
+        </div>
+
+        <div id="logs-container" class="hidden border border-zinc-800 bg-black rounded-lg p-2.5 font-mono text-[9px] text-zinc-400">
+          <div class="flex justify-between items-center mb-1 pb-1 border-b border-zinc-900">
+            <span class="text-emerald-500 uppercase tracking-wider text-[8px] font-bold" id="logs-title">Log output</span>
+            <button onclick="closeLogs()" class="text-zinc-600 hover:text-zinc-300">
+              <i data-lucide="x" class="w-3 h-3"></i>
+            </button>
+          </div>
+          <pre class="overflow-auto max-h-36 terminal-scrollbar whitespace-pre-wrap leading-tight font-mono" id="logs-output"></pre>
+        </div>
+
+        <div class="text-[10px] font-mono text-zinc-500 grid grid-cols-2 gap-y-1 gap-x-2 border-t border-zinc-900 pt-2">
+          <div>OS: <span class="text-zinc-400" id="pulse-platform">--</span></div>
+          <div class="text-right">MEM: <span class="text-zinc-400" id="pulse-memory">-- MB</span></div>
+          <div>NODE: <span class="text-zinc-400" id="pulse-node">--</span></div>
+          <div class="text-right">PING: <span class="text-emerald-500/80">OK</span></div>
+        </div>
+      </section>
+
+      <!-- TIMELINE: Recent Milestones / Trophy Case -->
+      <section class="bg-zinc-950 p-4 rounded-xl glow-border">
+        <div class="flex items-center gap-2 mb-3 text-emerald-500">
+          <i data-lucide="trophy" class="w-4 h-4"></i>
+          <h2 class="text-xs font-bold uppercase tracking-wider font-mono">Recent Milestones & Trophy Case</h2>
+        </div>
+        <div class="relative pl-4 border-l border-zinc-800 space-y-4 text-xs" id="milestones-timeline">
+          <!-- Dynamic Milestones -->
+        </div>
+      </section>
+
+      <!-- TOGGLE: Emergency Kill Switch -->
+      <section class="border border-red-500/20 bg-red-950/5 p-4 rounded-xl flex flex-col items-center justify-center glow-border-danger relative overflow-hidden">
+        <div class="hazard-stripe h-1 w-full absolute top-0 left-0 opacity-50"></div>
+        <div class="text-center mb-3">
+          <h3 class="text-xs font-extrabold text-red-500 font-mono tracking-wider flex items-center gap-1.5 justify-center">
+            <i data-lucide="alert-triangle" class="w-3.5 h-3.5 animate-pulse"></i>
+            EMERGENCY KILL SWITCH
+          </h3>
+          <p class="text-[9px] text-zinc-500 mt-0.5">Instantly aborts all active workspace runs and agent triggers.</p>
+        </div>
+        <button onclick="confirmKill()" class="w-full bg-red-700 hover:bg-red-600 text-white font-extrabold tracking-wider font-mono text-xs py-2.5 rounded-lg border border-red-500/40 hover:shadow-lg transition-all active:scale-95">
+          TRIP RUNTIME OVERRIDE
+        </button>
+      </section>
+
+    <!-- Kill Confirmation Modal -->
+    <div id="kill-modal" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-black/90 p-4">
+      <div class="bg-zinc-950 border border-red-500/40 rounded-xl p-5 max-w-sm w-full text-center space-y-4">
+        <div class="w-12 h-12 bg-red-950/50 rounded-full flex items-center justify-center mx-auto text-red-500">
+          <i data-lucide="shield-alert" class="w-6 h-6"></i>
+        </div>
+        <div class="space-y-1">
+          <h4 class="text-base font-bold text-red-500 font-mono uppercase">Confirm System Halt?</h4>
+          <p class="text-xs text-zinc-400 leading-relaxed font-mono">
+            This will write an immutable kill instruction to the disk and terminate the command bridge immediately. You will lose remote connectivity.
+          </p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="closeKillModal()" class="flex-1 bg-zinc-900 hover:bg-zinc-800 text-zinc-400 text-xs font-bold py-2 rounded-lg border border-zinc-800 transition-colors">
+            Cancel
+          </button>
+          <button onclick="executeKill()" class="flex-1 bg-red-600 hover:bg-red-500 text-black text-xs font-extrabold py-2 rounded-lg transition-colors">
+            HALT SYSTEM
+          </button>
+        </div>
+      </div>
+    </div>
+    </main>
+  </div>
+  <script>
+    let pollInterval = null;
+
+    async function loadStatus() {
+      try {
+        const response = await fetch('/api/status');
+        if (!response.ok) throw new Error("HTTP connection failure");
+        const data = await response.json();
+        
+        if (data.pulse.isKilled) {
+          triggerLockdown();
+          return;
+        }
+
+        updateUI(data);
+      } catch (e) {
+        console.error("UIPoll Error:", e);
+      }
+    }
+
+    function formatUptime(seconds) {
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = Math.floor(seconds % 60);
+      return `${h}h ${m}m ${s}s`;
+    }
+
+    function updateUI(data) {
+      const objectiveText = document.getElementById('objective-text');
+      objectiveText.innerHTML = data.currentObjective
+        .replace(/\n-\s/g, '<br>• ')
+        .replace(/\*\*(.*?)\*\*/g, '<strong class="text-emerald-400 font-bold">$1</strong>');
+
+      const countDisplay = document.getElementById('deliverables-count');
+      const listContainer = document.getElementById('deliverables-list');
+      
+      const total = data.deliverables.length;
+      const checked = data.deliverables.filter(d => d.checked).length;
+      countDisplay.textContent = `${checked}/${total}`;
+
+      listContainer.innerHTML = data.deliverables.map(d => {
+        const checkState = d.checked ? 'checked' : '';
+        const lineStyle = d.checked ? 'line-through text-zinc-500' : 'text-zinc-300';
+        return `
+          <li class="flex items-center justify-between p-2 rounded bg-zinc-900/30 border border-zinc-900/60 hover:border-zinc-800 transition-colors">
+            <label class="flex items-start gap-2.5 flex-1 cursor-pointer select-none py-0.5">
+              <input type="checkbox" ${checkState} onchange="toggleDeliverable('${d.id}', this.checked)" 
+                     class="mt-1 w-3.5 h-3.5 bg-zinc-850 border-zinc-700 text-emerald-500 rounded focus:ring-0 focus:ring-offset-0 accent-emerald-500">
+              <span class="text-xs ${lineStyle} font-medium pr-2 leading-snug font-mono">${d.text}</span>
+            </label>
+            <button onclick="deleteDeliverable('${d.id}')" class="text-zinc-600 hover:text-red-500/80 p-1 rounded transition-colors ml-1">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+          </li>
+        `;
+      }).join('');
+
+      document.getElementById('uptime-display').textContent = 'Uptime: ' + formatUptime(data.pulse.uptime);
+      document.getElementById('server-time').textContent = data.pulse.serverTime.split('T')[0];
+      document.getElementById('pulse-platform').textContent = data.pulse.platform.toUpperCase();
+      document.getElementById('pulse-memory').textContent = Math.round(data.pulse.memory / (1024 * 1024)) + ' MB';
+      document.getElementById('pulse-node').textContent = data.pulse.nodeVersion;
+
+      const gitState = document.getElementById('pulse-git-state');
+      if (data.pulse.git.isClean) {
+        gitState.innerHTML = `<span class="bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-mono text-[9px] font-bold">GIT: CLEAN</span>`;
+      } else {
+        gitState.innerHTML = `<span class="bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded font-mono text-[9px] font-bold">GIT: DIRTY (${data.pulse.git.files.length})</span>`;
+      }
+
+      updateToolButton('btn-build', 'icon-build', 'status-build', data.pulse.build, 'package', '02_PROSIS');
+      updateToolButton('btn-health', 'icon-health', 'status-health', data.pulse.health, 'terminal', 'Health Suite');
+
+      const timelineContainer = document.getElementById('milestones-timeline');
+      if (data.milestones.length === 0) {
+        timelineContainer.innerHTML = '<div class="text-zinc-600 italic font-mono">No milestones available</div>';
+      } else {
+        timelineContainer.innerHTML = data.milestones.map(m => {
+          let badgeColor = "bg-zinc-900 border-zinc-800 text-zinc-500";
+          let circleColor = "border-zinc-800 bg-black";
+          let exitDesc = m.exitCondition;
+
+          if (m.isComplete) {
+            badgeColor = "bg-emerald-500/10 border-emerald-500/20 text-emerald-400";
+            circleColor = "border-emerald-500 bg-emerald-500 animate-pulse";
+          } else if (m.isActive) {
+            badgeColor = "bg-sky-500/10 border-sky-500/20 text-sky-400";
+            circleColor = "border-sky-500 bg-zinc-900";
+          }
+
+          return `
+            <div class="relative pb-0.5">
+              <span class="absolute -left-[20px] top-1 w-2.5 h-2.5 rounded-full border-2 ${circleColor}"></span>
+              <div class="flex items-center gap-1.5 mb-1 flex-wrap">
+                <span class="font-bold text-zinc-200 font-mono">${m.id}</span>
+                <span class="font-bold text-zinc-100 font-mono text-[11px]">${m.title}</span>
+                <span class="text-[8px] border px-1 py-0.1 rounded uppercase tracking-wider ${badgeColor} font-mono">${m.statusText}</span>
+              </div>
+              <p class="text-[10px] text-zinc-400 font-mono bg-zinc-900/25 p-1.5 rounded border border-zinc-900/50 leading-normal">${exitDesc}</p>
+            </div>
+          `;
+        }).join('');
+      }
+
+      lucide.createIcons();
+    }
+    
+    function updateToolButton(btnId, iconId, statusId, toolState, defaultIcon, defaultSubtext) {
+      const btn = document.getElementById(btnId);
+      const icon = document.getElementById(iconId);
+      const sub = document.getElementById(statusId);
+
+      if (toolState.status === "BUILDING" || toolState.status === "RUNNING") {
+        btn.classList.add("bg-emerald-950/20", "border-emerald-500/30");
+        icon.className = "w-5 h-5 text-emerald-400 mb-1 animate-spin";
+        sub.textContent = toolState.status + "...";
+        sub.className = "text-[8px] text-emerald-400 font-bold font-mono";
+        btn.onclick = null;
+      } else if (toolState.status === "SUCCESS") {
+        btn.classList.remove("bg-emerald-950/20", "border-emerald-500/30");
+        icon.className = "w-5 h-5 text-emerald-400 mb-1";
+        sub.textContent = "VIEW LOGS (PASS)";
+        sub.className = "text-[7px] text-emerald-400 font-bold font-mono";
+        btn.onclick = () => showLogs(toolState.logs, defaultSubtext + " Log [PASS]");
+      } else if (toolState.status === "FAILED") {
+        btn.classList.remove("bg-emerald-950/20", "border-emerald-500/30");
+        icon.className = "w-5 h-5 text-red-500 mb-1";
+        sub.textContent = "VIEW LOGS (FAIL)";
+        sub.className = "text-[7px] text-red-500 font-bold font-mono";
+        btn.onclick = () => showLogs(toolState.logs, defaultSubtext + " Log [FAIL]");
+      } else {
+        btn.classList.remove("bg-emerald-950/20", "border-emerald-500/30");
+        icon.className = "w-5 h-5 text-zinc-400 mb-1";
+        sub.textContent = defaultSubtext;
+        sub.className = "text-[8px] text-zinc-500 font-mono";
+        btn.onclick = (btnId === "btn-build") ? triggerBuild : triggerHealthcheck;
+      }
+    }
+
+    async function toggleDeliverable(id, checked) {
+      await fetch('/api/deliverables', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, checked })
+      });
+      loadStatus();
+    }
+
+    document.getElementById('add-deliverable-form').onsubmit = async function(e) {
+      e.preventDefault();
+      const input = document.getElementById('new-deliverable-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const res = await fetch('/api/deliverables/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+      if (res.ok) {
+        input.value = '';
+        loadStatus();
+      }
+    };
+
+    async function deleteDeliverable(id) {
+      const res = await fetch('/api/deliverables/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      if (res.ok) {
+        loadStatus();
+      }
+    }
+
+    async function triggerBuild() {
+      const res = await fetch('/api/build', { method: 'POST' });
+      if (res.ok) {
+        loadStatus();
+      }
+    }
+
+    async function triggerHealthcheck() {
+      const res = await fetch('/api/healthcheck', { method: 'POST' });
+      if (res.ok) {
+        loadStatus();
+      }
+    }
+
+    function showLogs(logs, title) {
+      const container = document.getElementById('logs-container');
+      const output = document.getElementById('logs-output');
+      const titleEl = document.getElementById('logs-title');
+
+      titleEl.textContent = title;
+      output.textContent = logs || "No logs captured.";
+      container.classList.remove('hidden');
+      container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function closeLogs() {
+      document.getElementById('logs-container').classList.add('hidden');
+    }
+
+    function confirmKill() {
+      document.getElementById('kill-modal').classList.remove('hidden');
+    }
+
+    function closeKillModal() {
+      document.getElementById('kill-modal').classList.add('hidden');
+    }
+
+    async function executeKill() {
+      closeKillModal();
+      triggerLockdown();
+      try {
+        await fetch('/api/kill', { method: 'POST' });
+      } catch (e) {
+        // Expected network connection termination
+      }
+    }
+
+    function triggerLockdown() {
+      if (pollInterval) clearInterval(pollInterval);
+      document.getElementById('lockdown-overlay').classList.remove('hidden');
+    }
+
+    // Init & Long Poll loop
+    loadStatus();
+    pollInterval = setInterval(loadStatus, 2000);
+  </script>
+</body>
+</html>

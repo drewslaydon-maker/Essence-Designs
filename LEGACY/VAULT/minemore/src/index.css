@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif-display: "Cinzel", Georgia, serif;
+  --font-sans: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+@keyframes pulse-glint {
+  0%, 100% { transform: scale(1); opacity: 0.2; }
+  50% { transform: scale(1.6); opacity: 1; filter: drop-shadow(0 0 10px currentColor); }
+}
+
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.animate-pulse-glint {
+  animation: pulse-glint 1.8s ease-in-out infinite;
+}
+
+.animate-float-gentle {
+  animation: float-gentle 3s ease-in-out infinite;
+}

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Tavern Darts • Proving Ground Sandbox</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #080c14;
+      color: #e2e8f0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 10px 8px 24px 8px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      touch-action: pan-y;
+      -webkit-overflow-scrolling: touch;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    #top-nav {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      margin-bottom: 8px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 10px;
+    }
+    .nav-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #1e293b;
+      color: #fbbf24;
+      border: 1px solid #f59e0b;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .nav-back-btn:active {
+      background: #f59e0b;
+      color: #000;
+    }
+    .scroll-hint {
+      font-size: 10px;
+      color: #94a3b8;
+    }
+    #sandbox-container {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      height: 82vh;
+      min-height: 480px;
+      max-height: 740px;
+      background: #0f172a;
+      border: 1px solid #f59e0b;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(245, 158, 11, 0.2);
+      touch-action: pan-y;
+    }
+    header {
+      padding: 10px 16px;
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid rgba(245, 158, 11, 0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    h1 { font-size: 13px; font-weight: 700; color: #f59e0b; letter-spacing: 0.5px; }
+    .badge { font-size: 10px; background: #1e293b; color: #38bdf8; padding: 2px 8px; border-radius: 12px; border: 1px solid #0284c7; }
+    canvas {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      background: #140e0a;
+      display: block;
+      touch-action: none;
+    }
+    #controls {
+      padding: 12px 16px;
+      background: rgba(15, 23, 42, 0.95);
+      border-top: 1px solid rgba(245, 158, 11, 0.3);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .btn {
+      flex: 1;
+      padding: 14px 10px;
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #475569;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      touch-action: manipulation;
+    }
+    .btn:active, .btn.active {
+      background: #f59e0b;
+      color: #000;
+      border-color: #d97706;
+      transform: scale(0.98);
+    }
+    .btn-throw {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      color: #fff;
+      border-color: #f59e0b;
+    }
+    #score-banner {
+      position: absolute;
+      top: 54px;
+      left: 12px;
+      right: 12px;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+      font-size: 12px;
+    }
+    .hud-chip {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      padding: 4px 10px;
+      border-radius: 8px;
+      color: #cbd5e1;
+    }
+    .hud-chip strong { color: #f59e0b; }
+  </style>
+</head>
+<body>
+  <div id="top-nav">
+    <button class="nav-back-btn" onclick="handleReturnToApp()">
+      ← Return to Essence Fl0w Hub
+    </button>
+    <div class="scroll-hint">↕ Swipe outside box to scroll</div>
+  </div>
+
+  <div id="sandbox-container">
+    <header>
+      <div>
+        <h1>🎯 TAVERN DARTS PROVING GROUND</h1>
+        <div style="font-size: 10px; color: #94a3b8;">Lissajous Hand Sway • Polar Coordinate Targeting</div>
+      </div>
+      <span class="badge">ESSENCE FL0W v1.0</span>
+    </header>
+
+    <div id="score-banner">
+      <div class="hud-chip">Darts: <strong id="hud-darts">3 / 3</strong></div>
+      <div class="hud-chip">Score: <strong id="hud-score">0</strong></div>
+      <div class="hud-chip">Bulls: <strong id="hud-bulls">0</strong></div>
+    </div>
+
+    <canvas id="dartCanvas"></canvas>
+
+    <div id="controls">
+      <button class="btn" id="btnBreath">🌬️ HOLD BREATH (Aim Steady)</button>
+      <button class="btn btn-throw" id="btnThrow">🎯 PULL & THROW</button>
+      <button class="btn" id="btnReset" style="flex: 0 0 46px;">🔄</button>
+    </div>
+  </div>
+
+  <script>
+    // Direct Web Audio Synthesizer (Zero asset lag)
+    let audioCtx = null;
+    function ensureAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+    function playTone(freq, type='sine', dur=0.15, vol=0.2) {
+      if (!audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        g.gain.setValueAtTime(vol, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+        osc.connect(g);
+        g.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + dur);
+      } catch(e) {}
+    }
+
+    const DART_SECTORS = [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5];
+    const canvas = document.getElementById('dartCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let width, height, boardCenter = { x: 0, y: 0 }, boardRadius = 150;
+
+    function resize() {
+      width = canvas.width = canvas.clientWidth * window.devicePixelRatio;
+      height = canvas.height = canvas.clientHeight * window.devicePixelRatio;
+      boardCenter.x = width / 2;
+      boardCenter.y = height * 0.44;
+      boardRadius = Math.min(width, height) * 0.42;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Game State
+    let dartsRemaining = 3;
+    let totalScore = 0;
+    let bullsEyes = 0;
+    let aimX = 0, aimY = 0; // Normalized board coordinates [-1, 1]
+    let isHoldingBreath = false;
+    let isTensioning = false;
+    let tension = 0.0;
+    let lastHitText = "Drag on board to aim. Tap or hold THROW!";
+    let lastHitColor = "#f59e0b";
+    let hits = [];
+
+    // Lissajous Hand Sway
+    let t = 0;
+    const wx = 2.1, wy = 1.6;
+    let swayX = 0, swayY = 0;
+
+    // Flight animation
+    let flight = null;
+
+    function update() {
+      t += 0.016;
+      const amp = isHoldingBreath ? 0.02 : 0.07;
+      swayX = amp * Math.sin(t * wx + 0.4);
+      swayY = amp * Math.cos(t * wy + 1.2);
+
+      if (isTensioning) {
+        tension = Math.min(1.0, tension + 0.02);
+      }
+
+      if (flight) {
+        flight.progress += 0.08;
+        if (flight.progress >= 1.0) {
+          // Landing
+          evaluateHit(flight.targetX, flight.targetY);
+          flight = null;
+        }
+      }
+    }
+
+    function evaluateHit(x, y) {
+      ensureAudio();
+      const r = Math.hypot(x, y);
+      let angle = Math.atan2(-y, x);
+      if (angle < 0) angle += 2 * Math.PI;
+
+      let hit = { points: 0, label: 'MISS' };
+      if (r <= 0.05) {
+        hit = { points: 50, label: 'DOUBLE BULLSEYE! (50 pts)', color: '#ef4444' };
+        bullsEyes++;
+        playTone(880, 'sine', 0.35, 0.3);
+      } else if (r <= 0.12) {
+        hit = { points: 25, label: 'BULLSEYE! (25 pts)', color: '#10b981' };
+        bullsEyes++;
+        playTone(660, 'sine', 0.25, 0.25);
+      } else if (r > 1.0) {
+        hit = { points: 0, label: 'OFF BOARD (0 pts)', color: '#64748b' };
+        playTone(180, 'sawtooth', 0.15, 0.15);
+      } else {
+        const wedgeAngle = (2 * Math.PI) / 20;
+        let shifted = angle - (Math.PI / 2 - wedgeAngle / 2);
+        while (shifted < 0) shifted += 2 * Math.PI;
+        while (shifted >= 2 * Math.PI) shifted -= 2 * Math.PI;
+        const sector = DART_SECTORS[Math.floor(shifted / wedgeAngle) % 20];
+
+        if (r >= 0.52 && r <= 0.58) {
+          hit = { points: sector * 3, label: `TRIPLE ${sector}! (${sector * 3} pts)`, color: '#f59e0b' };
+          playTone(550, 'triangle', 0.2, 0.2);
+        } else if (r >= 0.88 && r <= 0.96) {
+          hit = { points: sector * 2, label: `DOUBLE ${sector}! (${sector * 2} pts)`, color: '#38bdf8' };
+          playTone(440, 'triangle', 0.2, 0.2);
+        } else {
+          hit = { points: sector, label: `Single ${sector} (${sector} pts)`, color: '#e2e8f0' };
+          playTone(330, 'sine', 0.12, 0.15);
+        }
+      }
+
+      hits.push({ x, y, ...hit });
+      totalScore += hit.points;
+      dartsRemaining--;
+      lastHitText = hit.label;
+      lastHitColor = hit.color || '#f59e0b';
+
+      document.getElementById('hud-darts').innerText = `${dartsRemaining} / 3`;
+      document.getElementById('hud-score').innerText = totalScore;
+      document.getElementById('hud-bulls').innerText = bullsEyes;
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+
+      // 1. Draw Dartboard (Polar rings)
+      const cx = boardCenter.x, cy = boardCenter.y, R = boardRadius;
+
+      // Outer rim
+      ctx.beginPath();
+      ctx.arc(cx, cy, R * 1.05, 0, Math.PI * 2);
+      ctx.fillStyle = '#1e1008';
+      ctx.fill();
+      ctx.strokeStyle = '#b45309';
+      ctx.lineWidth = 4 * (width / 500);
+      ctx.stroke();
+
+      // Wedges
+      const wedgeAngle = (Math.PI * 2) / 20;
+      for (let i = 0; i < 20; i++) {
+        const startA = i * wedgeAngle - Math.PI / 2 - wedgeAngle / 2;
+        const endA = startA + wedgeAngle;
+        const isDark = i % 2 === 0;
+
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, R, startA, endA);
+        ctx.closePath();
+        ctx.fillStyle = isDark ? '#0f172a' : '#f8fafc';
+        ctx.fill();
+
+        // Double ring wedge
+        ctx.beginPath();
+        ctx.arc(cx, cy, R * 0.96, startA, endA);
+        ctx.arc(cx, cy, R * 0.88, endA, startA, true);
+        ctx.closePath();
+        ctx.fillStyle = isDark ? '#dc2626' : '#16a34a';
+        ctx.fill();
+
+        // Triple ring wedge
+        ctx.beginPath();
+        ctx.arc(cx, cy, R * 0.58, startA, endA);
+        ctx.arc(cx, cy, R * 0.52, endA, startA, true);
+        ctx.closePath();
+        ctx.fillStyle = isDark ? '#dc2626' : '#16a34a';
+        ctx.fill();
+
+        // Numbers on outer rim
+        const numA = i * wedgeAngle - Math.PI / 2;
+        const numX = cx + Math.cos(numA) * (R * 1.14);
+        const numY = cy + Math.sin(numA) * (R * 1.14);
+        ctx.font = `bold ${11 * (width / 500)}px monospace`;
+        ctx.fillStyle = '#fef08a';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(DART_SECTORS[i], numX, numY);
+      }
+
+      // Outer Bull (25)
+      ctx.beginPath();
+      ctx.arc(cx, cy, R * 0.12, 0, Math.PI * 2);
+      ctx.fillStyle = '#16a34a';
+      ctx.fill();
+
+      // Inner Bull (50)
+      ctx.beginPath();
+      ctx.arc(cx, cy, R * 0.05, 0, Math.PI * 2);
+      ctx.fillStyle = '#dc2626';
+      ctx.fill();
+
+      // Wire rings
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      ctx.lineWidth = 1.5;
+      [0.05, 0.12, 0.52, 0.58, 0.88, 0.96, 1.0].forEach(r => {
+        ctx.beginPath();
+        ctx.arc(cx, cy, R * r, 0, Math.PI * 2);
+        ctx.stroke();
+      });
+
+      // Previous hit markers
+      hits.forEach((h, idx) => {
+        const hx = cx + h.x * R;
+        const hy = cy + h.y * R;
+        ctx.beginPath();
+        ctx.arc(hx, hy, 5 * (width / 500), 0, Math.PI * 2);
+        ctx.fillStyle = '#f59e0b';
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      });
+
+      // In-flight dart
+      if (flight) {
+        const fx = cx + (flight.startX + (flight.targetX - flight.startX) * flight.progress) * R;
+        const fy = cy + (flight.startY + (flight.targetY - flight.startY) * flight.progress) * R;
+        const scale = 1.8 - flight.progress * 0.8;
+        ctx.save();
+        ctx.translate(fx, fy);
+        ctx.scale(scale, scale);
+        ctx.beginPath();
+        ctx.moveTo(0, -16);
+        ctx.lineTo(4, 16);
+        ctx.lineTo(-4, 16);
+        ctx.closePath();
+        ctx.fillStyle = '#f59e0b';
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // Reticle with Lissajous Hand Sway
+      if (dartsRemaining > 0 && !flight) {
+        const rx = cx + (aimX + swayX) * R;
+        const ry = cy + (aimY + swayY) * R;
+
+        ctx.strokeStyle = isHoldingBreath ? '#38bdf8' : '#f59e0b';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(rx, ry, 14 * (width / 500), 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(rx - 18, ry); ctx.lineTo(rx + 18, ry);
+        ctx.moveTo(rx, ry - 18); ctx.lineTo(rx, ry + 18);
+        ctx.stroke();
+
+        // Tension Arc
+        if (tension > 0) {
+          ctx.beginPath();
+          ctx.arc(rx, ry, 22 * (width / 500), -Math.PI / 2, -Math.PI / 2 + tension * Math.PI * 2);
+          ctx.strokeStyle = '#10b981';
+          ctx.lineWidth = 4;
+          ctx.stroke();
+        }
+      }
+
+      // Bottom Status Banner
+      ctx.fillStyle = lastHitColor;
+      ctx.font = `bold ${13 * (width / 500)}px monospace`;
+      ctx.textAlign = 'center';
+      ctx.fillText(lastHitText, cx, height - 20);
+
+      requestAnimationFrame(() => {
+        update();
+        draw();
+      });
+    }
+
+    requestAnimationFrame(() => {
+      update();
+      draw();
+    });
+
+    // Interaction Controls
+    function throwDart() {
+      if (dartsRemaining <= 0 || flight) return;
+      ensureAudio();
+      playTone(280, 'triangle', 0.1, 0.15);
+      flight = {
+        startX: (aimX + swayX) * 0.3,
+        startY: 1.4,
+        targetX: aimX + swayX,
+        targetY: aimY + swayY,
+        progress: 0.0
+      };
+      tension = 0.0;
+      isTensioning = false;
+    }
+
+    // Touch & Mouse Aiming on Canvas
+    function handlePointer(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const px = (clientX - rect.left) * window.devicePixelRatio;
+      const py = (clientY - rect.top) * window.devicePixelRatio;
+      aimX = (px - boardCenter.x) / boardRadius;
+      aimY = (py - boardCenter.y) / boardRadius;
+    }
+
+    canvas.addEventListener('pointerdown', (e) => { ensureAudio(); handlePointer(e); });
+    canvas.addEventListener('pointermove', (e) => { if (e.buttons === 1 || e.touches) handlePointer(e); });
+    canvas.addEventListener('touchmove', (e) => {
+      if (e.cancelable) e.preventDefault();
+      handlePointer(e);
+    }, { passive: false });
+
+    function handleReturnToApp() {
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'ESSENCE_NAVIGATE', tab: 'landing' }, '*');
+        }
+      } catch (err) {}
+      window.location.href = '/';
+    }
+
+    const btnBreath = document.getElementById('btnBreath');
+    btnBreath.addEventListener('pointerdown', () => { ensureAudio(); isHoldingBreath = true; btnBreath.classList.add('active'); });
+    btnBreath.addEventListener('pointerup', () => { isHoldingBreath = false; btnBreath.classList.remove('active'); });
+
+    const btnThrow = document.getElementById('btnThrow');
+    btnThrow.addEventListener('pointerdown', () => { ensureAudio(); isTensioning = true; });
+    btnThrow.addEventListener('pointerup', () => { throwDart(); });
+
+    document.getElementById('btnReset').addEventListener('click', () => {
+      ensureAudio();
+      dartsRemaining = 3;
+      totalScore = 0;
+      bullsEyes = 0;
+      hits = [];
+      lastHitText = "Leg reset. Ready to aim!";
+      lastHitColor = "#f59e0b";
+      document.getElementById('hud-darts').innerText = '3 / 3';
+      document.getElementById('hud-score').innerText = '0';
+      document.getElementById('hud-bulls').innerText = '0';
+    });
+  </script>
+</body>
+</html>

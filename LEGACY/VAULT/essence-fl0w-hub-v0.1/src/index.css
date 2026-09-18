@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-cinzel: 'Cinzel', serif;
+    --font-decorative: 'Cinzel Decorative', serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-sans: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #07090e;
+    color: #cbd5e1;
+    overflow-x: hidden;
+  }
+}
+
+.font-cinzel {
+  font-family: var(--font-cinzel);
+}
+
+.font-decorative {
+  font-family: var(--font-decorative);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Cosmic & Constellation Gradients */
+.bg-cosmic-void {
+  background: radial-gradient(circle at 50% 20%, #111528 0%, #080a13 50%, #040508 100%);
+}
+
+.bg-stellar-card {
+  background: linear-gradient(135deg, rgba(17, 24, 39, 0.75) 0%, rgba(10, 15, 29, 0.85) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  backdrop-filter: blur(12px);
+}
+
+/* Classic Parchment Styling for Lore & Tickets */
+.parchment-scroll {
+  background: 
+    radial-gradient(ellipse at center, rgba(235, 218, 178, 0.05) 0%, rgba(30, 26, 20, 0.85) 70%, rgba(18, 15, 12, 0.95) 100%),
+    linear-gradient(to bottom, rgba(212, 175, 55, 0.04), rgba(0, 0, 0, 0.5));
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  box-shadow: 
+    inset 0 0 20px rgba(0, 0, 0, 0.8),
+    0 4px 20px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.parchment-scroll::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+}
+
+.parchment-scroll::after {
+  content: "";
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+}
+
+/* Runic Glow & Animations */
+.glow-rune {
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.8), 0 0 20px rgba(125, 211, 252, 0.4);
+}
+
+.glow-rune-gold {
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.8), 0 0 20px rgba(251, 191, 36, 0.4);
+}
+
+.glow-rune-emerald {
+  text-shadow: 0 0 8px rgba(52, 211, 153, 0.8), 0 0 20px rgba(16, 185, 129, 0.4);
+}
+
+.glow-rune-violet {
+  text-shadow: 0 0 8px rgba(168, 85, 247, 0.8), 0 0 20px rgba(192, 132, 252, 0.4);
+}
+
+@keyframes runePulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); filter: brightness(1); }
+  50% { opacity: 1; transform: scale(1.04); filter: brightness(1.3); }
+}
+
+.animate-rune-pulse {
+  animation: runePulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Custom Stellar Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080a13;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+  border: 1px solid rgba(56, 189, 248, 0.1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}

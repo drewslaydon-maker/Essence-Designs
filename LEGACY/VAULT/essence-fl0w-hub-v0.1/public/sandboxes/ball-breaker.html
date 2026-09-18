@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Ball Breaker // Slingshot & Feel Sandbox</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-user-select: none; user-select: none; }
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: #080a0f;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+  }
+  #top-nav {
+    position: absolute; top: 14px; left: 14px; z-index: 20;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-back-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(15, 23, 42, 0.88);
+    color: #00f0ff;
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    touch-action: manipulation;
+    letter-spacing: 0.05em;
+    backdrop-filter: blur(4px);
+    transition: all 0.15s ease;
+  }
+  .nav-back-btn:hover {
+    background: rgba(0, 240, 255, 0.15);
+    border-color: #00f0ff;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.35);
+  }
+  .nav-back-btn:active {
+    background: #00f0ff;
+    color: #080a0f;
+  }
+  #canvas-container {
+    position: absolute; width: 100%; height: 100%;
+    touch-action: none;
+  }
+  canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+  #hud {
+    position: absolute; top: 18px; left: 0; width: 100%;
+    text-align: center; pointer-events: none;
+    color: #4a5568; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<div id="top-nav">
+  <button id="nav-back-btn" class="nav-back-btn" onclick="handleReturnToApp()">
+    ← ESSENCE HUB
+  </button>
+</div>
+<div id="hud">PULL & RELEASE TO LAUNCH // TAP TO RESET</div>
+<div id="canvas-container">
+  <canvas id="sandbox"></canvas>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  // Standalone Return Navigation Handler (auto-hidden inside iframes)
+  window.handleReturnToApp = function() {
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'ESSENCE_NAVIGATE', tab: 'landing' }, '*');
+      }
+    } catch (err) {}
+    window.location.href = '/';
+  };
+  if (window.self !== window.top) {
+    const nav = document.getElementById('top-nav');
+    if (nav) nav.style.display = 'none';
+  }
+
+  // --- AUDIO SYNTHESIS ENGINE (ZERO ASSETS) ---
+  class SoundFX {
+    constructor() {
+      this.ctx = null;
+      this.tensionOsc = null;
+      this.tensionGain = null;
+    }
+
+    init() {
+      if (this.ctx) return;
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      this.ctx = new AudioContext();
+
+      // Continuous tension oscillator
+      this.tensionOsc = this.ctx.createOscillator();
+      this.tensionGain = this.ctx.createGain();
+      this.tensionOsc.type = 'triangle';
+      this.tensionGain.gain.setValueAtTime(0, this.ctx.currentTime);
+      this.tensionOsc.connect(this.tensionGain);
+      this.tensionGain.connect(this.ctx.destination);
+      this.tensionOsc.start();
+    }
+
+    setTension(ratio) {
+      if (!this.ctx) return;
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      if (ratio <= 0.05) {
+        this.tensionGain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.03);
+      } else {
+        const freq = 110 + ratio * 330; // 110Hz -> 440Hz
+        this.tensionOsc.frequency.setTargetAtTime(freq, this.ctx.currentTime, 0.02);
+        this.tensionGain.gain.setTargetAtTime(0.12 * ratio, this.ctx.currentTime, 0.02);
+      }
+    }
+
+    playRelease() {
+      if (!this.ctx) return;
+      this.setTension(0);
+      const t = this.ctx.currentTime;
+
+      // Sub-bass thump
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(140, t);
+      osc.frequency.exponentialRampToValueAtTime(32, t + 0.09);
+      gain.gain.setValueAtTime(0.6, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.1);
+
+      // Noise snap transient
+      const bufferSize = this.ctx.sampleRate * 0.02;
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'highpass';
+      filter.frequency.value = 1200;
+      const noiseGain = this.ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.2, t);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
+      noise.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(this.ctx.destination);
+      noise.start(t);
+    }
+
+    playCancel() {
+      if (!this.ctx) return;
+      this.setTension(0);
+      const t = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(120, t);
+      osc.frequency.exponentialRampToValueAtTime(60, t + 0.06);
+      gain.gain.setValueAtTime(0.15, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.07);
+    }
+
+    playBounce(intensity = 1.0) {
+      if (!this.ctx) return;
+      const t = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      const startFreq = 220 + Math.min(intensity, 2.5) * 160;
+      osc.frequency.setValueAtTime(startFreq, t);
+      osc.frequency.exponentialRampToValueAtTime(80, t + 0.08);
+      gain.gain.setValueAtTime(Math.min(0.4 * intensity, 0.5), t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.09);
+    }
+  }
+
+  // --- SETUP CANVAS & STATE ---
+  const canvas = document.getElementById('sandbox');
+  const ctx = canvas.getContext('2d');
+  const sfx = new SoundFX();
+
+  let width, height, dpr;
+  const resize = () => {
+    dpr = window.devicePixelRatio || 1;
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    ctx.scale(dpr, dpr);
+    if (ball.state === 'IDLE') {
+      ball.x = width * 0.5;
+      ball.y = height * 0.72;
+    }
+  };
+
+  const ball = {
+    x: 0, y: 0,
+    vx: 0, vy: 0,
+    radius: 18,
+    state: 'IDLE', // IDLE, AIMING, FLYING
+    friction: 0.988,
+    color: '#00f0ff'
+  };
+
+  const drag = {
+    active: false,
+    touchId: null,
+    startX: 0, startY: 0,
+    currX: 0, currY: 0,
+    pullDist: 0,
+    clampedDist: 0,
+    angle: 0,
+    deadZone: 12,
+    maxPull: 110,
+    impulseScalar: 0.22
+  };
+
+  let shake = { x: 0, y: 0, intensity: 0 };
+  const triggerShake = (val) => { shake.intensity = Math.min(shake.intensity + val, 16); };
+
+  // --- INPUT HANDLING (MOBILE-FIRST QUARANTINE) ---
+  const handleStart = (clientX, clientY, id) => {
+    sfx.init();
+    if (ball.state === 'FLYING') {
+      // Instant tap-to-stop debug assist
+      ball.vx = 0;
+      ball.vy = 0;
+      ball.state = 'IDLE';
+      ball.x = clientX;
+      ball.y = clientY;
+      return;
+    }
+    const dx = clientX - ball.x;
+    const dy = clientY - ball.y;
+    // Allow grab within 2.5x ball radius
+    if (Math.hypot(dx, dy) <= ball.radius * 2.5) {
+      drag.active = true;
+      drag.touchId = id;
+      drag.startX = ball.x;
+      drag.startY = ball.y;
+      drag.currX = clientX;
+      drag.currY = clientY;
+      ball.state = 'AIMING';
+    }
+  };
+
+  const handleMove = (clientX, clientY, id) => {
+    if (!drag.active || drag.touchId !== id) return;
+    drag.currX = clientX;
+    drag.currY = clientY;
+
+    const dx = drag.currX - drag.startX;
+    const dy = drag.currY - drag.startY;
+    drag.pullDist = Math.hypot(dx, dy);
+    drag.angle = Math.atan2(dy, dx);
+
+    // Logarithmic tension clamping
+    drag.clampedDist = drag.maxPull * Math.tanh(drag.pullDist / drag.maxPull);
+
+    if (drag.pullDist > drag.deadZone) {
+      const tensionRatio = (drag.clampedDist / drag.maxPull);
+      sfx.setTension(tensionRatio);
+    } else {
+      sfx.setTension(0);
+    }
+  };
+
+  const handleEnd = (id) => {
+    if (!drag.active || drag.touchId !== id) return;
+    drag.active = false;
+    drag.touchId = null;
+
+    if (drag.pullDist > drag.deadZone) {
+      // Inverted slingshot impulse
+      const power = drag.clampedDist * drag.impulseScalar;
+      ball.vx = -Math.cos(drag.angle) * power;
+      ball.vy = -Math.sin(drag.angle) * power;
+      ball.state = 'FLYING';
+      sfx.playRelease();
+      triggerShake(power * 0.4);
+    } else {
+      ball.state = 'IDLE';
+      sfx.playCancel();
+    }
+    drag.pullDist = 0;
+    drag.clampedDist = 0;
+  };
+
+  // Touch Listeners
+  window.addEventListener('touchstart', (e) => {
+    if (drag.active) return;
+    const t = e.changedTouches[0];
+    handleStart(t.clientX, t.clientY, t.identifier);
+  }, { passive: false });
+
+  window.addEventListener('touchmove', (e) => {
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      const t = e.changedTouches[i];
+      if (t.identifier === drag.touchId) {
+        handleMove(t.clientX, t.clientY, t.identifier);
+        e.preventDefault();
+        break;
+      }
+    }
+  }, { passive: false });
+
+  window.addEventListener('touchend', (e) => {
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      if (e.changedTouches[i].identifier === drag.touchId) {
+        handleEnd(drag.touchId);
+        break;
+      }
+    }
+  });
+
+  window.addEventListener('touchcancel', (e) => {
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      if (e.changedTouches[i].identifier === drag.touchId) {
+        handleEnd(drag.touchId);
+        break;
+      }
+    }
+  });
+
+  // Desktop Fallback Listeners
+  window.addEventListener('mousedown', (e) => handleStart(e.clientX, e.clientY, 'mouse'));
+  window.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY, 'mouse'));
+  window.addEventListener('mouseup', () => handleEnd('mouse'));
+  window.addEventListener('resize', resize);
+
+  // --- TRAJECTORY RAYCAST SIMULATION ---
+  const renderTrajectory = () => {
+    if (ball.state !== 'AIMING' || drag.pullDist <= drag.deadZone) return;
+
+    const power = drag.clampedDist * drag.impulseScalar;
+    let simX = ball.x + Math.cos(drag.angle) * drag.clampedDist;
+    let simY = ball.y + Math.sin(drag.angle) * drag.clampedDist;
+    let simVx = -Math.cos(drag.angle) * power;
+    let simVy = -Math.sin(drag.angle) * power;
+
+    const steps = 38;
+    let bounceCount = 0;
+
+    for (let i = 0; i < steps; i++) {
+      simX += simVx;
+      simY += simVy;
+      simVx *= ball.friction;
+      simVy *= ball.friction;
+
+      // Predictive wall bounce (1 bounce max for clarity)
+      if (bounceCount === 0) {
+        if (simX - ball.radius < 0) { simX = ball.radius; simVx *= -1; bounceCount++; }
+        else if (simX + ball.radius > width) { simX = width - ball.radius; simVx *= -1; bounceCount++; }
+        if (simY - ball.radius < 0) { simY = ball.radius; simVy *= -1; bounceCount++; }
+        else if (simY + ball.radius > height) { simY = height - ball.radius; simVy *= -1; bounceCount++; }
+      }
+
+      const alpha = 1.0 - (i / steps);
+      const radius = Math.max(2, 5.5 * (1 - i / steps));
+
+      ctx.beginPath();
+      ctx.arc(simX, simY, radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0, 240, 255, ${alpha * 0.75})`;
+      ctx.fill();
+    }
+  };
+
+  // --- MAIN SIMULATION LOOP ---
+  const updatePhysics = () => {
+    if (ball.state === 'FLYING') {
+      ball.x += ball.vx;
+      ball.y += ball.vy;
+      ball.vx *= ball.friction;
+      ball.vy *= ball.friction;
+
+      const speed = Math.hypot(ball.vx, ball.vy);
+
+      // Boundary Collisions with dampening
+      let hit = false;
+      if (ball.x - ball.radius < 0) {
+        ball.x = ball.radius; ball.vx = -ball.vx * 0.88; hit = true;
+      } else if (ball.x + ball.radius > width) {
+        ball.x = width - ball.radius; ball.vx = -ball.vx * 0.88; hit = true;
+      }
+      if (ball.y - ball.radius < 0) {
+        ball.y = ball.radius; ball.vy = -ball.vy * 0.88; hit = true;
+      } else if (ball.y + ball.radius > height) {
+        ball.y = height - ball.radius; ball.vy = -ball.vy * 0.88; hit = true;
+      }
+
+      if (hit) {
+        sfx.playBounce(speed * 0.1);
+        triggerShake(speed * 0.35);
+      }
+
+      // Rest condition
+      if (speed < 0.2) {
+        ball.vx = 0;
+        ball.vy = 0;
+        ball.state = 'IDLE';
+      }
+    }
+
+    // Screen-shake decay
+    if (shake.intensity > 0.1) {
+      shake.x = (Math.random() - 0.5) * shake.intensity;
+      shake.y = (Math.random() - 0.5) * shake.intensity;
+      shake.intensity *= 0.88;
+    } else {
+      shake.x = 0;
+      shake.y = 0;
+      shake.intensity = 0;
+    }
+  };
+
+  // --- RENDER PASS ---
+  const render = () => {
+    ctx.save();
+    ctx.clearRect(0, 0, width, height);
+    ctx.translate(shake.x, shake.y);
+
+    // Subtle arena grid
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.025)';
+    ctx.lineWidth = 1;
+    const grid = 48;
+    for (let x = 0; x < width; x += grid) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
+    }
+    for (let y = 0; y < height; y += grid) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
+    }
+
+    // Trajectory beads
+    renderTrajectory();
+
+    // Slingshot visuals (when aiming)
+    if (ball.state === 'AIMING') {
+      const tensionRatio = drag.clampedDist / drag.maxPull;
+      const stretchX = ball.x + Math.cos(drag.angle) * drag.clampedDist;
+      const stretchY = ball.y + Math.sin(drag.angle) * drag.clampedDist;
+
+      // Anchor pins perpendicular to drag vector
+      const perp = drag.angle + Math.PI / 2;
+      const spread = 28;
+      const p1x = ball.x + Math.cos(perp) * spread;
+      const p1y = ball.y + Math.sin(perp) * spread;
+      const p2x = ball.x - Math.cos(perp) * spread;
+      const p2y = ball.y - Math.sin(perp) * spread;
+
+      // Tension color interpolation (Cyan -> Hot Amber/Pink)
+      const r = Math.floor(0 + tensionRatio * 255);
+      const g = Math.floor(240 - tensionRatio * 180);
+      const b = Math.floor(255 - tensionRatio * 150);
+      const bandColor = `rgb(${r}, ${g}, ${b})`;
+
+      // Render dual bands
+      ctx.strokeStyle = bandColor;
+      ctx.lineWidth = Math.max(1.8, 4.5 * (1 - tensionRatio * 0.5));
+      ctx.lineCap = 'round';
+
+      ctx.beginPath();
+      ctx.moveTo(p1x, p1y);
+      ctx.quadraticCurveTo(ball.x, ball.y, stretchX, stretchY);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(p2x, p2y);
+      ctx.quadraticCurveTo(ball.x, ball.y, stretchX, stretchY);
+      ctx.stroke();
+
+      // Render anchor pins
+      ctx.fillStyle = '#1e293b';
+      ctx.strokeStyle = bandColor;
+      ctx.lineWidth = 1.5;
+      [ {x: p1x, y: p1y}, {x: p2x, y: p2y} ].forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      });
+
+      // Render squashed ball at dragged position
+      ctx.save();
+      ctx.translate(stretchX, stretchY);
+      ctx.rotate(drag.angle);
+      const squashX = 1 + tensionRatio * 0.35;
+      const squashY = 1 - tensionRatio * 0.22;
+      ctx.scale(squashX, squashY);
+
+      // Core
+      ctx.fillStyle = bandColor;
+      ctx.shadowColor = bandColor;
+      ctx.shadowBlur = 16 * tensionRatio;
+      ctx.beginPath();
+      ctx.arc(0, 0, ball.radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    } else {
+      // Normal / Flying Ball
+      ctx.save();
+      ctx.translate(ball.x, ball.y);
+      ctx.fillStyle = ball.color;
+      ctx.shadowColor = ball.color;
+      ctx.shadowBlur = ball.state === 'FLYING' ? 14 : 6;
+      ctx.beginPath();
+      ctx.arc(0, 0, ball.radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Specular highlight
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.beginPath();
+      ctx.arc(-ball.radius * 0.3, -ball.radius * 0.3, ball.radius * 0.32, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    ctx.restore();
+  };
+
+  const loop = () => {
+    updatePhysics();
+    render();
+    requestAnimationFrame(loop);
+  };
+
+  // Init
+  resize();
+  loop();
+})();
+</script>
+</body>
+</html>
