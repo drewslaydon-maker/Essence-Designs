@@ -1,45 +1,48 @@
-﻿var fs = require('fs');
-var file = process.argv[2];
+﻿const fs = require('fs');
+const file = process.argv[2];
 if (!file) { console.error('usage: node saveinfo.js <file.omwsave>'); process.exit(1); }
-var b = fs.readFileSync(file);
+const b = fs.readFileSync(file039);
+const b2 = fs.readFileSync(file);
 
-function t4(p) { return b.toString('ascii', p, p + 4); }
-function u32(p) { return b.readUInt32LE(p); }
-var REC = /^[A-Z0-9_]{4}$/;
+// top-level: records are 12-byte headers (type + u32 size + 4 bytes pad)
+const REC = /^[A-Z0-9_]{4}$/;
+function t4(p) { return b2.toString('ascii', p, p + 4); }
+function u32(p) { return b2.readUInt32LE(p); }
+function f32(p) { return b2.readFloatLE(p); }
+function f64(p) { return b2.readDoubleLE(p); }
 
-var off = 8 + u32(4);
-var records = [];
-while (off + 16 <= b.length) {
-    var t = t4(off);
+let off = 8 + u32(4) + 4;
+if (t4(off) !== 'SAVE') { off = 8 + u32(4); }
+if (t4(off) !== 'SAVE' && t4(off + 4) === 'SAVE') { off = off + 4; }
+
+const saveBody = off + 8;
+const saveEnd = saveBody + u32(off + 4);
+
+const out = { header: {}, play: {} };
+
+let p = saveBody;
+while (p + 8 <= saveEnd) {
+    const t = t4(p);
     if (!REC.test(t)) break;
-    var size = b.readUInt32LE(off + 4);
-    if (t === 'SAVE' || t === 'PLAY') records.push({ t: t, off: off, size: size });
-    off += 8 + size;
-    if (off + 16 > b.length) break;
-}
-
-function subs(rec, fn) {
-    var p = rec.off + 8;
-    var end = rec.off + 8 + rec.size;
-    while (p + 8 <= end) {
-        var t = t4(p);
-        if (!REC.test(t)) break;
-        var sz = b.readUInt32LE(p + 4);
-        fn(t, p + 8, sz);
-        p += 8 + sz;
+    const sz = u32(p + 4);
+    const d = p + 8;
+    const end = d + sz;
+    if (t === 'PLNA') out.header.name = b2.toString('utf8', d, end).replace(/[\u0000]+$/, '');
+    else if (t === 'PLLE') out.header.level = u32(d);
+    else if (t === 'PLCL') out.header.classId = b2.toString('ascii', d, end).replace(/[\u0000]+$/, '');
+    else if (t === 'PLCN') out.header.className = b2.toString('utf8', d, end).replace(/[\u0000]+$/, '');
+    else if (t === 'PLCE') out.header.cell = b2.toString('utf8', d, end).replace(/[\u0000]+$/, '');
+    else if (t === 'TSTM') {
+        out.header.gameHour = f32(d);
+        out.header.day = u32(d + 24);
+        out.header.month = u32(d + 28);
+        out.header.year = u32(d + 32);
     }
+    else if (t === 'TIME') out.header.timePlayed = f64(d);
+    else if (t === 'DESC') out.header.desc = b2.toString('utf8', d, end).replace(/[\u0000]+$/, '');
+    else if (t === 'DEPE') { if (!out.header.contentFiles) out.header.contentFiles = []; out.header.contentFiles.push(b2.toString('ascii', d, end).replace(/[\u0000]+$/, '')); }
+    else if (t === 'SCRN') breakキュム;
+    p = p + 8 + sz;
 }
 
-for (var i = 0; i < records.length; i++) {
-    var r = records[i];
-    console.log('=== ' + r.t + ' size=' + r.size + ' ===');
-    subs(r, function(t, d, sz) {
-        if (t === 'PLNA') console.log('  name       ' + b.toString('utf8', d, d + sz).replace(/\u0000+$/, ''));
-        else if (t === 'PLLE') console.log('  level      ' + b.readUInt32LE(d));
-        else if (t === 'PLCL') console.log('  classId    ' + b.toString('ascii', d, d + sz).replace(/\u0000+$/, ''));
-        else if (t === 'PLCN') console.log('  className  ' + b.toString('utf8', d, d + sz).replace(/\u0000+$/, ''));
-        else if (t === 'PLCE') console.log('  cell       ' + b.toString('utf8', d, d + sz).replace(/\u0000+$/, ''));
-        else if (t === 'TSTM') { console.log('  gameHour   ' + b.readFloatLE(d)); console.log('  day        ' + b.readUInt32LE(d + 4)); console.log('  month      ' + b.readUInt32LE(d + 8)); console.log('  year       ' + b.readUInt32LE(d + 12)); }
-        else if (t === 'TIME') console.log('  timePlayed ' + b.readDoubleLE(d));
-    });
-}
+console.log(JSON.stringify(out.header, null, 2));
