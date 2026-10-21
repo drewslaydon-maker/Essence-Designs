@@ -80,6 +80,14 @@
    knowledge base) doubles as **supporting research** for LAG worldbuilding
    — LAG is designed as a **WoW/OSRS/Morrowind "New Classic"**. Journeys
    Unto stays parked (feature-complete first room; polish + combat next).
+7. **FOUNDING ARTIFACTS (17→19) — REFLECTED (2026-09-19):** the arc's three
+   majors: (1) **The Pipeline** — Goal 1.0 ED FLOW (boot contract, operating
+   core, leaf lifecycle, ledger + seat roster). (2) **The Guru** — ES GURU
+   Helper (play-session skill + knowledge base, supporting research for
+   LAG). (3) **The Native Wheel** — WHEEL-NATIVE-001 wrapped `06_`'s static
+   build in Electron (golden Wheel icon, no Chrome tab, 6/6 gates green);
+   Architect walked with no notes — certified 100% LAG base. Native wrap
+   does not change `06_`'s catalog entry (still ACTIVE MAIN).
 
 ## 5. Honors
 

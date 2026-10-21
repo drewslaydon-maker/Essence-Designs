@@ -1,0 +1,679 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/items/Atomos?only=name,uniqueName,type,category,tradable,masterable,components,set,ducats,quantity",
+    "tag": "Atomos",
+    "httpStatus": 200,
+    "ok": true,
+    "durationMs": 523,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:58.082Z",
+    "accountId": "11121350"
+  },
+  "data": {
+    "name": "Atomos",
+    "uniqueName": "/Lotus/Weapons/Grineer/Pistols/HeatGun/GrnHeatGun",
+    "components": [
+      {
+        "uniqueName": "/Lotus/Types/Items/MiscItems/ArgonCrystal",
+        "name": "Argon Crystal",
+        "description": "A Void based radioactive resource that decays every day it is out of the Void.\n\nLocation: Missions in the Void",
+        "codexSecret": false,
+        "itemCount": 2,
+        "imageName": "ArgonCrystal.png",
+        "drops": [
+          {
+            "location": "Neptune/Cephalon Capture (Conclave), Rotation B",
+            "type": "Argon Crystal",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Annihilation (Conclave), Rotation B",
+            "type": "Argon Crystal",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Cephalon Capture (Conclave), Rotation B",
+            "type": "Argon Crystal",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Lunaro (Conclave), Rotation B",
+            "type": "Argon Crystal",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Team Annihilation (Conclave), Rotation B",
+            "type": "Argon Crystal",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Variant Annihilation (Conclave), Rotation B",
+            "type": "Argon Crystal",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Variant Cephalon Capture (Conclave), Rotation B",
+            "type": "Argon Crystal",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation B",
+            "type": "Argon Crystal",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Mars/Gradivus (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 0.67,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Mercury/Neruda (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 0.67,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Mercury/Terminus (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 0.67,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Venus/Ishtar (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 0.67,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Ceres/Ker (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 1,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Ceres/Thon (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 1,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Jupiter/Adrastea (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 1,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Jupiter/Carpo (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 1,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Calypso (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 1,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Pallene (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 1,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Lua/Plato (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 10.82,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Hallowed Flame Mission Caches, Rotation B",
+            "type": "Argon Crystal",
+            "chance": 11.06,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Hallowed Flame Endurance Caches, Rotation B",
+            "type": "Argon Crystal",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Hallowed Flame Endurance Caches, Rotation C",
+            "type": "2X Argon Crystal",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Hallowed Flame Mission Caches, Rotation C",
+            "type": "Argon Crystal",
+            "chance": 15.18,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Deimos/Formido (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 19.36,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Kuva Fortress/Dakata (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Neptune/Halimede (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Neptune/Thalassa (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Pluto/Charon (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Pluto/Cypress (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Sedna/Phithale (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Sedna/Rusalka (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Uranus/Portia (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Void/Stribog (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Deimos/Formido (Caches), Rotation C",
+            "type": "2X Argon Crystal",
+            "chance": 3.76,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Void/Marduk (Caches), Rotation C",
+            "type": "Argon Crystal",
+            "chance": 4.42,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Corrupted Vor",
+            "type": "Argon Crystal",
+            "chance": 50,
+            "rarity": "Common"
+          }
+        ],
+        "tradable": false,
+        "masterable": false,
+        "type": "Resource"
+      },
+      {
+        "uniqueName": "/Lotus/Types/Recipes/Weapons/GrnHeatGunBlueprint",
+        "name": "Blueprint",
+        "description": "This particle cannon generates a condensed beam of super-heated plasma designed to melt rock to ore, and enemies to molten slag.",
+        "itemCount": 1,
+        "imageName": "blueprint.png",
+        "tradable": false,
+        "masterable": false
+      },
+      {
+        "uniqueName": "/Lotus/Types/Items/MiscItems/PolymerBundle",
+        "name": "Polymer Bundle",
+        "description": "A hard, thermoplastic casing. Manufactured by Corpus.\n\nLocation: Mercury, Venus, and Uranus",
+        "codexSecret": false,
+        "itemCount": 1300,
+        "imageName": "PolymerBundle.png",
+        "drops": [
+          {
+            "location": "Ceres/Ker (Caches), Rotation B",
+            "type": "300X Polymer Bundle",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Ceres/Thon (Caches), Rotation B",
+            "type": "300X Polymer Bundle",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Jupiter/Adrastea (Caches), Rotation B",
+            "type": "300X Polymer Bundle",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Jupiter/Carpo (Caches), Rotation B",
+            "type": "300X Polymer Bundle",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Mars/Gradivus (Caches), Rotation B",
+            "type": "240X Polymer Bundle",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Mercury/Neruda (Caches), Rotation B",
+            "type": "240X Polymer Bundle",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Mercury/Terminus (Caches), Rotation B",
+            "type": "240X Polymer Bundle",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Neptune/Cephalon Capture (Conclave), Rotation B",
+            "type": "500X Polymer Bundle",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Annihilation (Conclave), Rotation B",
+            "type": "500X Polymer Bundle",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Calypso (Caches), Rotation B",
+            "type": "300X Polymer Bundle",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Cephalon Capture (Conclave), Rotation B",
+            "type": "500X Polymer Bundle",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Lunaro (Conclave), Rotation B",
+            "type": "500X Polymer Bundle",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Pallene (Caches), Rotation B",
+            "type": "300X Polymer Bundle",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Team Annihilation (Conclave), Rotation B",
+            "type": "500X Polymer Bundle",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Annihilation (Conclave), Rotation B",
+            "type": "500X Polymer Bundle",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Cephalon Capture (Conclave), Rotation B",
+            "type": "500X Polymer Bundle",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation B",
+            "type": "500X Polymer Bundle",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Ishtar (Caches), Rotation B",
+            "type": "240X Polymer Bundle",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Lua/Plato (Caches), Rotation A",
+            "type": "300X Polymer Bundle",
+            "chance": 12.91,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Uranus/Desdemona (Caches), Rotation A",
+            "type": "300X Polymer Bundle",
+            "chance": 20,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Uranus/Prospero (Caches), Rotation A",
+            "type": "300X Polymer Bundle",
+            "chance": 20,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Uranus/Setebos (Caches), Rotation A",
+            "type": "300X Polymer Bundle",
+            "chance": 20,
+            "rarity": "Uncommon"
+          }
+        ],
+        "tradable": false,
+        "masterable": false,
+        "type": "Resource"
+      },
+      {
+        "uniqueName": "/Lotus/Types/Items/MiscItems/Rubedo",
+        "name": "Rubedo",
+        "description": "A jagged crystalline ore. Gives off radiant energy.\n\nLocation: Earth, Lua, Phobos, Europa, Pluto, Sedna, and the Void",
+        "codexSecret": false,
+        "itemCount": 800,
+        "imageName": "ComponentRubedo.png",
+        "drops": [
+          {
+            "location": "Earth/Cervantes (Caches), Rotation B",
+            "type": "150X Rubedo",
+            "chance": 12.18,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Ceres/Ker (Caches), Rotation B",
+            "type": "350X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Ceres/Thon (Caches), Rotation B",
+            "type": "350X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Jupiter/Adrastea (Caches), Rotation B",
+            "type": "350X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Jupiter/Carpo (Caches), Rotation B",
+            "type": "350X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Kuva Fortress/Dakata (Caches), Rotation B",
+            "type": "400X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Neptune/Halimede (Caches), Rotation B",
+            "type": "400X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Neptune/Thalassa (Caches), Rotation B",
+            "type": "400X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Pluto/Charon (Caches), Rotation B",
+            "type": "400X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Pluto/Cypress (Caches), Rotation B",
+            "type": "400X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Calypso (Caches), Rotation B",
+            "type": "350X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Pallene (Caches), Rotation B",
+            "type": "350X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Sedna/Phithale (Caches), Rotation B",
+            "type": "400X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Sedna/Rusalka (Caches), Rotation B",
+            "type": "400X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Uranus/Portia (Caches), Rotation B",
+            "type": "400X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Void/Stribog (Caches), Rotation B",
+            "type": "400X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Lua/Plato (Caches), Rotation A",
+            "type": "350X Rubedo",
+            "chance": 12.91,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 20 - 40 Orb Vallis Bounty), Rotation C",
+            "type": "300X Rubedo",
+            "chance": 13.24,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 20 - 40 Orb Vallis Bounty), Rotation C",
+            "type": "300X Rubedo",
+            "chance": 15,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Void/Marduk (Caches), Rotation B",
+            "type": "400X Rubedo",
+            "chance": 15.18,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 20 - 40 Orb Vallis Bounty), Rotation C",
+            "type": "300X Rubedo",
+            "chance": 25,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation A",
+            "type": "10X Rubedo",
+            "chance": 3.16,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation B",
+            "type": "10X Rubedo",
+            "chance": 3.16,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Neptune/Cephalon Capture (Conclave), Rotation B",
+            "type": "100X Rubedo",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Annihilation (Conclave), Rotation B",
+            "type": "100X Rubedo",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Cephalon Capture (Conclave), Rotation B",
+            "type": "100X Rubedo",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Lunaro (Conclave), Rotation B",
+            "type": "100X Rubedo",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Team Annihilation (Conclave), Rotation B",
+            "type": "100X Rubedo",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Variant Annihilation (Conclave), Rotation B",
+            "type": "100X Rubedo",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Variant Cephalon Capture (Conclave), Rotation B",
+            "type": "100X Rubedo",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation B",
+            "type": "100X Rubedo",
+            "chance": 7.37,
+            "rarity": "Rare"
+          }
+        ],
+        "tradable": false,
+        "masterable": false,
+        "type": "Resource"
+      },
+      {
+        "uniqueName": "/Lotus/Types/Items/MiscItems/Salvage",
+        "name": "Salvage",
+        "description": "High value metals collected from war salvage.\n\nLocation: Mars, Jupiter, and Sedna",
+        "codexSecret": false,
+        "itemCount": 1500,
+        "imageName": "ComponentSalvage.png",
+        "drops": [
+          {
+            "location": "Neptune/Cephalon Capture (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Annihilation (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Cephalon Capture (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Lunaro (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Team Annihilation (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Annihilation (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Cephalon Capture (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation A",
+            "type": "10X Salvage",
+            "chance": 3.16,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation B",
+            "type": "10X Salvage",
+            "chance": 3.16,
+            "rarity": "Rare"
+          }
+        ],
+        "tradable": false,
+        "masterable": false,
+        "type": "Resource"
+      }
+    ],
+    "type": "Pistol",
+    "category": "Secondary",
+    "tradable": false,
+    "masterable": true
+  }
+}

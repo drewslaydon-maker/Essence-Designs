@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Braton%20Vandal",
+    "tag": "Braton Vandal",
+    "httpStatus": 403,
+    "ok": false,
+    "durationMs": 87,
+    "contentType": "text/html",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:06.778Z",
+    "accountId": "11121350"
+  },
+  "data": null
+}

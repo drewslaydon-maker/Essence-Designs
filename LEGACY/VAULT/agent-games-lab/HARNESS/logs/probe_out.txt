@@ -1,0 +1,4 @@
+probe started
+spawned ok
+alive: True
+terminated

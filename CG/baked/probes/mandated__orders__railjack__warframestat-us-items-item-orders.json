@@ -1,0 +1,19 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/items/Railjack/orders",
+    "tag": "Railjack",
+    "httpStatus": 404,
+    "ok": false,
+    "durationMs": 130,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:32.844Z",
+    "accountId": "11121350"
+  },
+  "data": {
+    "message": "Cannot GET /items/Railjack/orders",
+    "error": "Not Found",
+    "statusCode": 404
+  }
+}

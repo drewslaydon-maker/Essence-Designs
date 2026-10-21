@@ -1,0 +1,19 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/items/Zenurik/orders",
+    "tag": "Zenurik",
+    "httpStatus": 404,
+    "ok": false,
+    "durationMs": 1322,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:31.247Z",
+    "accountId": "11121350"
+  },
+  "data": {
+    "message": "Cannot GET /items/Zenurik/orders",
+    "error": "Not Found",
+    "statusCode": 404
+  }
+}

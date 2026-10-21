@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/pricecheck/find/Stalking%20Fan",
+    "tag": "Stalking Fan",
+    "httpStatus": 200,
+    "ok": true,
+    "durationMs": 162,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:29:03.433Z",
+    "accountId": "11121350"
+  },
+  "data": []
+}

@@ -1,0 +1,18 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/items/Steflos%20Prime?only=name,uniqueName,type,category,tradable,masterable,components,set,ducats,quantity",
+    "tag": "Steflos Prime",
+    "httpStatus": 404,
+    "ok": false,
+    "durationMs": 516,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:43.314Z",
+    "accountId": "11121350"
+  },
+  "data": {
+    "error": "No Result",
+    "code": 404
+  }
+}

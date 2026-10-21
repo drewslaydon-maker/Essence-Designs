@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ESSENCE DESIGNS GHOST HUB</title>
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <header>
+    <h1>ESSENCE DESIGNS GHOST HUB</h1>
+    <div class="era-stamp">ESSENCE v4 · PAD · ED FLOW 2.0</div>
+    <div class="hub-symbol" aria-label="WASH symbol: purple smooth-edged box, golden 4-leaf clover with red lining"></div>
+  </header>
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="council" id="council-tab">HEAD COUNCIL GHOSTS</button>
+    <button role="tab" aria-selected="false" data-tab="specters" id="specters-tab">SPECIFIED SPECTERS</button>
+    <button role="tab" aria-selected="false" data-tab="roster" id="roster-tab">AGENT ROSTER</button>
+    <button role="tab" aria-selected="false" data-tab="toolkit" id="toolkit-tab">TOOLKIT</button>
+  </nav>
+  <main>
+    <section id="council" role="tabpanel" aria-labelledby="council-tab"></section>
+    <section id="specters" role="tabpanel" aria-labelledby="specters-tab" hidden></section>
+    <section id="roster" role="tabpanel" aria-labelledby="roster-tab" hidden>
+      <div id="roster-list"></div>
+      <details class="shadow-council" id="shadow-council">
+        <summary>SHADOW COUNCIL — dormant seats (GHOST-HUB-009)</summary>
+        <div id="shadow-council-list"></div>
+      </details>
+    </section>
+    <section id="toolkit" role="tabpanel" aria-labelledby="toolkit-tab" hidden></section>
+  </main>
+  <footer>
+    <span class="era-stamp">ESSENCE v4 · PAD</span>
+    <a href="/tk-manifest" target="_blank" rel="noopener">TK MANIFEST</a>
+    <span class="version">v0.3 — Sandtrap-secured</span>
+  </footer>
+  <script>
+    (function() {
+      "use strict";
+
+      // Tab router (hash-based)
+      const tabs = document.querySelectorAll(".tabs button[role=tab]");
+      const panels = document.querySelectorAll("main section[role=tabpanel]");
+
+      // Presentation-pass persistence caches (GHOST-HUB-004): survive the
+      // 30s loadState() re-render so Drew's open lanes keep their state.
+      const laneVisual = {};      // agent -> { open: bool, output: string }
+      const sessionCache = {};    // agent -> last sessionId
+      let xpOpen = false;         // XP console shell toggle state (survives re-render)
+
+      // Agent symbol glyph map (7-glyph set, sanctioned by Drew) — id -> class
+      // token. Alnum-safe ids only; unknown ids fall back to an empty glyph.
+      const GLYPH = {
+        wash: "sym-wash", "0-wake": "sym-wake", "1-stone": "sym-stone",
+        "b-bolt": "sym-bolt", "x-xp": "sym-xp", cg: "sym-cg", "es-guru": "sym-es-guru",
+      };
+      const glyphSpan = (a) =>
+        `<span class="agent-symbol ${GLYPH[a.id] || "sym-none"}" aria-hidden="true"></span>`;
+
+      function showTab(tabName) {
+        tabs.forEach(btn => {
+          const isActive = btn.dataset.tab === tabName;
+          btn.setAttribute("aria-selected", isActive);
+        });
+        panels.forEach(panel => {
+          const isActive = panel.id === tabName;
+          panel.hidden = !isActive;
+        });
+        location.hash = tabName;
+      }
+
+      tabs.forEach(btn => {
+        btn.addEventListener("click", () => showTab(btn.dataset.tab));
+      });
+
+      // Restore from hash
+      const hash = location.hash.slice(1);
+      if (hash && ["council", "specters", "roster", "toolkit"].includes(hash)) {
+        showTab(hash);
+      }
+
+      // SSE client
+      const evtSource = new EventSource("/events");
+      evtSource.onmessage = (e) => {
+        console.log("[SSE]", e.data);
+      };
+      evtSource.onerror = () => {
+        console.warn("[SSE] connection lost, retrying...");
+      };
+
+      // Fetch state and render
+      async function loadState() {
+        try {
+          const res = await fetch("/state");
+          if (!res.ok) throw new Error("state fetch failed");
+          const data = await res.json();
+          renderCouncil(data.council || []);
+          renderSpecters(data.specters || []);
+          renderRoster(data.roster || []);
+          renderShadow(data.shadow || []); // GHOST-HUB-009: collapsed SHADOW COUNCIL bottom section
+          renderToolkit(data.tkManifest || []);
+        } catch (err) {
+          console.error("[GHOST HUB] state load failed:", err);
+        }
+      }
+
+      function cardShell(a, cls, extra) {
+        return `
+          <article class="agent-card ${cls}">
+            <header>
+              ${glyphSpan(a)}
+              <strong>${escapeHtml(a.displayName || a.id)}</strong>
+              <span class="role">${escapeHtml(a.role)}</span>
+            </header>
+            <div class="tagline">${escapeHtml(a.tagline || "")}</div>
+            <div class="meta-row">
+              <span class="status ${escapeHtml(a.status)}">${escapeHtml(a.status)}</span>
+              ${a.access ? `<span class="access">Access: ${escapeHtml(a.access)}</span>` : ""}
+            </div>
+            ${extra || ""}
+          </article>
+        `;
+      }
+
+      function renderCouncil(council) {
+        const el = document.getElementById("council");
+
+        // GHOST-HUB-007: never re-render mid-stream — a live lane would be detached
+        // and its reply tail lost. Skip this tick; the next 30s tick renders fresh.
+        if (el.querySelector(".chat-lane.working")) return;
+
+        // Capture per-lane lane state before the re-render wipes the DOM.
+        document.querySelectorAll("#council .chat-lane").forEach(lane => {
+          const lid = lane.dataset.lane;
+          const out = lane.querySelector(".chat-output");
+          const inp = lane.querySelector(".chat-input");
+          laneVisual[lid] = {
+            open: lane.classList.contains("open"),
+            output: out ? out.textContent : "",
+            input: inp ? inp.value : ""
+          };
+        });
+
+        // Capture current XP toggle state so the 30s re-render survives it.
+        const xpEl = document.getElementById("council");
+        const curToggle = xpEl ? xpEl.querySelector(".xp-toggle") : null;
+        if (curToggle) xpOpen = curToggle.getAttribute("aria-expanded") === "true";
+
+        let html = "";
+        if (council.length) {
+          html += "<h2>HEAD COUNCIL GHOSTS</h2>";
+          const parts = council.map(a => {
+            if (a.id === "wash") return cardShell(a, "council hero", chatLane(a));
+            if (a.id === "x-xp") return (
+              '<button class="xp-toggle" type="button" aria-expanded="false">' +
+                '<span class="xp-toggle-label">THE EXPERIENCER — ISOLATED LANE</span>' +
+                '<span class="xp-toggle-mark" aria-hidden="true">◆</span>' +
+              '</button>' +
+              '<div class="xp-shell">' + cardShell(a, "council compact", chatLane(a)) + '</div>'
+            );
+            return cardShell(a, "council", chatLane(a));
+          });
+          const hero = parts.find(p => typeof p === "string" && p.includes("council hero"));
+          const xp = parts.find(p => typeof p === "string" && p.includes("xp-toggle"));
+          const rest = parts.filter(p => p !== hero && p !== xp);
+          html += (hero || "");
+          html += rest.length ? '<div class="council-split">' + rest.join("") + '</div>' : "";
+          html += (xp || "");
+        }
+        el.innerHTML = html || "<p class=\"empty\">No council ghosts.</p>";
+        wireChatLanes(el);
+
+        // XP toggle wiring — collapsed by default; opens/closes the shell.
+        const xpToggle = el.querySelector(".xp-toggle");
+        const xpShell = el.querySelector(".xp-shell");
+        if (xpToggle && xpShell) {
+          xpToggle.setAttribute("aria-expanded", String(xpOpen));
+          xpShell.classList.toggle("open", xpOpen);
+          xpToggle.addEventListener("click", () => {
+            xpOpen = !xpOpen;
+            xpToggle.setAttribute("aria-expanded", String(xpOpen));
+            xpShell.classList.toggle("open", xpOpen);
+          });
+        }
+
+        // Restore captured lane state (open toggles + visible output + input).
+        document.querySelectorAll("#council .chat-lane").forEach(lane => {
+          const st = laneVisual[lane.dataset.lane];
+          if (st && st.open) lane.classList.add("open");
+          if (st && st.output) {
+            const out = lane.querySelector(".chat-output");
+            if (out) out.textContent = st.output;
+          }
+          if (st && st.input !== undefined) {
+            const inp = lane.querySelector(".chat-input");
+            if (inp) inp.value = st.input;
+          }
+        });
+      }
+
+      function chatLane(a) {
+        // GHOST-HUB-008: WASH has its own seated agent (.opencode/agents/wash.md).
+        const agentStem = a.id;
+        return `
+          <button class="chat-toggle" type="button" aria-expanded="false">Chat</button>
+          <div class="chat-lane" data-lane="${escapeHtml(a.id)}" data-agent="${escapeHtml(agentStem)}">
+            <div class="lane-head">
+              ${glyphSpan(a)}
+              <span class="lane-name">${escapeHtml(a.displayName || a.id)}</span>
+              <span class="lane-role">${escapeHtml(a.role)}</span>
+              <span class="lane-status ${escapeHtml(a.status)}">${escapeHtml(a.status)}</span>
+            </div>
+            <div class="chat-input-row">
+              <input class="chat-input" placeholder="Message ${escapeHtml(a.displayName || a.id)}..." aria-label="Message ${escapeHtml(a.displayName || a.id)}">
+              <button class="chat-send">Send</button>
+            </div>
+            <pre class="chat-output" aria-live="polite"></pre>
+          </div>
+        `;
+      }
+
+      // GHOST-HUB-008: clean NDJSON renderer — ported from WASH/app.js
+      // handleEventLine (lines 96-129). Parses the streamed opencode events,
+      // renders ONLY the readable text parts into the ghost reply element,
+      // and funnels the session id into the lane-scope sessionRef (never
+      // printed as raw JSON). Returns false for non-JSON stray lines so the
+      // caller can surface them as muted [meta] lines.
+      function handleHubEvent(line, ghostText, sessionRef) {
+        let ev;
+        try {
+          ev = JSON.parse(line);
+        } catch (e) {
+          return false; // not JSON (e.g. stray stderr) — caller decides how to surface
+        }
+        function sid(obj) {
+          if (!obj) return null;
+          return typeof obj.sessionID === "string" && obj.sessionID
+            ? obj.sessionID
+            : typeof obj.session_id === "string" && obj.session_id
+              ? obj.session_id
+              : null;
+        }
+        const found = sid(ev) || sid(ev.properties);
+        if (found && sessionRef) sessionRef.id = found;
+
+        if (ev.type === "text" && ev.part && ev.part.type === "text") {
+          ghostText.textContent = ev.part.text || "";
+        } else if (ev.type === "message.part.updated" && ev.part && ev.part.type === "text") {
+          ghostText.textContent = ev.part.text || "";
+        } else if (ev.type === "message.updated" && ev.message && Array.isArray(ev.message.parts)) {
+          const text = ev.message.parts
+            .filter((p) => p && p.type === "text")
+            .map((p) => p.text || "")
+            .join("");
+          if (text) ghostText.textContent = text;
+        }
+        return true;
+      }
+
+      function wireChatLanes(root) {
+        root.querySelectorAll(".chat-lane").forEach((lane) => {
+          const agent = lane.dataset.agent;
+          const laneId = lane.dataset.lane;
+          const input = lane.querySelector(".chat-input");
+          const send = lane.querySelector(".chat-send");
+          const output = lane.querySelector(".chat-output");
+          const card = lane.closest(".agent-card");
+          let sessionId = sessionCache[laneId] || null;
+
+          const working = (busy) => {
+            send.disabled = busy;
+            input.disabled = busy;
+            send.textContent = busy ? "Working..." : "Send";
+            lane.classList.toggle("working", busy);
+            if (card) card.classList.toggle("working", busy);
+          };
+          const appendLine = (text) => {
+            const node = document.createElement("div");
+            node.textContent = text; // escaped via textContent — no HTML injection
+            output.appendChild(node);
+            output.scrollTop = output.scrollHeight;
+          };
+
+          const run = async () => {
+            const message = input.value.trim();
+            if (!message) return;
+            working(true);
+            // GHOST-HUB-008: per-turn UI contract — one "you" line for the
+            // user message, then ONE ghost reply element the stream updates
+            // in place (WASH console bubble pattern).
+            const you = document.createElement("div");
+            you.className = "you";
+            you.textContent = message; // textContent — no HTML injection
+            output.appendChild(you);
+            const ghost = document.createElement("div");
+            ghost.className = "ghost-reply";
+            output.appendChild(ghost);
+            output.scrollTop = output.scrollHeight;
+            const sessionRef = { id: sessionId };
+            try {
+              const res = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  agent: agent,
+                  message: message,
+                  sessionId: sessionId || undefined,
+                }),
+              });
+              if (!res.ok) {
+                let detail = "HTTP " + res.status;
+                try {
+                  detail = JSON.stringify(await res.json());
+                } catch (e) { /* non-JSON body */ }
+                appendLine("[error] " + detail);
+                return;
+              }
+              const reader = res.body.getReader();
+              const decoder = new TextDecoder();
+              let buf = "";
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                buf += decoder.decode(value, { stream: true });
+                let idx;
+                while ((idx = buf.indexOf("\n")) >= 0) {
+                  const line = buf.slice(0, idx);
+                  buf = buf.slice(idx + 1);
+                  const trimmed = line.trim();
+                  if (!trimmed) continue;
+                  if (trimmed.startsWith("session=")) {
+                    const sid = trimmed.slice("session=".length);
+                    if (sid) sessionId = sid;
+                    sessionCache[laneId] = sid;
+                    appendLine("[session] " + sid);
+                  } else {
+                    // GHOST-HUB-008: clean NDJSON renderer — no raw event dump.
+                    if (handleHubEvent(trimmed, ghost, sessionRef)) {
+                      if (sessionRef.id) sessionId = sessionRef.id;
+                    } else {
+                      appendLine("[meta] " + trimmed); // non-JSON stray (e.g. stderr)
+                    }
+                  }
+                }
+              }
+            } catch (err) {
+              appendLine("[error] " + err.message);
+            } finally {
+              working(false);
+            }
+          };
+
+          send.addEventListener("click", run);
+          input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") run();
+          });
+
+          const toggle = lane.parentElement.querySelector(".chat-toggle");
+          if (!toggle) return; // never let a missing toggle blank the whole page
+          toggle.addEventListener("click", () => {
+            lane.classList.toggle("open");
+            toggle.setAttribute("aria-expanded", lane.classList.contains("open"));
+            if (lane.classList.contains("open")) input.focus();
+          });
+        });
+      }
+
+      function renderSpecters(list) {
+        const el = document.getElementById("specters");
+        if (!list.length) {
+          el.innerHTML = "<p class=\"empty\">No specters seated.</p>";
+          return;
+        }
+        el.innerHTML = list.map(s => `
+          <article class="agent-card specter">
+            <header>
+              ${glyphSpan(s)}
+              <strong>${escapeHtml(s.displayName || s.id)}</strong>
+              <span class="role">${escapeHtml(s.role)}</span>
+            </header>
+            <div class="status ${escapeHtml(s.status)}">${escapeHtml(s.status)}</div>
+            <div class="tagline">${escapeHtml(s.tagline || "")}</div>
+            <div class="access">Access: ${escapeHtml(s.access)}</div>
+            <span class="chip-placeholder" aria-disabled="true" title="Chat lanes ship in GHOST-HUB-003">Chat — GHOST-HUB-003</span>
+          </article>
+        `).join("");
+      }
+
+      function renderRoster(list) {
+        // GHOST-HUB-009: target the roster-list container so the static
+        // SHADOW COUNCIL <details> below it survives every re-render tick.
+        const el = document.getElementById("roster-list");
+        if (!el) return;
+        if (!list.length) {
+          el.innerHTML = "<p class=\"empty\">Roster empty.</p>";
+          return;
+        }
+        const bySection = {};
+        for (const a of list) {
+          (bySection[a.section] = bySection[a.section] || []).push(a);
+        }
+        let html = "";
+        for (const [section, agents] of Object.entries(bySection)) {
+          html += `<h2>${escapeHtml(section.toUpperCase())}</h2>`;
+          html += agents.map(a => {
+            const seals = (a.seals || []).map(seal => `<span class="badge seal">${escapeHtml(seal)}</span>`).join("");
+            const milestones = (a.majorMilestones || []).map(m => `<span class="badge milestone">${escapeHtml(m)}</span>`).join("");
+            const badges = (seals || milestones)
+              ? `<div class="badges">${seals}${milestones}</div>`
+              : "";
+            return `
+              <article class="agent-card roster">
+                <header>
+                  ${glyphSpan(a)}
+                  <strong>${escapeHtml(a.displayName || a.id)}</strong>
+                  <span class="level">L${escapeHtml(a.level)}</span>
+                </header>
+                <div class="role">${escapeHtml(a.role)}</div>
+                <div class="status ${escapeHtml(a.status)}">${escapeHtml(a.status)}</div>
+                ${badges}
+              </article>
+            `;
+          }).join("");
+        }
+        el.innerHTML = html;
+      }
+
+      // GHOST-HUB-009: SHADOW COUNCIL — dormant seats rendered at the roster
+      // bottom inside a collapsed <details> (default-closed, no open attr).
+      // Structural hook only — V-D-003 owns the styling. No chat lanes: the
+      // shadow seats are dormant and read-only by charter.
+      function renderShadow(list) {
+        const el = document.getElementById("shadow-council-list");
+        if (!el) return;
+        if (!list.length) {
+          el.innerHTML = "<p class=\"empty\">No shadow seats.</p>";
+          return;
+        }
+        el.innerHTML = list.map(s => cardShell(s, "shadow", "")).join("");
+      }
+
+      function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+      }
+
+      function renderToolkit(tk) {
+        const el = document.getElementById("toolkit");
+        if (!tk.length) {
+          el.innerHTML = "<p class=\"empty\">Toolkit manifest empty.</p>";
+          return;
+        }
+        el.innerHTML = "\n          <h2>TOOLKIT — THE MACHINE MAKES ITSELF READABLE</h2>\n          <table class=\"toolkit-table\">\n            <thead><tr><th>Tool</th><th>Purpose</th><th>Access</th><th>Notes</th></tr></thead>\n            <tbody>\n" +
+          tk.map(t => "\n              <tr>\n                <td>" + escapeHtml(t.tool || "") + "</td>\n                <td>" + escapeHtml(t.purpose || "") + "</td>\n                <td>" + escapeHtml(t.access || "") + "</td>\n                <td>" + escapeHtml(t.notes || "") + "</td>\n              </tr>\n").join("") +
+          "\n            </tbody>\n          </table>\n        ";
+      }
+
+      // Initial load
+      loadState();
+      // Refresh every 30s
+      setInterval(loadState, 30000);
+    })();
+  </script>
+</body>
+</html>

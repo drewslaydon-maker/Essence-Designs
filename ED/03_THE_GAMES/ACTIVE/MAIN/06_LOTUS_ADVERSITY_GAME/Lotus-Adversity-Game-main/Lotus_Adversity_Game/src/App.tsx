@@ -5,7 +5,6 @@ import { SpokesView } from "./components/SpokesView";
 import { HeraldryView } from "./components/HeraldryView";
 import { CodexView } from "./components/CodexView";
 import { PillarsView } from "./components/PillarsView";
-import { ChamberView } from "./components/ChamberView";
 import { Shield } from "lucide-react";
 
 export default function App() {
@@ -21,7 +20,6 @@ export default function App() {
         {activeTab === "heraldry" && <HeraldryView />}
         {activeTab === "codex" && <CodexView />}
         {activeTab === "pillars" && <PillarsView />}
-        {activeTab === "chamber" && <ChamberView />}
       </main>
 
       <footer className="mt-auto border-t border-neutral-800/80 bg-neutral-950/80 backdrop-blur-sm py-6 text-xs text-neutral-400">
@@ -36,8 +34,6 @@ export default function App() {
             <span className="text-[11px] font-mono">Pillars I–IV</span>
             <span>•</span>
             <span className="text-[11px] font-mono">15-Spoke Matrix</span>
-            <span>•</span>
-            <span className="text-[11px] font-mono text-rose-400">FLOWER 08 REVOKED</span>
           </div>
         </div>
       </footer>

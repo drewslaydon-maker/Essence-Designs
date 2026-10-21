@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Stalking%20Fan",
+    "tag": "Stalking Fan",
+    "httpStatus": 403,
+    "ok": false,
+    "durationMs": 117,
+    "contentType": "text/html",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:27.557Z",
+    "accountId": "11121350"
+  },
+  "data": null
+}

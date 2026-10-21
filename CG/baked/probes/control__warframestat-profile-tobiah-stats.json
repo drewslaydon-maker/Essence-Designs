@@ -1,0 +1,18 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/profile/Tobiah/stats",
+    "tag": "warframestat /profile/Tobiah/stats",
+    "httpStatus": 404,
+    "ok": false,
+    "durationMs": 152,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:27:55.566Z",
+    "accountId": "11121350"
+  },
+  "data": {
+    "error": "No Result",
+    "code": 404
+  }
+}

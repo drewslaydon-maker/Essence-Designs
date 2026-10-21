@@ -1,0 +1,1678 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/items/Valkyr%20Prime?only=name,uniqueName,type,category,tradable,masterable,components,set,ducats,quantity",
+    "tag": "Valkyr Prime",
+    "httpStatus": 200,
+    "ok": true,
+    "durationMs": 522,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:47.519Z",
+    "accountId": "11121350"
+  },
+  "data": {
+    "uniqueName": "/Lotus/Powersuits/Berserker/ValkyrPrime",
+    "name": "Valkyr Prime",
+    "components": [
+      {
+        "uniqueName": "/Lotus/Types/Recipes/WarframeRecipes/ValkyrPrimeBlueprint",
+        "name": "Blueprint",
+        "description": "A proud fighter emerges unscarred by time or malice. Featuring altered mod polarities for greater customization.",
+        "itemCount": 1,
+        "primeSellingPrice": 15,
+        "imageName": "blueprint.png",
+        "drops": [
+          {
+            "location": "Axi V7 Relic (Radiant)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 16.67,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V9 Relic (Radiant)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 16.67,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith A2 Relic (Radiant)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 16.67,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith C7 Relic (Radiant)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 16.67,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith N3 Relic (Radiant)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 16.67,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith T2 Relic (Radiant)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 16.67,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso N8 Relic (Radiant)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 16.67,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso S3 Relic (Radiant)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 16.67,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso S6 Relic (Radiant)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 16.67,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Neo K1 Relic (Radiant)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 16.67,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V7 Relic (Flawless)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V9 Relic (Flawless)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith A2 Relic (Flawless)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith C7 Relic (Flawless)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith N3 Relic (Flawless)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith T2 Relic (Flawless)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso N8 Relic (Flawless)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso S3 Relic (Flawless)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso S6 Relic (Flawless)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Neo K1 Relic (Flawless)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V7 Relic (Exceptional)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 23.33,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V9 Relic (Exceptional)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 23.33,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith A2 Relic (Exceptional)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 23.33,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith C7 Relic (Exceptional)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 23.33,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith N3 Relic (Exceptional)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 23.33,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith T2 Relic (Exceptional)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 23.33,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso N8 Relic (Exceptional)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 23.33,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso S3 Relic (Exceptional)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 23.33,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso S6 Relic (Exceptional)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 23.33,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Neo K1 Relic (Exceptional)",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 23.33,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V7 Relic",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 25.33,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V9 Relic",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 25.33,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith A2 Relic",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 25.33,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith C7 Relic",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 25.33,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith N3 Relic",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 25.33,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith T2 Relic",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 25.33,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso N8 Relic",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 25.33,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso S3 Relic",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 25.33,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso S6 Relic",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 25.33,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Neo K1 Relic",
+            "type": "Valkyr Prime Blueprint",
+            "chance": 25.33,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          }
+        ],
+        "tradable": true,
+        "masterable": false,
+        "ducats": 15
+      },
+      {
+        "uniqueName": "/Lotus/Types/Recipes/WarframeRecipes/ValkyrPrimeChassisComponent",
+        "name": "Chassis",
+        "description": "Chassis component of the Valkyr Prime Warframe.",
+        "codexSecret": false,
+        "primeSellingPrice": 100,
+        "itemCount": 1,
+        "imageName": "GenericWarframePrimeChassis.png",
+        "drops": [
+          {
+            "location": "Axi V5 Relic (Radiant)",
+            "type": "Valkyr Prime Chassis Blueprint",
+            "chance": 10,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V6 Relic (Radiant)",
+            "type": "Valkyr Prime Chassis Blueprint",
+            "chance": 10,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith V6 Relic (Radiant)",
+            "type": "Valkyr Prime Chassis Blueprint",
+            "chance": 10,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Neo V7 Relic (Radiant)",
+            "type": "Valkyr Prime Chassis Blueprint",
+            "chance": 10,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Neo V9 Relic (Radiant)",
+            "type": "Valkyr Prime Chassis Blueprint",
+            "chance": 10,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V5 Relic",
+            "type": "Valkyr Prime Chassis Blueprint",
+            "chance": 2,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V6 Relic",
+            "type": "Valkyr Prime Chassis Blueprint",
+            "chance": 2,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith V6 Relic",
+            "type": "Valkyr Prime Chassis Blueprint",
+            "chance": 2,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Neo V7 Relic",
+            "type": "Valkyr Prime Chassis Blueprint",
+            "chance": 2,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Neo V9 Relic",
+            "type": "Valkyr Prime Chassis Blueprint",
+            "chance": 2,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V5 Relic (Exceptional)",
+            "type": "Valkyr Prime Chassis Blueprint",
+            "chance": 4,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V6 Relic (Exceptional)",
+            "type": "Valkyr Prime Chassis Blueprint",
+            "chance": 4,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith V6 Relic (Exceptional)",
+            "type": "Valkyr Prime Chassis Blueprint",
+            "chance": 4,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Neo V7 Relic (Exceptional)",
+            "type": "Valkyr Prime Chassis Blueprint",
+            "chance": 4,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Neo V9 Relic (Exceptional)",
+            "type": "Valkyr Prime Chassis Blueprint",
+            "chance": 4,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V5 Relic (Flawless)",
+            "type": "Valkyr Prime Chassis Blueprint",
+            "chance": 6,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V6 Relic (Flawless)",
+            "type": "Valkyr Prime Chassis Blueprint",
+            "chance": 6,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith V6 Relic (Flawless)",
+            "type": "Valkyr Prime Chassis Blueprint",
+            "chance": 6,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Neo V7 Relic (Flawless)",
+            "type": "Valkyr Prime Chassis Blueprint",
+            "chance": 6,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Neo V9 Relic (Flawless)",
+            "type": "Valkyr Prime Chassis Blueprint",
+            "chance": 6,
+            "rarity": "Rare",
+            "uniqueName": ""
+          }
+        ],
+        "tradable": true,
+        "masterable": false,
+        "ducats": 100
+      },
+      {
+        "uniqueName": "/Lotus/Types/Recipes/WarframeRecipes/ValkyrPrimeHelmetComponent",
+        "name": "Neuroptics",
+        "description": "Neuroptics component of the Valkyr Prime Warframe.",
+        "codexSecret": false,
+        "primeSellingPrice": 45,
+        "itemCount": 1,
+        "imageName": "GenericWarframePrimeHelmet.png",
+        "drops": [
+          {
+            "location": "Lith C5 Relic",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 11,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith S6 Relic",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 11,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith T1 Relic",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 11,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso C2 Relic",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 11,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso D2 Relic",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 11,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso N11 Relic",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 11,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso N8 Relic",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 11,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso V4 Relic",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 11,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Neo N7 Relic",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 11,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith C5 Relic (Exceptional)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 13,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith S6 Relic (Exceptional)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 13,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith T1 Relic (Exceptional)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 13,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso C2 Relic (Exceptional)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 13,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso D2 Relic (Exceptional)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 13,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso N11 Relic (Exceptional)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 13,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso N8 Relic (Exceptional)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 13,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso V4 Relic (Exceptional)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 13,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Neo N7 Relic (Exceptional)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 13,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith C5 Relic (Flawless)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 17,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith S6 Relic (Flawless)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 17,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith T1 Relic (Flawless)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 17,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso C2 Relic (Flawless)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 17,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso D2 Relic (Flawless)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 17,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso N11 Relic (Flawless)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 17,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso N8 Relic (Flawless)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 17,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso V4 Relic (Flawless)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 17,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Neo N7 Relic (Flawless)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 17,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith C5 Relic (Radiant)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith S6 Relic (Radiant)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith T1 Relic (Radiant)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso C2 Relic (Radiant)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso D2 Relic (Radiant)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso N11 Relic (Radiant)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso N8 Relic (Radiant)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso V4 Relic (Radiant)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Neo N7 Relic (Radiant)",
+            "type": "Valkyr Prime Neuroptics Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          }
+        ],
+        "tradable": true,
+        "masterable": false,
+        "ducats": 45
+      },
+      {
+        "uniqueName": "/Lotus/Types/Items/MiscItems/OrokinCell",
+        "name": "Orokin Cell",
+        "description": "Ancient energy cell from the Orokin era.\n\nLocation: Ceres, Saturn, and Deimos",
+        "codexSecret": false,
+        "itemCount": 3,
+        "imageName": "ComponentCell.png",
+        "drops": [
+          {
+            "location": "Neptune/Cephalon Capture (Conclave), Rotation B",
+            "type": "Orokin Cell",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Annihilation (Conclave), Rotation B",
+            "type": "Orokin Cell",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Cephalon Capture (Conclave), Rotation B",
+            "type": "Orokin Cell",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Lunaro (Conclave), Rotation B",
+            "type": "Orokin Cell",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Team Annihilation (Conclave), Rotation B",
+            "type": "Orokin Cell",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Variant Annihilation (Conclave), Rotation B",
+            "type": "Orokin Cell",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Variant Cephalon Capture (Conclave), Rotation B",
+            "type": "Orokin Cell",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation B",
+            "type": "Orokin Cell",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Brachiolyst Disperser",
+            "type": "Orokin Cell",
+            "chance": 0.26,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Brachiolyst",
+            "type": "Orokin Cell",
+            "chance": 0.26,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Amalgam Arca Heqet",
+            "type": "Orokin Cell",
+            "chance": 0.27,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Amalgam Arca Kucumatz",
+            "type": "Orokin Cell",
+            "chance": 0.27,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Amalgam Cinder Machinist",
+            "type": "Orokin Cell",
+            "chance": 0.27,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Amalgam Phase Moa",
+            "type": "Orokin Cell",
+            "chance": 0.27,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Amalgam Swarm Satyr",
+            "type": "Orokin Cell",
+            "chance": 0.27,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Amalgam Alkonost",
+            "type": "Orokin Cell",
+            "chance": 0.38,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Amalgam Heqet",
+            "type": "Orokin Cell",
+            "chance": 0.38,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Amalgam Kucumatz",
+            "type": "Orokin Cell",
+            "chance": 0.38,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Amalgam Machinist",
+            "type": "Orokin Cell",
+            "chance": 0.38,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Amalgam Moa",
+            "type": "Orokin Cell",
+            "chance": 0.38,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Amalgam Osprey",
+            "type": "Orokin Cell",
+            "chance": 0.38,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Amalgam Satyr",
+            "type": "Orokin Cell",
+            "chance": 0.38,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Aurax Culveri Moa",
+            "type": "Orokin Cell",
+            "chance": 0.38,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Aurax Polaris Moa",
+            "type": "Orokin Cell",
+            "chance": 0.38,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Demolyst Heqet",
+            "type": "Orokin Cell",
+            "chance": 0.38,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Demolyst Machinist",
+            "type": "Orokin Cell",
+            "chance": 0.38,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Demolyst Moa",
+            "type": "Orokin Cell",
+            "chance": 0.38,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Demolyst Osprey",
+            "type": "Orokin Cell",
+            "chance": 0.38,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Demolyst Satyr",
+            "type": "Orokin Cell",
+            "chance": 0.38,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Mimic",
+            "type": "Orokin Cell",
+            "chance": 0.65,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Aerolyst",
+            "type": "Orokin Cell",
+            "chance": 1.29,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Ambulas",
+            "type": "Orokin Cell",
+            "chance": 1.29,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Archimedean Itzam",
+            "type": "Orokin Cell",
+            "chance": 1.29,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Battalyst",
+            "type": "Orokin Cell",
+            "chance": 1.29,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Conculyst",
+            "type": "Orokin Cell",
+            "chance": 1.29,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Decaying Battalyst",
+            "type": "Orokin Cell",
+            "chance": 1.29,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Decaying Conculyst",
+            "type": "Orokin Cell",
+            "chance": 1.29,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Erra",
+            "type": "Orokin Cell",
+            "chance": 1.29,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Hunhow",
+            "type": "Orokin Cell",
+            "chance": 1.29,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Ortholyst",
+            "type": "Orokin Cell",
+            "chance": 1.29,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Protector Stalker",
+            "type": "Orokin Cell",
+            "chance": 1.29,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Shadow Stalker",
+            "type": "Orokin Cell",
+            "chance": 1.29,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Stalker",
+            "type": "Orokin Cell",
+            "chance": 1.29,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Summulyst",
+            "type": "Orokin Cell",
+            "chance": 1.29,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Symbilyst",
+            "type": "Orokin Cell",
+            "chance": 1.29,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Typholyst",
+            "type": "Orokin Cell",
+            "chance": 1.29,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Tyro Conculyst",
+            "type": "Orokin Cell",
+            "chance": 1.29,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Earth/Cetus (Level 10 - 30 Cetus Bounty), Rotation C",
+            "type": "2X Orokin Cell",
+            "chance": 10.42,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Kuva Fortress/Dakata (Caches), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 10.79,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Lua/Plato (Caches), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 10.82,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Lua/Plato (Caches), Rotation C",
+            "type": "2X Orokin Cell",
+            "chance": 10.82,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Neptune/Halimede (Caches), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 12.58,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Neptune/Thalassa (Caches), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 12.58,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Pluto/Charon (Caches), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 12.58,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Pluto/Cypress (Caches), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 12.58,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Sedna/Phithale (Caches), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 12.58,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Sedna/Rusalka (Caches), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 12.58,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Uranus/Portia (Caches), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 12.58,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Hallowed Flame Endurance Caches, Rotation B",
+            "type": "2X Orokin Cell",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Hallowed Flame Mission Caches, Rotation B",
+            "type": "Orokin Cell",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Ceres/Ker (Caches), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 15.1,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Ceres/Thon (Caches), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 15.1,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Jupiter/Adrastea (Caches), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 15.1,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Jupiter/Carpo (Caches), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 15.1,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Calypso (Caches), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 15.1,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Pallene (Caches), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 15.1,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 100 - 100 Orb Vallis Bounty), Rotation A",
+            "type": "Orokin Cell",
+            "chance": 16.67,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 100 - 100 Orb Vallis Bounty), Rotation B",
+            "type": "Orokin Cell",
+            "chance": 16.67,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 100 - 100 Orb Vallis Bounty), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 16.67,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 40 - 60 Orb Vallis Bounty), Rotation A",
+            "type": "Orokin Cell",
+            "chance": 16.67,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 40 - 60 Orb Vallis Bounty), Rotation B",
+            "type": "Orokin Cell",
+            "chance": 16.67,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 40 - 60 Orb Vallis Bounty), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 16.67,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Deimos/Formido (Caches), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 19.36,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Alad V",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Artificer",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Captain Vor",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Cinderthresh Hyena",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Councilor Vay Hek",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "General Sargas Ruk",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Gyre Hyena",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Hyena Ln2",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Hyena Ng",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Hyena Pb",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Hyena Th",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Icemire Hyena",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "J3 Jordas Golem",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Jackal",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Janus Captain Vor",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Jordas Golem",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Kela De Thaym",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Lephantis",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Lt Lech Kril",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Mutalist Alad V",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Phorid",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Rabbleback Hyena",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "The Sergeant",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Tyl Regor",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Vay Hek Terra Frame",
+            "type": "Orokin Cell",
+            "chance": 2.58,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 100 - 100 Orb Vallis Bounty), Rotation A",
+            "type": "Orokin Cell",
+            "chance": 20,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 100 - 100 Orb Vallis Bounty), Rotation B",
+            "type": "Orokin Cell",
+            "chance": 20,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 100 - 100 Orb Vallis Bounty), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 20,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 40 - 60 Orb Vallis Bounty), Rotation A",
+            "type": "Orokin Cell",
+            "chance": 20,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 40 - 60 Orb Vallis Bounty), Rotation B",
+            "type": "Orokin Cell",
+            "chance": 20,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 40 - 60 Orb Vallis Bounty), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 20,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Kuva Fortress/Dakata (Caches), Rotation C",
+            "type": "2X Orokin Cell",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Neptune/Halimede (Caches), Rotation C",
+            "type": "2X Orokin Cell",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Neptune/Thalassa (Caches), Rotation C",
+            "type": "2X Orokin Cell",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Pluto/Charon (Caches), Rotation C",
+            "type": "2X Orokin Cell",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Pluto/Cypress (Caches), Rotation C",
+            "type": "2X Orokin Cell",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Sedna/Phithale (Caches), Rotation C",
+            "type": "2X Orokin Cell",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Sedna/Rusalka (Caches), Rotation C",
+            "type": "2X Orokin Cell",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Uranus/Portia (Caches), Rotation C",
+            "type": "2X Orokin Cell",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Void/Stribog (Caches), Rotation C",
+            "type": "2X Orokin Cell",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Deimos/Formido (Caches), Rotation C",
+            "type": "2X Orokin Cell",
+            "chance": 3.76,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 100 - 100 Orb Vallis Bounty), Rotation A",
+            "type": "Orokin Cell",
+            "chance": 33.33,
+            "rarity": "Common"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 100 - 100 Orb Vallis Bounty), Rotation B",
+            "type": "Orokin Cell",
+            "chance": 33.33,
+            "rarity": "Common"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 100 - 100 Orb Vallis Bounty), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 33.33,
+            "rarity": "Common"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 40 - 60 Orb Vallis Bounty), Rotation A",
+            "type": "Orokin Cell",
+            "chance": 33.33,
+            "rarity": "Common"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 40 - 60 Orb Vallis Bounty), Rotation B",
+            "type": "Orokin Cell",
+            "chance": 33.33,
+            "rarity": "Common"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 40 - 60 Orb Vallis Bounty), Rotation C",
+            "type": "Orokin Cell",
+            "chance": 33.33,
+            "rarity": "Common"
+          },
+          {
+            "location": "Earth/Cetus (Level 10 - 30 Cetus Bounty), Rotation C",
+            "type": "2X Orokin Cell",
+            "chance": 4.03,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Ceres/Ker (Caches), Rotation C",
+            "type": "2X Orokin Cell",
+            "chance": 4.4,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Ceres/Thon (Caches), Rotation C",
+            "type": "2X Orokin Cell",
+            "chance": 4.4,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Jupiter/Adrastea (Caches), Rotation C",
+            "type": "2X Orokin Cell",
+            "chance": 4.4,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Jupiter/Carpo (Caches), Rotation C",
+            "type": "2X Orokin Cell",
+            "chance": 4.4,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Calypso (Caches), Rotation C",
+            "type": "2X Orokin Cell",
+            "chance": 4.4,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Pallene (Caches), Rotation C",
+            "type": "2X Orokin Cell",
+            "chance": 4.4,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Void/Marduk (Caches), Rotation C",
+            "type": "2X Orokin Cell",
+            "chance": 4.42,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Corrupted Vor",
+            "type": "Orokin Cell",
+            "chance": 50,
+            "rarity": "Common"
+          }
+        ],
+        "tradable": false,
+        "masterable": false,
+        "type": "Resource"
+      },
+      {
+        "uniqueName": "/Lotus/Types/Recipes/WarframeRecipes/ValkyrPrimeSystemsComponent",
+        "name": "Systems",
+        "description": "Systems component of the Valkyr Prime Warframe.",
+        "codexSecret": false,
+        "primeSellingPrice": 65,
+        "itemCount": 1,
+        "imageName": "GenericWarframePrimeSystem.png",
+        "drops": [
+          {
+            "location": "Lith V3 Relic (Radiant)",
+            "type": "Valkyr Prime Systems Blueprint",
+            "chance": 10,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith V5 Relic (Radiant)",
+            "type": "Valkyr Prime Systems Blueprint",
+            "chance": 10,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso V3 Relic (Radiant)",
+            "type": "Valkyr Prime Systems Blueprint",
+            "chance": 10,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V10 Relic",
+            "type": "Valkyr Prime Systems Blueprint",
+            "chance": 11,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V9 Relic",
+            "type": "Valkyr Prime Systems Blueprint",
+            "chance": 11,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V10 Relic (Exceptional)",
+            "type": "Valkyr Prime Systems Blueprint",
+            "chance": 13,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V9 Relic (Exceptional)",
+            "type": "Valkyr Prime Systems Blueprint",
+            "chance": 13,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V10 Relic (Flawless)",
+            "type": "Valkyr Prime Systems Blueprint",
+            "chance": 17,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V9 Relic (Flawless)",
+            "type": "Valkyr Prime Systems Blueprint",
+            "chance": 17,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith V3 Relic",
+            "type": "Valkyr Prime Systems Blueprint",
+            "chance": 2,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith V5 Relic",
+            "type": "Valkyr Prime Systems Blueprint",
+            "chance": 2,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso V3 Relic",
+            "type": "Valkyr Prime Systems Blueprint",
+            "chance": 2,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V10 Relic (Radiant)",
+            "type": "Valkyr Prime Systems Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Axi V9 Relic (Radiant)",
+            "type": "Valkyr Prime Systems Blueprint",
+            "chance": 20,
+            "rarity": "Uncommon",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith V3 Relic (Exceptional)",
+            "type": "Valkyr Prime Systems Blueprint",
+            "chance": 4,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith V5 Relic (Exceptional)",
+            "type": "Valkyr Prime Systems Blueprint",
+            "chance": 4,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso V3 Relic (Exceptional)",
+            "type": "Valkyr Prime Systems Blueprint",
+            "chance": 4,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith V3 Relic (Flawless)",
+            "type": "Valkyr Prime Systems Blueprint",
+            "chance": 6,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Lith V5 Relic (Flawless)",
+            "type": "Valkyr Prime Systems Blueprint",
+            "chance": 6,
+            "rarity": "Rare",
+            "uniqueName": ""
+          },
+          {
+            "location": "Meso V3 Relic (Flawless)",
+            "type": "Valkyr Prime Systems Blueprint",
+            "chance": 6,
+            "rarity": "Rare",
+            "uniqueName": ""
+          }
+        ],
+        "tradable": true,
+        "masterable": false,
+        "ducats": 65
+      }
+    ],
+    "type": "Warframe",
+    "category": "Warframes",
+    "tradable": false,
+    "masterable": true
+  }
+}

@@ -1,6 +1,6 @@
 # ESSENCE DESIGNS - Master Index & Machine Bible
 
-*Last refreshed: 2026-09-17 (ESSENCE v4 "PAD" · ED FLOW 2.0). Ground-truth
+*Last refreshed: 2026-09-19 (ESSENCE v4 "PAD" · ED FLOW 2.0 — Founding Arc 17→19). Ground-truth
 index of the studio. Canonical operating system lives in
 `ED/00_ESSENCE_CORE/ED_FLOW/`.*
 
@@ -19,6 +19,9 @@ index of the studio. Canonical operating system lives in
 - **Safe word:** **BROWN BANANA BREAD** — any agent flagging danger or needing
   Drew stops and says it.
 - **Boot contract:** root `AGENTS.md` (read first every session).
+- **Seat roster (same `.opencode/agents/*.md` registry):** 0-Wake (PLANNER)
+  → 1-Stone (DOER) → B-Bolt (COURRIER) → X-XP (EXPERIENCER). Alpha order =
+  seat flow. Plant, don't paste.
 
 ---
 
@@ -83,9 +86,10 @@ Layer 3 is **OpenCode-native only**. The former `ESSENCE_HUB`
 
 ### Hardware Profile & Cost Constraints
 * **Financial floor & burn pace:** maximum target burn **< $1.00 / hour** across
-  all cloud API operations. Local offload is maxed.
+  all cloud API operations. Stock free-tier box models.
 * **GPU pipeline:** **8 GB VRAM** ceiling.
-* **Local default model:** `qwen2.5-coder:3b` for heavy offload.
+* **Model policy:** stock opencode free-tier LLMs — stick with the box until
+  the box doesn't work.
 * **Capital discipline:** Julia's income supports operations; Drew controls
   studio burn; zero financial burden on the family network. Scope is cut
   aggressively to preserve runway.
@@ -118,11 +122,12 @@ wiring, `/boot` and `/leaf` commands are the live layer.
 |10|**Ashen & Ink**|`03_THE_GAMES/PARKED/09_METROID_SOUL_VANIA/`|**Design Draft**|2D side-scrolling Metroidvania / Souls-lite with custom velocity movement.|
 |11|**Stage & Saddle**|`03_THE_GAMES/PARKED/10_STAGEnSADDLE/`|**Narrative Draft**|Psychological Western thriller (Kojima x David Lynch surrealism).|
 |12|**Arcane Trigger**|`03_THE_GAMES/PARKED/11_MAGIC_HANDS/`|**Engine R&D**|Retro boomer shooter replacing guns with hand-cast kinetic magic.|
-|13|**Lotus Adversity**|`03_THE_GAMES/ACTIVE/MAIN/06_LOTUS_ADVERSITY_GAME/`|**Active MAIN — FLOW 2.0 focus**|The Wheel + codex = the active development & testing lab (Game Dev, System Dev, AI research, lore writing). GOTY-era rhythm/combat; the studio's first platform. Nested game under `Lotus-Adversity-Game-main/`.|
+|13|**Lotus Adversity**|`03_THE_GAMES/ACTIVE/MAIN/06_LOTUS_ADVERSITY_GAME/`|**Active MAIN — native Wheel LIVE (2026-09-19)**|The Wheel + codex = the active development & testing lab (Game Dev, System Dev, AI research, lore writing). GOTY-era rhythm/combat; the studio's first platform. Nested game under `Lotus-Adversity-Game-main/`. **Native wrapper shipped (WHEEL-NATIVE-001):** Electron desktop window, golden Wheel icon, no Chrome tab, 6/6 gates green; Architect walked with no notes — certified 100% base of all LAG dev.|
 |14|**The True Client**|`EXPLORE/`|**Parked (2026-09-17) — v0.5 functional**|Read-only live map of the domain — **the tapestry**: proven concepts slide in from standalone tests; it displays, it is not the test bench.|
 |15|**Icon System**|`ED/01_THE_DESIGNS/ICONS/`|**Live**|Purple/gold identity family as real Windows folder icons (57 Tier-1 nodes) + source for the client.|
 |16|**Video Essay Series**|`02_THE_LOGS/01_VIDEOS/`|**Active**|Ep. 1 script complete, waiting for post-game release tie-in; more pieces queued.|
 |17|**Stream Marathon**|`02_THE_LOGS/02_STREAM/`|**Active Setup**|Late Sept launch stream + Minecraft; Oct Halloween cosplay; Nov BtW dev focus; Dec rest.|
+|18|**ES GURU Helper**|`.opencode/skills/elder-scrolls-guru/` + `LEGACY/VAULT/ElderScrollsGuruHelper/`|**Live — supporting research for LAG**|Elder Scrolls play-session skill + self-improving knowledge base, accuracy-tagged (`[VERIFIED]` / `[VERIFY]` / `[OPENMW DIFF]`) and gated to Drew's approval. Morrowind (GOTY/OpenMW) first; Oblivion later.|
 
 ---
 

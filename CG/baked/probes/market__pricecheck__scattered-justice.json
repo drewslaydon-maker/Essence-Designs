@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/pricecheck/find/Scattered%20Justice",
+    "tag": "Scattered Justice",
+    "httpStatus": 200,
+    "ok": true,
+    "durationMs": 151,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:37.861Z",
+    "accountId": "11121350"
+  },
+  "data": []
+}

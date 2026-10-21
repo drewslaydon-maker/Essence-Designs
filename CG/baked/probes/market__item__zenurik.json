@@ -1,0 +1,22 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/items/Zenurik?only=name,uniqueName,type,category,tradable,masterable,components,set,ducats,quantity",
+    "tag": "Zenurik",
+    "httpStatus": 200,
+    "ok": true,
+    "durationMs": 529,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:29:06.747Z",
+    "accountId": "11121350"
+  },
+  "data": {
+    "uniqueName": "/Lotus/Upgrades/Skins/TextureOverrides/Zenurik",
+    "name": "Zenurik",
+    "type": "Skin",
+    "category": "Skins",
+    "tradable": false,
+    "masterable": false
+  }
+}

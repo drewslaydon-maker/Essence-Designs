@@ -1,0 +1,7 @@
+{
+  "name": "d4_002",
+  "note": "Explore D:4 from the entry room (open door, look for down stairs, loot, monsters). Mind the escape hatch (one-way down, safe to walk over).",
+  "plan": [
+    {"task": "explore", "budget": 40}
+  ]
+}

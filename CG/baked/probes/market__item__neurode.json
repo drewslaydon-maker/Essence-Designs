@@ -1,0 +1,324 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/items/Neurode?only=name,uniqueName,type,category,tradable,masterable,components,set,ducats,quantity",
+    "tag": "Neurode",
+    "httpStatus": 200,
+    "ok": true,
+    "durationMs": 805,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:29:00.461Z",
+    "accountId": "11121350"
+  },
+  "data": {
+    "uniqueName": "/Lotus/Types/Items/MiscItems/Neurode",
+    "name": "Neurodes",
+    "components": [
+      {
+        "uniqueName": "/Lotus/Types/Items/MiscItems/AlloyPlate",
+        "name": "Alloy Plate",
+        "description": "Carbon steel plates used to reinforce Grineer armor.\n\nLocation: Venus, Phobos, Ceres, Jupiter, Pluto, and Sedna.",
+        "codexSecret": false,
+        "itemCount": 50000,
+        "imageName": "AlloyPlate.png",
+        "drops": [
+          {
+            "location": "Mars/Gradivus (Caches), Rotation B",
+            "type": "750X Alloy Plate",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Mercury/Neruda (Caches), Rotation B",
+            "type": "750X Alloy Plate",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Mercury/Terminus (Caches), Rotation B",
+            "type": "750X Alloy Plate",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Neptune/Cephalon Capture (Conclave), Rotation B",
+            "type": "400X Alloy Plate",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Annihilation (Conclave), Rotation B",
+            "type": "400X Alloy Plate",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Cephalon Capture (Conclave), Rotation B",
+            "type": "400X Alloy Plate",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Lunaro (Conclave), Rotation B",
+            "type": "400X Alloy Plate",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Team Annihilation (Conclave), Rotation B",
+            "type": "400X Alloy Plate",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Annihilation (Conclave), Rotation B",
+            "type": "400X Alloy Plate",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Cephalon Capture (Conclave), Rotation B",
+            "type": "400X Alloy Plate",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation B",
+            "type": "400X Alloy Plate",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Ishtar (Caches), Rotation B",
+            "type": "750X Alloy Plate",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation A",
+            "type": "10X Alloy Plate",
+            "chance": 3.16,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation B",
+            "type": "10X Alloy Plate",
+            "chance": 3.16,
+            "rarity": "Rare"
+          }
+        ],
+        "tradable": false,
+        "masterable": false,
+        "type": "Resource"
+      },
+      {
+        "uniqueName": "/Lotus/Types/Recipes/Components/NeurodeResourceBlueprint",
+        "name": "Blueprint",
+        "description": "Biotech sensor organ harvested from Infested entities.\n\nLocation: Earth, Lua, Eris, and Deimos",
+        "itemCount": 1,
+        "imageName": "blueprint.png",
+        "tradable": false,
+        "masterable": false
+      },
+      {
+        "uniqueName": "/Lotus/Types/Items/MiscItems/Nanospores",
+        "name": "Nano Spores",
+        "description": "Fibrous technocyte tumour. Handle Infested tissue with caution.\n\nLocation: Saturn, Neptune, Eris, and Deimos",
+        "codexSecret": false,
+        "itemCount": 50000,
+        "imageName": "ComponentNanospores.png",
+        "drops": [
+          {
+            "location": "Neptune/Cephalon Capture (Conclave), Rotation B",
+            "type": "500X Nano Spores",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Annihilation (Conclave), Rotation B",
+            "type": "500X Nano Spores",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Cephalon Capture (Conclave), Rotation B",
+            "type": "500X Nano Spores",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Lunaro (Conclave), Rotation B",
+            "type": "500X Nano Spores",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Team Annihilation (Conclave), Rotation B",
+            "type": "500X Nano Spores",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Annihilation (Conclave), Rotation B",
+            "type": "500X Nano Spores",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Cephalon Capture (Conclave), Rotation B",
+            "type": "500X Nano Spores",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation B",
+            "type": "500X Nano Spores",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 10 - 30 Orb Vallis Bounty), Rotation C",
+            "type": "200X Nano Spores",
+            "chance": 13.24,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Deimos/Formido (Caches), Rotation A",
+            "type": "1000X Nano Spores",
+            "chance": 14.29,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 10 - 30 Orb Vallis Bounty), Rotation C",
+            "type": "200X Nano Spores",
+            "chance": 15,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Hallowed Flame Mission Caches, Rotation A",
+            "type": "500X Nano Spores",
+            "chance": 15.18,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Eris/Candiru (Caches), Rotation A",
+            "type": "1000X Nano Spores",
+            "chance": 16.67,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Eris/Lepis (Caches), Rotation A",
+            "type": "1000X Nano Spores",
+            "chance": 16.67,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Eris/Naeglar (Caches), Rotation A",
+            "type": "1000X Nano Spores",
+            "chance": 16.67,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Eris/Psoro (Caches), Rotation A",
+            "type": "1000X Nano Spores",
+            "chance": 16.67,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Eris/Viver (Caches), Rotation A",
+            "type": "1000X Nano Spores",
+            "chance": 16.67,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 10 - 30 Orb Vallis Bounty), Rotation C",
+            "type": "200X Nano Spores",
+            "chance": 25,
+            "rarity": "Uncommon"
+          }
+        ],
+        "tradable": false,
+        "masterable": false,
+        "type": "Resource"
+      },
+      {
+        "uniqueName": "/Lotus/Types/Items/MiscItems/Salvage",
+        "name": "Salvage",
+        "description": "High value metals collected from war salvage.\n\nLocation: Mars, Jupiter, and Sedna",
+        "codexSecret": false,
+        "itemCount": 25000,
+        "imageName": "ComponentSalvage.png",
+        "drops": [
+          {
+            "location": "Neptune/Cephalon Capture (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Annihilation (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Cephalon Capture (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Lunaro (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Team Annihilation (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Annihilation (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Cephalon Capture (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation A",
+            "type": "10X Salvage",
+            "chance": 3.16,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation B",
+            "type": "10X Salvage",
+            "chance": 3.16,
+            "rarity": "Rare"
+          }
+        ],
+        "tradable": false,
+        "masterable": false,
+        "type": "Resource"
+      }
+    ],
+    "type": "Misc",
+    "category": "Misc",
+    "tradable": false,
+    "masterable": false
+  }
+}

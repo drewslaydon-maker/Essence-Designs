@@ -5,6 +5,12 @@ This repository is the working root of the **ESSENCE DESIGNS** studio
 
 **Era:** ESSENCE v4 — "PAD." Purple & gold. Symbol: a cosmic pencil over a
 blank pad.
+**Seats (in order):** PLANNER (0-Wake) → DOER (1-Stone) → COURRIER (B-Bolt) →
+EXPERIENCER (X-XP).
+**Operating pattern:** plant, don't paste — every directive is planted as a
+task file (`*_TASK.md`) in the target folder, then agents are pointed at it.
+Each seat plants its own report next to its task, then flags Drew to route
+the next seat to that file (e.g. "point COURRIER at it").
 **Doctrine:** "Simple + Creative + Tested = Good." "Skeleton before flesh."
 **Core law:** execute only the explicit, approved task package — zero
 discretion, zero speculation, mandatory halt & report.
@@ -44,10 +50,23 @@ session input for active research and intent, not canon until enshrined.
   annotate; never touch game code.**
 - Game IDs are **immutable chronological numbers** (`00_`–`99_`); priority
   lives in folder placement, not numbers.
-- Studio burn limit `< $1.00/hr`; GPU ceiling 8 GB VRAM; local model
-  `qwen2.5-coder:3b` preferred for heavy offload.
+- Studio burn limit `< $1.00/hr`; GPU ceiling 8 GB VRAM; model policy:
+  stock opencode free-tier LLMs — stick with the box until it doesn't work.
 - Consoles answer questions; they don't own truth. Docs are the truth.
 - Report exactly what was done and not done. Never masquerade completion.
+- **Plant, don't paste:** directive and task packages live as files in the
+  target folder (e.g. `*_TASK.md`); prompts stay short and only point at
+  them. Planting over pasting — the operating pattern from 2026-09-19. A
+  confirmed receipt is MOVED into
+  `ED/02_THE_LOGS/06_THE_LEDGER/<CODESIGN>/<date>/`.
+- No duplicates — `.opencode/agents/*.md` is the single source.
+- **Lean Lane (Drew, 2026-10-07):** one package = one user-visible
+  capability; reports ≤ 15 lines; gate = existing suite green (new oracles
+  only for new behavior); PLANNER review is a same-session spot check with
+  default resolutions; ledger/doc/VCS hygiene batched to arc close.
+  Escalate to Drew only for data-loss risk, forbidden-path needs, or
+  unscored scope. Full rules: `ED/00_ESSENCE_CORE/ED_FLOW/01_OPERATING_CORE.md`
+  §13.
 
 ## Guru Helper (parallel play-session skill)
 

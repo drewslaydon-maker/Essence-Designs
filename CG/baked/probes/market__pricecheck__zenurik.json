@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/pricecheck/find/Zenurik",
+    "tag": "Zenurik",
+    "httpStatus": 200,
+    "ok": true,
+    "durationMs": 147,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:29:07.599Z",
+    "accountId": "11121350"
+  },
+  "data": []
+}

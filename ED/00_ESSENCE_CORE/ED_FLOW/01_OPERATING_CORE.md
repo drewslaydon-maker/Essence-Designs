@@ -55,7 +55,7 @@ resolves.
 | District | Path | Role |
 |---|---|---|
 | **THE ENGINE** | `00_ESSENCE_CORE/` (+ `ED_FLOW/`) | Unchangeable truth. Rules, definitions, operational scripts. |
-| **THE LOGS** | `02_THE_LOGS/05_CAPTAINS_LOG/` | Chronological history + daily reflections. |
+| **THE LOGS** | `02_THE_LOGS/05_CAPTAINS_LOG/` | Chronological history + daily reflections. `06_THE_LEDGER` — chamber of completed work receipts (per seat + date). |
 | **THE DESIGNS** | `01_THE_DESIGNS/` | Architectural planning + reference. `DISCOVERIES/` (hard-won lessons), `INFLUENCES/`, `FRAMEWORKS/`. |
 | **THE GAMES** | `03_THE_GAMES/` | All game projects by numeric ID + placement district. |
 | **LEGACY VAULT** | `LEGACY/VAULT/` | Archived-era snapshot; active survivors flagged in `LEGACY/VAULT/00_README.md`. |
@@ -68,6 +68,16 @@ resolves.
   leaf when it uncovers a fundamental flaw or system leak. Acknowledges the
   correction was born *out of* the leaf, not interrupting the sequence.
 - **Planted:** a leaf is complete and its code verified/merged.
+- **Seal Gate (Shadow Audit):** a planted leaf does not seal on mechanics
+  alone. Before it is committed as done, a read-only Shadow Audit pass runs
+  against the leaf's scope and the state tree, publishing RED / AMBER /
+  NOTED findings. Drew resolves findings; a leaf does not seal while RED or
+  unresolved findings stand. (Protocol in the Shadow Council — Auditor.)
+- **Filed:** a sealed leaf's receipt (`*_TASK.md`) is MOVED into
+  `06_THE_LEDGER/` under its owning seat's code sign, dated. The receipt is
+  the permanent record of the completed work.
+  A sealed leaf leaves no staging residue — the staging folder holds only
+  in-flight references and is empty at seal.
 
 ## 7. Game Numbering Rule
 
@@ -94,23 +104,29 @@ Game directories use a **zero-padded two-digit immutable ID** (`00_`–`99_`).
 
 - Financial floor: studio burn limit **< $1.00 / hour**.
 - GPU pipeline: **8 GB VRAM** ceiling.
-- Local default model: `qwen2.5-coder:3b` (offload heavy work locally).
+- Model policy: stock opencode free-tier LLMs — stick with the box until the box doesn't work.
 - Layer 3 is **OpenCode-native only**. The former `ESSENCE_HUB`
   (Express/Node, port 5555, Thinker/Doer) was **retired 2026-09-17** and
   archived at `LEGACY/VAULT/essence-hub-v0.1/`.
+- **Sandtrap law (2026-09-20):** every studio subprocess spawn uses
+  `stdio: ["ignore","pipe","pipe"]` + `windowsHide` + a kill-point
+  (`ED/00_ESSENCE_CORE/INFRA/SANDTRAP_DISCIPLINE.md`, `spawn-safe.js`).
+- **Ghost Hub (2026-09-20):** `WASH/hub-server.js` + Electron native wrapper — the studio hub for Head Council Ghosts, Specified Specters, and Agent Roster; all agent spawns route through `spawn-safe.js` (Sandtrap law).
 
 ## 10. Definition of Done (DoD)
 
 1. **Mechanical Skeleton Verified** — mechanics, GTL logic, or structural
    builds tested/verified ("Skeleton before flesh").
-2. **Canonical Docs Updated** — `ED/00_ESSENCE_BIBLE.md` and
+2. **Shadow Seal Gate Passed** — post-leaf Shadow Audit ran clean or its
+   findings were resolved (see the Shadow Council — Auditor).
+3. **Canonical Docs Updated** — `ED/00_ESSENCE_BIBLE.md` and
    `01_THE_DESIGNS/MILESTONES.md` reflect ground truth.
-3. **Console Synchronization** — external consoles (Trello etc.) mirror
+4. **Console Synchronization** — external consoles (Trello etc.) mirror
    local state.
-4. **VCS Clean State** — committed with clear messages
+5. **VCS Clean State** — committed with clear messages
    (`docs:`, `feat:`, `fix:`, `infra:`).
-5. **Capital Efficiency & Burn Compliance** — within < $1.00/hr, local
-   offload maxed.
+6. **Capital Efficiency & Burn Compliance** — within < $1.00/hr, stock
+   opencode free-tier box models.
    Plus, for executor-hand work: **Single Output Stop** — report and wait,
    do not chain ahead.
 
@@ -137,4 +153,32 @@ Game directories use a **zero-padded two-digit immutable ID** (`00_`–`99_`).
   - **Active Research** → `LEGACY/VAULT/`
   - **Emotional weight / progressional validation** → `02_THE_LOGS/05_CAPTAINS_LOG/`
   - **Structural truths / lessons** → `01_THE_DESIGNS/DISCOVERIES/` or this core
+
+## 13. The Lean Lane (Drew, 2026-10-07)
+
+> Process ruling after the CG-002-A arc: the bloat was in the process, not
+> the local pivot — days spent pushing a plan to live instead of closing the
+> loop. Leaves must land same-session where possible. This is the default
+> for leaf work; retire or extend only by Drew's call.
+
+1. **One package = one user-visible capability.** Targets, exact edit, one
+   test command. No supersede banners, no resume/report twins, no
+   multi-unit staging unless a regen genuinely needs it.
+2. **Report ≤ 15 lines** — what changed, test output, anything weird. Hash
+   tables and verbatim command chapters only on unexpected divergence.
+3. **Gate = the existing suite green.** It is already built; running it
+   costs seconds. New oracles only for new behavior (~3 per leaf max)
+   unless real data-risk appears.
+4. **PLANNER review = same-session spot check** (run the suite, read the
+   diff). Findings get default resolutions, reported not escalated.
+   Escalate to Drew ONLY for: data-loss risk, forbidden-path needs, or
+   scope he has not ruled on.
+5. **Hygiene batched to arc close** — ledger filing, canon-doc sync, and
+   commit batches happen in one pass when Drew says the artifact is
+   usable, not after every leaf. Console sync is N/A where there is no
+   external console.
+6. **Unchanged:** forbidden paths on fragile files, no masquerade,
+   halt & report (now one paragraph), the safe word, embargoes — with the
+   addendum that **Drew naming a canon file = the authorization** for that
+   doc edit.
 - **Seed record:** `LEGACY/VAULT/00_ESSENCE_PAD_SEED_2026-09.md`.

@@ -33,3 +33,53 @@ Players claim they want to be overpowered, but an absence of resistance leads to
 
 ## 10. Perfect is the Enemy of Shipped
 A flawed game that is playable and testing with a real human (like Phil) is infinitely more valuable than a perfect game locked in a private repository. Do not endlessly polish before gathering real-world data.
+
+## 11. The Leaf Lifecycle is a Flow, Not a Script
+"Verify the receipt script" was the ask — there was no script. The
+lifecycle — plant a `*_TASK.md`, execute, Drew confirms, MOVE the receipt
+into `06_THE_LEDGER/<CODESIGN>/<date>/` — IS the system. It passed
+end-to-end twice in one day (VAL-003, VAL-004). Vocabulary, not machinery:
+here "script" means the flow, and Drew's "VCS" means Visual Studio Code —
+not version control.
+
+## 12. A Sealed Leaf Leaves No Residue
+Sealing a leaf does not mean the staging folder is clean. VAL-001's scope
+and VAL-002's proposal sat in `validation/` past their seals and needed a
+dedicated leaf (VAL-004) to carry them to the chamber. Staging holds only
+in-flight references; an empty staging folder is part of the sealed state.
+
+## 13. Rename-with-Prefix is the Ordering Contract
+0-Wake / 1-Stone / B-Bolt / X-XP exists because opencode's TUI sorts the
+roster alphabetically. The prefix scheme makes alpha order equal the seat
+flow, permanently. Future seats inherit the reserved Y/Z tail — the sort
+IS the contract.
+
+## 14. One Registration Per Agent
+`.opencode/agents/*.md` is the single source of the agent registry; the
+`opencode.json` agents map stays empty. A `default_agent` still resolves
+from the file registry — proven when the reboot kept this 0-Wake session
+alive through the rename.
+
+## 15. Inline Verify + Reboot-Pending is the Registry-Change Pattern
+When a package renames live configuration, bake the diagnostics in before
+the restart; the reboot is the final proof. Never chain ahead of it.
+
+## 16. Ambiguity Defaults to the Confirmation-Gated Reading
+VAL-003's package text conflicted (Unit 2 said file in Unit 4; Unit 6 said
+on Drew's go). The executor chose the gated path and stood by. Package
+writers must not leave conflicting instructions; executors default to the
+safer reading.
+
+## 17. Trust Entries Only Apply to Packages That Have Postinstall Scripts
+WHEEL-NATIVE-001 stopped at Unit 1: after `bun add -d electron`, the binary
+was absent — and the stop report's root cause ("bun skips untrusted
+postinstalls") scored a `trustedDependencies` ruling. The deeper truth,
+proven during execution, was simpler: **electron@44 has NO postinstall
+script at all.** The ~100 MB binary downloads *lazily* on first use
+(`index.js` → `install.js` → `@electron/get`). There was nothing to trust —
+the package just had never been invoked. The fix was running the package's
+own official `install.js` once, no config knobs added. Plausible root
+causes get disproven by execution; when a package's binary isn't present,
+run the package's own download step before piling on dependency-trust
+settings. (Enshrined 2026-09-19 from the WHEEL-NATIVE-001 stop + ruling +
+completion flow.)

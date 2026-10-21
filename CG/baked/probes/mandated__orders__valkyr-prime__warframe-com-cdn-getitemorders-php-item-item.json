@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Valkyr%20Prime",
+    "tag": "Valkyr Prime",
+    "httpStatus": 403,
+    "ok": false,
+    "durationMs": 35,
+    "contentType": "text/html",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:16.283Z",
+    "accountId": "11121350"
+  },
+  "data": null
+}

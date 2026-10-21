@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Voltaic%20Strike",
+    "tag": "Voltaic Strike",
+    "httpStatus": 403,
+    "ok": false,
+    "durationMs": 40,
+    "contentType": "text/html",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:09.957Z",
+    "accountId": "11121350"
+  },
+  "data": null
+}

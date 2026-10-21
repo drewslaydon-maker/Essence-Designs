@@ -1,0 +1,22 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/items/Railjack?only=name,uniqueName,type,category,tradable,masterable,components,set,ducats,quantity",
+    "tag": "Railjack",
+    "httpStatus": 200,
+    "ok": true,
+    "durationMs": 515,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:29:10.926Z",
+    "accountId": "11121350"
+  },
+  "data": {
+    "uniqueName": "/Lotus/Types/Game/CrewShip/Ships/RailJack",
+    "name": "Railjack",
+    "type": "Orbiter",
+    "category": "Misc",
+    "tradable": false,
+    "masterable": false
+  }
+}

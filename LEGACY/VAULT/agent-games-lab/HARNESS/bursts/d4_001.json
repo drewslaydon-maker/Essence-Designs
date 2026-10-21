@@ -1,0 +1,7 @@
+{
+  "name": "d4_001",
+  "note": "D:4 entry room: quokka attacked us on the stairs. Tab it down.",
+  "plan": [
+    {"task": "fight", "budget": 20}
+  ]
+}

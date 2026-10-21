@@ -1,0 +1,15 @@
+{
+  "name": "essence-ghost-hub",
+  "private": true,
+  "version": "0.3.0",
+  "main": "electron-main.js",
+  "scripts": {
+    "start": "node hub-server.js",
+    "native": "electron .",
+    "launch": "node launch-hub.js"
+  },
+  "trustedDependencies": ["electron"],
+  "devDependencies": {
+    "electron": "^44.4.3"
+  }
+}

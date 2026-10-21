@@ -1,0 +1,7 @@
+{
+  "name": "d3_006",
+  "note": "Walk west from the stirs-loss point to bring the > stairs back into view.",
+  "plan": [
+    {"task": "move", "keys": "hhh", "max_block": 3}
+  ]
+}

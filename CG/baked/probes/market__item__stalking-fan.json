@@ -1,0 +1,22 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/items/Stalking%20Fan?only=name,uniqueName,type,category,tradable,masterable,components,set,ducats,quantity",
+    "tag": "Stalking Fan",
+    "httpStatus": 200,
+    "ok": true,
+    "durationMs": 528,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:29:02.556Z",
+    "accountId": "11121350"
+  },
+  "data": {
+    "uniqueName": "/Lotus/Weapons/Tenno/Melee/MeleeTrees/ScytheCmbTwoMeleeTree",
+    "name": "Stalking Fan",
+    "type": "Stance Mod",
+    "category": "Mods",
+    "tradable": true,
+    "masterable": false
+  }
+}

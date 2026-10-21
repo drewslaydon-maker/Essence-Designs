@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import {
   Flame,
   ScrollText,
@@ -8,12 +8,8 @@ import {
   VolumeX,
   Tv,
   Layers,
-  Cpu,
-  Database,
-  Milestone,
 } from "lucide-react";
 import { useAppStore } from "../store/useAppStore";
-import { GitSyncModal } from "./GitSyncModal";
 
 interface NavEntry {
   id: string;
@@ -28,12 +24,10 @@ const NAV: NavEntry[] = [
   { id: "heraldry", label: "Heraldry", icon: ScrollText, badge: "3 Families" },
   { id: "codex", label: "Codex", icon: BookOpen, badge: "Chronicles" },
   { id: "pillars", label: "Pillars", icon: Layers, badge: "Doctrine" },
-  { id: "chamber", label: "Chamber", icon: Cpu, badge: "Unratified" },
 ];
 
 export const Header: FC = () => {
   const { activeTab, setActiveTab, crtEnabled, setCrtEnabled, soundEnabled, setSoundEnabled, playSfx } = useAppStore();
-  const [gitModalOpen, setGitModalOpen] = useState(false);
 
   const select = (id: string) => {
     setActiveTab(id);
@@ -70,14 +64,6 @@ export const Header: FC = () => {
 
           {/* Controls */}
           <div className="flex items-center gap-1.5 sm:gap-2.5">
-            <div className="hidden xl:flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-900 border border-neutral-800 text-xs font-mono">
-              <div className="w-2 h-2 rounded-full bg-rose-400 animate-pulse" />
-              <span className="text-neutral-300">FLOWER 08</span>
-              <span className="text-[10px] text-rose-400 bg-rose-950/60 px-1.5 py-0.5 rounded border border-rose-800/60 font-bold">
-                REVOKED
-              </span>
-            </div>
-
             <button
               onClick={() => {
                 const next = !soundEnabled;
@@ -106,15 +92,6 @@ export const Header: FC = () => {
             >
               <Tv className="w-4 h-4" />
               <span className="hidden md:inline text-[11px] font-mono">CRT</span>
-            </button>
-
-            <button
-              onClick={() => { setGitModalOpen(true); playSfx("anvil"); }}
-              className="p-2 rounded-lg border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer"
-              title="Push directly to the GitHub Truth Holder"
-            >
-              <Database className="w-4 h-4 text-amber-400" />
-              <span className="hidden sm:inline text-[11px]">Git Sync</span>
             </button>
           </div>
         </div>
@@ -173,8 +150,6 @@ export const Header: FC = () => {
           </div>
         </nav>
       </div>
-
-      <GitSyncModal isOpen={gitModalOpen} onClose={() => setGitModalOpen(false)} />
     </header>
   );
 };

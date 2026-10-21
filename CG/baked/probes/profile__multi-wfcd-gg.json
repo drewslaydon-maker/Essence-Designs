@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.wfcd.gg/profile/11121350",
+    "tag": "multi (wfcd.gg)",
+    "httpStatus": 0,
+    "ok": false,
+    "durationMs": 23,
+    "contentType": null,
+    "transportError": "TypeError: fetch failed",
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:27:53.847Z",
+    "accountId": "11121350"
+  },
+  "data": null
+}

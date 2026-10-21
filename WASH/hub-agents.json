@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "note": "Personalization surface for the GHOST HUB. Edit freely. Server merges over ground-truth defaults (seats from .opencode/agents/, shadow from 00_SHADOW_COUNCIL/, ledger seals).",
+  "agents": {
+    "0-wake":   { "displayName": "Wake",   "role": "PLANNER",   "section": "council",  "tagline": "The planner seat. Reads truth, specs leaves, never builds.", "status": "active" },
+    "1-stone":  { "displayName": "Stone",   "role": "DOER",      "section": "council",  "tagline": "The build lane. Executes the approved task package, halts.", "status": "active" },
+    "b-bolt":   { "displayName": "Bolt",    "role": "COURRIER", "section": "roster", "tagline": "Bridge role. Ferries verified records between windows.", "status": "active" },
+    "x-xp":     { "displayName": "XP",      "role": "EXPERIENCER", "section": "council", "tagline": "The play lane. Experiencer's workspace.", "status": "active" },
+    "wash":     { "displayName": "WASH",    "role": "SEER",      "section": "council",  "tagline": "Outside seer. Read-only walks, artifact filing, live ghost.", "status": "live" },
+    "cg":       { "displayName": "CG",      "role": "Cephalon Ghost", "section": "specters", "tagline": "Warframe helper — seated specter, READ-ONLY by default.", "status": "seated", "access": "READ-ONLY" },
+    "es-guru":  { "displayName": "ES-GURU", "role": "Elder Scrolls Guide", "section": "specters", "tagline": "MW/OBL game-play lane, isolated chat.", "status": "seated", "access": "isolated chat" },
+    "v-d":      { "displayName": "V-D",      "role": "VISUAL DESIGNER", "section": "specters", "tagline": "Visual designer specter. Designs AND builds the studio's look; proves itself through its own icon.", "status": "seated" },
+    "shadow-auditor": { "displayName": "SHADOW AUDITOR", "role": "Shadow Council", "section": "shadow", "tagline": "Standing fishhook — fresh-context drift audit.", "status": "dormant" },
+    "timelord": { "displayName": "TIMELORD", "role": "Shadow Council", "section": "shadow", "tagline": "Record keeper of the permanent record.", "status": "dormant" }
+  }
+}

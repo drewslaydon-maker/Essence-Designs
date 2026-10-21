@@ -68,6 +68,14 @@ in the 2026-09-17 repass and archived at
 | `WORKSHOP/` (empty TEMPLATES/TEST_BENCH) | **PURGED** — deleted; tombstone same |
 | `CORTEX/` (empty placeholder) | **PURGED** — deleted; tombstone same |
 
+## PART 5: SANDTRAP — SPAWN DISCIPLINE (2026-09-20)
+
+The terminal/window gates (the Sandtrap) are governed by the Sandtrap law:
+every studio subprocess spawn uses `stdio: ["ignore","pipe","pipe"]`,
+`windowsHide`, and a kill-point — see `SANDTRAP_DISCIPLINE.md` +
+`spawn-safe.js` in this folder. Boundary: the opencode config/agent-spawn
+layer is a follow-up leaf.
+
 ---
 
 *Any change to execution tooling or the operating model must be reflected in

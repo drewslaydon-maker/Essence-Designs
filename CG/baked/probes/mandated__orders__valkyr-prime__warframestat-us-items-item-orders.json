@@ -1,0 +1,19 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/items/Valkyr%20Prime/orders",
+    "tag": "Valkyr Prime",
+    "httpStatus": 404,
+    "ok": false,
+    "durationMs": 115,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:15.545Z",
+    "accountId": "11121350"
+  },
+  "data": {
+    "message": "Cannot GET /items/Valkyr%20Prime/orders",
+    "error": "Not Found",
+    "statusCode": 404
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Atomos",
+    "tag": "Atomos",
+    "httpStatus": 403,
+    "ok": false,
+    "durationMs": 94,
+    "contentType": "text/html",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:24.244Z",
+    "accountId": "11121350"
+  },
+  "data": null
+}

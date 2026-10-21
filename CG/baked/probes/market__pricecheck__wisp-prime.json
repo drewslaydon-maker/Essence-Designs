@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/pricecheck/find/Wisp%20Prime",
+    "tag": "Wisp Prime",
+    "httpStatus": 200,
+    "ok": true,
+    "durationMs": 160,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:52.601Z",
+    "accountId": "11121350"
+  },
+  "data": []
+}

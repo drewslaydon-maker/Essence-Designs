@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api-mob.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+    "tag": "Mobile",
+    "httpStatus": 403,
+    "ok": false,
+    "durationMs": 96,
+    "contentType": "text/html",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:27:51.203Z",
+    "accountId": "11121350"
+  },
+  "data": null
+}

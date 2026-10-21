@@ -1,0 +1,3845 @@
+{
+  "_doc": "CG-001 canonical dock master. Drew's TradeDock, imported verbatim. Edit here (or via the CG seat), then run node CG/build-dock.js.",
+  "schemaVersion": "cg-001",
+  "source": {
+    "_doc": "Provenance. importedAt is the xlsx mtime, NOT wall-clock, so re-imports are byte-identical.",
+    "xlsxPath": "C:\\Users\\Andrew\\Desktop\\WF10_04-TRADEDOCK.xlsx",
+    "xlsxSize": 11030,
+    "xlsxMtime": "2026-10-05T23:46:03.938Z",
+    "importedAt": "2026-10-05T23:46:03.938Z",
+    "pricesFetchedAt": "2026-10-05T22:28:04.295Z",
+    "filteredFetchedAt": "2026-10-05T22:28:05.166Z",
+    "sharedStrings": 149,
+    "tradeDockRef": "A1:N36",
+    "scratchpadRef": "A38:D41"
+  },
+  "velocityTiers": {
+    "_doc": "The observed vocabulary, verbatim. No invented tier.",
+    "values": [
+      "0 - SACRED",
+      "1 - S-Tier",
+      "2 - A-Tier",
+      "3 - B-Tier",
+      "4 - C-Tier",
+      "5 - F-Tier",
+      "6 - Market"
+    ]
+  },
+  "items": [
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 1,
+      "xlsxRow": 2,
+      "item": "Wisp Prime",
+      "category": "Warframe",
+      "velocityTier": "0 - SACRED",
+      "bpMainQty": "1.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Chassis",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 2,
+          "name": "Neuroptics",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 3,
+          "name": "Systems",
+          "qty": "1.0",
+          "have": true
+        }
+      ],
+      "estValueRaw": "LOCKED",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "DO NOT SELL (Crown Jewel)",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "34",
+          "feedVolToday": "70",
+          "feedVolYest": "120",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Wisp Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Chassis",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "17.1",
+          "feedVolToday": "60",
+          "feedVolYest": "121",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Wisp Prime Chassis Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Neuroptics",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "5.2",
+          "feedVolToday": "38",
+          "feedVolYest": "62",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Wisp Prime Neuroptics Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Systems",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "5.3",
+          "feedVolToday": "39",
+          "feedVolYest": "39",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Wisp Prime Systems Blueprint",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "68.9",
+        "today_vol": "121",
+        "yesterday_vol": "229",
+        "matchedName": "Wisp Prime Set"
+      },
+      "missing": [],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 61.6,
+        "pricedSegments": 4,
+        "totalSegments": 4,
+        "complete": true
+      },
+      "flags": [
+        "SACRED",
+        "LOCKED",
+        "COMPLETE"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 2,
+      "xlsxRow": 3,
+      "item": "Burston Prime",
+      "category": "Rifle",
+      "velocityTier": "0 - SACRED",
+      "bpMainQty": "0.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Barrel",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Receiver",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 3,
+          "name": "Stock",
+          "qty": "1.0",
+          "have": true
+        }
+      ],
+      "estValueRaw": "LOCKED",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "DO NOT SELL (Incarnon Host)",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "3.3",
+          "feedVolToday": "37",
+          "feedVolYest": "12",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Burston Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Barrel",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "4.7",
+          "feedVolToday": "99",
+          "feedVolYest": "68",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Burston Prime Barrel",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Receiver",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "3.4",
+          "feedVolToday": "68",
+          "feedVolYest": "29",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Burston Prime Receiver",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Stock",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "3.5",
+          "feedVolToday": "54",
+          "feedVolYest": "27",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Burston Prime Stock",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "13.2",
+        "today_vol": "354",
+        "yesterday_vol": "122",
+        "matchedName": "Burston Prime Set"
+      },
+      "missing": [
+        "BP/Main",
+        "Barrel"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 14.9,
+        "pricedSegments": 4,
+        "totalSegments": 4,
+        "complete": true
+      },
+      "flags": [
+        "SACRED",
+        "LOCKED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 3,
+      "xlsxRow": 4,
+      "item": "Sybaris Prime",
+      "category": "Rifle",
+      "velocityTier": "1 - S-Tier",
+      "bpMainQty": "0.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Barrel",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Receiver",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "Stock",
+          "qty": "1.0",
+          "have": true
+        }
+      ],
+      "estValueRaw": "74-80p",
+      "vaulted": "Yes",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Sells on Barrel (30p). Hunt aggressively.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "6.5",
+          "feedVolToday": "7",
+          "feedVolYest": "10",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Sybaris Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Barrel",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "34.3",
+          "feedVolToday": "12",
+          "feedVolYest": "35",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Sybaris Prime Barrel",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Receiver",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "8.7",
+          "feedVolToday": "13",
+          "feedVolYest": "12",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Sybaris Prime Receiver",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Stock",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "9.7",
+          "feedVolToday": "5",
+          "feedVolYest": "18",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Sybaris Prime Stock",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "72.3",
+        "today_vol": "19",
+        "yesterday_vol": "32",
+        "matchedName": "Sybaris Prime Set"
+      },
+      "missing": [
+        "BP/Main",
+        "Barrel",
+        "Receiver"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 59.2,
+        "pricedSegments": 4,
+        "totalSegments": 4,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 4,
+      "xlsxRow": 5,
+      "item": "Steflos Prime",
+      "category": "Shotgun",
+      "velocityTier": "1 - S-Tier",
+      "bpMainQty": "1.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Barrel",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Receiver",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "Stock",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "70-75p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "All parts hold value. Green light.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "8.3",
+          "feedVolToday": "95",
+          "feedVolYest": "181",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Steflos Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Barrel",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "25.5",
+          "feedVolToday": "140",
+          "feedVolYest": "212",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Steflos Prime Barrel",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Receiver",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "7.6",
+          "feedVolToday": "29",
+          "feedVolYest": "54",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Steflos Prime Receiver",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Stock",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "8.6",
+          "feedVolToday": "102",
+          "feedVolYest": "150",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Steflos Prime Stock",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "71.3",
+        "today_vol": "170",
+        "yesterday_vol": "270",
+        "matchedName": "Steflos Prime Set"
+      },
+      "missing": [
+        "Barrel",
+        "Receiver",
+        "Stock"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 50,
+        "pricedSegments": 4,
+        "totalSegments": 4,
+        "complete": true
+      },
+      "flags": [
+        "CATALOG_MISS",
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 5,
+      "xlsxRow": 6,
+      "item": "Baza Prime",
+      "category": "Rifle",
+      "velocityTier": "1 - S-Tier",
+      "bpMainQty": "1.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Barrel",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Receiver",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "Stock",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "69-70p",
+      "vaulted": "Yes",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Missing Stock (25-30p). High margin.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "8.4",
+          "feedVolToday": "33",
+          "feedVolYest": "75",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Baza Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Barrel",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "5.5",
+          "feedVolToday": "19",
+          "feedVolYest": "28",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Baza Prime Barrel",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Receiver",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "7.9",
+          "feedVolToday": "36",
+          "feedVolYest": "43",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Baza Prime Receiver",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Stock",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "22.7",
+          "feedVolToday": "62",
+          "feedVolYest": "89",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Baza Prime Stock",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "68.1",
+        "today_vol": "36",
+        "yesterday_vol": "30",
+        "matchedName": "Baza Prime Set"
+      },
+      "missing": [
+        "Barrel",
+        "Receiver",
+        "Stock"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 44.5,
+        "pricedSegments": 4,
+        "totalSegments": 4,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 6,
+      "xlsxRow": 7,
+      "item": "Valkyr Prime",
+      "category": "Warframe",
+      "velocityTier": "1 - S-Tier",
+      "bpMainQty": "1.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Chassis",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Neuroptics",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "Systems",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "69-70p",
+      "vaulted": "Yes",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Vaulted royalty. Chassis is jackpot.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "5.7",
+          "feedVolToday": "20",
+          "feedVolYest": "46",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Valkyr Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Chassis",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "34.3",
+          "feedVolToday": "37",
+          "feedVolYest": "51",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Valkyr Prime Chassis Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Neuroptics",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "9.8",
+          "feedVolToday": "44",
+          "feedVolYest": "73",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Valkyr Prime Neuroptics Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Systems",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "14.7",
+          "feedVolToday": "42",
+          "feedVolYest": "61",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Valkyr Prime Systems Blueprint",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "69.1",
+        "today_vol": "84",
+        "yesterday_vol": "96",
+        "matchedName": "Valkyr Prime Set"
+      },
+      "missing": [
+        "Chassis",
+        "Neuroptics",
+        "Systems"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 64.5,
+        "pricedSegments": 4,
+        "totalSegments": 4,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 7,
+      "xlsxRow": 8,
+      "item": "Ivara Prime",
+      "category": "Warframe",
+      "velocityTier": "1 - S-Tier",
+      "bpMainQty": "0.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Chassis",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 2,
+          "name": "Neuroptics",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "Systems",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "62-65p",
+      "vaulted": "Yes",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Hold Chassis (19-22p) for completion.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "9",
+          "feedVolToday": "84",
+          "feedVolYest": "142",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Ivara Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Chassis",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "19",
+          "feedVolToday": "99",
+          "feedVolYest": "179",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Ivara Prime Chassis Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Neuroptics",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "7.5",
+          "feedVolToday": "45",
+          "feedVolYest": "69",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Ivara Prime Neuroptics Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Systems",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "9.8",
+          "feedVolToday": "70",
+          "feedVolYest": "101",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Ivara Prime Systems Blueprint",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "60.1",
+        "today_vol": "126",
+        "yesterday_vol": "160",
+        "matchedName": "Ivara Prime Set"
+      },
+      "missing": [
+        "BP/Main",
+        "Neuroptics",
+        "Systems"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 45.3,
+        "pricedSegments": 4,
+        "totalSegments": 4,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 8,
+      "xlsxRow": 9,
+      "item": "Corufell Prime",
+      "category": "Melee",
+      "velocityTier": "1 - S-Tier",
+      "bpMainQty": "0.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Blade",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Handle",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 3,
+          "name": "Receiver",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 4,
+          "name": "Stock",
+          "qty": null,
+          "have": false
+        }
+      ],
+      "estValueRaw": "55-70p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Receiver (25p) bottlenecks set.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "6.3",
+          "feedVolToday": "75",
+          "feedVolYest": "121",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Corufell Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Blade",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": null,
+          "feedVolToday": null,
+          "feedVolYest": null,
+          "matchShape": null,
+          "matchedName": null,
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Handle",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "6.9",
+          "feedVolToday": "120",
+          "feedVolYest": "175",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Corufell Prime Handle",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Receiver",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "24.1",
+          "feedVolToday": "151",
+          "feedVolYest": "259",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Corufell Prime Receiver",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Stock",
+          "qty": null,
+          "have": false,
+          "feedAvg": "7.9",
+          "feedVolToday": "101",
+          "feedVolYest": "142",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Corufell Prime Stock",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "60",
+        "today_vol": "228",
+        "yesterday_vol": "308",
+        "matchedName": "Corufell Prime Set"
+      },
+      "missing": [
+        "BP/Main",
+        "Blade",
+        "Receiver",
+        "Stock"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 45.2,
+        "pricedSegments": 4,
+        "totalSegments": 5,
+        "complete": false
+      },
+      "flags": [
+        "CATALOG_MISS",
+        "DREW_VALUE_STATED",
+        "SEG_INACCESSIBLE",
+        "PART_LIST_CONFLICT"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 9,
+      "xlsxRow": 10,
+      "item": "Athodai Prime",
+      "category": "Pistol",
+      "velocityTier": "2 - A-Tier",
+      "bpMainQty": "1.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Barrel",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Receiver",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "N/A",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "29-30p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Easy 25p flip if parts drop.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "3.8",
+          "feedVolToday": "13",
+          "feedVolYest": "25",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Athodai Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Barrel",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "9.1",
+          "feedVolToday": "45",
+          "feedVolYest": "73",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Athodai Prime Barrel",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Receiver",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "8.3",
+          "feedVolToday": "35",
+          "feedVolYest": "69",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Athodai Prime Receiver",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "28.9",
+        "today_vol": "47",
+        "yesterday_vol": "87",
+        "matchedName": "Athodai Prime Set"
+      },
+      "missing": [
+        "Barrel",
+        "Receiver"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 21.2,
+        "pricedSegments": 3,
+        "totalSegments": 3,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 10,
+      "xlsxRow": 11,
+      "item": "Daikyu Prime",
+      "category": "Bow",
+      "velocityTier": "2 - A-Tier",
+      "bpMainQty": "1.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Grip",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Lower",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 3,
+          "name": "Upper",
+          "qty": "1.0",
+          "have": true
+        }
+      ],
+      "estValueRaw": "14-15p",
+      "vaulted": "Yes",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Has String (1). Buy Grip to flip.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "1.6",
+          "feedVolToday": "2",
+          "feedVolYest": "8",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Daikyu Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Grip",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "7.9",
+          "feedVolToday": "59",
+          "feedVolYest": "63",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Daikyu Prime Grip",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Lower",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": null,
+          "feedVolToday": null,
+          "feedVolYest": null,
+          "matchShape": null,
+          "matchedName": null,
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Upper",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": null,
+          "feedVolToday": null,
+          "feedVolYest": null,
+          "matchShape": null,
+          "matchedName": null,
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "14.8",
+        "today_vol": "57",
+        "yesterday_vol": "83",
+        "matchedName": "Daikyu Prime Set"
+      },
+      "missing": [
+        "Grip"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 9.5,
+        "pricedSegments": 2,
+        "totalSegments": 4,
+        "complete": false
+      },
+      "flags": [
+        "DREW_VALUE_STATED",
+        "SEG_INACCESSIBLE",
+        "JOIN_ALIAS_PROPOSED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 11,
+      "xlsxRow": 12,
+      "item": "Gyre Prime",
+      "category": "Warframe",
+      "velocityTier": "2 - A-Tier",
+      "bpMainQty": "0.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Chassis",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Neuroptics",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 3,
+          "name": "Systems",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "25p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "List Neuro alone or hold.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "4.1",
+          "feedVolToday": "44",
+          "feedVolYest": "69",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Gyre Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Chassis",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "5.6",
+          "feedVolToday": "67",
+          "feedVolYest": "114",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Gyre Prime Chassis Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Neuroptics",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "9",
+          "feedVolToday": "92",
+          "feedVolYest": "122",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Gyre Prime Neuroptics Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Systems",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "3.7",
+          "feedVolToday": "34",
+          "feedVolYest": "58",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Gyre Prime Systems Blueprint",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "24.7",
+        "today_vol": "127",
+        "yesterday_vol": "250",
+        "matchedName": "Gyre Prime Set"
+      },
+      "missing": [
+        "BP/Main",
+        "Chassis",
+        "Systems"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 22.4,
+        "pricedSegments": 4,
+        "totalSegments": 4,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 12,
+      "xlsxRow": 13,
+      "item": "Kompressa Prime",
+      "category": "Pistol",
+      "velocityTier": "2 - A-Tier",
+      "bpMainQty": "1.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Barrel",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Receiver",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 3,
+          "name": "N/A",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "14-15p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Buy Barrel (9p) to flip.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "1.8",
+          "feedVolToday": "3",
+          "feedVolYest": "6",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Kompressa Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Barrel",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "8.3",
+          "feedVolToday": "53",
+          "feedVolYest": "86",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Kompressa Prime Barrel",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Receiver",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "4.2",
+          "feedVolToday": "25",
+          "feedVolYest": "42",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Kompressa Prime Receiver",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "10.5",
+        "today_vol": "92",
+        "yesterday_vol": "112",
+        "matchedName": "Kompressa Prime Set"
+      },
+      "missing": [
+        "Barrel"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 14.3,
+        "pricedSegments": 3,
+        "totalSegments": 3,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 13,
+      "xlsxRow": 14,
+      "item": "Yareli Prime",
+      "category": "Warframe",
+      "velocityTier": "2 - A-Tier",
+      "bpMainQty": "1.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Chassis",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 2,
+          "name": "Neuroptics",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "Systems",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "28-30p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Need N/S for easy flip.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "3.2",
+          "feedVolToday": "26",
+          "feedVolYest": "77",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Yareli Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Chassis",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "2.3",
+          "feedVolToday": "14",
+          "feedVolYest": "30",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Yareli Prime Chassis Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Neuroptics",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "9.3",
+          "feedVolToday": "112",
+          "feedVolYest": "144",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Yareli Prime Neuroptics Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Systems",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "10.7",
+          "feedVolToday": "87",
+          "feedVolYest": "126",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Yareli Prime Systems Blueprint",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "25.6",
+        "today_vol": "120",
+        "yesterday_vol": "257",
+        "matchedName": "Yareli Prime Set"
+      },
+      "missing": [
+        "Neuroptics",
+        "Systems"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 25.5,
+        "pricedSegments": 4,
+        "totalSegments": 4,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 14,
+      "xlsxRow": 15,
+      "item": "Afentis Prime",
+      "category": "Rifle",
+      "velocityTier": "3 - B-Tier",
+      "bpMainQty": "0.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Barrel",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 2,
+          "name": "Blade",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "Handle",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "37-40p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Low volume. Farm, do not buy.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "13.2",
+          "feedVolToday": "37",
+          "feedVolYest": "70",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Afentis Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Barrel",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "4.2",
+          "feedVolToday": "33",
+          "feedVolYest": "52",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Afentis Prime Barrel",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Blade",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "9.2",
+          "feedVolToday": "42",
+          "feedVolYest": "91",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Afentis Prime Blade",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Handle",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "4.8",
+          "feedVolToday": "28",
+          "feedVolYest": "27",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Afentis Prime Handle",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "38.6",
+        "today_vol": "90",
+        "yesterday_vol": "157",
+        "matchedName": "Afentis Prime Set"
+      },
+      "missing": [
+        "BP/Main",
+        "Blade",
+        "Handle"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 31.4,
+        "pricedSegments": 4,
+        "totalSegments": 4,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 15,
+      "xlsxRow": 16,
+      "item": "Alternox Prime",
+      "category": "Rifle",
+      "velocityTier": "3 - B-Tier",
+      "bpMainQty": "1.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Barrel",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Receiver",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "Stock",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "20-23p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Pick only if nothing else pops.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "7.1",
+          "feedVolToday": "44",
+          "feedVolYest": "76",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Alternox Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Barrel",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "3.2",
+          "feedVolToday": "16",
+          "feedVolYest": "29",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Alternox Prime Barrel",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Receiver",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "2.8",
+          "feedVolToday": "9",
+          "feedVolYest": "10",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Alternox Prime Receiver",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Stock",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "9.4",
+          "feedVolToday": "31",
+          "feedVolYest": "52",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Alternox Prime Stock",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "20.2",
+        "today_vol": "45",
+        "yesterday_vol": "73",
+        "matchedName": "Alternox Prime Set"
+      },
+      "missing": [
+        "Barrel",
+        "Receiver",
+        "Stock"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 22.5,
+        "pricedSegments": 4,
+        "totalSegments": 4,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 16,
+      "xlsxRow": 17,
+      "item": "Cedo Prime",
+      "category": "Shotgun",
+      "velocityTier": "3 - B-Tier",
+      "bpMainQty": "0.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Barrel",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 2,
+          "name": "Receiver",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 3,
+          "name": "Stock",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "16-20p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Hold for now, assess later.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "8.5",
+          "feedVolToday": "27",
+          "feedVolYest": "69",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Cedo Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Barrel",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "3.6",
+          "feedVolToday": "12",
+          "feedVolYest": "16",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Cedo Prime Barrel",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Receiver",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "2.7",
+          "feedVolToday": "14",
+          "feedVolYest": "60",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Cedo Prime Receiver",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Stock",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "4.4",
+          "feedVolToday": "15",
+          "feedVolYest": "21",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Cedo Prime Stock",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "15.1",
+        "today_vol": "74",
+        "yesterday_vol": "118",
+        "matchedName": "Cedo Prime Set"
+      },
+      "missing": [
+        "BP/Main",
+        "Stock"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 19.2,
+        "pricedSegments": 4,
+        "totalSegments": 4,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 17,
+      "xlsxRow": 18,
+      "item": "Epitaph Prime",
+      "category": "Pistol",
+      "velocityTier": "3 - B-Tier",
+      "bpMainQty": "0.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Barrel",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 2,
+          "name": "Receiver",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "N/A",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "15-20p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Strong seller. Hold for BP/Rec.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "5.3",
+          "feedVolToday": "13",
+          "feedVolYest": "18",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Epitaph Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Barrel",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "3.8",
+          "feedVolToday": "8",
+          "feedVolYest": "25",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Epitaph Prime Barrel",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Receiver",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "10.1",
+          "feedVolToday": "26",
+          "feedVolYest": "66",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Epitaph Prime Receiver",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "19.7",
+        "today_vol": "69",
+        "yesterday_vol": "89",
+        "matchedName": "Epitaph Prime Set"
+      },
+      "missing": [
+        "BP/Main",
+        "Receiver"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 19.2,
+        "pricedSegments": 3,
+        "totalSegments": 3,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 18,
+      "xlsxRow": 19,
+      "item": "Fulmin Prime",
+      "category": "Rifle",
+      "velocityTier": "3 - B-Tier",
+      "bpMainQty": "0.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Barrel",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 2,
+          "name": "Receiver",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "Stock",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "40-45p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Receiver dictates viability.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "5.5",
+          "feedVolToday": "4",
+          "feedVolYest": "15",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Fulmin Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Barrel",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "4.8",
+          "feedVolToday": "14",
+          "feedVolYest": "16",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Fulmin Prime Barrel",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Receiver",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "24.2",
+          "feedVolToday": "22",
+          "feedVolYest": "58",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Fulmin Prime Receiver",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Stock",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "5.2",
+          "feedVolToday": "10",
+          "feedVolYest": "22",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Fulmin Prime Stock",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "41.8",
+        "today_vol": "40",
+        "yesterday_vol": "79",
+        "matchedName": "Fulmin Prime Set"
+      },
+      "missing": [
+        "BP/Main",
+        "Receiver",
+        "Stock"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 39.7,
+        "pricedSegments": 4,
+        "totalSegments": 4,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 19,
+      "xlsxRow": 20,
+      "item": "Kestrel Prime",
+      "category": "Melee",
+      "velocityTier": "3 - B-Tier",
+      "bpMainQty": "1.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Blade",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Grip",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "N/A",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "20-25p",
+      "vaulted": "Yes",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Needs 2 Blades. Hold.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "3",
+          "feedVolToday": "5",
+          "feedVolYest": "23",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Kestrel Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Blade",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "4.4",
+          "feedVolToday": "23",
+          "feedVolYest": "33",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Kestrel Prime Blade",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Grip",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "8.1",
+          "feedVolToday": "43",
+          "feedVolYest": "56",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Kestrel Prime Grip",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "19.6",
+        "today_vol": "30",
+        "yesterday_vol": "57",
+        "matchedName": "Kestrel Prime Set"
+      },
+      "missing": [
+        "Blade",
+        "Grip"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 15.5,
+        "pricedSegments": 3,
+        "totalSegments": 3,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 20,
+      "xlsxRow": 21,
+      "item": "Lavos Prime",
+      "category": "Warframe",
+      "velocityTier": "3 - B-Tier",
+      "bpMainQty": "0.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Chassis",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 2,
+          "name": "Neuroptics",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "Systems",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "20-24p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Systems is bottleneck.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "3.2",
+          "feedVolToday": "23",
+          "feedVolYest": "61",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Lavos Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Chassis",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "2",
+          "feedVolToday": "37",
+          "feedVolYest": "25",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Lavos Prime Chassis Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Neuroptics",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "4.7",
+          "feedVolToday": "43",
+          "feedVolYest": "83",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Lavos Prime Neuroptics Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Systems",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "10.3",
+          "feedVolToday": "91",
+          "feedVolYest": "119",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Lavos Prime Systems Blueprint",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "20.6",
+        "today_vol": "154",
+        "yesterday_vol": "253",
+        "matchedName": "Lavos Prime Set"
+      },
+      "missing": [
+        "BP/Main",
+        "Neuroptics",
+        "Systems"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 20.2,
+        "pricedSegments": 4,
+        "totalSegments": 4,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 21,
+      "xlsxRow": 22,
+      "item": "Masseter Prime",
+      "category": "Melee",
+      "velocityTier": "3 - B-Tier",
+      "bpMainQty": "1.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Blade",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Handle",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 3,
+          "name": "N/A",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "20p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Blade is bottleneck.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "3.2",
+          "feedVolToday": "5",
+          "feedVolYest": "3",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Masseter Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Blade",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "13.4",
+          "feedVolToday": "20",
+          "feedVolYest": "35",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Masseter Prime Blade",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Handle",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "3.9",
+          "feedVolToday": "4",
+          "feedVolYest": "1",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Masseter Prime Handle",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "19.3",
+        "today_vol": "18",
+        "yesterday_vol": "14",
+        "matchedName": "Masseter Prime Set"
+      },
+      "missing": [
+        "Blade"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 20.5,
+        "pricedSegments": 3,
+        "totalSegments": 3,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 22,
+      "xlsxRow": 23,
+      "item": "Nautilus Prime",
+      "category": "Sentinel",
+      "velocityTier": "3 - B-Tier",
+      "bpMainQty": "0.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Carapace",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Cerebrum",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "Systems",
+          "qty": "1.0",
+          "have": true
+        }
+      ],
+      "estValueRaw": "46-50p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "High demand, hold for set.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "10.7",
+          "feedVolToday": "55",
+          "feedVolYest": "75",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Nautilus Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Carapace",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "6.2",
+          "feedVolToday": "44",
+          "feedVolYest": "52",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Nautilus Prime Carapace",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Cerebrum",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "22.3",
+          "feedVolToday": "93",
+          "feedVolYest": "139",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Nautilus Prime Cerebrum",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Systems",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "3.5",
+          "feedVolToday": "31",
+          "feedVolYest": "55",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Nautilus Prime Systems",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "47.8",
+        "today_vol": "176",
+        "yesterday_vol": "214",
+        "matchedName": "Nautilus Prime Set"
+      },
+      "missing": [
+        "BP/Main",
+        "Carapace",
+        "Cerebrum"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 42.7,
+        "pricedSegments": 4,
+        "totalSegments": 4,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 23,
+      "xlsxRow": 24,
+      "item": "Ninkondi Prime",
+      "category": "Melee",
+      "velocityTier": "3 - B-Tier",
+      "bpMainQty": "1.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Chain",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Handle",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "N/A",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "61-65p",
+      "vaulted": "Yes",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Needs 2 Handles. Hold.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "5.8",
+          "feedVolToday": "9",
+          "feedVolYest": "7",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Ninkondi Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Chain",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "4.2",
+          "feedVolToday": "11",
+          "feedVolYest": "6",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Ninkondi Prime Chain",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Handle",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "20",
+          "feedVolToday": "24",
+          "feedVolYest": "42",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Ninkondi Prime Handle",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "61.4",
+        "today_vol": "11",
+        "yesterday_vol": "13",
+        "matchedName": "Ninkondi Prime Set"
+      },
+      "missing": [
+        "Chain",
+        "Handle"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 30,
+        "pricedSegments": 3,
+        "totalSegments": 3,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 24,
+      "xlsxRow": 25,
+      "item": "Okina Prime",
+      "category": "Melee",
+      "velocityTier": "3 - B-Tier",
+      "bpMainQty": "0.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Blade",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 2,
+          "name": "Handle",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "N/A",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "50p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "High value filler. Needs 2 Handles.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "14.1",
+          "feedVolToday": "37",
+          "feedVolYest": "86",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Okina Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Blade",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "7.2",
+          "feedVolToday": "58",
+          "feedVolYest": "84",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Okina Prime Blade",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Handle",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "6.5",
+          "feedVolToday": "62",
+          "feedVolYest": "109",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Okina Prime Handle",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "49",
+        "today_vol": "90",
+        "yesterday_vol": "109",
+        "matchedName": "Okina Prime Set"
+      },
+      "missing": [
+        "BP/Main",
+        "Handle"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 27.8,
+        "pricedSegments": 3,
+        "totalSegments": 3,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 25,
+      "xlsxRow": 26,
+      "item": "Perigale Prime",
+      "category": "Sniper",
+      "velocityTier": "3 - B-Tier",
+      "bpMainQty": "1.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Barrel",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Receiver",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "Stock",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "29-30p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Barrel is bottleneck.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "2.6",
+          "feedVolToday": "8",
+          "feedVolYest": "16",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Perigale Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Barrel",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "17.3",
+          "feedVolToday": "60",
+          "feedVolYest": "101",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Perigale Prime Barrel",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Receiver",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "4.4",
+          "feedVolToday": "20",
+          "feedVolYest": "29",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Perigale Prime Receiver",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Stock",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "2.7",
+          "feedVolToday": "10",
+          "feedVolYest": "16",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Perigale Prime Stock",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "29.4",
+        "today_vol": "59",
+        "yesterday_vol": "82",
+        "matchedName": "Perigale Prime Set"
+      },
+      "missing": [
+        "Barrel",
+        "Receiver",
+        "Stock"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 27,
+        "pricedSegments": 4,
+        "totalSegments": 4,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 26,
+      "xlsxRow": 27,
+      "item": "Quassus Prime",
+      "category": "Melee",
+      "velocityTier": "3 - B-Tier",
+      "bpMainQty": "1.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Blade",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Handle",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 3,
+          "name": "N/A",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "28-30p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Needs 2 Blades to flip.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "3.4",
+          "feedVolToday": "10",
+          "feedVolYest": "39",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Quassus Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Blade",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "8.9",
+          "feedVolToday": "37",
+          "feedVolYest": "62",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Quassus Prime Blade",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Handle",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "3.8",
+          "feedVolToday": "13",
+          "feedVolYest": "36",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Quassus Prime Handle",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "26.8",
+        "today_vol": "47",
+        "yesterday_vol": "54",
+        "matchedName": "Quassus Prime Set"
+      },
+      "missing": [
+        "Blade"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 16.1,
+        "pricedSegments": 3,
+        "totalSegments": 3,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 27,
+      "xlsxRow": 28,
+      "item": "Trumna Prime",
+      "category": "Rifle",
+      "velocityTier": "3 - B-Tier",
+      "bpMainQty": "1.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Barrel",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Receiver",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "Stock",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "19-22p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Grab parts if no other options.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "1.6",
+          "feedVolToday": "1",
+          "feedVolYest": "5",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Trumna Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Barrel",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "8.4",
+          "feedVolToday": "32",
+          "feedVolYest": "51",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Trumna Prime Barrel",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Receiver",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "10",
+          "feedVolToday": "47",
+          "feedVolYest": "42",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Trumna Prime Receiver",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Stock",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "3.6",
+          "feedVolToday": "11",
+          "feedVolYest": "13",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Trumna Prime Stock",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "20.3",
+        "today_vol": "45",
+        "yesterday_vol": "63",
+        "matchedName": "Trumna Prime Set"
+      },
+      "missing": [
+        "Barrel",
+        "Receiver",
+        "Stock"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 23.6,
+        "pricedSegments": 4,
+        "totalSegments": 4,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 28,
+      "xlsxRow": 29,
+      "item": "Voruna Prime",
+      "category": "Warframe",
+      "velocityTier": "3 - B-Tier",
+      "bpMainQty": "0.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Chassis",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Neuroptics",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 3,
+          "name": "Systems",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "35-40p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Need BP to justify build.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "19.1",
+          "feedVolToday": "131",
+          "feedVolYest": "160",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Voruna Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Chassis",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "7.8",
+          "feedVolToday": "89",
+          "feedVolYest": "145",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Voruna Prime Chassis Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Neuroptics",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "2.8",
+          "feedVolToday": "44",
+          "feedVolYest": "132",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Voruna Prime Neuroptics Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Systems",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "8.3",
+          "feedVolToday": "102",
+          "feedVolYest": "183",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Voruna Prime Systems Blueprint",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "37.7",
+        "today_vol": "200",
+        "yesterday_vol": "316",
+        "matchedName": "Voruna Prime Set"
+      },
+      "missing": [
+        "BP/Main",
+        "Chassis",
+        "Systems"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 38,
+        "pricedSegments": 4,
+        "totalSegments": 4,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 29,
+      "xlsxRow": 30,
+      "item": "Xaku Prime",
+      "category": "Warframe",
+      "velocityTier": "3 - B-Tier",
+      "bpMainQty": "0.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Chassis",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Neuroptics",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "Systems",
+          "qty": "1.0",
+          "have": true
+        }
+      ],
+      "estValueRaw": "20-25p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Low priority completion.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "12.2",
+          "feedVolToday": "118",
+          "feedVolYest": "154",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Xaku Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Chassis",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "3.6",
+          "feedVolToday": "33",
+          "feedVolYest": "108",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Xaku Prime Chassis Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Neuroptics",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "3.3",
+          "feedVolToday": "49",
+          "feedVolYest": "44",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Xaku Prime Neuroptics Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Systems",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "3.4",
+          "feedVolToday": "41",
+          "feedVolYest": "65",
+          "matchShape": "SLOT_BLUEPRINT",
+          "matchedName": "Xaku Prime Systems Blueprint",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "24.2",
+        "today_vol": "203",
+        "yesterday_vol": "302",
+        "matchedName": "Xaku Prime Set"
+      },
+      "missing": [
+        "BP/Main",
+        "Chassis",
+        "Neuroptics"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 22.5,
+        "pricedSegments": 4,
+        "totalSegments": 4,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 30,
+      "xlsxRow": 31,
+      "item": "Dual Zoren Prime",
+      "category": "Melee",
+      "velocityTier": "4 - C-Tier",
+      "bpMainQty": "1.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Blade",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Handle",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 3,
+          "name": "N/A",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "25p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Needs 2 Blades. Pure RNG filler.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "2.4",
+          "feedVolToday": "14",
+          "feedVolYest": "58",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Dual Zoren Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Blade",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "9.5",
+          "feedVolToday": "43",
+          "feedVolYest": "93",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Dual Zoren Prime Blade",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Handle",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "2.5",
+          "feedVolToday": "9",
+          "feedVolYest": "21",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Dual Zoren Prime Handle",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "25.4",
+        "today_vol": "54",
+        "yesterday_vol": "74",
+        "matchedName": "Dual Zoren Prime Set"
+      },
+      "missing": [
+        "Blade"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 14.4,
+        "pricedSegments": 3,
+        "totalSegments": 3,
+        "complete": true
+      },
+      "flags": [
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 31,
+      "xlsxRow": 32,
+      "item": "Akbolto Prime",
+      "category": "Pistol",
+      "velocityTier": "5 - F-Tier",
+      "bpMainQty": "1.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Barrel",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Link",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "Receiver",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "TRAP",
+      "vaulted": "Yes",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Market trap (5 trades). Sell Recs for plat.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "3.4",
+          "feedVolToday": "5",
+          "feedVolYest": "6",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Akbolto Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Barrel",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "7",
+          "feedVolToday": "37",
+          "feedVolYest": "55",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Akbolto Prime Barrel",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Link",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "4.4",
+          "feedVolToday": "10",
+          "feedVolYest": "16",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Akbolto Prime Link",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Receiver",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "26.2",
+          "feedVolToday": "35",
+          "feedVolYest": "56",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Akbolto Prime Receiver",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "73.5",
+        "today_vol": "10",
+        "yesterday_vol": "28",
+        "matchedName": "Akbolto Prime Set"
+      },
+      "missing": [
+        "Barrel",
+        "Link",
+        "Receiver"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 41,
+        "pricedSegments": 4,
+        "totalSegments": 4,
+        "complete": true
+      },
+      "flags": [
+        "TRAP"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 32,
+      "xlsxRow": 33,
+      "item": "Orthos Prime",
+      "category": "Melee",
+      "velocityTier": "5 - F-Tier",
+      "bpMainQty": "1.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Blade",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "Handle",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 3,
+          "name": "N/A",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "10-12p",
+      "vaulted": "No",
+      "jujuRsv": "Yes",
+      "wantedBy": "JULIA",
+      "liveActionPlan": "Save for Julia Mastery. Do not burn trade.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "2.6",
+          "feedVolToday": "4",
+          "feedVolYest": "18",
+          "matchShape": "BASE_BLUEPRINT",
+          "matchedName": "Orthos Prime Blueprint",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Blade",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": "4.2",
+          "feedVolToday": "16",
+          "feedVolYest": "29",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Orthos Prime Blade",
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Handle",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": "2.3",
+          "feedVolToday": "2",
+          "feedVolYest": "3",
+          "matchShape": "EXACT_SET_NAME",
+          "matchedName": "Orthos Prime Handle",
+          "drewValue": null
+        }
+      ],
+      "setPrice": {
+        "_doc": "The set row from the feed snapshot. custom_avg is a FAIR-VALUE REFERENCE, not a price.",
+        "custom_avg": "9.8",
+        "today_vol": "28",
+        "yesterday_vol": "89",
+        "matchedName": "Orthos Prime Set"
+      },
+      "missing": [
+        "Blade"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": 9.1,
+        "pricedSegments": 3,
+        "totalSegments": 3,
+        "complete": true
+      },
+      "flags": [
+        "JUJU_RESERVED",
+        "DREW_VALUE_STATED"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 33,
+      "xlsxRow": 34,
+      "item": "Braton Vandal",
+      "category": "Rifle",
+      "velocityTier": "6 - Market",
+      "bpMainQty": "0.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "Stock",
+          "qty": "1.0",
+          "have": true
+        },
+        {
+          "slot": 2,
+          "name": "N/A",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "N/A",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "8p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Actively listed on market.",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "0.0",
+          "have": false,
+          "feedAvg": null,
+          "feedVolToday": null,
+          "feedVolYest": null,
+          "matchShape": null,
+          "matchedName": null,
+          "drewValue": null
+        },
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "Stock",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": null,
+          "feedVolToday": null,
+          "feedVolYest": null,
+          "matchShape": null,
+          "matchedName": null,
+          "drewValue": null
+        }
+      ],
+      "setPrice": null,
+      "missing": [
+        "BP/Main"
+      ],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": null,
+        "pricedSegments": 0,
+        "totalSegments": 2,
+        "complete": false
+      },
+      "flags": [
+        "NO_PUBLIC_PRICE",
+        "CATALOG_MISS",
+        "DREW_VALUE_STATED",
+        "SEG_INACCESSIBLE"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 34,
+      "xlsxRow": 35,
+      "item": "Scattered Justice",
+      "category": "Mod",
+      "velocityTier": "6 - Market",
+      "bpMainQty": "2.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "N/A",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "N/A",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "N/A",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "8p",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Actively listed on market.",
+      "marketRead": "my own analysis based on volume, and market interactions like if it is frequently undercut, or if it is bought by noobs like my scattered justices tend to be",
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "2.0",
+          "have": true,
+          "feedAvg": null,
+          "feedVolToday": null,
+          "feedVolYest": null,
+          "matchShape": null,
+          "matchedName": null,
+          "drewValue": null
+        }
+      ],
+      "setPrice": null,
+      "missing": [],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": null,
+        "pricedSegments": 0,
+        "totalSegments": 1,
+        "complete": false
+      },
+      "flags": [
+        "NO_PUBLIC_PRICE",
+        "CATALOG_MISS",
+        "COMPLETE",
+        "DREW_VALUE_STATED",
+        "DREW_MARKET_READ",
+        "SEG_INACCESSIBLE"
+      ]
+    },
+    {
+      "_doc": "One TradeDock row, carried verbatim. No cell coerced, no field invented.",
+      "ordinal": 35,
+      "xlsxRow": 36,
+      "item": "Voltaic Strike",
+      "category": "Mod",
+      "velocityTier": "6 - Market",
+      "bpMainQty": "1.0",
+      "parts": [
+        {
+          "slot": 1,
+          "name": "N/A",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 2,
+          "name": "N/A",
+          "qty": "0.0",
+          "have": false
+        },
+        {
+          "slot": 3,
+          "name": "N/A",
+          "qty": "0.0",
+          "have": false
+        }
+      ],
+      "estValueRaw": "HOLD",
+      "vaulted": "No",
+      "jujuRsv": "No",
+      "wantedBy": null,
+      "liveActionPlan": "Park for 4-8 weeks (40-60p+).",
+      "marketRead": null,
+      "estValueBasis": "DREW_WORD",
+      "segments": [
+        {
+          "_doc": "One segment slot (ruling N). Values are CG-derived from the feed snapshot; never a price.",
+          "slot": "BP/Main",
+          "qty": "1.0",
+          "have": true,
+          "feedAvg": null,
+          "feedVolToday": null,
+          "feedVolYest": null,
+          "matchShape": null,
+          "matchedName": null,
+          "drewValue": null
+        }
+      ],
+      "setPrice": null,
+      "missing": [],
+      "partsSum": {
+        "_doc": "Derived sum of segment feedAvg. NEVER a bare number: the denominator is always carried.",
+        "value": null,
+        "pricedSegments": 0,
+        "totalSegments": 1,
+        "complete": false
+      },
+      "flags": [
+        "NO_PUBLIC_PRICE",
+        "CATALOG_MISS",
+        "HOLD",
+        "COMPLETE",
+        "SEG_INACCESSIBLE"
+      ]
+    }
+  ],
+  "scratchpad": {
+    "_doc": "Drew's four Scratchpad columns. Live-editable in the browser for this session only; never saved back to the xlsx.",
+    "headers": [
+      "Unknown Drop Check",
+      "Ducat Tier (15/45/100)",
+      "Current Plat Floor",
+      "Verdict (Add to Ledger / Junk)"
+    ],
+    "rows": [
+      {
+        "_doc": "Scratchpad row. SESSION ONLY in the browser; never written back to the xlsx.",
+        "xlsxRow": 39,
+        "unknownDropCheck": "[Type Item Here]",
+        "ducatTier": null,
+        "currentPlatFloor": null,
+        "verdict": null
+      },
+      {
+        "_doc": "Scratchpad row. SESSION ONLY in the browser; never written back to the xlsx.",
+        "xlsxRow": 40,
+        "unknownDropCheck": "[Type Item Here]",
+        "ducatTier": null,
+        "currentPlatFloor": null,
+        "verdict": null
+      }
+    ]
+  },
+  "conflicts": {
+    "_doc": "Conflict registry. Three are OPEN; PART_LIST_CONFLICT was RESOLVED by Drew 2026-10-06 (Corufell 4+1 BP). History is retained, never deleted.",
+    "entries": [
+      {
+        "_doc": "Open conflict. Carried forward unresolved. CG never picks a date.",
+        "id": "VOLT-RESEARCH-DATE",
+        "status": "OPEN — AWAITING DREW",
+        "observed": "intake: \"Wednesday\"",
+        "reported": "Drew: \"3 days from today = 2026-10-08\"",
+        "gap": "two sources, no reconciliation; no Volt timer is seeded (ruling E)"
+      },
+      {
+        "_doc": "Open conflict. The sheet cannot express foundry state. No assembled field was invented.",
+        "id": "WISP-ASSEMBLY",
+        "status": "OPEN — AWAITING DREW",
+        "observed": "Wisp Prime: BP+Chassis+Neuroptics+Systems all 1.0 — the only complete row",
+        "reported": "Drew: final Wisp piece still not crafted",
+        "gap": "no assembly/foundry state exists; `have` is possession only",
+        "question": "Does CG need an ASSEMBLED state distinct from possession? If so it is a NEW LEAF."
+      },
+      {
+        "_doc": "Open conflict. A proposal, not an alias. joinAliases stays empty until Drew approves.",
+        "id": "JOIN_ALIAS_PROPOSED",
+        "status": "OPEN — AWAITING DREW",
+        "item": "Daikyu Prime",
+        "dockSays": [
+          "Lower",
+          "Upper"
+        ],
+        "feedSays": [
+          "Daikyu Prime Lower Limb",
+          "Daikyu Prime Upper Limb"
+        ],
+        "measuredInFeed": {
+          "Daikyu Prime Lower Limb": "3.1",
+          "Daikyu Prime Upper Limb": "2.8"
+        },
+        "gap": "no semantic alias without Drew approval, so Lower/Upper stay [INACCESSIBLE]"
+      },
+      {
+        "_doc": "Conflict, RESOLVED by Drew; history retained, never deleted. Stock is now a counted slot in partsSum.",
+        "id": "PART_LIST_CONFLICT",
+        "status": "RESOLVED — DREW 2026-10-06 (4+1 BP)",
+        "note": "Stock is now a counted slot: the 4th part of Corufell Prime's 4+1 BP, carried by CG/drew/CRAFT_OVERRIDES.json and counted in partsSum.",
+        "item": "Corufell Prime",
+        "dockSays": [
+          "Blade"
+        ],
+        "feedSays": [
+          "Corufell Prime Stock"
+        ],
+        "measuredFeedOnly": {
+          "name": "Corufell Prime Stock",
+          "custom_avg": "7.9",
+          "today_vol": "101",
+          "yesterday_vol": "142"
+        },
+        "countedInPartsSum": true,
+        "gap": "was: the feed had no Blade row and the dock had no Stock row — both sides were shown. Resolved 2026-10-06: Stock is a dock slot now; Blade still has no feed row and stays [INACCESSIBLE]."
+      }
+    ]
+  },
+  "timers": {
+    "_doc": "EMPTY by ruling E. Out of scope in CG-001; no Volt timer is seeded.",
+    "entries": []
+  },
+  "inventory": {
+    "_doc": "Player-scoped inventory is INACCESSIBLE from every automated source (CG-000 §6). Nothing here is real.",
+    "state": "[INACCESSIBLE]"
+  },
+  "authority": {
+    "_doc": "Precedence when sources disagree. Drew's word outranks any CG derivation.",
+    "order": [
+      "liveActionPlan (DREW)",
+      "marketRead (DREW)",
+      "estValueRaw (DREW)",
+      "feed custom_avg (FAIR-VALUE REFERENCE)",
+      "CG NEVER outranks Drew"
+    ]
+  },
+  "externalStores": {
+    "_doc": "Google Sheets dock REJECTED: ruling F is overturned. Write authority is Drew's; CG may never acquire it.",
+    "googleSheetsDock": {
+      "status": "REJECTED",
+      "why": "ruling F overturned; dock.json is the single canonical master"
+    },
+    "writePolicy": "FORBIDDEN"
+  },
+  "provenance": {
+    "_doc": "How this file came to be.",
+    "source": "DREW_XLSX_IMPORT",
+    "importer": "CG/import-xlsx.js"
+  },
+  "joinCoverage": {
+    "_doc": "Canonical feed->catalog join against the 758-row snapshot. Every unjoined row is classed; nothing is dropped.",
+    "priceRows": 758,
+    "joined": 742,
+    "unjoinedCount": 16,
+    "joinedByClass": {
+      "JOINED_CATALOG_SET": 160,
+      "JOINED_CATALOG_PART_CANON": 153,
+      "JOINED_CATALOG_PART_EXACT": 429
+    },
+    "unjoinedByClass": {
+      "CATALOG_MISS_ITEM": 4,
+      "CATALOG_MISS_SET": 3,
+      "CATALOG_MISS_PART": 9
+    },
+    "unjoined": [
+      {
+        "name": "Gotva Prime",
+        "class": "CATALOG_MISS_ITEM",
+        "catalogMissFor": "Gotva Prime"
+      },
+      {
+        "name": "Citrine Prime Set",
+        "class": "CATALOG_MISS_SET"
+      },
+      {
+        "name": "Citrine Prime Blueprint",
+        "class": "CATALOG_MISS_ITEM",
+        "catalogMissFor": "Citrine Prime"
+      },
+      {
+        "name": "Citrine Prime Neuroptics Blueprint",
+        "class": "CATALOG_MISS_PART",
+        "catalogMissFor": "Citrine Prime"
+      },
+      {
+        "name": "Citrine Prime Chassis Blueprint",
+        "class": "CATALOG_MISS_PART",
+        "catalogMissFor": "Citrine Prime"
+      },
+      {
+        "name": "Citrine Prime Systems Blueprint",
+        "class": "CATALOG_MISS_PART",
+        "catalogMissFor": "Citrine Prime"
+      },
+      {
+        "name": "Steflos Prime Set",
+        "class": "CATALOG_MISS_SET"
+      },
+      {
+        "name": "Steflos Prime Blueprint",
+        "class": "CATALOG_MISS_ITEM",
+        "catalogMissFor": "Steflos Prime"
+      },
+      {
+        "name": "Steflos Prime Receiver",
+        "class": "CATALOG_MISS_PART",
+        "catalogMissFor": "Steflos Prime"
+      },
+      {
+        "name": "Steflos Prime Barrel",
+        "class": "CATALOG_MISS_PART",
+        "catalogMissFor": "Steflos Prime"
+      },
+      {
+        "name": "Steflos Prime Stock",
+        "class": "CATALOG_MISS_PART",
+        "catalogMissFor": "Steflos Prime"
+      },
+      {
+        "name": "Corufell Prime Set",
+        "class": "CATALOG_MISS_SET"
+      },
+      {
+        "name": "Corufell Prime Blueprint",
+        "class": "CATALOG_MISS_ITEM",
+        "catalogMissFor": "Corufell Prime"
+      },
+      {
+        "name": "Corufell Prime Stock",
+        "class": "CATALOG_MISS_PART",
+        "catalogMissFor": "Corufell Prime"
+      },
+      {
+        "name": "Corufell Prime Handle",
+        "class": "CATALOG_MISS_PART",
+        "catalogMissFor": "Corufell Prime"
+      },
+      {
+        "name": "Corufell Prime Receiver",
+        "class": "CATALOG_MISS_PART",
+        "catalogMissFor": "Corufell Prime"
+      }
+    ]
+  },
+  "catalogMiss": {
+    "_doc": "Dock items absent from the eqmt catalog. Their price rows still render.",
+    "items": [
+      "Steflos Prime",
+      "Corufell Prime",
+      "Braton Vandal",
+      "Scattered Justice",
+      "Voltaic Strike"
+    ]
+  },
+  "priceability": {
+    "_doc": "Dock targets with a public Set row in the snapshot. NO_PUBLIC_PRICE is not \"no value\".",
+    "priceable": 32,
+    "total": 35,
+    "inaccessible": [
+      "Braton Vandal",
+      "Scattered Justice",
+      "Voltaic Strike"
+    ]
+  },
+  "segmentCoverage": {
+    "_doc": "Ruling N per-segment coverage across every slot on the dock.",
+    "pricedSegments": 116,
+    "totalSegments": 123,
+    "pct": 94.3
+  },
+  "joinAliases": {
+    "_doc": "Explicitly approved semantic aliases. EMPTY in CG-001 — Daikyu Upper->Upper Limb is a PROPOSAL, not an alias.",
+    "approved": {}
+  },
+  "feedErrors": {
+    "_doc": "The snapshot's own errors[], surfaced prominently in the relic panel (ruling K).",
+    "count": 11,
+    "entries": [
+      "Aklex Prime - Lex Prime is partially Vaulted",
+      "Axi A22 IS MISSING DROPS",
+      "Axi T13 IS MISSING DROPS",
+      "Axi V10 IS MISSING DROPS",
+      "Axi V14 IS MISSING DROPS",
+      "Lith K12 IS MISSING DROPS",
+      "Lith S18 IS MISSING DROPS",
+      "Meso K8 IS MISSING DROPS",
+      "Meso N11 IS MISSING DROPS",
+      "Meso V15 IS MISSING DROPS",
+      "Neo Y1 IS MISSING DROPS"
+    ]
+  }
+}

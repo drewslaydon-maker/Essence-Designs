@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/pricecheck/find/Atomos",
+    "tag": "Atomos",
+    "httpStatus": 200,
+    "ok": true,
+    "durationMs": 158,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:58.951Z",
+    "accountId": "11121350"
+  },
+  "data": []
+}

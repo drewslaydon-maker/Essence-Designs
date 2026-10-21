@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/pricecheck/find/Crimson%20Dervish",
+    "tag": "Crimson Dervish",
+    "httpStatus": 200,
+    "ok": true,
+    "durationMs": 142,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:29:05.512Z",
+    "accountId": "11121350"
+  },
+  "data": []
+}

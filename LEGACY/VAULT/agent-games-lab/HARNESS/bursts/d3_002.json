@@ -1,0 +1,7 @@
+{
+  "name": "d3_002",
+  "note": "D:3 goblin fight: close with the launcher goblin (7 tiles west on my row) and kill it with tab auto-fight.",
+  "plan": [
+    {"task": "fight", "budget": 30, "quiet_stop": 3}
+  ]
+}

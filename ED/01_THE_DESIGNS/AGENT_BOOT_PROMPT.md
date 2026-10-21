@@ -13,9 +13,9 @@
 ---
 
 ## 🛠️ ENVIRONMENT & CONSTRAINTS
-- **GPU Pipeline:** 8 GB VRAM limit. Models > 7B must not be loaded directly.
-- **Local Engine:** qwen2.5-coder:3b / ast-coder (PARAMETER num_ctx 8192).
-- **Financial Floor:** Studio burn limit < $1.00 / hour. Prefer local offload for single-file/ambient tasks; reserve cloud APIs for high-reasoning refactors.
+- **GPU Pipeline:** 8 GB VRAM ceiling.
+- **Model Policy:** stock opencode free-tier LLMs — stick with the box until the box doesn't work.
+- **Financial Floor:** Studio burn limit < $1.00 / hour per studio burn policy.
 - **Primary Tooling:** Cline / DOER, Ollama, Git, VSCode.
 
 ---

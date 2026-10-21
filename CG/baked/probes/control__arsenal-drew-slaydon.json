@@ -1,0 +1,18 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/profile/drew.slaydon/arsenal",
+    "tag": "arsenal: drew.slaydon",
+    "httpStatus": 404,
+    "ok": false,
+    "durationMs": 124,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:00.504Z",
+    "accountId": "11121350"
+  },
+  "data": {
+    "error": "No Result",
+    "code": 404
+  }
+}

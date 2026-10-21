@@ -1,0 +1,136 @@
+"use strict";
+
+/**
+ * ESSENCE DESIGNS GHOST HUB — behavioral test suite (GHOST-HUB-006 Unit 5).
+ * Node built-in test runner: `node --test WASH/GHOST-HUB-006.test.js`.
+ * Boots the server on its own port (4753). NO real opencode chat spawn in
+ * tests (burn + nondeterminism) — validation failures only, mirroring
+ * GHOST-HUB-003/004/005.
+ *
+ * Leaf scope: console shell pass — era stamps, the 7-glyph agent-symbol set,
+ * the WAKE/STONE council split + XP toggle + shell, the chat lane header row,
+ * hub working animation, plus 005 ground-truth regressions (hero / compact /
+ * divider copy / crash fix) and the /spawn sandbox regression.
+ */
+
+const { test, before, after } = require("node:test");
+const assert = require("node:assert/strict");
+
+const BASE = "http://127.0.0.1:4753";
+const PORT = 4753;
+
+const { startServer } = require("./hub-server.js");
+
+let server = null;
+
+before(async () => {
+  try {
+    server = startServer({ port: PORT });
+  } catch (e) {
+    throw new Error("failed to boot hub server on 127.0.0.1:4753: " + e.message);
+  }
+  const deadline = Date.now() + 5000;
+  while (Date.now() < deadline) {
+    try {
+      const res = await fetch(`${BASE}/`);
+      if (res.status === 200) return;
+    } catch (e) { /* not up yet */ }
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  throw new Error("hub server did not come up on 127.0.0.1:4753 in time");
+});
+
+after(async () => {
+  if (server) {
+    try { server.closeAllConnections(); } catch (e) { /* older node */ }
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+const count = (s, needle) => s.split(needle).length - 1;
+
+test("T1 · server boots on 127.0.0.1:4753 and GET / serves the hub shell", async () => {
+  const res = await fetch(`${BASE}/`, { signal: AbortSignal.timeout(5000) });
+  assert.equal(res.status, 200, "GET / status must be 200");
+  const body = await res.text();
+  assert.ok(body.includes("ESSENCE DESIGNS GHOST HUB"), "shell must carry the hub title");
+});
+
+test("T2 · served hub.html carries the console shell pass deltas", async () => {
+  const html = await (await fetch(`${BASE}/hub.html`, { signal: AbortSignal.timeout(5000) })).text();
+  assert.ok(count(html, "era-stamp") >= 2, "hub.html must carry the era stamp in header AND footer");
+  assert.ok(html.includes("agent-symbol"), 'hub.html must contain "agent-symbol"');
+  assert.ok(html.includes("council-split"), 'hub.html must contain "council-split"');
+  assert.ok(html.includes("xp-toggle"), 'hub.html must contain "xp-toggle"');
+  assert.ok(html.includes("xp-shell"), 'hub.html must contain "xp-shell"');
+  assert.ok(html.includes("lane-head"), 'hub.html must contain "lane-head"');
+  assert.ok(
+    html.includes('lane.classList.toggle("working"'),
+    'hub.html must wire the working class: lane.classList.toggle("working")'
+  );
+});
+
+test("T3 · served hub.css carries the shell styles + working keyframes", async () => {
+  const css = await (await fetch(`${BASE}/hub.css`, { signal: AbortSignal.timeout(5000) })).text();
+  assert.ok(css.includes(".agent-symbol"), "hub.css must contain .agent-symbol");
+  assert.ok(css.includes(".council-split"), "hub.css must contain .council-split");
+  assert.ok(css.includes(".xp-toggle"), "hub.css must contain .xp-toggle");
+  assert.ok(css.includes(".xp-shell"), "hub.css must contain .xp-shell");
+  assert.ok(css.includes(".lane-head"), "hub.css must contain .lane-head");
+  assert.ok(css.includes("@keyframes hubWorking"), "hub.css must contain @keyframes hubWorking");
+});
+
+test("T4 · served hub.html retains 005 ground truth (hero/compact/divider + crash fix)", async () => {
+  const html = await (await fetch(`${BASE}/hub.html`, { signal: AbortSignal.timeout(5000) })).text();
+  const css = await (await fetch(`${BASE}/hub.css`, { signal: AbortSignal.timeout(5000) })).text();
+  assert.ok(html.includes("council hero"), 'hub.html must contain "council hero"');
+  assert.ok(html.includes("council compact"), 'hub.html must contain "council compact"');
+  assert.ok(
+    html.includes("THE EXPERIENCER — ISOLATED LANE"),
+    "hub.html must contain the exact divider copy THE EXPERIENCER — ISOLATED LANE"
+  );
+  assert.ok(
+    css.includes(".council-divider"),
+    "hub.css must keep the .council-divider rule block (005 suite greps it)"
+  );
+  assert.ok(
+    html.includes('lane.parentElement.querySelector(".chat-toggle")'),
+    "wireChatLanes must use the sibling lookup lane.parentElement.querySelector(.chat-toggle)"
+  );
+  assert.ok(
+    html.includes("if (!toggle) return;"),
+    "wireChatLanes must carry the null guard if (!toggle) return; (blank-tabs regression lock)"
+  );
+});
+
+test("T5 · served hub.html carries the full 7-glyph symbol map", async () => {
+  const html = await (await fetch(`${BASE}/hub.html`, { signal: AbortSignal.timeout(5000) })).text();
+  for (const token of ["sym-wash", "sym-wake", "sym-stone", "sym-bolt", "sym-xp", "sym-cg", "sym-es-guru"]) {
+    assert.ok(html.includes(token), `hub.html must contain ${token}`);
+  }
+});
+
+test("T6 · /spawn regression — single child-close response (Sandtrap spawn)", async () => {
+  const res = await fetch(`${BASE}/spawn`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      bin: "node",
+      args: ["-e", "console.log('hub-spawn-ok')"],
+      agent: "test",
+      timeoutMs: 5000,
+    }),
+    signal: AbortSignal.timeout(15000),
+  });
+  assert.equal(res.status, 200, "/spawn must answer 200");
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (e) {
+    assert.fail("response body is not a single JSON object (double response?): " + text.slice(0, 200));
+  }
+  assert.equal(data.ok, true, "child-close shape must carry ok===true");
+  assert.equal(data.exitCode, 0, "benign node -e command must exit 0");
+  assert.ok(data.stdout.includes("hub-spawn-ok"), "stdout must include hub-spawn-ok");
+});

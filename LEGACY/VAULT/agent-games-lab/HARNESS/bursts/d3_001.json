@@ -1,0 +1,10 @@
+{
+  "name": "d3_001",
+  "note": "D:3 first burst: grab gold to the west, auto-explore the floor, finish any combat, then find and descend the down-stairs.",
+  "plan": [
+    {"task": "move", "keys": "hhhh", "max_block": 3},
+    {"task": "explore", "budget": 40, "quiet_stop": 2},
+    {"task": "fight", "budget": 20, "quiet_stop": 3},
+    {"task": "descend", "max_steps": 80}
+  ]
+}

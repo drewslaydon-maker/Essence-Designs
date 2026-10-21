@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEPHALON GHOST — Personal Gaming Agent</title>
+<style>
+  :root {
+    --bg-obsidian: #0d0b14;
+    --bg-panel: #151122;
+    --bg-card: #1d1730;
+    --bg-input: #0a0810;
+    --purple-royal: #2d1b4e;
+    --purple-glow: #5a359c;
+    --gold: #d4af37;
+    --gold-bright: #f3cf55;
+    --gold-dim: #8c7322;
+    --text-main: #ede8f5;
+    --text-muted: #9e93b8;
+    --border: #322454;
+    --ok: #42d392;
+    --warn: #f5a623;
+    --danger: #e55353;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-obsidian);
+    color: var(--text-main);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ---- Top Header Bar ---- */
+  header.topbar {
+    background: linear-gradient(90deg, #120d1f 0%, #21143b 60%, #120d1f 100%);
+    border-bottom: 1px solid var(--gold-dim);
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .brand-orb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 10px var(--gold);
+  }
+
+  .brand-title {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: var(--gold);
+  }
+
+  .view-tabs {
+    display: flex;
+    gap: 6px;
+  }
+
+  .btn, .tab-btn, .mode-pill {
+    background: var(--bg-card);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn:hover, .tab-btn:hover, .mode-pill:hover {
+    border-color: var(--gold);
+    color: var(--gold-bright);
+  }
+
+  .tab-btn.active {
+    background: var(--purple-royal);
+    border-color: var(--gold);
+    color: var(--gold-bright);
+    box-shadow: 0 0 8px rgba(212, 175, 55, 0.25);
+  }
+
+  .mode-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .mode-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+  }
+
+  .mode-pill {
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-size: 11px;
+    padding: 4px 9px;
+    border-radius: 999px;
+  }
+
+  .mode-pill.active {
+    background: var(--gold);
+    color: #0d0b14;
+    border-color: var(--gold-bright);
+    font-weight: 700;
+  }
+
+  .controls-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  select.select-box, input.key-input {
+    background: var(--bg-input);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .key-badge {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    font-weight: 600;
+  }
+
+  .key-badge.ok {
+    background: rgba(66, 211, 146, 0.12);
+    color: var(--ok);
+    border-color: rgba(66, 211, 146, 0.4);
+  }
+
+  .key-badge.missing {
+    background: rgba(245, 166, 35, 0.15);
+    color: var(--warn);
+    border-color: var(--warn);
+  }
+
+  .btn-undo {
+    border-color: var(--gold-dim);
+    color: var(--gold);
+  }
+
+  .btn-undo:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    border-color: var(--border);
+    color: var(--text-muted);
+  }
+
+  .btn-kill {
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #fca5a5;
+  }
+
+  .btn-kill:hover {
+    border-color: #ef4444;
+    color: #ffffff;
+    background: rgba(239, 68, 68, 0.2);
+  }
+
+  /* ---- Key Drawer Bar ---- */
+  #keyBar {
+    display: none;
+    background: #171226;
+    border-bottom: 1px solid var(--border);
+    padding: 8px 14px;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  #keyBar.open {
+    display: flex;
+  }
+
+  /* ---- Main Workspace ---- */
+  .workspace {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+  }
+
+  #chatView {
+    flex: 1;
+    display: flex;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  #dockView {
+    flex: 1;
+    display: none;
+    height: 100%;
+  }
+
+  #dockView iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: var(--bg-obsidian);
+  }
+
+  /* ---- Left/Center: Chat Stream ---- */
+  .chat-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border-right: 1px solid var(--border);
+  }
+
+  .chat-stream {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .msg {
+    max-width: 86%;
+    padding: 11px 14px;
+    border-radius: 8px;
+    line-height: 1.5;
+    font-size: 13.5px;
+    word-wrap: break-word;
+  }
+
+  .msg.user {
+    align-self: flex-end;
+    background: var(--purple-royal);
+    border: 1px solid var(--purple-glow);
+    color: var(--text-main);
+  }
+
+  .msg.model {
+    align-self: flex-start;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+  }
+
+  .msg-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .msg.model .msg-header {
+    color: var(--gold);
+  }
+
+  .tool-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .tool-badge {
+    font-size: 11px;
+    background: rgba(212, 175, 55, 0.14);
+    color: var(--gold-bright);
+    border: 1px solid var(--gold-dim);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: Consolas, monospace;
+  }
+
+  .msg-body p { margin-bottom: 8px; }
+  .msg-body p:last-child { margin-bottom: 0; }
+  .msg-body pre {
+    background: #09070e;
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+    margin: 6px 0;
+    font-family: Consolas, monospace;
+    font-size: 12px;
+  }
+  .msg-body code {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: Consolas, monospace;
+    font-size: 12px;
+  }
+  .msg-body ul {
+    margin: 4px 0 8px 20px;
+  }
+
+  /* ---- Chat Input Bar ---- */
+  .chat-composer {
+    background: var(--bg-panel);
+    border-top: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .composer-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+  }
+
+  textarea#chatInput {
+    flex: 1;
+    background: var(--bg-input);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-size: 13.5px;
+    font-family: inherit;
+    resize: none;
+    height: 54px;
+    line-height: 1.4;
+  }
+
+  textarea#chatInput:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+
+  .btn-send {
+    background: var(--gold);
+    color: #0d0b14;
+    border-color: var(--gold-bright);
+    font-weight: 700;
+    height: 54px;
+    padding: 0 18px;
+    font-size: 13px;
+  }
+
+  .btn-send:hover {
+    background: var(--gold-bright);
+    color: #0d0b14;
+  }
+
+  .composer-hint {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* ---- Right Drawer: Live Environment Inspector ---- */
+  .inspector-drawer {
+    width: 34%;
+    min-width: 300px;
+    max-width: 480px;
+    background: var(--bg-panel);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .inspector-drawer.collapsed {
+    display: none;
+  }
+
+  .inspector-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    background: #110d1c;
+  }
+
+  .insp-tab {
+    flex: 1;
+    text-align: center;
+    padding: 9px 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+
+  .insp-tab.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+    background: var(--bg-panel);
+  }
+
+  .inspector-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .inspector-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  textarea#inspectorEditor {
+    flex: 1;
+    background: var(--bg-input);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 10px;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 12px;
+    line-height: 1.45;
+    resize: none;
+  }
+
+  textarea#inspectorEditor:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+
+  .status-toast {
+    font-size: 11px;
+    color: var(--ok);
+  }
+
+  /* ---- Cephalon Status Orb Widget ---- */
+  .agent-status-widget {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 3px 9px 3px 7px;
+    border-radius: 999px;
+    background: rgba(13, 11, 20, 0.7);
+    border: 1px solid var(--border);
+    cursor: default;
+    user-select: none;
+    transition: all 0.25s ease;
+  }
+
+  .orb-container {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .orb-core {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+
+  .orb-ring {
+    position: absolute;
+    border-radius: 50%;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+  }
+
+  .ring-outer {
+    width: 18px;
+    height: 18px;
+  }
+
+  .ring-inner {
+    width: 12px;
+    height: 12px;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  @keyframes spin-reverse {
+    0% { transform: rotate(360deg); }
+    100% { transform: rotate(-360deg); }
+  }
+
+  @keyframes orb-pulse-slow {
+    0%, 100% { transform: scale(1); opacity: 0.85; }
+    50% { transform: scale(1.15); opacity: 1; }
+  }
+
+  @keyframes orb-pulse-fast {
+    0%, 100% { transform: scale(0.95); opacity: 0.9; }
+    50% { transform: scale(1.25); opacity: 1; }
+  }
+
+  @keyframes orb-warn {
+    0%, 100% { opacity: 0.45; transform: scale(0.95); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+
+  /* LIVE: purple core with gold breathing glow, slow rotating outer ring */
+  .status-live {
+    border-color: rgba(212, 175, 55, 0.35);
+  }
+  .status-live .orb-core {
+    background: #5a359c;
+    box-shadow: 0 0 8px #d4af37, 0 0 4px #5a359c;
+    animation: orb-pulse-slow 3s ease-in-out infinite;
+  }
+  .status-live .ring-outer {
+    border-top: 1.5px solid var(--gold);
+    border-bottom: 1.5px solid rgba(212, 175, 55, 0.25);
+    border-left: 1.5px solid transparent;
+    border-right: 1.5px solid transparent;
+    animation: spin 12s linear infinite;
+  }
+  .status-live .ring-inner {
+    border-left: 1px solid var(--purple-glow);
+    border-right: 1px solid rgba(90, 53, 156, 0.3);
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+  }
+  .status-live .agent-status-badge {
+    color: var(--gold-bright);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+  }
+
+  /* THINKING: high-energy dual-ring spinning orbit and gold flare */
+  .status-thinking {
+    border-color: var(--gold-bright);
+    background: rgba(33, 20, 59, 0.9);
+    box-shadow: 0 0 10px rgba(243, 207, 85, 0.3);
+  }
+  .status-thinking .orb-core {
+    background: #f3cf55;
+    box-shadow: 0 0 14px #f3cf55, 0 0 6px #ffffff;
+    animation: orb-pulse-fast 0.8s ease-in-out infinite;
+  }
+  .status-thinking .ring-outer {
+    border: 1.5px dashed var(--gold-bright);
+    animation: spin 1.2s linear infinite;
+  }
+  .status-thinking .ring-inner {
+    border: 1.5px solid var(--purple-glow);
+    border-top-color: var(--gold);
+    animation: spin-reverse 0.9s linear infinite;
+  }
+  .status-thinking .agent-status-badge {
+    color: var(--gold-bright);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+  }
+
+  /* WAITING: amber core pulse, stationary rings with slow warning fade */
+  .status-waiting {
+    border-color: rgba(245, 166, 35, 0.45);
+  }
+  .status-waiting .orb-core {
+    background: #f5a623;
+    box-shadow: 0 0 10px #f5a623;
+    animation: orb-warn 2s ease-in-out infinite;
+  }
+  .status-waiting .ring-outer {
+    border: 1.5px dotted rgba(245, 166, 35, 0.4);
+    animation: none;
+  }
+  .status-waiting .ring-inner {
+    border: 1px solid rgba(245, 166, 35, 0.2);
+    animation: none;
+  }
+  .status-waiting .agent-status-badge {
+    color: var(--warn);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+  }
+
+  /* ---- Image Attachment Staging Tray ---- */
+  .image-tray {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 10px;
+    background: #110d1c;
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    margin-bottom: 6px;
+  }
+
+  .image-chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 3px 6px 3px 4px;
+    gap: 6px;
+  }
+
+  .image-chip img {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+
+  .image-chip .chip-name {
+    font-size: 11px;
+    color: var(--text-muted);
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .image-chip .chip-remove {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 2px;
+  }
+
+  .image-chip .chip-remove:hover {
+    color: var(--danger);
+  }
+
+  /* ---- Chat Stream Image Cards ---- */
+  .chat-images-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .chat-img-thumb {
+    max-width: 240px;
+    max-height: 180px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    object-fit: contain;
+    background: #09070e;
+  }
+
+  .chat-img-thumb:hover {
+    transform: scale(1.02);
+    border-color: var(--gold);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.35);
+  }
+
+  /* ---- Lightbox Modal ---- */
+  .lightbox-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(7, 5, 12, 0.88);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .lightbox-content {
+    background: var(--bg-panel);
+    border: 1px solid var(--gold-dim);
+    border-radius: 8px;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.8), 0 0 12px rgba(212, 175, 55, 0.2);
+    max-width: 92vw;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .lightbox-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: #110d1c;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+
+  .lightbox-info {
+    color: var(--gold);
+    font-weight: 600;
+    letter-spacing: 0.6px;
+  }
+
+  .lightbox-image-wrap {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px;
+    background: #09070e;
+  }
+
+  .lightbox-image-wrap img {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-orb"></div>
+    <div class="brand-title">CEPHALON GHOST // PERSONAL AGENT</div>
+    <div class="view-tabs">
+      <button class="tab-btn active" id="tabChatBtn" onclick="switchMainTab('chat')">[ CHAT &amp; RECON ]</button>
+      <button class="tab-btn" id="tabDockBtn" onclick="switchMainTab('dock')">[ WF LOOT/TRADE DOCK ]</button>
+    </div>
+  </div>
+
+  <div class="mode-bar">
+    <span class="mode-label">Mode:</span>
+    <div id="modePills" style="display:flex; gap:5px; flex-wrap:wrap;"></div>
+    <button class="btn" title="Create or switch to a custom mode" onclick="promptNewMode()">+ Mode</button>
+  </div>
+
+  <div class="controls-right">
+    <select id="modelSelect" class="select-box" onchange="changeModel(this.value)" title="Gemini Model">
+      <option value="gemini-3.8-flash">gemini-3.8-flash</option>
+      <option value="gemini-3.5-flash">gemini-3.5-flash</option>
+      <option value="gemini-3.1-pro-preview">gemini-3.1-pro-preview</option>
+      <option value="gemini-3-flash-preview">gemini-3-flash-preview</option>
+      <option value="gemini-4-argon">gemini-4-argon</option>
+    </select>
+    <div id="agentStatusWidget" class="agent-status-widget status-live" title="Agent Status: LIVE">
+      <div class="orb-container">
+        <span class="orb-ring ring-outer"></span>
+        <span class="orb-ring ring-inner"></span>
+        <span class="orb-core"></span>
+      </div>
+      <span id="agentStatusBadge" class="agent-status-badge">LIVE</span>
+    </div>
+    <span id="keyBadge" class="key-badge missing" onclick="toggleKeyBar()">KEY MISSING</span>
+    <button id="undoBtn" class="btn btn-undo" onclick="revertSelfEdit()" disabled title="Restore last file modified by CG">[ UNDO SELF-EDIT ]</button>
+    <button class="btn" onclick="clearChat()" title="Clear chat history">[ CLEAR CHAT ]</button>
+    <button class="btn" onclick="toggleDrawer()" title="Toggle Live Memory/Prompt Drawer">[ INSPECTOR ]</button>
+    <button class="btn btn-kill" onclick="killServer()" title="Shut down Cephalon Ghost server and exit">[ KILL / QUIT ]</button>
+  </div>
+</header>
+
+<div id="keyBar">
+  <span><strong>Gemini API Key:</strong> (saved locally to <code>CG/.env</code>, never exposed)</span>
+  <input type="password" id="apiKeyInput" class="key-input" placeholder="Paste GEMINI_API_KEY here..." style="width:280px;">
+  <button class="btn" onclick="saveApiKey()">Save Key</button>
+  <button class="btn" onclick="toggleKeyBar()">Close</button>
+</div>
+
+<div class="workspace">
+  <!-- Main Tab 1: Standalone Chat & Recon + Live Inspector -->
+  <div id="chatView">
+    <div class="chat-column">
+      <div class="chat-stream" id="chatStream"></div>
+
+      <div class="chat-composer">
+        <div id="imageTray" class="image-tray" style="display:none;"></div>
+        <div class="composer-row">
+          <textarea id="chatInput" placeholder="Talk to Cephalon Ghost... (paste screenshots with Ctrl+V or click [+ IMG])"></textarea>
+          <button class="btn" id="attachBtn" type="button" onclick="document.getElementById('imageFileInput').click()" title="Attach screenshot image">[+ IMG]</button>
+          <input type="file" id="imageFileInput" accept="image/*" multiple style="display:none;" onchange="handleFileSelect(event)">
+          <button class="btn btn-send" id="sendBtn" onclick="sendChatMessage()">SEND</button>
+        </div>
+        <div class="composer-hint">
+          <span>Enter to send · Shift+Enter for newline · Paste images with Ctrl+V</span>
+          <span id="statusText">Ready</span>
+        </div>
+      </div>
+    </div>
+
+    <aside class="inspector-drawer" id="inspectorDrawer">
+      <div class="inspector-tabs">
+        <div class="insp-tab active" id="inspTabMemory" onclick="switchInspectorTab('memory')">MEMORY</div>
+        <div class="insp-tab" id="inspTabMode" onclick="switchInspectorTab('modePrompt')">MODE PROMPT</div>
+        <div class="insp-tab" id="inspTabSystem" onclick="switchInspectorTab('systemPrompt')">SYSTEM PROMPT</div>
+      </div>
+      <div class="inspector-body">
+        <div class="inspector-meta">
+          <span id="inspectorPathLabel">CG/agent/memory/rimworld.md</span>
+          <div>
+            <span id="saveToast" class="status-toast"></span>
+            <button class="btn" onclick="saveInspectorContent()">[ SAVE ]</button>
+          </div>
+        </div>
+        <textarea id="inspectorEditor" spellcheck="false"></textarea>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Main Tab 2: Embedded Warframe Prime & Trade Dock -->
+  <div id="dockView">
+    <iframe id="dockFrame" src="about:blank"></iframe>
+  </div>
+</div>
+
+<script>
+  let agentState = null;
+  let currentInspectorTab = 'memory';
+  let busy = false;
+
+  function escapeHtml(s) {
+    return String(s || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function renderMarkdownLite(text) {
+    let html = escapeHtml(text);
+    // Code blocks
+    html = html.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (_, lang, code) => {
+      return '<pre><code>' + code.trim() + '</code></pre>';
+    });
+    // Inline code
+    html = html.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+    // Bold
+    html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    // Paragraphs / line breaks
+    const blocks = html.split(/\n{2,}/);
+    return blocks.map(b => {
+      if (b.startsWith('<pre>')) return b;
+      const lines = b.split('\n');
+      if (lines.every(l => /^\s*[-*]\s+/.test(l))) {
+        return '<ul>' + lines.map(l => '<li>' + l.replace(/^\s*[-*]\s+/, '') + '</li>').join('') + '</ul>';
+      }
+      return '<p>' + lines.join('<br>') + '</p>';
+    }).join('');
+  }
+
+  function switchMainTab(tab) {
+    const chatView = document.getElementById('chatView');
+    const dockView = document.getElementById('dockView');
+    const tabChatBtn = document.getElementById('tabChatBtn');
+    const tabDockBtn = document.getElementById('tabDockBtn');
+    const dockFrame = document.getElementById('dockFrame');
+
+    if (tab === 'dock') {
+      chatView.style.display = 'none';
+      dockView.style.display = 'block';
+      tabChatBtn.classList.remove('active');
+      tabDockBtn.classList.add('active');
+      if (dockFrame.getAttribute('src') === 'about:blank') {
+        dockFrame.setAttribute('src', '/dock.html');
+      }
+    } else {
+      dockView.style.display = 'none';
+      chatView.style.display = 'flex';
+      tabDockBtn.classList.remove('active');
+      tabChatBtn.classList.add('active');
+    }
+  }
+
+  function toggleDrawer() {
+    document.getElementById('inspectorDrawer').classList.toggle('collapsed');
+  }
+
+  function toggleKeyBar() {
+    document.getElementById('keyBar').classList.toggle('open');
+  }
+
+  function setAgentStatus(state, label) {
+    const widget = document.getElementById('agentStatusWidget');
+    const badge = document.getElementById('agentStatusBadge');
+    if (!widget || !badge) return;
+    widget.className = 'agent-status-widget status-' + state;
+    const text = label || state.toUpperCase();
+    badge.textContent = text;
+    widget.title = 'Agent Status: ' + text;
+  }
+
+  let pendingImages = []; // [{ mimeType, data }]
+
+  function addImageAttachment(mimeType, dataUrl) {
+    if (!dataUrl) return;
+    const cleanData = String(dataUrl).replace(/^data:image\/[a-zA-Z0-9+.-]+;base64,/i, '');
+    pendingImages.push({
+      mimeType: mimeType || 'image/png',
+      data: cleanData
+    });
+    renderImageTray();
+  }
+
+  function removePendingImage(idx) {
+    if (idx >= 0 && idx < pendingImages.length) {
+      pendingImages.splice(idx, 1);
+      renderImageTray();
+    }
+  }
+
+  function clearPendingImages() {
+    pendingImages = [];
+    renderImageTray();
+  }
+
+  function renderImageTray() {
+    const tray = document.getElementById('imageTray');
+    if (!tray) return;
+    if (pendingImages.length === 0) {
+      tray.style.display = 'none';
+      tray.innerHTML = '';
+      return;
+    }
+    tray.style.display = 'flex';
+    tray.innerHTML = pendingImages.map((img, idx) => `
+      <div class="image-chip">
+        <img src="data:${img.mimeType};base64,${img.data}" alt="attachment">
+        <span class="chip-name">Image ${idx + 1}</span>
+        <button type="button" class="chip-remove" onclick="removePendingImage(${idx})" title="Remove attachment">&times;</button>
+      </div>
+    `).join('');
+  }
+
+  function handleFileSelect(e) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          addImageAttachment(file.type, ev.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    e.target.value = '';
+  }
+
+  function handlePaste(e) {
+    const items = (e.clipboardData || (e.originalEvent && e.originalEvent.clipboardData))?.items;
+    if (!items) return;
+    let hasImage = false;
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (item.type && item.type.startsWith('image/')) {
+        const blob = item.getAsFile();
+        if (blob) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            addImageAttachment(blob.type || 'image/png', ev.target.result);
+          };
+          reader.readAsDataURL(blob);
+          hasImage = true;
+        }
+      }
+    }
+    if (hasImage) {
+      e.preventDefault();
+    }
+  }
+
+  window.addEventListener('paste', handlePaste);
+
+  function openLightbox(src) {
+    const modal = document.getElementById('lightboxModal');
+    const img = document.getElementById('lightboxImg');
+    const info = document.getElementById('lightboxInfo');
+    if (!modal || !img) return;
+    img.onload = () => {
+      if (info) info.textContent = `Screenshot (${img.naturalWidth} × ${img.naturalHeight}px)`;
+    };
+    img.src = src;
+    modal.style.display = 'flex';
+  }
+
+  function closeLightbox(e) {
+    const modal = document.getElementById('lightboxModal');
+    if (!modal) return;
+    modal.style.display = 'none';
+    const img = document.getElementById('lightboxImg');
+    if (img) img.src = '';
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeLightbox();
+    }
+  });
+
+  function applyStateToUI(st) {
+    agentState = st;
+
+    // Agent status orb
+    if (st.hasKey) {
+      setAgentStatus('live', 'LIVE');
+    } else {
+      setAgentStatus('waiting', 'WAITING');
+    }
+
+    // Mode pills
+    const pillsEl = document.getElementById('modePills');
+    pillsEl.innerHTML = '';
+    (st.modes || []).forEach(m => {
+      const btn = document.createElement('button');
+      btn.className = 'mode-pill' + (m === st.activeMode ? ' active' : '');
+      btn.textContent = m;
+      btn.onclick = () => switchMode(m);
+      pillsEl.appendChild(btn);
+    });
+
+    // Model selector
+    const modelSelect = document.getElementById('modelSelect');
+    if (st.config && st.config.model) {
+      modelSelect.value = st.config.model;
+    }
+
+    // Key status
+    const keyBadge = document.getElementById('keyBadge');
+    if (st.hasKey) {
+      keyBadge.className = 'key-badge ok';
+      keyBadge.textContent = 'KEY SET ✓';
+    } else {
+      keyBadge.className = 'key-badge missing';
+      keyBadge.textContent = 'SET API KEY';
+    }
+
+    // Undo button
+    document.getElementById('undoBtn').disabled = !st.hasBackup;
+
+    // Inspector editor
+    refreshInspectorEditor();
+
+    // Chat history
+    renderChatHistory(st.history || []);
+  }
+
+  function refreshInspectorEditor() {
+    if (!agentState) return;
+    const editor = document.getElementById('inspectorEditor');
+    const label = document.getElementById('inspectorPathLabel');
+    document.getElementById('inspTabMemory').classList.toggle('active', currentInspectorTab === 'memory');
+    document.getElementById('inspTabMode').classList.toggle('active', currentInspectorTab === 'modePrompt');
+    document.getElementById('inspTabSystem').classList.toggle('active', currentInspectorTab === 'systemPrompt');
+
+    if (currentInspectorTab === 'memory') {
+      label.textContent = `CG/agent/memory/${agentState.activeMode}.md`;
+      editor.value = agentState.memory || '';
+    } else if (currentInspectorTab === 'modePrompt') {
+      label.textContent = `CG/agent/modes/${agentState.activeMode}.md`;
+      editor.value = agentState.modePrompt || '';
+    } else {
+      label.textContent = 'CG/agent/system.md';
+      editor.value = agentState.systemPrompt || '';
+    }
+  }
+
+  function switchInspectorTab(tab) {
+    currentInspectorTab = tab;
+    refreshInspectorEditor();
+  }
+
+  function renderChatHistory(history) {
+    const stream = document.getElementById('chatStream');
+    stream.innerHTML = '';
+
+    if (!history || history.length === 0) {
+      const welcome = document.createElement('div');
+      welcome.className = 'msg model';
+      welcome.innerHTML = `
+        <div class="msg-header"><span>CEPHALON GHOST // ${escapeHtml((agentState && agentState.activeMode) || 'rimworld')}</span><span>ONLINE</span></div>
+        <div class="msg-body">
+          <p><strong>Cephalon Ghost online.</strong> Active mode: <code>${escapeHtml((agentState && agentState.activeMode) || 'rimworld')}</code>.</p>
+          <p>Tell me what we're playing, ask me to <strong>switch modes</strong> (RimWorld, Warframe, Recon, or any new game), or ask me to update your memory notes or modify my own UI right from chat.</p>
+        </div>
+      `;
+      stream.appendChild(welcome);
+      return;
+    }
+
+    history.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'msg ' + (item.role === 'user' ? 'user' : 'model');
+      const who = item.role === 'user' ? 'DREW' : 'CEPHALON GHOST';
+      const timeStr = item.ts ? new Date(item.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+
+      let badgesHtml = '';
+      if (Array.isArray(item.toolCalls) && item.toolCalls.length > 0) {
+        badgesHtml = '<div class="tool-badges">' +
+          item.toolCalls.map(t => `<span class="tool-badge">⚡ ${escapeHtml(t.summary || t.name)}</span>`).join('') +
+          '</div>';
+      }
+
+      let imagesHtml = '';
+      if (Array.isArray(item.images) && item.images.length > 0) {
+        imagesHtml = '<div class="chat-images-grid">' +
+          item.images.map(img => {
+            const mime = img.mimeType || 'image/png';
+            const src = `data:${mime};base64,${img.data}`;
+            return `<img class="chat-img-thumb" src="${src}" onclick="openLightbox(this.src)" alt="Attached screenshot" title="Click to view full image">`;
+          }).join('') +
+          '</div>';
+      }
+
+      div.innerHTML = `
+        <div class="msg-header"><span>${who}</span><span>${escapeHtml(timeStr)}</span></div>
+        ${badgesHtml}
+        <div class="msg-body">${renderMarkdownLite(item.text || '')}</div>
+        ${imagesHtml}
+      `;
+      stream.appendChild(div);
+    });
+
+    stream.scrollTop = stream.scrollHeight;
+  }
+
+  async function loadAgentState() {
+    const res = await fetch('/api/agent/state');
+    if (res.ok) {
+      const st = await res.json();
+      applyStateToUI(st);
+    }
+  }
+
+  async function switchMode(mode) {
+    setStatus(`Switching mode to ${mode}...`);
+    const res = await fetch('/api/agent/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ activeMode: mode })
+    });
+    if (res.ok) {
+      const st = await res.json();
+      applyStateToUI(st);
+      setStatus(`Active mode: ${st.activeMode}`);
+    }
+  }
+
+  async function promptNewMode() {
+    const name = prompt('Enter mode name (e.g. rimworld, warframe, morrowind, factorio):');
+    if (!name || !name.trim()) return;
+    await switchMode(name.trim());
+  }
+
+  async function changeModel(model) {
+    const res = await fetch('/api/agent/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model })
+    });
+    if (res.ok) {
+      applyStateToUI(await res.json());
+      setStatus(`Model set to ${model}`);
+    }
+  }
+
+  async function saveInspectorContent() {
+    const val = document.getElementById('inspectorEditor').value;
+    const payload = {};
+    payload[currentInspectorTab] = val;
+    const res = await fetch('/api/agent/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      applyStateToUI(await res.json());
+      const toast = document.getElementById('saveToast');
+      toast.textContent = 'Saved ✓';
+      setTimeout(() => { toast.textContent = ''; }, 2000);
+    }
+  }
+
+  async function saveApiKey() {
+    const input = document.getElementById('apiKeyInput');
+    const apiKey = input.value.trim();
+    if (!apiKey) return;
+    const res = await fetch('/api/agent/key', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ apiKey })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      input.value = '';
+      document.getElementById('keyBar').classList.remove('open');
+      applyStateToUI(data.state);
+      setStatus('API key saved.');
+    }
+  }
+
+  async function revertSelfEdit() {
+    const res = await fetch('/api/agent/revert', { method: 'POST' });
+    if (res.ok) {
+      const data = await res.json();
+      setStatus(`Reverted ${data.restored}`);
+      if (data.restored && data.restored.endsWith('.html')) {
+        window.location.reload();
+        return;
+      }
+      applyStateToUI(data.state);
+    }
+  }
+
+  async function clearChat() {
+    const res = await fetch('/api/agent/clear', { method: 'POST' });
+    if (res.ok) {
+      const data = await res.json();
+      applyStateToUI(data.state);
+      setStatus('Chat cleared.');
+    }
+  }
+
+  async function killServer() {
+    if (!confirm('Shut down Cephalon Ghost server and exit?')) return;
+    setStatus('Cephalon Ghost shutting down...');
+    try {
+      await fetch('/api/shutdown', { method: 'POST' });
+    } catch (e) {}
+    const badge = document.getElementById('agentStatusBadge');
+    if (badge) badge.textContent = 'OFFLINE';
+    const widget = document.getElementById('agentStatusWidget');
+    if (widget) {
+      widget.className = 'agent-status-widget status-idle';
+      widget.title = 'Agent Status: OFFLINE';
+    }
+    setTimeout(() => {
+      try { window.close(); } catch (e) {}
+    }, 250);
+  }
+
+  function setStatus(msg) {
+    document.getElementById('statusText').textContent = msg;
+  }
+
+  async function sendChatMessage() {
+    if (busy) return;
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    if (!message && pendingImages.length === 0) return;
+
+    const sendingImages = pendingImages.slice();
+    clearPendingImages();
+
+    input.value = '';
+    busy = true;
+    document.getElementById('sendBtn').disabled = true;
+    setAgentStatus('thinking', 'THINKING');
+    setStatus('Cephalon Ghost thinking...');
+
+    // Optimistic append
+    const stream = document.getElementById('chatStream');
+    const tempDiv = document.createElement('div');
+    tempDiv.className = 'msg user';
+    let imagesHtml = '';
+    if (sendingImages.length > 0) {
+      imagesHtml = '<div class="chat-images-grid">' +
+        sendingImages.map(img => `<img class="chat-img-thumb" src="data:${img.mimeType};base64,${img.data}" onclick="openLightbox(this.src)" alt="Attached screenshot" title="Click to view full image">`).join('') +
+        '</div>';
+    }
+    tempDiv.innerHTML = `<div class="msg-header"><span>DREW</span><span>NOW</span></div><div class="msg-body">${renderMarkdownLite(message || '(attached image)')}</div>${imagesHtml}`;
+    stream.appendChild(tempDiv);
+    stream.scrollTop = stream.scrollHeight;
+
+    try {
+      const res = await fetch('/api/agent/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: message || '(attached image)', images: sendingImages })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        if (res.status === 400 && (data.error || '').includes('GEMINI_API_KEY')) {
+          document.getElementById('keyBar').classList.add('open');
+        }
+        const errDiv = document.createElement('div');
+        errDiv.className = 'msg model';
+        errDiv.innerHTML = `<div class="msg-header"><span>SYSTEM ERROR</span></div><div class="msg-body"><p>${escapeHtml(data.error || 'Request failed')}</p></div>`;
+        stream.appendChild(errDiv);
+        stream.scrollTop = stream.scrollHeight;
+        setStatus('Error: ' + (data.error || 'failed'));
+        setAgentStatus('waiting', 'ERROR');
+      } else {
+        applyStateToUI(data.state);
+        setStatus('Ready');
+        if (data.reloadRequested) {
+          setTimeout(() => window.location.reload(), 350);
+        }
+      }
+    } catch (e) {
+      setStatus('Network error');
+      setAgentStatus('waiting', 'ERROR');
+    } finally {
+      busy = false;
+      document.getElementById('sendBtn').disabled = false;
+      if (agentState && agentState.hasKey) {
+        setAgentStatus('live', 'LIVE');
+      } else {
+        setAgentStatus('waiting', 'WAITING');
+      }
+      input.focus();
+    }
+  }
+
+  document.getElementById('chatInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendChatMessage();
+    }
+  });
+
+  loadAgentState();
+</script>
+
+<!-- Lightbox Modal -->
+<div id="lightboxModal" class="lightbox-modal" style="display:none;" onclick="closeLightbox(event)">
+  <div class="lightbox-content" onclick="event.stopPropagation()">
+    <div class="lightbox-header">
+      <span id="lightboxInfo" class="lightbox-info">Screenshot Lightbox</span>
+      <button class="btn" type="button" onclick="closeLightbox(event)">[ CLOSE &times; ]</button>
+    </div>
+    <div class="lightbox-image-wrap">
+      <img id="lightboxImg" src="" alt="Full view">
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "_doc": "DREW_SOURCED craft overrides. Drew 2026-10-06: Corufell Prime craft is 4+1 BP (Blade, Handle, Receiver, Stock) rather than the typical 3+1 BP of every other docked set.",
+  "Corufell Prime": {
+    "parts": ["Blade", "Handle", "Receiver", "Stock"],
+    "slot4": {
+      "name": "Stock",
+      "xlsxCell": null,
+      "note": "Stock is absent from the xlsx. qty null / have false until Drew logs a pickup (CG-002-B) or updates the sheet."
+    }
+  }
+}

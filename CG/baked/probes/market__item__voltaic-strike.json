@@ -1,0 +1,22 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/items/Voltaic%20Strike?only=name,uniqueName,type,category,tradable,masterable,components,set,ducats,quantity",
+    "tag": "Voltaic Strike",
+    "httpStatus": 200,
+    "ok": true,
+    "durationMs": 562,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:39.135Z",
+    "accountId": "11121350"
+  },
+  "data": {
+    "uniqueName": "/Lotus/Upgrades/Mods/Melee/DualStat/ElectEventMeleeMod",
+    "name": "Voltaic Strike",
+    "type": "Melee Mod",
+    "category": "Mods",
+    "tradable": true,
+    "masterable": false
+  }
+}

@@ -1,0 +1,211 @@
+{"ts": 1789885339.347355, "key": "hhhh", "note": "", "n": 42, "alive": true, "time": 162.9, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885339.8198493, "key": "o", "note": "", "n": 43, "alive": true, "time": 173.9, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885340.2976832, "key": "o", "note": "", "n": 44, "alive": true, "time": 181.9, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885340.7946455, "key": "o", "note": "", "n": 45, "alive": true, "time": 192.9, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885341.3136501, "key": "o", "note": "", "n": 46, "alive": true, "time": 205.9, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885341.8162963, "key": "o", "note": "", "n": 47, "alive": true, "time": 205.9, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885342.3433313, "key": "o", "note": "", "n": 48, "alive": true, "time": 205.9, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885342.8258455, "key": "o", "note": "", "n": 49, "alive": true, "time": 205.9, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885343.297767, "key": "o", "note": "", "n": 50, "alive": true, "time": 205.9, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885343.7921257, "key": "o", "note": "", "n": 51, "alive": true, "time": 205.9, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885344.281378, "key": "o", "note": "", "n": 52, "alive": true, "time": 205.9, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885344.7556984, "key": "o", "note": "", "n": 53, "alive": true, "time": 205.9, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885345.233349, "key": "o", "note": "", "n": 54, "alive": true, "time": 205.9, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885345.7063282, "key": "tab", "note": "auto-fight", "n": 55, "alive": true, "time": 206.9, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885346.185284, "key": "tab", "note": "auto-fight", "n": 56, "alive": true, "time": 207.9, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885346.6844687, "key": "tab", "note": "auto-fight", "n": 57, "alive": true, "time": 208.9, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885347.1786776, "key": "tab", "note": "auto-fight", "n": 58, "alive": true, "time": 210.0, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885347.68363, "key": "tab", "note": "auto-fight", "n": 59, "alive": true, "time": 210.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885348.1655135, "key": "tab", "note": "auto-fight", "n": 60, "alive": true, "time": 210.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885348.6739666, "key": "tab", "note": "auto-fight", "n": 61, "alive": true, "time": 210.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885349.1756637, "key": "tab", "note": "auto-fight", "n": 62, "alive": true, "time": 210.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885349.6565473, "key": "tab", "note": "auto-fight", "n": 63, "alive": true, "time": 210.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885350.129412, "key": "tab", "note": "auto-fight", "n": 64, "alive": true, "time": 210.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885350.5928862, "key": "tab", "note": "auto-fight", "n": 65, "alive": true, "time": 210.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885351.0762718, "key": "tab", "note": "auto-fight", "n": 66, "alive": true, "time": 210.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885351.5577002, "key": "tab", "note": "auto-fight", "n": 67, "alive": true, "time": 210.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885352.0979156, "key": "b", "note": "toward stairs", "n": 68, "alive": true, "time": 210.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885352.6224325, "key": "j", "note": "toward stairs alt", "n": 69, "alive": true, "time": 211.0, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885353.2053301, "key": "b", "note": "toward stairs", "n": 70, "alive": true, "time": 212.0, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885353.7882478, "key": "b", "note": "toward stairs", "n": 71, "alive": true, "time": 212.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885354.314863, "key": "j", "note": "toward stairs alt", "n": 72, "alive": true, "time": 212.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885354.8188915, "key": "b", "note": "toward stairs", "n": 73, "alive": true, "time": 212.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885355.3116124, "key": "j", "note": "toward stairs alt", "n": 74, "alive": true, "time": 212.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885355.8430498, "key": "b", "note": "toward stairs", "n": 75, "alive": true, "time": 212.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885356.3003147, "key": "j", "note": "toward stairs alt", "n": 76, "alive": true, "time": 212.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885356.813482, "key": "b", "note": "toward stairs", "n": 77, "alive": true, "time": 212.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885357.2899847, "key": "j", "note": "toward stairs alt", "n": 78, "alive": true, "time": 212.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885357.8233175, "key": "b", "note": "toward stairs", "n": 79, "alive": true, "time": 212.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885358.2829566, "key": "j", "note": "toward stairs alt", "n": 80, "alive": true, "time": 212.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885358.8036587, "key": "b", "note": "toward stairs", "n": 81, "alive": true, "time": 212.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885359.2988544, "key": "j", "note": "toward stairs alt", "n": 82, "alive": true, "time": 212.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885359.8302505, "key": "b", "note": "toward stairs", "n": 83, "alive": true, "time": 212.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885360.301497, "key": "j", "note": "toward stairs alt", "n": 84, "alive": true, "time": 212.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885360.8034909, "key": "b", "note": "toward stairs", "n": 85, "alive": true, "time": 212.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885361.2726603, "key": "j", "note": "toward stairs alt", "n": 86, "alive": true, "time": 212.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885361.8120198, "key": "o", "note": "unstuck explore", "n": 87, "alive": true, "time": 216.0, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885362.3869493, "key": "b", "note": "toward stairs", "n": 88, "alive": true, "time": 216.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885362.9032948, "key": "j", "note": "toward stairs alt", "n": 89, "alive": true, "time": 217.0, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885363.500108, "key": "b", "note": "toward stairs", "n": 90, "alive": true, "time": 217.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885364.0312004, "key": "j", "note": "toward stairs alt", "n": 91, "alive": true, "time": 218.0, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885364.6213558, "key": "b", "note": "toward stairs", "n": 92, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885365.183903, "key": "b", "note": "toward stairs", "n": 93, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885365.6968338, "key": "j", "note": "toward stairs alt", "n": 94, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885366.2293644, "key": "b", "note": "toward stairs", "n": 95, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885366.714757, "key": "j", "note": "toward stairs alt", "n": 96, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885367.2435172, "key": "b", "note": "toward stairs", "n": 97, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885367.74881, "key": "j", "note": "toward stairs alt", "n": 98, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885368.3285782, "key": "b", "note": "toward stairs", "n": 99, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885368.834052, "key": "j", "note": "toward stairs alt", "n": 100, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885369.384008, "key": "b", "note": "toward stairs", "n": 101, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885369.8748698, "key": "j", "note": "toward stairs alt", "n": 102, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885370.4153187, "key": "b", "note": "toward stairs", "n": 103, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885370.9286637, "key": "j", "note": "toward stairs alt", "n": 104, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885371.4245174, "key": "b", "note": "toward stairs", "n": 105, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885371.903001, "key": "j", "note": "toward stairs alt", "n": 106, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885372.446065, "key": "b", "note": "toward stairs", "n": 107, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885372.9196048, "key": "j", "note": "toward stairs alt", "n": 108, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885373.389291, "key": "o", "note": "unstuck explore", "n": 109, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885373.9334464, "key": "b", "note": "toward stairs", "n": 110, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885374.4340997, "key": "j", "note": "toward stairs alt", "n": 111, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885374.9365368, "key": "b", "note": "toward stairs", "n": 112, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885375.3943505, "key": "j", "note": "toward stairs alt", "n": 113, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885375.923617, "key": "b", "note": "toward stairs", "n": 114, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885376.4032671, "key": "j", "note": "toward stairs alt", "n": 115, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885376.9832509, "key": "b", "note": "toward stairs", "n": 116, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885377.4531615, "key": "j", "note": "toward stairs alt", "n": 117, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885377.9658723, "key": "b", "note": "toward stairs", "n": 118, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885378.433671, "key": "j", "note": "toward stairs alt", "n": 119, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885378.9610653, "key": "b", "note": "toward stairs", "n": 120, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885379.4724262, "key": "j", "note": "toward stairs alt", "n": 121, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885380.0189748, "key": "b", "note": "toward stairs", "n": 122, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885380.4704127, "key": "j", "note": "toward stairs alt", "n": 123, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885381.0102065, "key": "b", "note": "toward stairs", "n": 124, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885381.4798336, "key": "j", "note": "toward stairs alt", "n": 125, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885381.9472966, "key": "o", "note": "unstuck explore", "n": 126, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885382.5126085, "key": "b", "note": "toward stairs", "n": 127, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885382.982717, "key": "j", "note": "toward stairs alt", "n": 128, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885383.502008, "key": "b", "note": "toward stairs", "n": 129, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885384.0011406, "key": "j", "note": "toward stairs alt", "n": 130, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885384.5224397, "key": "b", "note": "toward stairs", "n": 131, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885385.0284865, "key": "j", "note": "toward stairs alt", "n": 132, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885385.5961077, "key": "b", "note": "toward stairs", "n": 133, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885386.1074388, "key": "j", "note": "toward stairs alt", "n": 134, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885386.6352994, "key": "b", "note": "toward stairs", "n": 135, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885387.10059, "key": "j", "note": "toward stairs alt", "n": 136, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885387.6154525, "key": "b", "note": "toward stairs", "n": 137, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885388.0838556, "key": "j", "note": "toward stairs alt", "n": 138, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885388.601302, "key": "b", "note": "toward stairs", "n": 139, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885389.1003027, "key": "j", "note": "toward stairs alt", "n": 140, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885389.6631713, "key": "b", "note": "toward stairs", "n": 141, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885390.17418, "key": "j", "note": "toward stairs alt", "n": 142, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885390.673942, "key": "o", "note": "unstuck explore", "n": 143, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885391.243222, "key": "b", "note": "toward stairs", "n": 144, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885391.7797961, "key": "j", "note": "toward stairs alt", "n": 145, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885392.3540196, "key": "b", "note": "toward stairs", "n": 146, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885392.8719976, "key": "j", "note": "toward stairs alt", "n": 147, "alive": true, "time": 219.0, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885544.4299254, "key": "tab", "note": "auto-fight", "n": 148, "alive": true, "time": 220.0, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885544.8765297, "key": "tab", "note": "auto-fight", "n": 149, "alive": true, "time": 221.0, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885545.35205, "key": "tab", "note": "auto-fight", "n": 150, "alive": true, "time": 222.0, "hp": 20, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885545.811795, "key": "tab", "note": "auto-fight", "n": 151, "alive": true, "time": 223.0, "hp": 20, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885546.281949, "key": "tab", "note": "auto-fight", "n": 152, "alive": true, "time": 224.0, "hp": 20, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885546.7302198, "key": "tab", "note": "auto-fight", "n": 153, "alive": true, "time": 225.3, "hp": 15, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885547.2126129, "key": "tab", "note": "auto-fight", "n": 154, "alive": true, "time": 226.5, "hp": 16, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885547.6514077, "key": "tab", "note": "auto-fight", "n": 155, "alive": true, "time": 227.6, "hp": 16, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885548.113344, "key": "tab", "note": "auto-fight", "n": 156, "alive": true, "time": 227.6, "hp": 16, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885548.6049845, "key": "tab", "note": "auto-fight", "n": 157, "alive": true, "time": 227.6, "hp": 16, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885549.0776854, "key": "tab", "note": "auto-fight", "n": 158, "alive": true, "time": 227.6, "hp": 16, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885549.518527, "key": "tab", "note": "auto-fight", "n": 159, "alive": true, "time": 227.6, "hp": 16, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885549.9841473, "key": "tab", "note": "auto-fight", "n": 160, "alive": true, "time": 227.6, "hp": 16, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885550.434812, "key": "tab", "note": "auto-fight", "n": 161, "alive": true, "time": 227.6, "hp": 16, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885550.8800573, "key": "tab", "note": "auto-fight", "n": 162, "alive": true, "time": 227.6, "hp": 16, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885551.3433948, "key": "tab", "note": "auto-fight", "n": 163, "alive": true, "time": 227.6, "hp": 16, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885551.8010178, "key": "tab", "note": "auto-fight", "n": 164, "alive": true, "time": 227.6, "hp": 16, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885609.1778188, "key": "q", "note": "", "n": 165, "alive": true, "time": null, "hp": null, "place": null, "moved": false, "game_over": false}
+{"ts": 1789885609.6597965, "key": "d", "note": "", "n": 166, "alive": true, "time": 228.6, "hp": 24, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885696.3197088, "key": "5", "note": "", "n": 167, "alive": true, "time": 257.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885696.77672, "key": "5", "note": "", "n": 168, "alive": true, "time": 357.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885697.2559543, "key": "5", "note": "", "n": 169, "alive": true, "time": 457.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885697.7648385, "key": "5", "note": "", "n": 170, "alive": true, "time": 557.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885698.2900941, "key": "5", "note": "", "n": 171, "alive": true, "time": 657.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885698.7990017, "key": "5", "note": "", "n": 172, "alive": true, "time": 757.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885699.2758405, "key": "5", "note": "", "n": 173, "alive": true, "time": 857.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885699.7703023, "key": "5", "note": "", "n": 174, "alive": true, "time": 957.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885700.2721727, "key": "5", "note": "", "n": 175, "alive": true, "time": 1057.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885700.7601094, "key": "5", "note": "", "n": 176, "alive": true, "time": 1157.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885701.2713342, "key": "5", "note": "", "n": 177, "alive": true, "time": 1257.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885701.789028, "key": "5", "note": "", "n": 178, "alive": true, "time": 1357.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885702.298802, "key": "5", "note": "", "n": 179, "alive": true, "time": 1457.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885702.820712, "key": "5", "note": "", "n": 180, "alive": true, "time": 1557.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885703.3245032, "key": "5", "note": "", "n": 181, "alive": true, "time": 1657.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885703.8441827, "key": "5", "note": "", "n": 182, "alive": true, "time": 1757.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885704.3427422, "key": "5", "note": "", "n": 183, "alive": true, "time": 1857.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885704.831847, "key": "5", "note": "", "n": 184, "alive": true, "time": 1957.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885705.399779, "key": "5", "note": "", "n": 185, "alive": true, "time": 2057.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885705.903198, "key": "5", "note": "", "n": 186, "alive": true, "time": 2157.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885706.421692, "key": "5", "note": "", "n": 187, "alive": true, "time": 2196.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789885706.919759, "key": "5", "note": "", "n": 188, "alive": true, "time": 2196.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885707.4157586, "key": "5", "note": "", "n": 189, "alive": true, "time": 2196.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885707.9312086, "key": "5", "note": "", "n": 190, "alive": true, "time": 2196.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885708.448857, "key": "5", "note": "", "n": 191, "alive": true, "time": 2196.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885708.948492, "key": "5", "note": "", "n": 192, "alive": true, "time": 2196.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885709.4293468, "key": "5", "note": "", "n": 193, "alive": true, "time": 2196.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885709.9687874, "key": "5", "note": "", "n": 194, "alive": true, "time": 2196.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885710.5371602, "key": "5", "note": "", "n": 195, "alive": true, "time": 2196.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789885711.0459387, "key": "5", "note": "", "n": 196, "alive": true, "time": 2196.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789886801.9997485, "key": "j", "note": "toward stairs", "n": 197, "alive": true, "time": 2196.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789886802.9468682, "key": "l", "note": "toward stairs", "n": 198, "alive": true, "time": 2197.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789886804.1036808, "key": "j", "note": "toward stairs", "n": 199, "alive": true, "time": 2197.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789886804.8122373, "key": "l", "note": "toward stairs", "n": 200, "alive": true, "time": 2198.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789886805.5453317, "key": "j", "note": "toward stairs", "n": 201, "alive": true, "time": 2199.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789886806.3252795, "key": "j", "note": "toward stairs", "n": 202, "alive": true, "time": 2200.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789886807.108115, "key": "j", "note": "toward stairs", "n": 203, "alive": true, "time": 2200.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789886807.7911284, "key": "l", "note": "toward stairs", "n": 204, "alive": true, "time": 2201.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789886808.5320807, "key": "j", "note": "toward stairs", "n": 205, "alive": true, "time": 2202.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789886809.3250203, "key": "j", "note": "toward stairs", "n": 206, "alive": true, "time": 2203.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789886810.1094842, "key": "l", "note": "toward stairs", "n": 207, "alive": true, "time": 2204.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789886810.9632945, "key": "o", "note": "reveal stairs", "n": 208, "alive": true, "time": 2204.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789886811.7883868, "key": "o", "note": "reveal stairs", "n": 209, "alive": true, "time": 2204.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789886812.5622115, "key": "o", "note": "reveal stairs", "n": 210, "alive": true, "time": 2204.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789886813.254818, "key": "o", "note": "reveal stairs", "n": 211, "alive": true, "time": 2204.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789886813.9308052, "key": "o", "note": "reveal stairs", "n": 212, "alive": true, "time": 2204.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789886814.7091172, "key": "o", "note": "reveal stairs", "n": 213, "alive": true, "time": 2204.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789886928.6006136, "key": "hhh", "note": "", "n": 214, "alive": true, "time": 2205.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789887017.6754477, "key": "l", "note": "toward stairs", "n": 215, "alive": true, "time": 2206.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789887019.070002, "key": "o", "note": "reveal stairs", "n": 216, "alive": true, "time": 2206.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789887020.200752, "key": "o", "note": "reveal stairs", "n": 217, "alive": true, "time": 2206.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789887021.1565402, "key": "o", "note": "reveal stairs", "n": 218, "alive": true, "time": 2206.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789887022.0699282, "key": "o", "note": "reveal stairs", "n": 219, "alive": true, "time": 2206.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789887022.928486, "key": "o", "note": "reveal stairs", "n": 220, "alive": true, "time": 2206.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789887023.8210094, "key": "o", "note": "reveal stairs", "n": 221, "alive": true, "time": 2206.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789887143.5290496, "key": "o", "note": "reveal stairs", "n": 222, "alive": true, "time": 2206.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789887144.7324286, "key": "o", "note": "reveal stairs", "n": 223, "alive": true, "time": 2206.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789887146.2536612, "key": "o", "note": "reveal stairs", "n": 224, "alive": true, "time": 2206.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789887147.2553213, "key": "o", "note": "reveal stairs", "n": 225, "alive": true, "time": 2206.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789887148.1421347, "key": "o", "note": "reveal stairs", "n": 226, "alive": true, "time": 2206.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789887148.9038684, "key": "o", "note": "reveal stairs", "n": 227, "alive": true, "time": 2206.6, "hp": 23, "place": "Dungeon:3", "moved": false, "game_over": false}
+{"ts": 1789887571.528399, "key": ">", "note": "", "n": 228, "alive": true, "time": 2207.6, "hp": 23, "place": "Dungeon:3", "moved": true, "game_over": false}
+{"ts": 1789887944.6476123, "key": "tab", "note": "auto-fight", "n": 229, "alive": true, "time": 2210.4, "hp": 19, "place": "Dungeon:4", "moved": true, "game_over": false}
+{"ts": 1789887945.4450822, "key": "tab", "note": "auto-fight", "n": 230, "alive": true, "time": 2211.6, "hp": 20, "place": "Dungeon:4", "moved": true, "game_over": false}
+{"ts": 1789887946.149915, "key": "tab", "note": "auto-fight", "n": 231, "alive": true, "time": 2211.6, "hp": 20, "place": "Dungeon:4", "moved": false, "game_over": false}
+{"ts": 1789887946.8533263, "key": "tab", "note": "auto-fight", "n": 232, "alive": true, "time": 2211.6, "hp": 20, "place": "Dungeon:4", "moved": false, "game_over": false}
+{"ts": 1789887947.5550277, "key": "tab", "note": "auto-fight", "n": 233, "alive": true, "time": 2211.6, "hp": 20, "place": "Dungeon:4", "moved": false, "game_over": false}
+{"ts": 1789887948.238788, "key": "tab", "note": "auto-fight", "n": 234, "alive": true, "time": 2211.6, "hp": 20, "place": "Dungeon:4", "moved": false, "game_over": false}
+{"ts": 1789887948.9003723, "key": "tab", "note": "auto-fight", "n": 235, "alive": true, "time": 2211.6, "hp": 20, "place": "Dungeon:4", "moved": false, "game_over": false}
+{"ts": 1789887949.6175964, "key": "tab", "note": "auto-fight", "n": 236, "alive": true, "time": 2211.6, "hp": 20, "place": "Dungeon:4", "moved": false, "game_over": false}
+{"ts": 1789887950.3481479, "key": "tab", "note": "auto-fight", "n": 237, "alive": true, "time": 2211.6, "hp": 20, "place": "Dungeon:4", "moved": false, "game_over": false}
+{"ts": 1789887950.98595, "key": "tab", "note": "auto-fight", "n": 238, "alive": true, "time": 2211.6, "hp": 20, "place": "Dungeon:4", "moved": false, "game_over": false}
+{"ts": 1789887951.7332866, "key": "tab", "note": "auto-fight", "n": 239, "alive": true, "time": 2211.6, "hp": 20, "place": "Dungeon:4", "moved": false, "game_over": false}
+{"ts": 1789888116.5627027, "key": "o", "note": "", "n": 240, "alive": true, "time": 2216.6, "hp": 21, "place": "Dungeon:4", "moved": true, "game_over": false}
+{"ts": 1789888117.4172475, "key": "o", "note": "", "n": 241, "alive": true, "time": 2230.6, "hp": 23, "place": "Dungeon:4", "moved": true, "game_over": false}
+{"ts": 1789888118.3645673, "key": "o", "note": "", "n": 242, "alive": true, "time": 2230.6, "hp": 23, "place": "Dungeon:4", "moved": false, "game_over": false}
+{"ts": 1789888119.4709709, "key": "o", "note": "", "n": 243, "alive": true, "time": 2230.6, "hp": 23, "place": "Dungeon:4", "moved": false, "game_over": false}
+{"ts": 1789888120.5362332, "key": "o", "note": "", "n": 244, "alive": true, "time": 2230.6, "hp": 23, "place": "Dungeon:4", "moved": false, "game_over": false}
+{"ts": 1789888121.4110005, "key": "o", "note": "", "n": 245, "alive": true, "time": 2230.6, "hp": 23, "place": "Dungeon:4", "moved": false, "game_over": false}
+{"ts": 1789888122.1776834, "key": "o", "note": "", "n": 246, "alive": true, "time": 2230.6, "hp": 23, "place": "Dungeon:4", "moved": false, "game_over": false}
+{"ts": 1789888122.953339, "key": "o", "note": "", "n": 247, "alive": true, "time": 2230.6, "hp": 23, "place": "Dungeon:4", "moved": false, "game_over": false}
+{"ts": 1789888123.763822, "key": "o", "note": "", "n": 248, "alive": true, "time": 2230.6, "hp": 23, "place": "Dungeon:4", "moved": false, "game_over": false}
+{"ts": 1789888124.5505118, "key": "o", "note": "", "n": 249, "alive": true, "time": 2230.6, "hp": 23, "place": "Dungeon:4", "moved": false, "game_over": false}
+{"ts": 1789888275.1766899, "key": "k", "note": "", "n": 250, "alive": true, "time": 2231.6, "hp": 23, "place": "Dungeon:4", "moved": true, "game_over": false}
+{"ts": 1789888276.0493436, "key": "l", "note": "", "n": 251, "alive": true, "time": 2231.6, "hp": 23, "place": "Dungeon:4", "moved": false, "game_over": false}
+{"ts": 1789888276.9291449, "key": ">", "note": "", "n": 252, "alive": true, "time": 2232.6, "hp": 23, "place": "Dungeon:4", "moved": true, "game_over": false}

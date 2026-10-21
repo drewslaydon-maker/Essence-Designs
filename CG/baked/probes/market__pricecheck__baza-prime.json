@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/pricecheck/find/Baza%20Prime",
+    "tag": "Baza Prime",
+    "httpStatus": 200,
+    "ok": true,
+    "durationMs": 161,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:46.293Z",
+    "accountId": "11121350"
+  },
+  "data": []
+}

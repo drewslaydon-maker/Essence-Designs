@@ -1,0 +1,19 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/items/Hek/orders",
+    "tag": "Hek",
+    "httpStatus": 404,
+    "ok": false,
+    "durationMs": 111,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:21.853Z",
+    "accountId": "11121350"
+  },
+  "data": {
+    "message": "Cannot GET /items/Hek/orders",
+    "error": "Not Found",
+    "statusCode": 404
+  }
+}

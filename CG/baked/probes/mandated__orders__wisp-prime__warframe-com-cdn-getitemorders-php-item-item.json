@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Wisp%20Prime",
+    "tag": "Wisp Prime",
+    "httpStatus": 403,
+    "ok": false,
+    "durationMs": 50,
+    "contentType": "text/html",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:19.447Z",
+    "accountId": "11121350"
+  },
+  "data": null
+}

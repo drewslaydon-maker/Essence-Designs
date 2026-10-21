@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Crimson%20Dervish",
+    "tag": "Crimson Dervish",
+    "httpStatus": 403,
+    "ok": false,
+    "durationMs": 77,
+    "contentType": "text/html",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:29.216Z",
+    "accountId": "11121350"
+  },
+  "data": null
+}

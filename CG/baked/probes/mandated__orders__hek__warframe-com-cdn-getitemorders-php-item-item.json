@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Hek",
+    "tag": "Hek",
+    "httpStatus": 403,
+    "ok": false,
+    "durationMs": 36,
+    "contentType": "text/html",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:22.598Z",
+    "accountId": "11121350"
+  },
+  "data": null
+}

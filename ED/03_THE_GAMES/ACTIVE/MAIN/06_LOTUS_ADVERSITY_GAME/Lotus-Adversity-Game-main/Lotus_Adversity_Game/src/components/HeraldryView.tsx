@@ -1,18 +1,17 @@
-import { FC, useMemo, useState } from "react";
+import { FC, useState } from "react";
 import { ArmorWeightClass, SymbolForm } from "../types";
 import { initialWarpedPantheon } from "../data/warpedPantheonData";
 import { initialArmorSymbols } from "../data/armorSymbolsData";
 import { spokeSymbolsData, spokeSymbolByNumber } from "../data/spokeSymbolsData";
 import { spokesData } from "../data/spokesAndPillarsData";
-import { computeCollisions } from "../lab/labChecks";
 import { PantheonSymbolGlyph } from "./PantheonSymbolGlyph";
 import { useAppStore } from "../store/useAppStore";
-import { Flame, Compass, Shield, Hammer, Gauge, Copy, Check, ScrollText, ShieldCheck } from "lucide-react";
+import { Flame, Compass, Shield, Hammer, Gauge, Copy, Check, ScrollText } from "lucide-react";
 
 // ============================================================================
 // HERALDRY — the single canonical home for all three symbol families
-// (Divine · Discipline · Armor) plus the runtime audit surface. There is no
-// competing gallery; `SymbolsView` was absorbed here.
+// (Divine · Discipline · Armor). There is no competing gallery;
+// `SymbolsView` was absorbed here.
 // ============================================================================
 
 type Family = "Divine" | "Discipline" | "Armor";
@@ -58,8 +57,6 @@ export const HeraldryView: FC = () => {
   const [copied, setCopied] = useState(false);
   const [rawDamage, setRawDamage] = useState(60);
   const [incomingPosture, setIncomingPosture] = useState(42);
-
-  const collisions = useMemo(() => computeCollisions(), []);
 
   const god = initialWarpedPantheon.find((g) => g.id === godId) ?? initialWarpedPantheon[0];
   const discSet = spokeSymbolByNumber[spokeNum] ?? spokeSymbolsData[0];
@@ -120,21 +117,6 @@ export const HeraldryView: FC = () => {
             </span>
           </button>
         ))}
-      </div>
-
-      {/* Audit surface */}
-      <div className={`rounded-2xl border p-4 sm:p-5 shadow-2xl ${collisions.length === 0 ? "bg-emerald-950/10 border-emerald-500/30" : "bg-rose-950/15 border-rose-500/40"}`}>
-        <div className="flex items-center gap-2">
-          <ShieldCheck className={`w-4 h-4 ${collisions.length === 0 ? "text-emerald-400" : "text-rose-400"}`} />
-          <span className="font-mono text-xs font-bold uppercase tracking-widest text-neutral-100">
-            One-Heraldry-One-Primitive Audit
-          </span>
-        </div>
-        <p className="text-[11px] font-mono text-neutral-400 mt-1.5 leading-relaxed">
-          {collisions.length === 0
-            ? "Zero primitive collisions across Divine, Discipline, and Armor. Registry coverage is complete."
-            : `${collisions.length} collision(s) detected — redesign one identity each: ${collisions.map((c) => c.primitive).join(", ")}`}
-        </p>
       </div>
 
       {/* ---------------- DIVINE ---------------- */}

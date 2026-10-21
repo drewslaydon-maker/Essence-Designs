@@ -1,0 +1,143 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/items/Braton%20Vandal?only=name,uniqueName,type,category,tradable,masterable,components,set,ducats,quantity",
+    "tag": "Braton Vandal",
+    "httpStatus": 200,
+    "ok": true,
+    "durationMs": 581,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:34.882Z",
+    "accountId": "11121350"
+  },
+  "data": {
+    "name": "Braton Vandal",
+    "uniqueName": "/Lotus/Weapons/Tenno/Rifle/VIPRifle",
+    "components": [
+      {
+        "uniqueName": "/Lotus/Types/Recipes/Weapons/WeaponParts/BratonVandalBarrel",
+        "name": "Barrel",
+        "description": "A weapon-crafting component.",
+        "codexSecret": false,
+        "itemCount": 1,
+        "imageName": "GenericGunBarrel.png",
+        "drops": [
+          {
+            "location": "Elite Sanctuary Onslaught, Rotation A",
+            "type": "Braton Vandal Barrel",
+            "chance": 2.51,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Elite Sanctuary Onslaught, Rotation B",
+            "type": "Braton Vandal Barrel",
+            "chance": 3.16,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Elite Sanctuary Onslaught, Rotation C",
+            "type": "Braton Vandal Barrel",
+            "chance": 3.16,
+            "rarity": "Rare"
+          }
+        ],
+        "tradable": true,
+        "masterable": false
+      },
+      {
+        "uniqueName": "/Lotus/Types/Recipes/Weapons/BratonVandalBlueprint",
+        "name": "Blueprint",
+        "description": "A special version of the standard Braton rifle with a slower Fire Rate but offering higher accuracy and damage values. The Braton Vandal has been customized by the Tenno with a blue-green metallic finish and Lotus branding on the grips.",
+        "itemCount": 1,
+        "imageName": "blueprint.png",
+        "drops": [
+          {
+            "location": "Elite Sanctuary Onslaught, Rotation A",
+            "type": "Braton Vandal Blueprint",
+            "chance": 2.51,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Elite Sanctuary Onslaught, Rotation B",
+            "type": "Braton Vandal Blueprint",
+            "chance": 3.16,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Elite Sanctuary Onslaught, Rotation C",
+            "type": "Braton Vandal Blueprint",
+            "chance": 3.16,
+            "rarity": "Rare"
+          }
+        ],
+        "tradable": true,
+        "masterable": false
+      },
+      {
+        "uniqueName": "/Lotus/Types/Recipes/Weapons/WeaponParts/BratonVandalReceiver",
+        "name": "Receiver",
+        "description": "A weapon-crafting component.",
+        "codexSecret": false,
+        "itemCount": 1,
+        "imageName": "GenericGunReceiver.png",
+        "drops": [
+          {
+            "location": "Elite Sanctuary Onslaught, Rotation A",
+            "type": "Braton Vandal Receiver",
+            "chance": 2.51,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Elite Sanctuary Onslaught, Rotation B",
+            "type": "Braton Vandal Receiver",
+            "chance": 3.16,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Elite Sanctuary Onslaught, Rotation C",
+            "type": "Braton Vandal Receiver",
+            "chance": 3.16,
+            "rarity": "Rare"
+          }
+        ],
+        "tradable": true,
+        "masterable": false
+      },
+      {
+        "uniqueName": "/Lotus/Types/Recipes/Weapons/WeaponParts/BratonVandalStock",
+        "name": "Stock",
+        "description": "A weapon-crafting component.",
+        "codexSecret": false,
+        "itemCount": 1,
+        "imageName": "GenericGunStock.png",
+        "drops": [
+          {
+            "location": "Elite Sanctuary Onslaught, Rotation A",
+            "type": "Braton Vandal Stock",
+            "chance": 2.51,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Elite Sanctuary Onslaught, Rotation B",
+            "type": "Braton Vandal Stock",
+            "chance": 3.16,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Elite Sanctuary Onslaught, Rotation C",
+            "type": "Braton Vandal Stock",
+            "chance": 3.16,
+            "rarity": "Rare"
+          }
+        ],
+        "tradable": true,
+        "masterable": false
+      }
+    ],
+    "type": "Rifle",
+    "category": "Primary",
+    "tradable": false,
+    "masterable": true
+  }
+}

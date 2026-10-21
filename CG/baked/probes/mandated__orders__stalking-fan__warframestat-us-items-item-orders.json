@@ -1,0 +1,19 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/items/Stalking%20Fan/orders",
+    "tag": "Stalking Fan",
+    "httpStatus": 404,
+    "ok": false,
+    "durationMs": 127,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:26.724Z",
+    "accountId": "11121350"
+  },
+  "data": {
+    "message": "Cannot GET /items/Stalking%20Fan/orders",
+    "error": "Not Found",
+    "statusCode": 404
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api-xb1.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+    "tag": "XB1",
+    "httpStatus": 403,
+    "ok": false,
+    "durationMs": 92,
+    "contentType": "text/html",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:27:49.584Z",
+    "accountId": "11121350"
+  },
+  "data": null
+}

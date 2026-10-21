@@ -1,0 +1,229 @@
+{
+  "$schema": "https://opencode.ai/theme.json",
+  "defs": {
+    "padBg": "#241542",
+    "padBgAlt": "#1E1238",
+    "padBgPanel": "#2A1B4E",
+    "padBgElement": "#32215A",
+    "padBgMenu": "#1E1238",
+    "padFg": "#EDE9F6",
+    "padFgMuted": "#BFB3DD",
+    "padBorder": "#4A3B73",
+    "padBorderActive": "#F5C542",
+    "padGold": "#F5C542",
+    "padGoldDeep": "#D4AF37",
+    "padPurple": "#7C5CBF",
+    "padBridge": "#A78BDB",
+    "padEye": "#E5484D",
+    "padSuccess": "#6FCF97",
+    "padQuicklime": "#4ADE80",
+    "padWarn": "#F2A93B",
+    "padInfo": "#7C9BE0"
+  },
+  "theme": {
+    "primary": {
+      "dark": "padGold",
+      "light": "padGoldDeep"
+    },
+    "secondary": {
+      "dark": "padBridge",
+      "light": "padPurple"
+    },
+    "accent": {
+      "dark": "padGoldDeep",
+      "light": "padPurple"
+    },
+    "error": {
+      "dark": "padEye",
+      "light": "#C0392B"
+    },
+    "warning": {
+      "dark": "padWarn",
+      "light": "#B8860B"
+    },
+    "success": {
+      "dark": "padSuccess",
+      "light": "#2E8B57"
+    },
+    "info": {
+      "dark": "padInfo",
+      "light": "#34558B"
+    },
+    "text": {
+      "dark": "padFg",
+      "light": "#241542"
+    },
+    "textMuted": {
+      "dark": "padFgMuted",
+      "light": "#6E5FA3"
+    },
+    "background": {
+      "dark": "padBg",
+      "light": "#F7F4FC"
+    },
+    "backgroundPanel": {
+      "dark": "padBgAlt",
+      "light": "#EFE9F9"
+    },
+    "backgroundElement": {
+      "dark": "padBgPanel",
+      "light": "#E6DDF2"
+    },
+    "backgroundMenu": {
+      "dark": "padBgMenu",
+      "light": "#FBF9FE"
+    },
+    "border": {
+      "dark": "padBorder",
+      "light": "#C9BCE8"
+    },
+    "borderActive": {
+      "dark": "padBorderActive",
+      "light": "padPurple"
+    },
+    "borderSubtle": {
+      "dark": "#3A2C5E",
+      "light": "#DDD3F0"
+    },
+    "diffAdded": {
+      "dark": "padSuccess",
+      "light": "#2E8B57"
+    },
+    "diffRemoved": {
+      "dark": "padEye",
+      "light": "#C0392B"
+    },
+    "diffContext": {
+      "dark": "padFgMuted",
+      "light": "#6E5FA3"
+    },
+    "diffHunkHeader": {
+      "dark": "padBridge",
+      "light": "padPurple"
+    },
+    "diffHighlightAdded": {
+      "dark": "padQuicklime",
+      "light": "#2E8B57"
+    },
+    "diffHighlightRemoved": {
+      "dark": "#FF7B7E",
+      "light": "#C0392B"
+    },
+    "diffAddedBg": {
+      "dark": "#2A3A33",
+      "light": "#EAF5EF"
+    },
+    "diffRemovedBg": {
+      "dark": "#3A2A2E",
+      "light": "#FBE9EB"
+    },
+    "diffContextBg": {
+      "dark": "#241542",
+      "light": "#EFE9F9"
+    },
+    "diffAddedLineNumberBg": {
+      "dark": "#2A3A33",
+      "light": "#EAF5EF"
+    },
+    "diffRemovedLineNumberBg": {
+      "dark": "#3A2A2E",
+      "light": "#FBE9EB"
+    },
+    "diffLineNumber": {
+      "dark": "#6E5FA3",
+      "light": "#9F8FD0"
+    },
+    "markdownText": {
+      "dark": "padFg",
+      "light": "#241542"
+    },
+    "markdownHeading": {
+      "dark": "padGold",
+      "light": "padPurple"
+    },
+    "markdownLink": {
+      "dark": "padBridge",
+      "light": "padPurple"
+    },
+    "markdownLinkText": {
+      "dark": "padInfo",
+      "light": "#34558B"
+    },
+    "markdownCode": {
+      "dark": "padGoldDeep",
+      "light": "#8C6A00"
+    },
+    "markdownCodeBlock": {
+      "dark": "padBgAlt",
+      "light": "#EFE9F9"
+    },
+    "markdownBlockQuote": {
+      "dark": "padFgMuted",
+      "light": "#6E5FA3"
+    },
+    "markdownEmph": {
+      "dark": "padGold",
+      "light": "padGoldDeep"
+    },
+    "markdownStrong": {
+      "dark": "padFg",
+      "light": "#241542"
+    },
+    "markdownHorizontalRule": {
+      "dark": "padBorder",
+      "light": "#C9BCE8"
+    },
+    "markdownListItem": {
+      "dark": "padGold",
+      "light": "padPurple"
+    },
+    "markdownListEnumeration": {
+      "dark": "padBridge",
+      "light": "padPurple"
+    },
+    "markdownImage": {
+      "dark": "padPurple",
+      "light": "padPurple"
+    },
+    "markdownImageText": {
+      "dark": "padFgMuted",
+      "light": "#6E5FA3"
+    },
+    "syntaxComment": {
+      "dark": "#8B7FAB",
+      "light": "#9F8FD0"
+    },
+    "syntaxKeyword": {
+      "dark": "padBridge",
+      "light": "padPurple"
+    },
+    "syntaxFunction": {
+      "dark": "padGold",
+      "light": "#B8860B"
+    },
+    "syntaxVariable": {
+      "dark": "#C98DE0",
+      "light": "#783EA8"
+    },
+    "syntaxString": {
+      "dark": "padSuccess",
+      "light": "#2E8B57"
+    },
+    "syntaxNumber": {
+      "dark": "padGoldDeep",
+      "light": "#8C6A00"
+    },
+    "syntaxType": {
+      "dark": "#7CBEEC",
+      "light": "#2D6DA8"
+    },
+    "syntaxOperator": {
+      "dark": "padEye",
+      "light": "#A93225"
+    },
+    "syntaxPunctuation": {
+      "dark": "padFgMuted",
+      "light": "#6E5FA3"
+    }
+  }
+}

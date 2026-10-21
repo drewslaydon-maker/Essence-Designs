@@ -44,12 +44,12 @@ All commands run from the app directory `Lotus_Adversity_Game/` (the git repo ro
 | Command | What it does |
 |---------|-------------|
 | `bun install` | Install dependencies (npm also works) |
-| `bun run dev` | Dev server — `tsx server.ts` on port 3000 (Express + Vite middleware) |
-| `bun run build` | Production build — `vite build` + esbuild bundle → `dist/server.cjs` |
-| `bun run start` | Run production — `node dist/server.cjs` |
+| `bun run dev` | Dev server — `vite` on http://localhost:5173 (static SPA, no backend) |
+| `bun run build` | Production build — `vite build` → static `dist/` |
 | `bun run lint` | Type-check only — `tsc --noEmit` (no ESLint/Prettier configured) |
 | `bun run lab:verify` | Executable Canon gates — `tsx verify-lab.ts`; exits non-zero on failure |
-| `bun run clean` | Remove `dist/` and `server.js` |
+| `bun run clean` | Remove `dist/` |
+| `bun run native` | Launch the native Electron window (static app — run `bun run build` first) |
 
 **No test suite exists.** No runner, no test files.
 
@@ -63,10 +63,9 @@ Lotus-Adversity-Game/                 ← Git repo root
 ├── AGENTS.md                         ← This file
 ├── VISUAL_DESIGN_MASTER.md           ← Root: visual law (palette, primitives, One-Heraldry-One-Primitive)
 └── Lotus_Adversity_Game/             ← The app (nested, not at root)
-    ├── server.ts                     ← Express backend (Gemini proxy, git-sync, zip export)
     ├── WHEEL_DESIGN_SPEC.md          ← Wheel anatomy + interaction math (geometry twin)
     ├── src/
-    │   ├── App.tsx                   ← Root: 6-tab nav via activeTab (NO router)
+    │   ├── App.tsx                   ← Root: 5-tab nav via activeTab (NO router)
     │   ├── index.css                 ← Tailwind v4 import + font utilities + CRT overlay
     │   ├── types.ts                  ← Shared TS interfaces (SymbolForm carries glyph: GlyphKey)
     │   ├── store/useAppStore.ts      ← THE ONLY store: activeTab, crtEnabled, sound, playSfx
@@ -79,8 +78,8 @@ Lotus-Adversity-Game/                 ← Git repo root
     │   │   ├── spokeSymbolsData.ts      (15 discipline true/corrupted forms)
     │   │   └── foreverFlowersData.ts    (RATIFIED/INVALIDATED union)
     │   ├── lab/labChecks.ts          ← SINGLE canonical wheel matrices + executable airseal gates
-    │   └── components/               ← Pantheon, Spokes, Heraldry, Codex, Pillars, Chamber +
-    │                                  GitSyncModal, RingWheel, Header, PantheonSymbolGlyph
+    │   └── components/               ← Pantheon, Spokes, Heraldry, Codex, Pillars, RingWheel,
+    │                                  Header, PantheonSymbolGlyph
     ├── verify-lab.ts                 ← CLI gate (`bun run lab:verify`)
     └── repo_temp/                    ← Stale duplicate — ignore entirely
 ```
@@ -93,11 +92,11 @@ Lotus-Adversity-Game/                 ← Git repo root
 - **One Zustand store:** `useAppStore` — `activeTab`, `crtEnabled`, `soundEnabled`, `playSfx`. There is no `engineStore` and no combat/engine state (deleted during the v2 rebuild).
 - **`RingWheel.tsx`** is the wheel centerpiece (largest component): SVG generation, drag-to-spin, counter-rotating inner Axis (`innerRotation = -rotation`), in-place dossier overlays. Its geometry reads ONLY from `labChecks` exports (`outerSpokeMatrix`, `innerSpokeMatrix`, `cardinalMainNumbers`, `innerSeamAngles`, `statusIdMap`) — NEVER inline a parallel matrix or the gates drift from rendered truth.
 - **Glyph system:** a symbol's motif is a `glyph: GlyphKey` from `src/symbols/glyphKeys.ts`, rendered via `renderGlyph` from `glyphRegistry.tsx`. `PantheonSymbolGlyph` only adds the alignment ring + glow. Never draw a bespoke inline path where a registered glyph exists, and never add an unregistered key to data (the Heraldry gate fails).
-- **`labChecks.ts`** is the single executable truth, run by BOTH `bun run lab:verify` AND the in-browser Chamber "Sealing Gates" tab. Gates: census (15), numeric (1–15 unique), geometry (Alden-North + Axis seam seats), ids (canonical SpokeId registry), data (inputs/outputs/milestones/dual-form lore), and **heraldry** (One-Heraldry-One-Primitive; the empty `KNOWN_COLLISIONS` ledger may only shrink).
+- **`labChecks.ts`** is the single executable truth, run by `bun run lab:verify`. Gates: census (15), numeric (1–15 unique), geometry (Alden-North + Axis seam seats), ids (canonical SpokeId registry), data (inputs/outputs/milestones/dual-form lore), and **heraldry** (One-Heraldry-One-Primitive; the empty `KNOWN_COLLISIONS` ledger may only shrink).
 - **Verification protocol:** after any code change run `bun run lint` then `bun run lab:verify`. Both green is the only currency for a *Verified* milestone (see Flower 08).
-- **Gemini:** key from `.env` via dotenv — **not** `.env.local` (the AI Studio `README.md` is stale boilerplate). Placeholder `MY_GEMINI_API_KEY` counts as missing; the server falls back to procedural generators, so never assume Gemini. Models: `gemini-3.8-flash` with `gemini-3.1-flash-lite` fallback. Endpoints: `/api/health`, `/api/git-status`, `/api/git-sync` (PAT push), `/api/export-project-zip`, and `/api/gemini/*` (inscribe-god, inscribe-armor-symbol, generate-lore, oracle).
 - **SFX** is synthesized with Web Audio oscillators (no audio files): `anvil`, `shield`, `scribe`, `click`.
-- **Custom fonts** load via Google Fonts in `index.html`; utilities exposed in `index.css` (`font-cinzel`, `font-medieval`, `font-pixel`).
+- **Custom fonts** are local woff2 files in `src/assets/fonts/` wired via `@font-face` in `src/index.css` (Cinzel 500/700/900 · MedievalSharp 400 · Press Start 2P 400); utilities exposed: `.font-cinzel`, `.font-medieval`, `.font-pixel`.
+- **Native wrapper:** `electron/main.cjs` (CJS) loads `dist/index.html` via `loadFile` (`bun run native`). No backend, no browser tab, no IPC. `vite.config.ts` sets `base: './'` so the file:// asset load resolves.
 
 ## Lore & Geometry Quick Reference
 
@@ -110,4 +109,4 @@ Lotus-Adversity-Game/                 ← Git repo root
 - **Axis seam-guardian seats** (never an outer spoke's ray — airseal-enforced):
   - 13 Breath @ 225° (8/9 seam) · 14 Vessel @ 345° (12/1 seam) · 15 Unarmored @ 105° (4/5 seam)
 - **Every symbol has two forms:** True/Healthy (`amber-500` or the spoke's own `color`) and Corrupted Imperial (`rose-500`/`emerald-500`). Never render only one.
-- **Phase status:** Phase 0.5 stands **UNSEALED** and **FLOWER 08 is REVOKED** (`INVALIDATED` in `foreverFlowersData.ts`) pending re-ratification of the v2 rebuild. Phase 1 (combat) remains paused — never assume gameplay/combat is active.
+- **Phase status:** Phase 0.5 stands **UNSEALED**. **FLOWER 08 is RATIFIED** (`RATIFIED` in `foreverFlowersData.ts` — restored 2026-09-20, FLOWER-08-RERATIFICATION-001). Phase 1 (combat) remains paused — never assume gameplay/combat is active.

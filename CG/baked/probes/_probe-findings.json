@@ -1,0 +1,2463 @@
+{
+  "leaf": "CG-000",
+  "probeVersion": "2.0",
+  "runAt": "2026-10-05T22:27:46.628Z",
+  "nodeVersion": "v24.19.0",
+  "accountId": "11121350",
+  "controlProfile": "Tobiah",
+  "discipline": {
+    "timeoutMs": 25000,
+    "spacingMs": 700,
+    "backoffMs": 6000,
+    "sequential": true
+  },
+  "sections": {
+    "surface": {
+      "specVersion": "3.2.28",
+      "totalPaths": 100,
+      "allPaths": [
+        "/heartbeat",
+        "/weapons",
+        "/warframes",
+        "/items",
+        "/mods",
+        "/weapons/{item}",
+        "/warframes/{item}",
+        "/items/{item}",
+        "/mods/{item}",
+        "/weapons/search/{query}",
+        "/warframes/search/{query}",
+        "/items/search/{query}",
+        "/mods/search/{query}",
+        "/drops",
+        "/drops/search/{query}",
+        "/{platform}/rivens",
+        "/{platform}/rivens/search/{query}",
+        "/wfinfo/filtered_items",
+        "/wfinfo/prices",
+        "/pricecheck/{type}/{query}",
+        "/profile/{playerId}",
+        "/profile/{playerId}/xpInfo",
+        "/profile/{playerId}/stats",
+        "/profile/{username}/arsenal",
+        "/twitter",
+        "/pc",
+        "/ps4",
+        "/psn",
+        "/xb1",
+        "/swi",
+        "/ns",
+        "/pc/{field}",
+        "/ps4/{field}",
+        "/psn/{field}",
+        "/xb1/{field}",
+        "/swi/{field}",
+        "/ns/{field}",
+        "/de/{field}",
+        "/es/{field}",
+        "/fr/{field}",
+        "/it/{field}",
+        "/ko/{field}",
+        "/pl/{field}",
+        "/pt/{field}",
+        "/ru/{field}",
+        "/zh/{field}",
+        "/cs/{field}",
+        "/sr/{field}",
+        "/uk/{field}",
+        "/en/{field}",
+        "/pc/alerts",
+        "/pc/arbitration",
+        "/pc/archimedeas",
+        "/pc/archonHunt",
+        "/pc/buildLabel",
+        "/pc/calendar",
+        "/pc/cambionCycle",
+        "/pc/cetusCycle",
+        "/pc/clanWeeklyInitiative",
+        "/pc/conclaveChallenges",
+        "/pc/constructionProgress",
+        "/pc/dailyDeals",
+        "/pc/darkSectors",
+        "/pc/descendia",
+        "/pc/duviriCycle",
+        "/pc/earthCycle",
+        "/pc/events",
+        "/pc/faceoffBonus",
+        "/pc/fissures",
+        "/pc/flashSales",
+        "/pc/globalUpgrades",
+        "/pc/invasions",
+        "/pc/kinepage",
+        "/pc/kuva",
+        "/pc/news",
+        "/pc/nightwave",
+        "/pc/persistentEnemies",
+        "/pc/questToConquerCancer",
+        "/pc/sentientOutposts",
+        "/pc/simaris",
+        "/pc/sortie",
+        "/pc/steelPath",
+        "/pc/syndicateMissions",
+        "/pc/timestamp",
+        "/pc/vallisCycle",
+        "/pc/vaultTrader",
+        "/pc/voidTrader",
+        "/pc/voidTraders",
+        "/pc/weeklyChallenges",
+        "/pc/zarimanCycle",
+        "/rss",
+        "/synthTargets",
+        "/arcanes",
+        "/tutorials",
+        "/conclave",
+        "/missionTypes",
+        "/factions",
+        "/syndicates",
+        "/{key}",
+        "/{key}/search/{query}"
+      ],
+      "orderRoutes": [],
+      "craftRoutes": [
+        "/pc/buildLabel"
+      ],
+      "questRoutes": [
+        "/pc/questToConquerCancer"
+      ],
+      "profileRoutes": [
+        "/profile/{playerId}",
+        "/profile/{playerId}/xpInfo",
+        "/profile/{playerId}/stats",
+        "/profile/{username}/arsenal"
+      ],
+      "securitySchemes": null,
+      "structuralFindings": {
+        "ordersRoutesInSpec": [],
+        "craftingOrResearchRoutesInSpec": [
+          "/pc/buildLabel"
+        ],
+        "questRoutesInSpec": [
+          "/pc/questToConquerCancer"
+        ]
+      }
+    },
+    "accountResolution": {
+      "candidatesProbed": 8,
+      "resolution": [
+        {
+          "platform": "PC",
+          "url": "https://api.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "httpStatus": 403,
+          "verdict": "FORBIDDEN",
+          "detail": "HTTP 403 — closed to unauthenticated callers (empty body)"
+        },
+        {
+          "platform": "PS4",
+          "url": "https://api-ps4.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "httpStatus": 403,
+          "verdict": "FORBIDDEN",
+          "detail": "HTTP 403 — closed to unauthenticated callers (empty body)"
+        },
+        {
+          "platform": "XB1",
+          "url": "https://api-xb1.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "httpStatus": 403,
+          "verdict": "FORBIDDEN",
+          "detail": "HTTP 403 — closed to unauthenticated callers (empty body)"
+        },
+        {
+          "platform": "Switch",
+          "url": "https://api-swi.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "httpStatus": 403,
+          "verdict": "FORBIDDEN",
+          "detail": "HTTP 403 — closed to unauthenticated callers (empty body)"
+        },
+        {
+          "platform": "Mobile",
+          "url": "https://api-mob.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "httpStatus": 403,
+          "verdict": "FORBIDDEN",
+          "detail": "HTTP 403 — closed to unauthenticated callers (empty body)"
+        },
+        {
+          "platform": "Android",
+          "url": "https://api-and.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "httpStatus": 403,
+          "verdict": "FORBIDDEN",
+          "detail": "HTTP 403 — closed to unauthenticated callers (empty body)"
+        },
+        {
+          "platform": "multi (warframestat)",
+          "url": "https://api.warframestat.us/profile/11121350",
+          "httpStatus": 404,
+          "verdict": "UNRESOLVED",
+          "detail": "{\"error\":\"No Result\",\"code\":404} — route/ID not exposed"
+        },
+        {
+          "platform": "multi (wfcd.gg)",
+          "url": "https://api.wfcd.gg/profile/11121350",
+          "httpStatus": 0,
+          "verdict": "TRANSPORT-ERROR",
+          "detail": "TypeError: fetch failed"
+        }
+      ],
+      "controlSweep": [
+        {
+          "label": "warframestat /profile/Tobiah",
+          "url": "https://api.warframestat.us/profile/Tobiah",
+          "tests": "spec-supplied example identifier (README/spec example \"Tobiah\")",
+          "httpStatus": 404,
+          "ok": false,
+          "bodySample": "{\"error\":\"No Result\",\"code\":404}",
+          "transportError": null
+        },
+        {
+          "label": "warframestat /profile/Tobiah/stats",
+          "url": "https://api.warframestat.us/profile/Tobiah/stats",
+          "tests": "profile stats route",
+          "httpStatus": 404,
+          "ok": false,
+          "bodySample": "{\"error\":\"No Result\",\"code\":404}",
+          "transportError": null
+        },
+        {
+          "label": "warframestat /profile/Tobiah/xpInfo",
+          "url": "https://api.warframestat.us/profile/Tobiah/xpInfo",
+          "tests": "profile xp/mastery route",
+          "httpStatus": 404,
+          "ok": false,
+          "bodySample": "{\"error\":\"No Result\",\"code\":404}",
+          "transportError": null
+        },
+        {
+          "label": "warframestat /profile/Tobiah/arsenal",
+          "url": "https://api.warframestat.us/profile/Tobiah/arsenal",
+          "tests": "arsenal route (spec: requires Twitch integration)",
+          "httpStatus": 404,
+          "ok": false,
+          "bodySample": "{\"error\":\"No Result\",\"code\":404}",
+          "transportError": null
+        },
+        {
+          "label": "warframestat /profile/11121350?withItem=true",
+          "url": "https://api.warframestat.us/profile/11121350?withItem=true",
+          "tests": "our id with item detail requested",
+          "httpStatus": 404,
+          "ok": false,
+          "bodySample": "{\"error\":\"No Result\",\"code\":404}",
+          "transportError": null
+        },
+        {
+          "label": "legacy PC accountId+contentId",
+          "url": "https://api.warframe.com/cdn/getProfileViewingData.php?accountId=11121350&contentId=2&language=en",
+          "tests": "corrected legacy param contract (accountId/contentId), our id",
+          "httpStatus": 403,
+          "ok": false,
+          "bodySample": "",
+          "transportError": null
+        },
+        {
+          "label": "legacy PC accountId+contentId CONTROL",
+          "url": "https://api.warframe.com/cdn/getProfileViewingData.php?accountId=Tobiah&contentId=2&language=en",
+          "tests": "corrected legacy param contract, control id",
+          "httpStatus": 403,
+          "ok": false,
+          "bodySample": "",
+          "transportError": null
+        },
+        {
+          "label": "arsenal: drew.slaydon",
+          "url": "https://api.warframestat.us/profile/drew.slaydon/arsenal",
+          "tests": "Drew IGN named in CG-000_TASK.md §1, arsenal-by-username route",
+          "httpStatus": 404,
+          "ok": false,
+          "bodySample": "{\"error\":\"No Result\",\"code\":404}",
+          "transportError": null
+        },
+        {
+          "label": "arsenal: Jubbiles",
+          "url": "https://api.warframestat.us/profile/Jubbiles/arsenal",
+          "tests": "Drew IGN named in CG-000_TASK.md §1, arsenal-by-username route",
+          "httpStatus": 404,
+          "ok": false,
+          "bodySample": "{\"error\":\"No Result\",\"code\":404}",
+          "transportError": null
+        }
+      ],
+      "controlResolves": false,
+      "profileVerdict": "SURFACE-CLOSED",
+      "platformVerdict": "UNRESOLVED — no candidate endpoint resolved",
+      "interpretation": "Even the API spec's own example identifier fails, so profile access is closed surface-wide. Our ID cannot be tested through it."
+    },
+    "profileCapabilities": [
+      {
+        "id": "Q1",
+        "ask": "Research / dojo timer with completion date?",
+        "why": "Drew's Volt research completes Wednesday — free if exposed",
+        "scope": "player",
+        "verdict": "[INACCESSIBLE]",
+        "fieldPaths": [],
+        "exampleShape": null,
+        "sourcesTried": [
+          "https://api.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-ps4.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-xb1.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-swi.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-mob.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-and.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api.warframestat.us/profile/11121350",
+          "https://api.wfcd.gg/profile/11121350",
+          "https://api.warframestat.us/profile/Tobiah",
+          "https://api.warframestat.us/profile/Tobiah/stats",
+          "https://api.warframestat.us/profile/Tobiah/xpInfo",
+          "https://api.warframestat.us/profile/Tobiah/arsenal",
+          "https://api.warframestat.us/profile/11121350?withItem=true",
+          "https://api.warframe.com/cdn/getProfileViewingData.php?accountId=11121350&contentId=2&language=en",
+          "https://api.warframe.com/cdn/getProfileViewingData.php?accountId=Tobiah&contentId=2&language=en",
+          "https://api.warframestat.us/profile/drew.slaydon/arsenal",
+          "https://api.warframestat.us/profile/Jubbiles/arsenal"
+        ],
+        "reason": "No profile payload obtainable. Profile surface verdict: SURFACE-CLOSED. Spec declares no research/dojo/crafting/quest route at all (structural absence)."
+      },
+      {
+        "id": "Q2",
+        "ask": "Any player-foundry crafting queue?",
+        "why": "Drew's Wisp Prime (12h+3d), Julia's Hek/Atomos — believed not exposed anywhere",
+        "scope": "player",
+        "verdict": "[INACCESSIBLE]",
+        "fieldPaths": [],
+        "exampleShape": null,
+        "sourcesTried": [
+          "https://api.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-ps4.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-xb1.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-swi.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-mob.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-and.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api.warframestat.us/profile/11121350",
+          "https://api.wfcd.gg/profile/11121350",
+          "https://api.warframestat.us/profile/Tobiah",
+          "https://api.warframestat.us/profile/Tobiah/stats",
+          "https://api.warframestat.us/profile/Tobiah/xpInfo",
+          "https://api.warframestat.us/profile/Tobiah/arsenal",
+          "https://api.warframestat.us/profile/11121350?withItem=true",
+          "https://api.warframe.com/cdn/getProfileViewingData.php?accountId=11121350&contentId=2&language=en",
+          "https://api.warframe.com/cdn/getProfileViewingData.php?accountId=Tobiah&contentId=2&language=en",
+          "https://api.warframestat.us/profile/drew.slaydon/arsenal",
+          "https://api.warframestat.us/profile/Jubbiles/arsenal"
+        ],
+        "reason": "No profile payload obtainable. Profile surface verdict: SURFACE-CLOSED. Spec declares no research/dojo/crafting/quest route at all (structural absence)."
+      },
+      {
+        "id": "Q3f",
+        "ask": "Player-OWNED prime parts / resources / mods / relics",
+        "why": "Layer-B inventory",
+        "scope": "player",
+        "verdict": "[INACCESSIBLE]",
+        "fieldPaths": [],
+        "exampleShape": null,
+        "sourcesTried": [
+          "https://api.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-ps4.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-xb1.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-swi.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-mob.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-and.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api.warframestat.us/profile/11121350",
+          "https://api.wfcd.gg/profile/11121350",
+          "https://api.warframestat.us/profile/Tobiah",
+          "https://api.warframestat.us/profile/Tobiah/stats",
+          "https://api.warframestat.us/profile/Tobiah/xpInfo",
+          "https://api.warframestat.us/profile/Tobiah/arsenal",
+          "https://api.warframestat.us/profile/11121350?withItem=true",
+          "https://api.warframe.com/cdn/getProfileViewingData.php?accountId=11121350&contentId=2&language=en",
+          "https://api.warframe.com/cdn/getProfileViewingData.php?accountId=Tobiah&contentId=2&language=en",
+          "https://api.warframestat.us/profile/drew.slaydon/arsenal",
+          "https://api.warframestat.us/profile/Jubbiles/arsenal"
+        ],
+        "reason": "No profile payload obtainable. Profile surface verdict: SURFACE-CLOSED. Spec declares no research/dojo/crafting/quest route at all (structural absence)."
+      },
+      {
+        "id": "Q3g",
+        "ask": "Player quest-completion keys",
+        "why": "Progression / Julia TWW gate",
+        "scope": "player",
+        "verdict": "[INACCESSIBLE]",
+        "fieldPaths": [],
+        "exampleShape": null,
+        "sourcesTried": [
+          "https://api.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-ps4.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-xb1.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-swi.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-mob.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-and.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api.warframestat.us/profile/11121350",
+          "https://api.wfcd.gg/profile/11121350",
+          "https://api.warframestat.us/profile/Tobiah",
+          "https://api.warframestat.us/profile/Tobiah/stats",
+          "https://api.warframestat.us/profile/Tobiah/xpInfo",
+          "https://api.warframestat.us/profile/Tobiah/arsenal",
+          "https://api.warframestat.us/profile/11121350?withItem=true",
+          "https://api.warframe.com/cdn/getProfileViewingData.php?accountId=11121350&contentId=2&language=en",
+          "https://api.warframe.com/cdn/getProfileViewingData.php?accountId=Tobiah&contentId=2&language=en",
+          "https://api.warframestat.us/profile/drew.slaydon/arsenal",
+          "https://api.warframestat.us/profile/Jubbiles/arsenal"
+        ],
+        "reason": "No profile payload obtainable. Profile surface verdict: SURFACE-CLOSED. Spec declares no research/dojo/crafting/quest route at all (structural absence)."
+      },
+      {
+        "id": "Q4a",
+        "ask": "Player credits",
+        "why": "Economy",
+        "scope": "player",
+        "verdict": "[INACCESSIBLE]",
+        "fieldPaths": [],
+        "exampleShape": null,
+        "sourcesTried": [
+          "https://api.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-ps4.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-xb1.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-swi.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-mob.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-and.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api.warframestat.us/profile/11121350",
+          "https://api.wfcd.gg/profile/11121350",
+          "https://api.warframestat.us/profile/Tobiah",
+          "https://api.warframestat.us/profile/Tobiah/stats",
+          "https://api.warframestat.us/profile/Tobiah/xpInfo",
+          "https://api.warframestat.us/profile/Tobiah/arsenal",
+          "https://api.warframestat.us/profile/11121350?withItem=true",
+          "https://api.warframe.com/cdn/getProfileViewingData.php?accountId=11121350&contentId=2&language=en",
+          "https://api.warframe.com/cdn/getProfileViewingData.php?accountId=Tobiah&contentId=2&language=en",
+          "https://api.warframestat.us/profile/drew.slaydon/arsenal",
+          "https://api.warframestat.us/profile/Jubbiles/arsenal"
+        ],
+        "reason": "No profile payload obtainable. Profile surface verdict: SURFACE-CLOSED. Spec declares no research/dojo/crafting/quest route at all (structural absence)."
+      },
+      {
+        "id": "Q4b",
+        "ask": "Player platinum",
+        "why": "Economy",
+        "scope": "player",
+        "verdict": "[INACCESSIBLE]",
+        "fieldPaths": [],
+        "exampleShape": null,
+        "sourcesTried": [
+          "https://api.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-ps4.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-xb1.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-swi.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-mob.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-and.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api.warframestat.us/profile/11121350",
+          "https://api.wfcd.gg/profile/11121350",
+          "https://api.warframestat.us/profile/Tobiah",
+          "https://api.warframestat.us/profile/Tobiah/stats",
+          "https://api.warframestat.us/profile/Tobiah/xpInfo",
+          "https://api.warframestat.us/profile/Tobiah/arsenal",
+          "https://api.warframestat.us/profile/11121350?withItem=true",
+          "https://api.warframe.com/cdn/getProfileViewingData.php?accountId=11121350&contentId=2&language=en",
+          "https://api.warframe.com/cdn/getProfileViewingData.php?accountId=Tobiah&contentId=2&language=en",
+          "https://api.warframestat.us/profile/drew.slaydon/arsenal",
+          "https://api.warframestat.us/profile/Jubbiles/arsenal"
+        ],
+        "reason": "No profile payload obtainable. Profile surface verdict: SURFACE-CLOSED. Spec declares no research/dojo/crafting/quest route at all (structural absence)."
+      },
+      {
+        "id": "Q4c",
+        "ask": "Player mastery rank",
+        "why": "Progression",
+        "scope": "player",
+        "verdict": "[INACCESSIBLE]",
+        "fieldPaths": [],
+        "exampleShape": null,
+        "sourcesTried": [
+          "https://api.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-ps4.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-xb1.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-swi.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-mob.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-and.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api.warframestat.us/profile/11121350",
+          "https://api.wfcd.gg/profile/11121350",
+          "https://api.warframestat.us/profile/Tobiah",
+          "https://api.warframestat.us/profile/Tobiah/stats",
+          "https://api.warframestat.us/profile/Tobiah/xpInfo",
+          "https://api.warframestat.us/profile/Tobiah/arsenal",
+          "https://api.warframestat.us/profile/11121350?withItem=true",
+          "https://api.warframe.com/cdn/getProfileViewingData.php?accountId=11121350&contentId=2&language=en",
+          "https://api.warframe.com/cdn/getProfileViewingData.php?accountId=Tobiah&contentId=2&language=en",
+          "https://api.warframestat.us/profile/drew.slaydon/arsenal",
+          "https://api.warframestat.us/profile/Jubbiles/arsenal"
+        ],
+        "reason": "No profile payload obtainable. Profile surface verdict: SURFACE-CLOSED. Spec declares no research/dojo/crafting/quest route at all (structural absence)."
+      },
+      {
+        "id": "Q4d",
+        "ask": "Player syndicate standings",
+        "why": "Progression",
+        "scope": "player",
+        "verdict": "[INACCESSIBLE]",
+        "fieldPaths": [],
+        "exampleShape": null,
+        "sourcesTried": [
+          "https://api.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-ps4.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-xb1.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-swi.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-mob.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-and.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api.warframestat.us/profile/11121350",
+          "https://api.wfcd.gg/profile/11121350",
+          "https://api.warframestat.us/profile/Tobiah",
+          "https://api.warframestat.us/profile/Tobiah/stats",
+          "https://api.warframestat.us/profile/Tobiah/xpInfo",
+          "https://api.warframestat.us/profile/Tobiah/arsenal",
+          "https://api.warframestat.us/profile/11121350?withItem=true",
+          "https://api.warframe.com/cdn/getProfileViewingData.php?accountId=11121350&contentId=2&language=en",
+          "https://api.warframe.com/cdn/getProfileViewingData.php?accountId=Tobiah&contentId=2&language=en",
+          "https://api.warframestat.us/profile/drew.slaydon/arsenal",
+          "https://api.warframestat.us/profile/Jubbiles/arsenal"
+        ],
+        "reason": "No profile payload obtainable. Profile surface verdict: SURFACE-CLOSED. Spec declares no research/dojo/crafting/quest route at all (structural absence)."
+      },
+      {
+        "id": "Q5",
+        "ask": "Quest progress granular enough for STARTED vs COMPLETE?",
+        "why": "Julia's TWW progress gate",
+        "scope": "player",
+        "verdict": "[INACCESSIBLE]",
+        "fieldPaths": [],
+        "exampleShape": null,
+        "sourcesTried": [
+          "https://api.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-ps4.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-xb1.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-swi.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-mob.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api-and.warframe.com/cdn/getProfileViewingData.php?playerId=11121350",
+          "https://api.warframestat.us/profile/11121350",
+          "https://api.wfcd.gg/profile/11121350",
+          "https://api.warframestat.us/profile/Tobiah",
+          "https://api.warframestat.us/profile/Tobiah/stats",
+          "https://api.warframestat.us/profile/Tobiah/xpInfo",
+          "https://api.warframestat.us/profile/Tobiah/arsenal",
+          "https://api.warframestat.us/profile/11121350?withItem=true",
+          "https://api.warframe.com/cdn/getProfileViewingData.php?accountId=11121350&contentId=2&language=en",
+          "https://api.warframe.com/cdn/getProfileViewingData.php?accountId=Tobiah&contentId=2&language=en",
+          "https://api.warframestat.us/profile/drew.slaydon/arsenal",
+          "https://api.warframestat.us/profile/Jubbiles/arsenal"
+        ],
+        "reason": "No profile payload obtainable. Profile surface verdict: SURFACE-CLOSED. Spec declares no research/dojo/crafting/quest route at all (structural absence)."
+      }
+    ],
+    "worldstate": {
+      "url": "https://api.warframestat.us/pc/en",
+      "httpStatus": 200,
+      "ok": true,
+      "topLevelKeys": [
+        "timestamp",
+        "buildLabel",
+        "news",
+        "events",
+        "alerts",
+        "sortie",
+        "syndicateMissions",
+        "fissures",
+        "globalUpgrades",
+        "flashSales",
+        "invasions",
+        "darkSectors",
+        "voidTraders",
+        "voidTrader",
+        "dailyDeals",
+        "simaris",
+        "conclaveChallenges",
+        "persistentEnemies",
+        "earthCycle",
+        "cetusCycle",
+        "cambionCycle",
+        "zarimanCycle",
+        "constructionProgress",
+        "vallisCycle",
+        "nightwave",
+        "kuva",
+        "arbitration",
+        "sentientOutposts",
+        "steelPath",
+        "vaultTrader",
+        "archonHunt",
+        "duviriCycle",
+        "kinepage",
+        "archimedeas",
+        "descendia",
+        "calendar",
+        "faceoffBonus",
+        "clanWeeklyInitiative"
+      ],
+      "streamDate": null,
+      "timestamp": "2026-10-05T22:15:39.000Z",
+      "snapshotStem": "worldstate__pc-en",
+      "note": "Field `streamDate` is ABSENT from the payload; the live timestamp field is `timestamp`.",
+      "timestampEndpoint": "2026-10-05T22:15:39.000Z"
+    },
+    "mandatedOrderEndpoints": {
+      "note": "CG-000_TASK.md §4C names exactly these two endpoints. Both return a router-level 404 for every probed item; neither appears in the OpenAPI spec.",
+      "endpoint1": "/items/<ITEM>/orders",
+      "endpoint2": "/cdn/getItemOrders.php?item=<ITEM>",
+      "mandated": [
+        {
+          "item": "Braton Vandal",
+          "results": [
+            {
+              "endpoint": "warframestat.us/items/<ITEM>/orders",
+              "url": "https://api.warframestat.us/items/Braton%20Vandal/orders",
+              "httpStatus": 404,
+              "ok": false,
+              "routerSays": "Cannot GET /items/Braton%20Vandal/orders",
+              "transportError": null
+            },
+            {
+              "endpoint": "warframe.com/cdn/getItemOrders.php?item=<ITEM>",
+              "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Braton%20Vandal",
+              "httpStatus": 403,
+              "ok": false,
+              "routerSays": "",
+              "transportError": null
+            }
+          ]
+        },
+        {
+          "item": "Scattered Justice",
+          "results": [
+            {
+              "endpoint": "warframestat.us/items/<ITEM>/orders",
+              "url": "https://api.warframestat.us/items/Scattered%20Justice/orders",
+              "httpStatus": 404,
+              "ok": false,
+              "routerSays": "Cannot GET /items/Scattered%20Justice/orders",
+              "transportError": null
+            },
+            {
+              "endpoint": "warframe.com/cdn/getItemOrders.php?item=<ITEM>",
+              "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Scattered%20Justice",
+              "httpStatus": 403,
+              "ok": false,
+              "routerSays": "",
+              "transportError": null
+            }
+          ]
+        },
+        {
+          "item": "Voltaic Strike",
+          "results": [
+            {
+              "endpoint": "warframestat.us/items/<ITEM>/orders",
+              "url": "https://api.warframestat.us/items/Voltaic%20Strike/orders",
+              "httpStatus": 404,
+              "ok": false,
+              "routerSays": "Cannot GET /items/Voltaic%20Strike/orders",
+              "transportError": null
+            },
+            {
+              "endpoint": "warframe.com/cdn/getItemOrders.php?item=<ITEM>",
+              "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Voltaic%20Strike",
+              "httpStatus": 403,
+              "ok": false,
+              "routerSays": "",
+              "transportError": null
+            }
+          ]
+        },
+        {
+          "item": "Sybaris Prime",
+          "results": [
+            {
+              "endpoint": "warframestat.us/items/<ITEM>/orders",
+              "url": "https://api.warframestat.us/items/Sybaris%20Prime/orders",
+              "httpStatus": 404,
+              "ok": false,
+              "routerSays": "Cannot GET /items/Sybaris%20Prime/orders",
+              "transportError": null
+            },
+            {
+              "endpoint": "warframe.com/cdn/getItemOrders.php?item=<ITEM>",
+              "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Sybaris%20Prime",
+              "httpStatus": 403,
+              "ok": false,
+              "routerSays": "",
+              "transportError": null
+            }
+          ]
+        },
+        {
+          "item": "Steflos Prime",
+          "results": [
+            {
+              "endpoint": "warframestat.us/items/<ITEM>/orders",
+              "url": "https://api.warframestat.us/items/Steflos%20Prime/orders",
+              "httpStatus": 404,
+              "ok": false,
+              "routerSays": "Cannot GET /items/Steflos%20Prime/orders",
+              "transportError": null
+            },
+            {
+              "endpoint": "warframe.com/cdn/getItemOrders.php?item=<ITEM>",
+              "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Steflos%20Prime",
+              "httpStatus": 403,
+              "ok": false,
+              "routerSays": "",
+              "transportError": null
+            }
+          ]
+        },
+        {
+          "item": "Baza Prime",
+          "results": [
+            {
+              "endpoint": "warframestat.us/items/<ITEM>/orders",
+              "url": "https://api.warframestat.us/items/Baza%20Prime/orders",
+              "httpStatus": 404,
+              "ok": false,
+              "routerSays": "Cannot GET /items/Baza%20Prime/orders",
+              "transportError": null
+            },
+            {
+              "endpoint": "warframe.com/cdn/getItemOrders.php?item=<ITEM>",
+              "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Baza%20Prime",
+              "httpStatus": 403,
+              "ok": false,
+              "routerSays": "",
+              "transportError": null
+            }
+          ]
+        },
+        {
+          "item": "Valkyr Prime",
+          "results": [
+            {
+              "endpoint": "warframestat.us/items/<ITEM>/orders",
+              "url": "https://api.warframestat.us/items/Valkyr%20Prime/orders",
+              "httpStatus": 404,
+              "ok": false,
+              "routerSays": "Cannot GET /items/Valkyr%20Prime/orders",
+              "transportError": null
+            },
+            {
+              "endpoint": "warframe.com/cdn/getItemOrders.php?item=<ITEM>",
+              "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Valkyr%20Prime",
+              "httpStatus": 403,
+              "ok": false,
+              "routerSays": "",
+              "transportError": null
+            }
+          ]
+        },
+        {
+          "item": "Ivara Prime",
+          "results": [
+            {
+              "endpoint": "warframestat.us/items/<ITEM>/orders",
+              "url": "https://api.warframestat.us/items/Ivara%20Prime/orders",
+              "httpStatus": 404,
+              "ok": false,
+              "routerSays": "Cannot GET /items/Ivara%20Prime/orders",
+              "transportError": null
+            },
+            {
+              "endpoint": "warframe.com/cdn/getItemOrders.php?item=<ITEM>",
+              "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Ivara%20Prime",
+              "httpStatus": 403,
+              "ok": false,
+              "routerSays": "",
+              "transportError": null
+            }
+          ]
+        },
+        {
+          "item": "Wisp Prime",
+          "results": [
+            {
+              "endpoint": "warframestat.us/items/<ITEM>/orders",
+              "url": "https://api.warframestat.us/items/Wisp%20Prime/orders",
+              "httpStatus": 404,
+              "ok": false,
+              "routerSays": "Cannot GET /items/Wisp%20Prime/orders",
+              "transportError": null
+            },
+            {
+              "endpoint": "warframe.com/cdn/getItemOrders.php?item=<ITEM>",
+              "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Wisp%20Prime",
+              "httpStatus": 403,
+              "ok": false,
+              "routerSays": "",
+              "transportError": null
+            }
+          ]
+        },
+        {
+          "item": "Volt",
+          "results": [
+            {
+              "endpoint": "warframestat.us/items/<ITEM>/orders",
+              "url": "https://api.warframestat.us/items/Volt/orders",
+              "httpStatus": 404,
+              "ok": false,
+              "routerSays": "Cannot GET /items/Volt/orders",
+              "transportError": null
+            },
+            {
+              "endpoint": "warframe.com/cdn/getItemOrders.php?item=<ITEM>",
+              "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Volt",
+              "httpStatus": 403,
+              "ok": false,
+              "routerSays": "",
+              "transportError": null
+            }
+          ]
+        },
+        {
+          "item": "Hek",
+          "results": [
+            {
+              "endpoint": "warframestat.us/items/<ITEM>/orders",
+              "url": "https://api.warframestat.us/items/Hek/orders",
+              "httpStatus": 404,
+              "ok": false,
+              "routerSays": "Cannot GET /items/Hek/orders",
+              "transportError": null
+            },
+            {
+              "endpoint": "warframe.com/cdn/getItemOrders.php?item=<ITEM>",
+              "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Hek",
+              "httpStatus": 403,
+              "ok": false,
+              "routerSays": "",
+              "transportError": null
+            }
+          ]
+        },
+        {
+          "item": "Atomos",
+          "results": [
+            {
+              "endpoint": "warframestat.us/items/<ITEM>/orders",
+              "url": "https://api.warframestat.us/items/Atomos/orders",
+              "httpStatus": 404,
+              "ok": false,
+              "routerSays": "Cannot GET /items/Atomos/orders",
+              "transportError": null
+            },
+            {
+              "endpoint": "warframe.com/cdn/getItemOrders.php?item=<ITEM>",
+              "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Atomos",
+              "httpStatus": 403,
+              "ok": false,
+              "routerSays": "",
+              "transportError": null
+            }
+          ]
+        },
+        {
+          "item": "Neurode",
+          "results": [
+            {
+              "endpoint": "warframestat.us/items/<ITEM>/orders",
+              "url": "https://api.warframestat.us/items/Neurode/orders",
+              "httpStatus": 404,
+              "ok": false,
+              "routerSays": "Cannot GET /items/Neurode/orders",
+              "transportError": null
+            },
+            {
+              "endpoint": "warframe.com/cdn/getItemOrders.php?item=<ITEM>",
+              "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Neurode",
+              "httpStatus": 403,
+              "ok": false,
+              "routerSays": "",
+              "transportError": null
+            }
+          ]
+        },
+        {
+          "item": "Stalking Fan",
+          "results": [
+            {
+              "endpoint": "warframestat.us/items/<ITEM>/orders",
+              "url": "https://api.warframestat.us/items/Stalking%20Fan/orders",
+              "httpStatus": 404,
+              "ok": false,
+              "routerSays": "Cannot GET /items/Stalking%20Fan/orders",
+              "transportError": null
+            },
+            {
+              "endpoint": "warframe.com/cdn/getItemOrders.php?item=<ITEM>",
+              "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Stalking%20Fan",
+              "httpStatus": 403,
+              "ok": false,
+              "routerSays": "",
+              "transportError": null
+            }
+          ]
+        },
+        {
+          "item": "Crimson Dervish",
+          "results": [
+            {
+              "endpoint": "warframestat.us/items/<ITEM>/orders",
+              "url": "https://api.warframestat.us/items/Crimson%20Dervish/orders",
+              "httpStatus": 404,
+              "ok": false,
+              "routerSays": "Cannot GET /items/Crimson%20Dervish/orders",
+              "transportError": null
+            },
+            {
+              "endpoint": "warframe.com/cdn/getItemOrders.php?item=<ITEM>",
+              "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Crimson%20Dervish",
+              "httpStatus": 403,
+              "ok": false,
+              "routerSays": "",
+              "transportError": null
+            }
+          ]
+        },
+        {
+          "item": "Zenurik",
+          "results": [
+            {
+              "endpoint": "warframestat.us/items/<ITEM>/orders",
+              "url": "https://api.warframestat.us/items/Zenurik/orders",
+              "httpStatus": 404,
+              "ok": false,
+              "routerSays": "Cannot GET /items/Zenurik/orders",
+              "transportError": null
+            },
+            {
+              "endpoint": "warframe.com/cdn/getItemOrders.php?item=<ITEM>",
+              "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Zenurik",
+              "httpStatus": 403,
+              "ok": false,
+              "routerSays": "",
+              "transportError": null
+            }
+          ]
+        },
+        {
+          "item": "Railjack",
+          "results": [
+            {
+              "endpoint": "warframestat.us/items/<ITEM>/orders",
+              "url": "https://api.warframestat.us/items/Railjack/orders",
+              "httpStatus": 404,
+              "ok": false,
+              "routerSays": "Cannot GET /items/Railjack/orders",
+              "transportError": null
+            },
+            {
+              "endpoint": "warframe.com/cdn/getItemOrders.php?item=<ITEM>",
+              "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Railjack",
+              "httpStatus": 403,
+              "ok": false,
+              "routerSays": "",
+              "transportError": null
+            }
+          ]
+        }
+      ]
+    },
+    "orderability": [
+      {
+        "group": "Drew — live/liquidating",
+        "item": "Braton Vandal",
+        "verdict": "NOT-ORDERABLE",
+        "resolvedItemName": "Braton Vandal",
+        "priceSignal": null,
+        "relatedPriceRows": [],
+        "itemDb": {
+          "queriedName": "Braton Vandal",
+          "exists": true,
+          "tradable": false,
+          "type": "Rifle",
+          "category": "Primary",
+          "uniqueName": "/Lotus/Weapons/Tenno/Rifle/VIPRifle",
+          "components": [
+            {
+              "name": "Barrel",
+              "count": 1,
+              "tradable": true,
+              "dropSources": 3
+            },
+            {
+              "name": "Blueprint",
+              "count": 1,
+              "tradable": true,
+              "dropSources": 3
+            },
+            {
+              "name": "Receiver",
+              "count": 1,
+              "tradable": true,
+              "dropSources": 3
+            },
+            {
+              "name": "Stock",
+              "count": 1,
+              "tradable": true,
+              "dropSources": 3
+            }
+          ]
+        },
+        "formsProbed": [
+          {
+            "queriedName": "Braton Vandal",
+            "itemDbExists": true,
+            "tradable": false,
+            "inWfinfoPricesExact": false,
+            "inWfinfoPricesSet": false,
+            "wfinfoPriceRows": null,
+            "relatedPriceRows": [],
+            "inFilteredEqmt": false,
+            "eqmtRow": null,
+            "pricecheckHttp": 200,
+            "pricecheckNonEmpty": false,
+            "pricecheckSample": "[]"
+          }
+        ],
+        "reading": "No live public price signal exists for this item. The in-game order book is not exposed by any reachable public route."
+      },
+      {
+        "group": "Drew — live/liquidating",
+        "item": "Scattered Justice",
+        "verdict": "NOT-ORDERABLE",
+        "resolvedItemName": "Scattered Justice",
+        "priceSignal": null,
+        "relatedPriceRows": [],
+        "itemDb": {
+          "queriedName": "Scattered Justice",
+          "exists": true,
+          "tradable": true,
+          "type": "Primary Mod",
+          "category": "Mods",
+          "uniqueName": "/Lotus/Upgrades/Mods/Syndicate/HekMod",
+          "components": []
+        },
+        "formsProbed": [
+          {
+            "queriedName": "Scattered Justice",
+            "itemDbExists": true,
+            "tradable": true,
+            "inWfinfoPricesExact": false,
+            "inWfinfoPricesSet": false,
+            "wfinfoPriceRows": null,
+            "relatedPriceRows": [],
+            "inFilteredEqmt": false,
+            "eqmtRow": null,
+            "pricecheckHttp": 200,
+            "pricecheckNonEmpty": false,
+            "pricecheckSample": "[]"
+          }
+        ],
+        "reading": "No live public price signal exists for this item. The in-game order book is not exposed by any reachable public route."
+      },
+      {
+        "group": "Drew — long-term hold",
+        "item": "Voltaic Strike",
+        "verdict": "NOT-ORDERABLE",
+        "resolvedItemName": "Voltaic Strike",
+        "priceSignal": null,
+        "relatedPriceRows": [],
+        "itemDb": {
+          "queriedName": "Voltaic Strike",
+          "exists": true,
+          "tradable": true,
+          "type": "Melee Mod",
+          "category": "Mods",
+          "uniqueName": "/Lotus/Upgrades/Mods/Melee/DualStat/ElectEventMeleeMod",
+          "components": []
+        },
+        "formsProbed": [
+          {
+            "queriedName": "Voltaic Strike",
+            "itemDbExists": true,
+            "tradable": true,
+            "inWfinfoPricesExact": false,
+            "inWfinfoPricesSet": false,
+            "wfinfoPriceRows": null,
+            "relatedPriceRows": [],
+            "inFilteredEqmt": false,
+            "eqmtRow": null,
+            "pricecheckHttp": 200,
+            "pricecheckNonEmpty": false,
+            "pricecheckSample": "[]"
+          }
+        ],
+        "reading": "No live public price signal exists for this item. The in-game order book is not exposed by any reachable public route."
+      },
+      {
+        "group": "Drew — S-tier set target",
+        "item": "Sybaris Prime",
+        "verdict": "ORDERABLE",
+        "resolvedItemName": "Sybaris Prime",
+        "priceSignal": {
+          "via": "wfinfo/prices",
+          "name": "Sybaris Prime Set",
+          "value": [
+            {
+              "name": "Sybaris Prime Set",
+              "yesterday_vol": "32",
+              "today_vol": "19",
+              "custom_avg": "72.3"
+            }
+          ]
+        },
+        "relatedPriceRows": [],
+        "itemDb": {
+          "queriedName": "Sybaris Prime",
+          "exists": true,
+          "tradable": false,
+          "type": "Rifle",
+          "category": "Primary",
+          "uniqueName": "/Lotus/Weapons/Tenno/LongGuns/PrimeSybaris/PrimeSybarisRifle",
+          "components": [
+            {
+              "name": "Barrel",
+              "count": 1,
+              "primeSellingPrice": 100,
+              "tradable": true,
+              "dropSources": 24
+            },
+            {
+              "name": "Blueprint",
+              "count": 1,
+              "primeSellingPrice": 15,
+              "tradable": true,
+              "dropSources": 28
+            },
+            {
+              "name": "Orokin Cell",
+              "count": 10,
+              "tradable": false,
+              "dropSources": 129
+            },
+            {
+              "name": "Receiver",
+              "count": 1,
+              "primeSellingPrice": 45,
+              "tradable": true,
+              "dropSources": 20
+            },
+            {
+              "name": "Stock",
+              "count": 1,
+              "primeSellingPrice": 15,
+              "tradable": true,
+              "dropSources": 24
+            }
+          ]
+        },
+        "formsProbed": [
+          {
+            "queriedName": "Sybaris Prime",
+            "itemDbExists": true,
+            "tradable": false,
+            "inWfinfoPricesExact": true,
+            "inWfinfoPricesSet": true,
+            "wfinfoPriceRows": [
+              {
+                "name": "Sybaris Prime Set",
+                "yesterday_vol": "32",
+                "today_vol": "19",
+                "custom_avg": "72.3"
+              }
+            ],
+            "relatedPriceRows": [
+              {
+                "name": "Sybaris Prime Barrel",
+                "yesterday_vol": "35",
+                "today_vol": "12",
+                "custom_avg": "34.3"
+              },
+              {
+                "name": "Sybaris Prime Blueprint",
+                "yesterday_vol": "10",
+                "today_vol": "7",
+                "custom_avg": "6.5"
+              },
+              {
+                "name": "Sybaris Prime Set",
+                "yesterday_vol": "32",
+                "today_vol": "19",
+                "custom_avg": "72.3"
+              },
+              {
+                "name": "Sybaris Prime Receiver",
+                "yesterday_vol": "12",
+                "today_vol": "13",
+                "custom_avg": "8.7"
+              },
+              {
+                "name": "Sybaris Prime Stock",
+                "yesterday_vol": "18",
+                "today_vol": "5",
+                "custom_avg": "9.7"
+              }
+            ],
+            "inFilteredEqmt": true,
+            "eqmtRow": {
+              "type": "Primary",
+              "vaulted": true,
+              "parts": {
+                "Sybaris Prime Barrel": {
+                  "count": 1,
+                  "ducats": 100,
+                  "vaulted": true
+                },
+                "Sybaris Prime Blueprint": {
+                  "count": 1,
+                  "ducats": 15,
+                  "vaulted": true
+                },
+                "Sybaris Prime Receiver": {
+                  "count": 1,
+                  "ducats": 45,
+                  "vaulted": true
+                },
+                "Sybaris Prime Stock": {
+                  "count": 1,
+                  "ducats": 15,
+                  "vaulted": true
+                }
+              }
+            },
+            "pricecheckHttp": 200,
+            "pricecheckNonEmpty": false,
+            "pricecheckSample": "[]"
+          }
+        ],
+        "reading": "A live public price row exists for this item name; an undercut could be computed against custom_avg, subject to the field-semantics caveat in §4."
+      },
+      {
+        "group": "Drew — S-tier set target",
+        "item": "Steflos Prime",
+        "verdict": "ORDERABLE",
+        "resolvedItemName": null,
+        "priceSignal": {
+          "via": "wfinfo/prices",
+          "name": "Steflos Prime Set",
+          "value": [
+            {
+              "name": "Steflos Prime Set",
+              "yesterday_vol": "270",
+              "today_vol": "170",
+              "custom_avg": "71.3"
+            }
+          ]
+        },
+        "relatedPriceRows": [],
+        "itemDb": null,
+        "formsProbed": [
+          {
+            "queriedName": "Steflos Prime",
+            "itemDbExists": false,
+            "tradable": null,
+            "inWfinfoPricesExact": true,
+            "inWfinfoPricesSet": true,
+            "wfinfoPriceRows": [
+              {
+                "name": "Steflos Prime Set",
+                "yesterday_vol": "270",
+                "today_vol": "170",
+                "custom_avg": "71.3"
+              }
+            ],
+            "relatedPriceRows": [
+              {
+                "name": "Steflos Prime Set",
+                "yesterday_vol": "270",
+                "today_vol": "170",
+                "custom_avg": "71.3"
+              },
+              {
+                "name": "Steflos Prime Blueprint",
+                "yesterday_vol": "181",
+                "today_vol": "95",
+                "custom_avg": "8.3"
+              },
+              {
+                "name": "Steflos Prime Receiver",
+                "yesterday_vol": "54",
+                "today_vol": "29",
+                "custom_avg": "7.6"
+              },
+              {
+                "name": "Steflos Prime Barrel",
+                "yesterday_vol": "212",
+                "today_vol": "140",
+                "custom_avg": "25.5"
+              },
+              {
+                "name": "Steflos Prime Stock",
+                "yesterday_vol": "150",
+                "today_vol": "102",
+                "custom_avg": "8.6"
+              }
+            ],
+            "inFilteredEqmt": false,
+            "eqmtRow": null,
+            "pricecheckHttp": 200,
+            "pricecheckNonEmpty": false,
+            "pricecheckSample": "[]"
+          }
+        ],
+        "reading": "A live public price row exists for this item name; an undercut could be computed against custom_avg, subject to the field-semantics caveat in §4."
+      },
+      {
+        "group": "Drew — S-tier set target",
+        "item": "Baza Prime",
+        "verdict": "ORDERABLE",
+        "resolvedItemName": "Baza Prime",
+        "priceSignal": {
+          "via": "wfinfo/prices",
+          "name": "Baza Prime Set",
+          "value": [
+            {
+              "name": "Baza Prime Set",
+              "yesterday_vol": "30",
+              "today_vol": "36",
+              "custom_avg": "68.1"
+            }
+          ]
+        },
+        "relatedPriceRows": [],
+        "itemDb": {
+          "queriedName": "Baza Prime",
+          "exists": true,
+          "tradable": false,
+          "type": "Rifle",
+          "category": "Primary",
+          "uniqueName": "/Lotus/Weapons/Tenno/LongGuns/PrimeBaza/PrimeBazaGun",
+          "components": [
+            {
+              "name": "Barrel",
+              "count": 1,
+              "primeSellingPrice": 45,
+              "tradable": true,
+              "dropSources": 28
+            },
+            {
+              "name": "Blueprint",
+              "count": 1,
+              "primeSellingPrice": 65,
+              "tradable": true,
+              "dropSources": 24
+            },
+            {
+              "name": "Orokin Cell",
+              "count": 10,
+              "tradable": false,
+              "dropSources": 129
+            },
+            {
+              "name": "Receiver",
+              "count": 1,
+              "primeSellingPrice": 15,
+              "tradable": true,
+              "dropSources": 32
+            },
+            {
+              "name": "Stock",
+              "count": 1,
+              "primeSellingPrice": 100,
+              "tradable": true,
+              "dropSources": 16
+            }
+          ]
+        },
+        "formsProbed": [
+          {
+            "queriedName": "Baza Prime",
+            "itemDbExists": true,
+            "tradable": false,
+            "inWfinfoPricesExact": true,
+            "inWfinfoPricesSet": true,
+            "wfinfoPriceRows": [
+              {
+                "name": "Baza Prime Set",
+                "yesterday_vol": "30",
+                "today_vol": "36",
+                "custom_avg": "68.1"
+              }
+            ],
+            "relatedPriceRows": [
+              {
+                "name": "Baza Prime Blueprint",
+                "yesterday_vol": "75",
+                "today_vol": "33",
+                "custom_avg": "8.4"
+              },
+              {
+                "name": "Baza Prime Set",
+                "yesterday_vol": "30",
+                "today_vol": "36",
+                "custom_avg": "68.1"
+              },
+              {
+                "name": "Baza Prime Stock",
+                "yesterday_vol": "89",
+                "today_vol": "62",
+                "custom_avg": "22.7"
+              },
+              {
+                "name": "Baza Prime Receiver",
+                "yesterday_vol": "43",
+                "today_vol": "36",
+                "custom_avg": "7.9"
+              },
+              {
+                "name": "Baza Prime Barrel",
+                "yesterday_vol": "28",
+                "today_vol": "19",
+                "custom_avg": "5.5"
+              }
+            ],
+            "inFilteredEqmt": true,
+            "eqmtRow": {
+              "type": "Primary",
+              "vaulted": true,
+              "parts": {
+                "Baza Prime Barrel": {
+                  "count": 1,
+                  "ducats": 45,
+                  "vaulted": true
+                },
+                "Baza Prime Blueprint": {
+                  "count": 1,
+                  "ducats": 65,
+                  "vaulted": true
+                },
+                "Baza Prime Receiver": {
+                  "count": 1,
+                  "ducats": 15,
+                  "vaulted": true
+                },
+                "Baza Prime Stock": {
+                  "count": 1,
+                  "ducats": 100,
+                  "vaulted": true
+                }
+              }
+            },
+            "pricecheckHttp": 200,
+            "pricecheckNonEmpty": false,
+            "pricecheckSample": "[]"
+          }
+        ],
+        "reading": "A live public price row exists for this item name; an undercut could be computed against custom_avg, subject to the field-semantics caveat in §4."
+      },
+      {
+        "group": "Drew — S-tier set target",
+        "item": "Valkyr Prime",
+        "verdict": "ORDERABLE",
+        "resolvedItemName": "Valkyr Prime",
+        "priceSignal": {
+          "via": "wfinfo/prices",
+          "name": "Valkyr Prime Set",
+          "value": [
+            {
+              "name": "Valkyr Prime Set",
+              "yesterday_vol": "96",
+              "today_vol": "84",
+              "custom_avg": "69.1"
+            }
+          ]
+        },
+        "relatedPriceRows": [],
+        "itemDb": {
+          "queriedName": "Valkyr Prime",
+          "exists": true,
+          "tradable": false,
+          "type": "Warframe",
+          "category": "Warframes",
+          "uniqueName": "/Lotus/Powersuits/Berserker/ValkyrPrime",
+          "components": [
+            {
+              "name": "Blueprint",
+              "count": 1,
+              "primeSellingPrice": 15,
+              "tradable": true,
+              "dropSources": 40
+            },
+            {
+              "name": "Chassis",
+              "count": 1,
+              "primeSellingPrice": 100,
+              "tradable": true,
+              "dropSources": 20
+            },
+            {
+              "name": "Neuroptics",
+              "count": 1,
+              "primeSellingPrice": 45,
+              "tradable": true,
+              "dropSources": 36
+            },
+            {
+              "name": "Orokin Cell",
+              "count": 3,
+              "tradable": false,
+              "dropSources": 129
+            },
+            {
+              "name": "Systems",
+              "count": 1,
+              "primeSellingPrice": 65,
+              "tradable": true,
+              "dropSources": 20
+            }
+          ]
+        },
+        "formsProbed": [
+          {
+            "queriedName": "Valkyr Prime",
+            "itemDbExists": true,
+            "tradable": false,
+            "inWfinfoPricesExact": true,
+            "inWfinfoPricesSet": true,
+            "wfinfoPriceRows": [
+              {
+                "name": "Valkyr Prime Set",
+                "yesterday_vol": "96",
+                "today_vol": "84",
+                "custom_avg": "69.1"
+              }
+            ],
+            "relatedPriceRows": [
+              {
+                "name": "Valkyr Prime Neuroptics Blueprint",
+                "yesterday_vol": "73",
+                "today_vol": "44",
+                "custom_avg": "9.8"
+              },
+              {
+                "name": "Valkyr Prime Chassis Blueprint",
+                "yesterday_vol": "51",
+                "today_vol": "37",
+                "custom_avg": "34.3"
+              },
+              {
+                "name": "Valkyr Prime Blueprint",
+                "yesterday_vol": "46",
+                "today_vol": "20",
+                "custom_avg": "5.7"
+              },
+              {
+                "name": "Valkyr Prime Set",
+                "yesterday_vol": "96",
+                "today_vol": "84",
+                "custom_avg": "69.1"
+              },
+              {
+                "name": "Valkyr Prime Systems Blueprint",
+                "yesterday_vol": "61",
+                "today_vol": "42",
+                "custom_avg": "14.7"
+              }
+            ],
+            "inFilteredEqmt": true,
+            "eqmtRow": {
+              "type": "Warframes",
+              "vaulted": false,
+              "parts": {
+                "Valkyr Prime Blueprint": {
+                  "count": 1,
+                  "ducats": 15,
+                  "vaulted": false
+                },
+                "Valkyr Prime Chassis": {
+                  "count": 1,
+                  "ducats": 100,
+                  "vaulted": false
+                },
+                "Valkyr Prime Neuroptics": {
+                  "count": 1,
+                  "ducats": 45,
+                  "vaulted": false
+                },
+                "Valkyr Prime Systems": {
+                  "count": 1,
+                  "ducats": 65,
+                  "vaulted": false
+                }
+              }
+            },
+            "pricecheckHttp": 200,
+            "pricecheckNonEmpty": false,
+            "pricecheckSample": "[]"
+          }
+        ],
+        "reading": "A live public price row exists for this item name; an undercut could be computed against custom_avg, subject to the field-semantics caveat in §4."
+      },
+      {
+        "group": "Drew — S-tier set target",
+        "item": "Ivara Prime",
+        "verdict": "ORDERABLE",
+        "resolvedItemName": "Ivara Prime",
+        "priceSignal": {
+          "via": "wfinfo/prices",
+          "name": "Ivara Prime Set",
+          "value": [
+            {
+              "name": "Ivara Prime Set",
+              "yesterday_vol": "160",
+              "today_vol": "126",
+              "custom_avg": "60.1"
+            }
+          ]
+        },
+        "relatedPriceRows": [],
+        "itemDb": {
+          "queriedName": "Ivara Prime",
+          "exists": true,
+          "tradable": false,
+          "type": "Warframe",
+          "category": "Warframes",
+          "uniqueName": "/Lotus/Powersuits/Ranger/IvaraPrime",
+          "components": [
+            {
+              "name": "Blueprint",
+              "count": 1,
+              "primeSellingPrice": 45,
+              "tradable": true,
+              "dropSources": 28
+            },
+            {
+              "name": "Chassis",
+              "count": 1,
+              "primeSellingPrice": 100,
+              "tradable": true,
+              "dropSources": 16
+            },
+            {
+              "name": "Neuroptics",
+              "count": 1,
+              "primeSellingPrice": 15,
+              "tradable": true,
+              "dropSources": 32
+            },
+            {
+              "name": "Orokin Cell",
+              "count": 5,
+              "tradable": false,
+              "dropSources": 129
+            },
+            {
+              "name": "Systems",
+              "count": 1,
+              "primeSellingPrice": 45,
+              "tradable": true,
+              "dropSources": 24
+            }
+          ]
+        },
+        "formsProbed": [
+          {
+            "queriedName": "Ivara Prime",
+            "itemDbExists": true,
+            "tradable": false,
+            "inWfinfoPricesExact": true,
+            "inWfinfoPricesSet": true,
+            "wfinfoPriceRows": [
+              {
+                "name": "Ivara Prime Set",
+                "yesterday_vol": "160",
+                "today_vol": "126",
+                "custom_avg": "60.1"
+              }
+            ],
+            "relatedPriceRows": [
+              {
+                "name": "Ivara Prime Neuroptics Blueprint",
+                "yesterday_vol": "69",
+                "today_vol": "45",
+                "custom_avg": "7.5"
+              },
+              {
+                "name": "Ivara Prime Chassis Blueprint",
+                "yesterday_vol": "179",
+                "today_vol": "99",
+                "custom_avg": "19"
+              },
+              {
+                "name": "Ivara Prime Systems Blueprint",
+                "yesterday_vol": "101",
+                "today_vol": "70",
+                "custom_avg": "9.8"
+              },
+              {
+                "name": "Ivara Prime Set",
+                "yesterday_vol": "160",
+                "today_vol": "126",
+                "custom_avg": "60.1"
+              },
+              {
+                "name": "Ivara Prime Blueprint",
+                "yesterday_vol": "142",
+                "today_vol": "84",
+                "custom_avg": "9"
+              }
+            ],
+            "inFilteredEqmt": true,
+            "eqmtRow": {
+              "type": "Warframes",
+              "vaulted": true,
+              "parts": {
+                "Ivara Prime Blueprint": {
+                  "count": 1,
+                  "ducats": 45,
+                  "vaulted": true
+                },
+                "Ivara Prime Chassis": {
+                  "count": 1,
+                  "ducats": 100,
+                  "vaulted": true
+                },
+                "Ivara Prime Neuroptics": {
+                  "count": 1,
+                  "ducats": 15,
+                  "vaulted": true
+                },
+                "Ivara Prime Systems": {
+                  "count": 1,
+                  "ducats": 45,
+                  "vaulted": true
+                }
+              }
+            },
+            "pricecheckHttp": 200,
+            "pricecheckNonEmpty": false,
+            "pricecheckSample": "[]"
+          }
+        ],
+        "reading": "A live public price row exists for this item name; an undercut could be computed against custom_avg, subject to the field-semantics caveat in §4."
+      },
+      {
+        "group": "Drew — in-flight gap",
+        "item": "Wisp Prime",
+        "verdict": "ORDERABLE",
+        "resolvedItemName": "Wisp Prime",
+        "priceSignal": {
+          "via": "wfinfo/prices",
+          "name": "Wisp Prime Set",
+          "value": [
+            {
+              "name": "Wisp Prime Set",
+              "yesterday_vol": "229",
+              "today_vol": "121",
+              "custom_avg": "68.9"
+            }
+          ]
+        },
+        "relatedPriceRows": [],
+        "itemDb": {
+          "queriedName": "Wisp Prime",
+          "exists": true,
+          "tradable": false,
+          "type": "Warframe",
+          "category": "Warframes",
+          "uniqueName": "/Lotus/Powersuits/Wisp/WispPrime",
+          "components": [
+            {
+              "name": "Blueprint",
+              "count": 1,
+              "primeSellingPrice": 100,
+              "tradable": true,
+              "dropSources": 20
+            },
+            {
+              "name": "Chassis",
+              "count": 1,
+              "primeSellingPrice": 65,
+              "tradable": true,
+              "dropSources": 20
+            },
+            {
+              "name": "Neuroptics",
+              "count": 1,
+              "primeSellingPrice": 45,
+              "tradable": true,
+              "dropSources": 28
+            },
+            {
+              "name": "Orokin Cell",
+              "count": 5,
+              "tradable": false,
+              "dropSources": 129
+            },
+            {
+              "name": "Systems",
+              "count": 1,
+              "primeSellingPrice": 15,
+              "tradable": true,
+              "dropSources": 32
+            }
+          ]
+        },
+        "formsProbed": [
+          {
+            "queriedName": "Wisp Prime",
+            "itemDbExists": true,
+            "tradable": false,
+            "inWfinfoPricesExact": true,
+            "inWfinfoPricesSet": true,
+            "wfinfoPriceRows": [
+              {
+                "name": "Wisp Prime Set",
+                "yesterday_vol": "229",
+                "today_vol": "121",
+                "custom_avg": "68.9"
+              }
+            ],
+            "relatedPriceRows": [
+              {
+                "name": "Wisp Prime Chassis Blueprint",
+                "yesterday_vol": "121",
+                "today_vol": "60",
+                "custom_avg": "17.1"
+              },
+              {
+                "name": "Wisp Prime Set",
+                "yesterday_vol": "229",
+                "today_vol": "121",
+                "custom_avg": "68.9"
+              },
+              {
+                "name": "Wisp Prime Neuroptics Blueprint",
+                "yesterday_vol": "62",
+                "today_vol": "38",
+                "custom_avg": "5.2"
+              },
+              {
+                "name": "Wisp Prime Systems Blueprint",
+                "yesterday_vol": "39",
+                "today_vol": "39",
+                "custom_avg": "5.3"
+              },
+              {
+                "name": "Wisp Prime Blueprint",
+                "yesterday_vol": "120",
+                "today_vol": "70",
+                "custom_avg": "34"
+              }
+            ],
+            "inFilteredEqmt": true,
+            "eqmtRow": {
+              "type": "Warframes",
+              "vaulted": true,
+              "parts": {
+                "Wisp Prime Blueprint": {
+                  "count": 1,
+                  "ducats": 100,
+                  "vaulted": true
+                },
+                "Wisp Prime Chassis": {
+                  "count": 1,
+                  "ducats": 65,
+                  "vaulted": true
+                },
+                "Wisp Prime Neuroptics": {
+                  "count": 1,
+                  "ducats": 45,
+                  "vaulted": true
+                },
+                "Wisp Prime Systems": {
+                  "count": 1,
+                  "ducats": 15,
+                  "vaulted": true
+                }
+              }
+            },
+            "pricecheckHttp": 200,
+            "pricecheckNonEmpty": false,
+            "pricecheckSample": "[]"
+          }
+        ],
+        "reading": "A live public price row exists for this item name; an undercut could be computed against custom_avg, subject to the field-semantics caveat in §4."
+      },
+      {
+        "group": "Drew — in-flight gap",
+        "item": "Volt",
+        "verdict": "NOT-ORDERABLE",
+        "resolvedItemName": "Volt",
+        "priceSignal": null,
+        "relatedPriceRows": [
+          "Volt Prime Neuroptics Blueprint",
+          "Volt Prime Chassis Blueprint",
+          "Volt Prime Blueprint",
+          "Volt Prime Set",
+          "Volt Prime Systems Blueprint"
+        ],
+        "itemDb": {
+          "queriedName": "Volt",
+          "exists": true,
+          "tradable": false,
+          "type": "Warframe",
+          "category": "Warframes",
+          "uniqueName": "/Lotus/Powersuits/Volt/Volt",
+          "components": [
+            {
+              "name": "Blueprint",
+              "count": 1,
+              "tradable": false,
+              "dropSources": null
+            },
+            {
+              "name": "Chassis",
+              "count": 1,
+              "tradable": false,
+              "dropSources": null
+            },
+            {
+              "name": "Neuroptics",
+              "count": 1,
+              "tradable": false,
+              "dropSources": null
+            },
+            {
+              "name": "Orokin Cell",
+              "count": 1,
+              "tradable": false,
+              "dropSources": 129
+            },
+            {
+              "name": "Systems",
+              "count": 1,
+              "tradable": false,
+              "dropSources": null
+            }
+          ]
+        },
+        "formsProbed": [
+          {
+            "queriedName": "Volt",
+            "itemDbExists": true,
+            "tradable": false,
+            "inWfinfoPricesExact": false,
+            "inWfinfoPricesSet": false,
+            "wfinfoPriceRows": null,
+            "relatedPriceRows": [
+              {
+                "name": "Volt Prime Neuroptics Blueprint",
+                "yesterday_vol": "39",
+                "today_vol": "35",
+                "custom_avg": "28.5"
+              },
+              {
+                "name": "Volt Prime Chassis Blueprint",
+                "yesterday_vol": "41",
+                "today_vol": "32",
+                "custom_avg": "9.9"
+              },
+              {
+                "name": "Volt Prime Blueprint",
+                "yesterday_vol": "34",
+                "today_vol": "48",
+                "custom_avg": "13.7"
+              },
+              {
+                "name": "Volt Prime Set",
+                "yesterday_vol": "92",
+                "today_vol": "44",
+                "custom_avg": "68.3"
+              },
+              {
+                "name": "Volt Prime Systems Blueprint",
+                "yesterday_vol": "58",
+                "today_vol": "34",
+                "custom_avg": "9.9"
+              }
+            ],
+            "inFilteredEqmt": false,
+            "eqmtRow": null,
+            "pricecheckHttp": 200,
+            "pricecheckNonEmpty": false,
+            "pricecheckSample": "[]"
+          }
+        ],
+        "reading": "No public price row for this exact name, but RELATED rows exist: Volt Prime Neuroptics Blueprint, Volt Prime Chassis Blueprint, Volt Prime Blueprint, Volt Prime Set, Volt Prime Systems Blueprint. Those belong to a differently-named item and are recorded, not granted."
+      },
+      {
+        "group": "Drew — in-flight gap",
+        "item": "Hek",
+        "verdict": "NOT-ORDERABLE",
+        "resolvedItemName": "Hek",
+        "priceSignal": null,
+        "relatedPriceRows": [],
+        "itemDb": {
+          "queriedName": "Hek",
+          "exists": true,
+          "tradable": false,
+          "type": "Shotgun",
+          "category": "Primary",
+          "uniqueName": "/Lotus/Weapons/Tenno/Shotgun/QuadShotgun",
+          "components": [
+            {
+              "name": "Blueprint",
+              "count": 1,
+              "tradable": false,
+              "dropSources": null
+            },
+            {
+              "name": "Circuits",
+              "count": 900,
+              "tradable": false,
+              "dropSources": 30
+            },
+            {
+              "name": "Neurodes",
+              "count": 5,
+              "tradable": false,
+              "dropSources": 88
+            },
+            {
+              "name": "Rubedo",
+              "count": 1000,
+              "tradable": false,
+              "dropSources": 31
+            },
+            {
+              "name": "Salvage",
+              "count": 1200,
+              "tradable": false,
+              "dropSources": 10
+            }
+          ]
+        },
+        "formsProbed": [
+          {
+            "queriedName": "Hek",
+            "itemDbExists": true,
+            "tradable": false,
+            "inWfinfoPricesExact": false,
+            "inWfinfoPricesSet": false,
+            "wfinfoPriceRows": null,
+            "relatedPriceRows": [],
+            "inFilteredEqmt": false,
+            "eqmtRow": null,
+            "pricecheckHttp": 200,
+            "pricecheckNonEmpty": false,
+            "pricecheckSample": "[]"
+          }
+        ],
+        "reading": "No live public price signal exists for this item. The in-game order book is not exposed by any reachable public route."
+      },
+      {
+        "group": "Drew — in-flight gap",
+        "item": "Atomos",
+        "verdict": "NOT-ORDERABLE",
+        "resolvedItemName": "Atomos",
+        "priceSignal": null,
+        "relatedPriceRows": [],
+        "itemDb": {
+          "queriedName": "Atomos",
+          "exists": true,
+          "tradable": false,
+          "type": "Pistol",
+          "category": "Secondary",
+          "uniqueName": "/Lotus/Weapons/Grineer/Pistols/HeatGun/GrnHeatGun",
+          "components": [
+            {
+              "name": "Argon Crystal",
+              "count": 2,
+              "tradable": false,
+              "dropSources": 36
+            },
+            {
+              "name": "Blueprint",
+              "count": 1,
+              "tradable": false,
+              "dropSources": null
+            },
+            {
+              "name": "Polymer Bundle",
+              "count": 1300,
+              "tradable": false,
+              "dropSources": 22
+            },
+            {
+              "name": "Rubedo",
+              "count": 800,
+              "tradable": false,
+              "dropSources": 31
+            },
+            {
+              "name": "Salvage",
+              "count": 1500,
+              "tradable": false,
+              "dropSources": 10
+            }
+          ]
+        },
+        "formsProbed": [
+          {
+            "queriedName": "Atomos",
+            "itemDbExists": true,
+            "tradable": false,
+            "inWfinfoPricesExact": false,
+            "inWfinfoPricesSet": false,
+            "wfinfoPriceRows": null,
+            "relatedPriceRows": [],
+            "inFilteredEqmt": false,
+            "eqmtRow": null,
+            "pricecheckHttp": 200,
+            "pricecheckNonEmpty": false,
+            "pricecheckSample": "[]"
+          }
+        ],
+        "reading": "No live public price signal exists for this item. The in-game order book is not exposed by any reachable public route."
+      },
+      {
+        "group": "Drew — in-flight gap",
+        "item": "Neurode",
+        "verdict": "NOT-ORDERABLE",
+        "resolvedItemName": "Neurode",
+        "priceSignal": null,
+        "relatedPriceRows": [],
+        "itemDb": {
+          "queriedName": "Neurode",
+          "exists": true,
+          "tradable": false,
+          "type": "Misc",
+          "category": "Misc",
+          "uniqueName": "/Lotus/Types/Items/MiscItems/Neurode",
+          "components": [
+            {
+              "name": "Alloy Plate",
+              "count": 50000,
+              "tradable": false,
+              "dropSources": 14
+            },
+            {
+              "name": "Blueprint",
+              "count": 1,
+              "tradable": false,
+              "dropSources": null
+            },
+            {
+              "name": "Nano Spores",
+              "count": 50000,
+              "tradable": false,
+              "dropSources": 18
+            },
+            {
+              "name": "Salvage",
+              "count": 25000,
+              "tradable": false,
+              "dropSources": 10
+            }
+          ]
+        },
+        "formsProbed": [
+          {
+            "queriedName": "Neurode",
+            "itemDbExists": true,
+            "tradable": false,
+            "inWfinfoPricesExact": false,
+            "inWfinfoPricesSet": false,
+            "wfinfoPriceRows": null,
+            "relatedPriceRows": [],
+            "inFilteredEqmt": false,
+            "eqmtRow": null,
+            "pricecheckHttp": 200,
+            "pricecheckNonEmpty": false,
+            "pricecheckSample": "[]"
+          }
+        ],
+        "reading": "No live public price signal exists for this item. The in-game order book is not exposed by any reachable public route."
+      },
+      {
+        "group": "Drew — buyout doctrine",
+        "item": "Stalking Fan",
+        "verdict": "NOT-ORDERABLE",
+        "resolvedItemName": "Stalking Fan",
+        "priceSignal": null,
+        "relatedPriceRows": [],
+        "itemDb": {
+          "queriedName": "Stalking Fan",
+          "exists": true,
+          "tradable": true,
+          "type": "Stance Mod",
+          "category": "Mods",
+          "uniqueName": "/Lotus/Weapons/Tenno/Melee/MeleeTrees/ScytheCmbTwoMeleeTree",
+          "components": []
+        },
+        "formsProbed": [
+          {
+            "queriedName": "Stalking Fan",
+            "itemDbExists": true,
+            "tradable": true,
+            "inWfinfoPricesExact": false,
+            "inWfinfoPricesSet": false,
+            "wfinfoPriceRows": null,
+            "relatedPriceRows": [],
+            "inFilteredEqmt": false,
+            "eqmtRow": null,
+            "pricecheckHttp": 200,
+            "pricecheckNonEmpty": false,
+            "pricecheckSample": "[]"
+          }
+        ],
+        "reading": "No live public price signal exists for this item. The in-game order book is not exposed by any reachable public route."
+      },
+      {
+        "group": "Drew — buyout doctrine",
+        "item": "Crimson Dervish",
+        "verdict": "NOT-ORDERABLE",
+        "resolvedItemName": "Crimson Dervish",
+        "priceSignal": null,
+        "relatedPriceRows": [],
+        "itemDb": {
+          "queriedName": "Crimson Dervish",
+          "exists": true,
+          "tradable": true,
+          "type": "Stance Mod",
+          "category": "Mods",
+          "uniqueName": "/Lotus/Weapons/Tenno/Melee/MeleeTrees/CrimsonDervishMeleeTree",
+          "components": []
+        },
+        "formsProbed": [
+          {
+            "queriedName": "Crimson Dervish",
+            "itemDbExists": true,
+            "tradable": true,
+            "inWfinfoPricesExact": false,
+            "inWfinfoPricesSet": false,
+            "wfinfoPriceRows": null,
+            "relatedPriceRows": [],
+            "inFilteredEqmt": false,
+            "eqmtRow": null,
+            "pricecheckHttp": 200,
+            "pricecheckNonEmpty": false,
+            "pricecheckSample": "[]"
+          }
+        ],
+        "reading": "No live public price signal exists for this item. The in-game order book is not exposed by any reachable public route."
+      },
+      {
+        "group": "Julia — gap (record only)",
+        "item": "Zenurik",
+        "verdict": "NOT-ORDERABLE",
+        "resolvedItemName": "Zenurik",
+        "priceSignal": null,
+        "relatedPriceRows": [],
+        "itemDb": {
+          "queriedName": "Zenurik",
+          "exists": true,
+          "tradable": false,
+          "type": "Skin",
+          "category": "Skins",
+          "uniqueName": "/Lotus/Upgrades/Skins/TextureOverrides/Zenurik",
+          "components": []
+        },
+        "formsProbed": [
+          {
+            "queriedName": "Zenurik",
+            "itemDbExists": true,
+            "tradable": false,
+            "inWfinfoPricesExact": false,
+            "inWfinfoPricesSet": false,
+            "wfinfoPriceRows": null,
+            "relatedPriceRows": [],
+            "inFilteredEqmt": false,
+            "eqmtRow": null,
+            "pricecheckHttp": 200,
+            "pricecheckNonEmpty": false,
+            "pricecheckSample": "[]"
+          },
+          {
+            "queriedName": "Zenurik Blueprint",
+            "itemDbExists": false,
+            "tradable": null,
+            "inWfinfoPricesExact": false,
+            "inWfinfoPricesSet": false,
+            "wfinfoPriceRows": null,
+            "relatedPriceRows": [],
+            "inFilteredEqmt": false,
+            "eqmtRow": null,
+            "pricecheckHttp": 200,
+            "pricecheckNonEmpty": false,
+            "pricecheckSample": "[]"
+          }
+        ],
+        "reading": "No live public price signal exists for this item. The in-game order book is not exposed by any reachable public route."
+      },
+      {
+        "group": "Julia — gap (record only)",
+        "item": "Railjack",
+        "verdict": "NOT-ORDERABLE",
+        "resolvedItemName": "Railjack",
+        "priceSignal": null,
+        "relatedPriceRows": [],
+        "itemDb": {
+          "queriedName": "Railjack",
+          "exists": true,
+          "tradable": false,
+          "type": "Orbiter",
+          "category": "Misc",
+          "uniqueName": "/Lotus/Types/Game/CrewShip/Ships/RailJack",
+          "components": []
+        },
+        "formsProbed": [
+          {
+            "queriedName": "Railjack",
+            "itemDbExists": true,
+            "tradable": false,
+            "inWfinfoPricesExact": false,
+            "inWfinfoPricesSet": false,
+            "wfinfoPriceRows": null,
+            "relatedPriceRows": [],
+            "inFilteredEqmt": false,
+            "eqmtRow": null,
+            "pricecheckHttp": 200,
+            "pricecheckNonEmpty": false,
+            "pricecheckSample": "[]"
+          },
+          {
+            "queriedName": "Railjack Blueprint",
+            "itemDbExists": false,
+            "tradable": null,
+            "inWfinfoPricesExact": false,
+            "inWfinfoPricesSet": false,
+            "wfinfoPriceRows": null,
+            "relatedPriceRows": [],
+            "inFilteredEqmt": false,
+            "eqmtRow": null,
+            "pricecheckHttp": 200,
+            "pricecheckNonEmpty": false,
+            "pricecheckSample": "[]"
+          }
+        ],
+        "reading": "No live public price signal exists for this item. The in-game order book is not exposed by any reachable public route."
+      }
+    ],
+    "tradeDoctrineComputability": {
+      "question": "Is the 1-Plat Undercut computable from public data?",
+      "answer": "PARTIALLY — computable for 6 of 17 probed items, and only against a coarse average row, never against a live order book.",
+      "orderableSubset": [
+        "Sybaris Prime",
+        "Steflos Prime",
+        "Baza Prime",
+        "Valkyr Prime",
+        "Ivara Prime",
+        "Wisp Prime"
+      ],
+      "notOrderableSubset": [
+        "Braton Vandal",
+        "Scattered Justice",
+        "Voltaic Strike",
+        "Volt",
+        "Hek",
+        "Atomos",
+        "Neurode",
+        "Stalking Fan",
+        "Crimson Dervish",
+        "Zenurik",
+        "Railjack"
+      ],
+      "existsButNoPublicPrice": [
+        {
+          "item": "Braton Vandal",
+          "tradable": false,
+          "type": "Rifle",
+          "uniqueName": "/Lotus/Weapons/Tenno/Rifle/VIPRifle"
+        },
+        {
+          "item": "Scattered Justice",
+          "tradable": true,
+          "type": "Primary Mod",
+          "uniqueName": "/Lotus/Upgrades/Mods/Syndicate/HekMod"
+        },
+        {
+          "item": "Voltaic Strike",
+          "tradable": true,
+          "type": "Melee Mod",
+          "uniqueName": "/Lotus/Upgrades/Mods/Melee/DualStat/ElectEventMeleeMod"
+        },
+        {
+          "item": "Volt",
+          "tradable": false,
+          "type": "Warframe",
+          "uniqueName": "/Lotus/Powersuits/Volt/Volt"
+        },
+        {
+          "item": "Hek",
+          "tradable": false,
+          "type": "Shotgun",
+          "uniqueName": "/Lotus/Weapons/Tenno/Shotgun/QuadShotgun"
+        },
+        {
+          "item": "Atomos",
+          "tradable": false,
+          "type": "Pistol",
+          "uniqueName": "/Lotus/Weapons/Grineer/Pistols/HeatGun/GrnHeatGun"
+        },
+        {
+          "item": "Neurode",
+          "tradable": false,
+          "type": "Misc",
+          "uniqueName": "/Lotus/Types/Items/MiscItems/Neurode"
+        },
+        {
+          "item": "Stalking Fan",
+          "tradable": true,
+          "type": "Stance Mod",
+          "uniqueName": "/Lotus/Weapons/Tenno/Melee/MeleeTrees/ScytheCmbTwoMeleeTree"
+        },
+        {
+          "item": "Crimson Dervish",
+          "tradable": true,
+          "type": "Stance Mod",
+          "uniqueName": "/Lotus/Weapons/Tenno/Melee/MeleeTrees/CrimsonDervishMeleeTree"
+        },
+        {
+          "item": "Zenurik",
+          "tradable": false,
+          "type": "Skin",
+          "uniqueName": "/Lotus/Upgrades/Skins/TextureOverrides/Zenurik"
+        },
+        {
+          "item": "Railjack",
+          "tradable": false,
+          "type": "Orbiter",
+          "uniqueName": "/Lotus/Types/Game/CrewShip/Ships/RailJack"
+        }
+      ],
+      "notAnItemAtAll": [
+        "Steflos Prime"
+      ],
+      "inGameTradableButNoPublicPrice": [
+        "Scattered Justice",
+        "Voltaic Strike",
+        "Stalking Fan",
+        "Crimson Dervish"
+      ],
+      "relatedRowsOnly": [
+        {
+          "item": "Volt",
+          "relatedPriceRows": [
+            "Volt Prime Neuroptics Blueprint",
+            "Volt Prime Chassis Blueprint",
+            "Volt Prime Blueprint",
+            "Volt Prime Set",
+            "Volt Prime Systems Blueprint"
+          ]
+        }
+      ],
+      "fieldSemanticsCaveat": "The API does not document what today_vol / yesterday_vol / custom_avg mean. /wfinfo/prices states its shape depends on an externally configured source. CG must not treat custom_avg as a live asking price without Drew confirming what it represents.",
+      "doctrineConsequence": "Split engine: prime items have a coarse public average to reason from; mods, packs and the liquidating stock have NO public price at all and must move on trade credits with Drew-supplied numbers. Never treat the average as a live order."
+    }
+  },
+  "snapshotCount": 96,
+  "verdictsRecorded": 94,
+  "internalErrors": []
+}

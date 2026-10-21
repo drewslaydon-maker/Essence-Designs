@@ -1,0 +1,1038 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/items/Hek?only=name,uniqueName,type,category,tradable,masterable,components,set,ducats,quantity",
+    "tag": "Hek",
+    "httpStatus": 200,
+    "ok": true,
+    "durationMs": 568,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:55.985Z",
+    "accountId": "11121350"
+  },
+  "data": {
+    "name": "Hek",
+    "uniqueName": "/Lotus/Weapons/Tenno/Shotgun/QuadShotgun",
+    "components": [
+      {
+        "uniqueName": "/Lotus/Types/Recipes/Weapons/QuadShotgunBlueprint",
+        "name": "Blueprint",
+        "description": "The Hek is a powerful shotgun that fires its shots with a tight spread, making it efficient at medium range as long as its strong recoil is properly managed.",
+        "itemCount": 1,
+        "imageName": "blueprint.png",
+        "tradable": false,
+        "masterable": false
+      },
+      {
+        "uniqueName": "/Lotus/Types/Items/MiscItems/Circuits",
+        "name": "Circuits",
+        "description": "Various electronic components.\n\nLocation: Venus, Ceres, and the Kuva Fortress",
+        "codexSecret": false,
+        "itemCount": 900,
+        "imageName": "ComponentCircuits.png",
+        "drops": [
+          {
+            "location": "Kuva Fortress/Dakata (Caches), Rotation B",
+            "type": "400X Circuits",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Mars/Gradivus (Caches), Rotation B",
+            "type": "750X Circuits",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Mercury/Neruda (Caches), Rotation B",
+            "type": "750X Circuits",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Mercury/Terminus (Caches), Rotation B",
+            "type": "750X Circuits",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Neptune/Halimede (Caches), Rotation B",
+            "type": "400X Circuits",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Neptune/Thalassa (Caches), Rotation B",
+            "type": "400X Circuits",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Pluto/Charon (Caches), Rotation B",
+            "type": "400X Circuits",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Pluto/Cypress (Caches), Rotation B",
+            "type": "400X Circuits",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Sedna/Phithale (Caches), Rotation B",
+            "type": "400X Circuits",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Sedna/Rusalka (Caches), Rotation B",
+            "type": "400X Circuits",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Uranus/Portia (Caches), Rotation B",
+            "type": "400X Circuits",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Ishtar (Caches), Rotation B",
+            "type": "750X Circuits",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Void/Stribog (Caches), Rotation B",
+            "type": "400X Circuits",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 20 - 40 Orb Vallis Bounty), Rotation A",
+            "type": "300X Circuits",
+            "chance": 13.24,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 20 - 40 Orb Vallis Bounty), Rotation A",
+            "type": "300X Circuits",
+            "chance": 15,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Void/Marduk (Caches), Rotation B",
+            "type": "400X Circuits",
+            "chance": 15.18,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Earth/Cetus (Level 10 - 30 Cetus Bounty), Rotation C",
+            "type": "300X Circuits",
+            "chance": 15.32,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Earth/Cetus (Level 10 - 30 Cetus Bounty), Rotation C",
+            "type": "300X Circuits",
+            "chance": 15.97,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Earth/Cetus (Level 10 - 30 Cetus Bounty), Rotation C",
+            "type": "300X Circuits",
+            "chance": 25,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 20 - 40 Orb Vallis Bounty), Rotation A",
+            "type": "300X Circuits",
+            "chance": 25,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation A",
+            "type": "10X Circuits",
+            "chance": 3.16,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation B",
+            "type": "10X Circuits",
+            "chance": 3.16,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Neptune/Cephalon Capture (Conclave), Rotation B",
+            "type": "100X Circuits",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Annihilation (Conclave), Rotation B",
+            "type": "100X Circuits",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Cephalon Capture (Conclave), Rotation B",
+            "type": "100X Circuits",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Lunaro (Conclave), Rotation B",
+            "type": "100X Circuits",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Team Annihilation (Conclave), Rotation B",
+            "type": "100X Circuits",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Variant Annihilation (Conclave), Rotation B",
+            "type": "100X Circuits",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Variant Cephalon Capture (Conclave), Rotation B",
+            "type": "100X Circuits",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation B",
+            "type": "100X Circuits",
+            "chance": 7.37,
+            "rarity": "Rare"
+          }
+        ],
+        "tradable": false,
+        "masterable": false,
+        "type": "Resource"
+      },
+      {
+        "uniqueName": "/Lotus/Types/Items/MiscItems/Neurode",
+        "name": "Neurodes",
+        "description": "Biotech sensor organ harvested from Infested entities.\n\nLocation: Earth, Lua, Eris, and Deimos",
+        "codexSecret": false,
+        "itemCount": 5,
+        "imageName": "ComponentNeurode.png",
+        "drops": [
+          {
+            "location": "Neptune/Cephalon Capture (Conclave), Rotation B",
+            "type": "Neurodes",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Annihilation (Conclave), Rotation B",
+            "type": "Neurodes",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Cephalon Capture (Conclave), Rotation B",
+            "type": "Neurodes",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Lunaro (Conclave), Rotation B",
+            "type": "Neurodes",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Team Annihilation (Conclave), Rotation B",
+            "type": "Neurodes",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Variant Annihilation (Conclave), Rotation B",
+            "type": "Neurodes",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Variant Cephalon Capture (Conclave), Rotation B",
+            "type": "Neurodes",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation B",
+            "type": "Neurodes",
+            "chance": 0.25,
+            "rarity": "Legendary"
+          },
+          {
+            "location": "Kuva Fortress/Dakata (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 10.79,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Lua/Plato (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 10.82,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Lua/Plato (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 10.82,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Earth/Cervantes (Caches), Rotation B",
+            "type": "Neurodes",
+            "chance": 12.18,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Neptune/Halimede (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 12.58,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Neptune/Thalassa (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 12.58,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Pluto/Charon (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 12.58,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Pluto/Cypress (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 12.58,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Sedna/Phithale (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 12.58,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Sedna/Rusalka (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 12.58,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Uranus/Portia (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 12.58,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Ceres/Ker (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 15.1,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Ceres/Thon (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 15.1,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Earth/Cervantes (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 15.1,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Jupiter/Adrastea (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 15.1,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Jupiter/Carpo (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 15.1,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Mars/Gradivus (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 15.1,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Mercury/Neruda (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 15.1,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Mercury/Terminus (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 15.1,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Calypso (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 15.1,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Pallene (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 15.1,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Ishtar (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 15.1,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Deimos/Formido (Caches), Rotation B",
+            "type": "Neurodes",
+            "chance": 15.18,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Eris/Candiru (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 15.49,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Eris/Candiru (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 15.49,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Eris/Lepis (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 15.49,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Eris/Lepis (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 15.49,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Eris/Naeglar (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 15.49,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Eris/Naeglar (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 15.49,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Eris/Psoro (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 15.49,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Eris/Psoro (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 15.49,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Eris/Viver (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 15.49,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Eris/Viver (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 15.49,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 100 - 100 Orb Vallis Bounty), Rotation A",
+            "type": "Neurodes",
+            "chance": 16.67,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 100 - 100 Orb Vallis Bounty), Rotation B",
+            "type": "Neurodes",
+            "chance": 16.67,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 100 - 100 Orb Vallis Bounty), Rotation C",
+            "type": "Neurodes",
+            "chance": 16.67,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 40 - 60 Orb Vallis Bounty), Rotation A",
+            "type": "Neurodes",
+            "chance": 16.67,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 40 - 60 Orb Vallis Bounty), Rotation B",
+            "type": "Neurodes",
+            "chance": 16.67,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 40 - 60 Orb Vallis Bounty), Rotation C",
+            "type": "Neurodes",
+            "chance": 16.67,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Void/Stribog (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 18.88,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Kuva Larvling",
+            "type": "Neurodes",
+            "chance": 2.5,
+            "rarity": "Common"
+          },
+          {
+            "location": "Saturn Six Fugitive",
+            "type": "Neurodes",
+            "chance": 2.5,
+            "rarity": "Common"
+          },
+          {
+            "location": "Zealot Baptizer",
+            "type": "Neurodes",
+            "chance": 2.5,
+            "rarity": "Common"
+          },
+          {
+            "location": "Zealot Herald",
+            "type": "Neurodes",
+            "chance": 2.5,
+            "rarity": "Common"
+          },
+          {
+            "location": "Zealot Proselytizer",
+            "type": "Neurodes",
+            "chance": 2.5,
+            "rarity": "Common"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 100 - 100 Orb Vallis Bounty), Rotation A",
+            "type": "Neurodes",
+            "chance": 20,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 100 - 100 Orb Vallis Bounty), Rotation B",
+            "type": "Neurodes",
+            "chance": 20,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 100 - 100 Orb Vallis Bounty), Rotation C",
+            "type": "Neurodes",
+            "chance": 20,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 40 - 60 Orb Vallis Bounty), Rotation A",
+            "type": "Neurodes",
+            "chance": 20,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 40 - 60 Orb Vallis Bounty), Rotation B",
+            "type": "Neurodes",
+            "chance": 20,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 40 - 60 Orb Vallis Bounty), Rotation C",
+            "type": "Neurodes",
+            "chance": 20,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Leekter",
+            "type": "Neurodes",
+            "chance": 25,
+            "rarity": "Common"
+          },
+          {
+            "location": "Shik Tal",
+            "type": "Neurodes",
+            "chance": 25,
+            "rarity": "Common"
+          },
+          {
+            "location": "Void/Marduk (Caches), Rotation C",
+            "type": "Neurodes",
+            "chance": 25.29,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Neptune/Halimede (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Neptune/Thalassa (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Pluto/Charon (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Pluto/Cypress (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Sedna/Phithale (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Sedna/Rusalka (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Uranus/Portia (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Void/Stribog (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 3.67,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 100 - 100 Orb Vallis Bounty), Rotation A",
+            "type": "Neurodes",
+            "chance": 33.33,
+            "rarity": "Common"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 100 - 100 Orb Vallis Bounty), Rotation B",
+            "type": "Neurodes",
+            "chance": 33.33,
+            "rarity": "Common"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 100 - 100 Orb Vallis Bounty), Rotation C",
+            "type": "Neurodes",
+            "chance": 33.33,
+            "rarity": "Common"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 40 - 60 Orb Vallis Bounty), Rotation A",
+            "type": "Neurodes",
+            "chance": 33.33,
+            "rarity": "Common"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 40 - 60 Orb Vallis Bounty), Rotation B",
+            "type": "Neurodes",
+            "chance": 33.33,
+            "rarity": "Common"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 40 - 60 Orb Vallis Bounty), Rotation C",
+            "type": "Neurodes",
+            "chance": 33.33,
+            "rarity": "Common"
+          },
+          {
+            "location": "Ceres/Ker (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 4.4,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Ceres/Thon (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 4.4,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Jupiter/Adrastea (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 4.4,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Jupiter/Carpo (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 4.4,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Calypso (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 4.4,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Pallene (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 4.4,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Deimos/Formido (Caches), Rotation B",
+            "type": "2X Neurodes",
+            "chance": 4.42,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Mars/Gradivus (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 5.5,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Mercury/Neruda (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 5.5,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Mercury/Terminus (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 5.5,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Venus/Ishtar (Caches), Rotation C",
+            "type": "2X Neurodes",
+            "chance": 5.5,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Vem Tabook",
+            "type": "Neurodes",
+            "chance": 50,
+            "rarity": "Common"
+          }
+        ],
+        "tradable": false,
+        "masterable": false
+      },
+      {
+        "uniqueName": "/Lotus/Types/Items/MiscItems/Rubedo",
+        "name": "Rubedo",
+        "description": "A jagged crystalline ore. Gives off radiant energy.\n\nLocation: Earth, Lua, Phobos, Europa, Pluto, Sedna, and the Void",
+        "codexSecret": false,
+        "itemCount": 1000,
+        "imageName": "ComponentRubedo.png",
+        "drops": [
+          {
+            "location": "Earth/Cervantes (Caches), Rotation B",
+            "type": "150X Rubedo",
+            "chance": 12.18,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Ceres/Ker (Caches), Rotation B",
+            "type": "350X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Ceres/Thon (Caches), Rotation B",
+            "type": "350X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Jupiter/Adrastea (Caches), Rotation B",
+            "type": "350X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Jupiter/Carpo (Caches), Rotation B",
+            "type": "350X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Kuva Fortress/Dakata (Caches), Rotation B",
+            "type": "400X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Neptune/Halimede (Caches), Rotation B",
+            "type": "400X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Neptune/Thalassa (Caches), Rotation B",
+            "type": "400X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Pluto/Charon (Caches), Rotation B",
+            "type": "400X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Pluto/Cypress (Caches), Rotation B",
+            "type": "400X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Calypso (Caches), Rotation B",
+            "type": "350X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Pallene (Caches), Rotation B",
+            "type": "350X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Sedna/Phithale (Caches), Rotation B",
+            "type": "400X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Sedna/Rusalka (Caches), Rotation B",
+            "type": "400X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Uranus/Portia (Caches), Rotation B",
+            "type": "400X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Void/Stribog (Caches), Rotation B",
+            "type": "400X Rubedo",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Lua/Plato (Caches), Rotation A",
+            "type": "350X Rubedo",
+            "chance": 12.91,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 20 - 40 Orb Vallis Bounty), Rotation C",
+            "type": "300X Rubedo",
+            "chance": 13.24,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 20 - 40 Orb Vallis Bounty), Rotation C",
+            "type": "300X Rubedo",
+            "chance": 15,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Void/Marduk (Caches), Rotation B",
+            "type": "400X Rubedo",
+            "chance": 15.18,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Venus/Orb Vallis (Level 20 - 40 Orb Vallis Bounty), Rotation C",
+            "type": "300X Rubedo",
+            "chance": 25,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation A",
+            "type": "10X Rubedo",
+            "chance": 3.16,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation B",
+            "type": "10X Rubedo",
+            "chance": 3.16,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Neptune/Cephalon Capture (Conclave), Rotation B",
+            "type": "100X Rubedo",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Annihilation (Conclave), Rotation B",
+            "type": "100X Rubedo",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Cephalon Capture (Conclave), Rotation B",
+            "type": "100X Rubedo",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Lunaro (Conclave), Rotation B",
+            "type": "100X Rubedo",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Team Annihilation (Conclave), Rotation B",
+            "type": "100X Rubedo",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Variant Annihilation (Conclave), Rotation B",
+            "type": "100X Rubedo",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Variant Cephalon Capture (Conclave), Rotation B",
+            "type": "100X Rubedo",
+            "chance": 7.37,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation B",
+            "type": "100X Rubedo",
+            "chance": 7.37,
+            "rarity": "Rare"
+          }
+        ],
+        "tradable": false,
+        "masterable": false,
+        "type": "Resource"
+      },
+      {
+        "uniqueName": "/Lotus/Types/Items/MiscItems/Salvage",
+        "name": "Salvage",
+        "description": "High value metals collected from war salvage.\n\nLocation: Mars, Jupiter, and Sedna",
+        "codexSecret": false,
+        "itemCount": 1200,
+        "imageName": "ComponentSalvage.png",
+        "drops": [
+          {
+            "location": "Neptune/Cephalon Capture (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Annihilation (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Cephalon Capture (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Lunaro (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Team Annihilation (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Annihilation (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Cephalon Capture (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation B",
+            "type": "600X Salvage",
+            "chance": 12.65,
+            "rarity": "Uncommon"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation A",
+            "type": "10X Salvage",
+            "chance": 3.16,
+            "rarity": "Rare"
+          },
+          {
+            "location": "Saturn/Variant Team Annihilation (Conclave), Rotation B",
+            "type": "10X Salvage",
+            "chance": 3.16,
+            "rarity": "Rare"
+          }
+        ],
+        "tradable": false,
+        "masterable": false,
+        "type": "Resource"
+      }
+    ],
+    "type": "Shotgun",
+    "category": "Primary",
+    "tradable": false,
+    "masterable": true
+  }
+}

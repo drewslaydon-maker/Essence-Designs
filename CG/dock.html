@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LOOT / TRADE DOCK — CG-001</title>
+<style>
+/* Self-contained. No webfont, no CDN, no network. Works from file://. */
+:root{
+  --bg:#14101c; --panel:#1d1830; --panel2:#251d3d; --line:#3a2f57;
+  --ink:#f2ecff; --dim:#a294c4; --gold:#e8c46a; --warn:#ff9f6e; --ok:#7ddba0;
+  --strike:#8a7ba8;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{padding:14px 18px;border-bottom:2px solid var(--line);background:var(--panel);
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:5}
+h1{font-size:18px;margin:0;color:var(--gold);letter-spacing:.5px}
+h1 small{display:block;color:var(--dim);font-size:11px;font-weight:400;letter-spacing:0}
+.mode{font-size:12px;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+button{background:var(--panel2);color:var(--ink);border:1px solid var(--line);
+  border-radius:6px;padding:7px 12px;cursor:pointer;font:inherit;font-size:13px}
+button:hover{border-color:var(--gold)}
+#drop{width:100%;padding:16px;font-size:22px;border-radius:8px;border:2px solid var(--gold);
+  background:#0f0c17;color:var(--ink);font-family:inherit}
+#drop:focus{outline:3px solid rgba(232,196,106,.35)}
+main{padding:18px;max-width:1180px;margin:0 auto}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:14px 16px;margin-bottom:14px}
+.plan{font-size:26px;font-weight:700;color:var(--gold);line-height:1.25;margin:0 0 6px}
+.lbl{font-size:11px;letter-spacing:1.4px;color:var(--dim);text-transform:uppercase;
+  display:block;margin-bottom:3px}
+.big{font-size:22px}
+.read{font-size:17px;color:var(--ink);border-left:3px solid var(--gold);padding-left:10px;margin:0 0 8px}
+.dim{color:var(--dim)}
+.flag{display:inline-block;font-size:11px;border:1px solid var(--line);border-radius:4px;
+  padding:2px 7px;margin:2px 4px 2px 0;color:var(--warn);background:#2a1b2e}
+.flag.juju{color:var(--gold);border-color:var(--gold)}
+.delta{font-size:15px;color:var(--ink)}
+.qual{font-size:11px;color:var(--dim);letter-spacing:1px;margin-left:8px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{border:1px solid var(--line);padding:5px 7px;text-align:left;vertical-align:top}
+th{background:var(--panel2);cursor:pointer;user-select:none;font-size:11px;letter-spacing:.6px}
+th.static{cursor:default}
+tbody tr:nth-child(even){background:rgba(255,255,255,.02)}
+.miss{color:var(--warn)}
+.have{color:var(--ok)}
+.inacc{color:var(--warn);font-style:italic}
+.sum{font-size:15px;font-weight:700;color:var(--ink)}
+.sum.partial{color:var(--strike);text-decoration:line-through}
+.sum.none{color:var(--warn)}
+.planadj{font-size:12px;color:var(--gold)}
+details{margin-top:6px}
+summary{cursor:pointer;font-size:12px;color:var(--dim)}
+.tier{background:var(--panel2);padding:8px;border-radius:6px;margin:6px 0}
+.tier h3{margin:0 0 4px;font-size:13px;color:var(--gold)}
+table.relic td{font-size:11px;padding:3px 5px}
+.err{background:#2e1620;border:1px solid #6b2f3f;border-radius:6px;padding:8px 10px;margin:6px 0;
+  font-size:12px;color:#ffc9c9}
+.err b{color:#ff8f8f}
+.session{font-size:11px;color:var(--warn);letter-spacing:1px}
+input.cell{width:100%;background:#0f0c17;color:var(--ink);border:1px solid var(--line);
+  border-radius:4px;padding:4px;font:inherit;font-size:12px}
+.notdock{border-left:3px solid var(--warn);padding-left:10px}
+.tbtn{background:var(--panel2);color:var(--gold);border:1px solid var(--gold);
+  border-radius:4px;padding:1px 7px;font:inherit;font-size:11px;cursor:pointer;margin-left:6px}
+.tbtn:hover{background:#33294f}
+.tinput{background:#0f0c17;color:var(--ink);border:1px solid var(--line);
+  border-radius:4px;padding:5px 6px;font:inherit;font-size:12px}
+.tform{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap;margin-left:6px;font-size:12px}
+.offdock{display:inline-block;color:var(--gold);border:1px solid var(--gold);border-radius:4px;
+  padding:1px 6px;font-size:10px;letter-spacing:1.4px;vertical-align:middle;margin-right:6px}
+.hidden{display:none}
+#guard{background:#2e1620;border:1px solid #6b2f3f;padding:18px;border-radius:8px;
+  font-size:15px;color:#ffc9c9}
+footer{padding:14px 18px;color:var(--dim);font-size:11px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>LOOT / TRADE DOCK<small>CG-001 · OFFLINE · SNAPSHOT, NOT LIVE</small></h1>
+  <span class="mode" id="modeTag">GLANCE</span>
+  <button id="toDeep">DEEP (G)</button>
+  <button id="toRelics">RELICS</button>
+  <span class="mode hidden" id="tradesToday">0 / 11 today</span>
+  <span class="mode hidden" id="tradeNote"></span>
+  <span class="dim" id="snapAge" style="font-size:12px"></span>
+</header>
+
+<main>
+  <div id="guard" class="hidden"></div>
+
+  <div id="glance">
+    <input id="drop" type="text" spellcheck="false"
+           placeholder="Type or paste an item or part name…" aria-label="Search items and parts">
+    <div id="verdict" style="margin-top:14px"></div>
+    <div id="suggest" style="margin-top:8px"></div>
+    <div id="addDrop" class="card hidden">
+      <span class="lbl">ADD DROP — NEW ITEM, NOT ON THE 35</span>
+      <div class="dim" style="font-size:12px;margin:4px 0 8px">
+        Item name + its part names, comma separated (up to 8). An optional first
+        part logs today's pickup straight away. Renders as an OFF-DOCK row.
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <input id="adItem" type="text" spellcheck="false" class="tinput"
+               placeholder="Item name" style="flex:1;min-width:180px" aria-label="Item name">
+        <input id="adParts" type="text" spellcheck="false" class="tinput"
+               placeholder="Part names, comma separated" style="flex:2;min-width:220px" aria-label="Part names">
+        <input id="adFirst" type="text" spellcheck="false" class="tinput"
+               placeholder="First part dropped (optional)" style="flex:1;min-width:160px" aria-label="First part dropped">
+        <button id="adGo">ADD DROP</button>
+      </div>
+      <div id="adMsg" class="dim" style="font-size:12px;margin-top:6px"></div>
+    </div>
+  </div>
+
+  <div id="deep" class="hidden">
+    <div class="card">
+      <span class="lbl">FILTER (all columns)</span>
+      <input id="deepFilter" type="text" style="width:100%;padding:10px;
+        background:#0f0c17;color:var(--ink);border:1px solid var(--line);border-radius:6px;font:inherit">
+      <div class="dim" style="font-size:12px;margin-top:6px" id="deepCount"></div>
+    </div>
+    <div class="card" style="overflow-x:auto">
+      <table id="deepTable"><thead></thead><tbody></tbody></table>
+    </div>
+    <div class="card">
+      <span class="lbl">SCRATCHPAD</span>
+      <span class="session">SESSION ONLY — NOT SAVED</span>
+      <div class="dim" style="font-size:12px;margin:6px 0">
+        Held in memory for this browser session only. CG never writes these back to the xlsx,
+        and this page never claims to have saved anything.
+      </div>
+      <table id="padTable"><thead></thead><tbody></tbody></table>
+    </div>
+  </div>
+
+  <div id="relics" class="hidden">
+    <div class="card">
+      <span class="lbl">SNAPSHOT ERRORS</span>
+      <div class="dim" style="font-size:12px;margin-bottom:6px">
+        These warnings come from the snapshot itself. A reward table the feed flags as
+        missing drops is marked where you read it.
+      </div>
+      <div id="relicErrors"></div>
+    </div>
+    <div class="card" id="relicTables"></div>
+  </div>
+</main>
+
+<footer>
+  <div id="footNote"></div>
+</footer>
+
+<!-- file:// contract: classic scripts, in order, data BEFORE the page script.
+     No fetch(), no type="module", no imports, no workers. -->
+<script src="dock.data.js"></script>
+<script src="relics.data.js"></script>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---- file:// guard: never a blank page, never `undefined` -----------------
+  var D = window.CG_DOCK;
+  var guard = document.getElementById('guard');
+  function bail(msg) {
+    guard.classList.remove('hidden');
+    guard.textContent = msg;
+    ['glance', 'deep', 'relics'].forEach(function (id) {
+      document.getElementById(id).classList.add('hidden');
+    });
+  }
+  if (!D || !D.items) {
+    bail('RUN: node CG/build-dock.js — dock.data.js did not load. The page cannot render without it.');
+    return;
+  }
+
+  var RELICS = window.CG_RELICS;
+  var INACC = '[INACCESSIBLE]';
+
+  // Flags shown on the page. An allow-list on purpose: a flag with no honest,
+  // non-presumptuous label is simply not printed. The one flag that would claim a
+  // finished state is deliberately absent from this list.
+  var SHOW_FLAGS = {
+    SACRED: 'SACRED', TRAP: 'TRAP', HOLD: 'HOLD', LOCKED: 'LOCKED',
+    NO_PUBLIC_PRICE: 'NO PUBLIC PRICE', CATALOG_MISS: 'CATALOG_MISS',
+    JUJU_RESERVED: 'JUJU RESERVED', SEG_INACCESSIBLE: 'SEG INACCESSIBLE',
+    PART_LIST_CONFLICT: 'PART LIST CONFLICT', JOIN_ALIAS_PROPOSED: 'JOIN ALIAS PROPOSED',
+    NO_PLAN: 'NO PLAN'
+  };
+
+  // ---- snapshot age: every price carries it, without exception ---------------
+  function snapAge() {
+    var t = Date.parse(D.snapshot && D.snapshot.pricesFetchedAt);
+    if (isNaN(t)) return 'SNAPSHOT AGE UNKNOWN';
+    var h = Math.max(0, Math.round((Date.now() - t) / 36e5));
+    var stamp = String(D.snapshot.pricesFetchedAt).replace('T', ' ').replace(/\..*$/, '');
+    return 'SNAPSHOT ' + stamp + ' · ' + h + 'h old · static, not live';
+  }
+  document.getElementById('snapAge').textContent = snapAge();
+
+  // ---- tiny helpers ---------------------------------------------------------
+  function esc(s) {
+    return String(s === null || s === undefined ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function num(v) { var n = Number(v); return isFinite(n) ? n : null; }
+  function fmt(v) {
+    var n = num(v);
+    if (n === null) return null;
+    return String(Math.round(n * 100) / 100);
+  }
+  function el(tag, cls, txt) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (txt !== undefined && txt !== null) e.textContent = txt;
+    return e;
+  }
+
+  /**
+   * Drew's Est Value takes three shapes and all three occur:
+   *   range   '74-80p' -> compare against the MIDPOINT, labelled 'vs mid'
+   *   single  '25p'    -> compare directly
+   *   sentinel LOCKED / TRAP / HOLD -> NO delta at all, ever.
+   * This is view-time parsing only. dock.json keeps his strings untouched.
+   */
+  function parseEst(raw) {
+    if (raw === null || raw === undefined) return null;
+    var s = String(raw).trim();
+    if (s === '') return null;
+    if (/^(LOCKED|TRAP|HOLD)$/i.test(s)) return null;
+    var range = s.match(/^(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)\s*p?$/i);
+    if (range) {
+      var lo = parseFloat(range[1]), hi = parseFloat(range[2]);
+      return { value: (lo + hi) / 2, qualifier: 'vs mid' };
+    }
+    var one = s.match(/^(\d+(?:\.\d+)?)\s*p?$/i);
+    if (one) return { value: parseFloat(one[1]), qualifier: '' };
+    return null;
+  }
+
+  // ---- CG-002-B trade overlay (DREW_SOURCED ledger, console mode only) ------
+  // dock.json stays import-pure; the ledger lives in CG/baked/trade.log.json.
+  // file:// keeps today's exact rendering; this block only activates over http.
+  var HTTP = (location.protocol !== 'file:');
+  var trade = null;
+  var tradeReady = false;
+  var tradeTried = false;
+  var offDockRaw = [];       // trade.items whose name is not one of the 35
+  var offDockByName = {};    // lowercase item name -> true (bracket access only)
+  var offSegByName = {};     // lowercase '<item> <part>' -> item name
+
+  function todayLocal() {
+    var d = new Date();
+    var mm = String(d.getMonth() + 1); if (mm.length < 2) mm = '0' + mm;
+    var dd = String(d.getDate()); if (dd.length < 2) dd = '0' + dd;
+    return d.getFullYear() + '-' + mm + '-' + dd;
+  }
+
+  function tradePickups() { return trade ? trade.pickups : null; }
+  function tradeSales() { return trade ? trade.sales : null; }
+
+  // The one derivation law, shared by the page and the dock.test oracle:
+  // base qty (numeric part; null/blank counts 0) + pickups - sales, clamped at 0.
+  function deriveQty(base, pickups, sales) {
+    var b = Number(base); if (!isFinite(b) || b < 0) b = 0;
+    var p = Number(pickups); if (!isFinite(p) || p < 0) p = 0;
+    var s = Number(sales); if (!isFinite(s) || s < 0) s = 0;
+    var q = b + p - s;
+    return q > 0 ? q : 0;
+  }
+
+  function countFor(list, itemName, partName) {
+    if (!list) return 0;
+    var c = 0;
+    for (var k = 0; k < list.length; k++) {
+      var ev = list[k];
+      if (ev && ev.item === itemName && ev.part === partName) c++;
+    }
+    return c;
+  }
+
+  function segQty(dkit, sg) {
+    return deriveQty(sg.qty,
+      countFor(tradePickups(), dkit.item, sg.slot),
+      countFor(tradeSales(), dkit.item, sg.slot));
+  }
+
+  function segHave(dkit, sg) { return segQty(dkit, sg) >= 1; }
+
+  function segQtyBySlot(dkit, slot) {
+    for (var k = 0; k < dkit.segments.length; k++) {
+      if (dkit.segments[k].slot === slot) return segQty(dkit, dkit.segments[k]);
+    }
+    return null;
+  }
+
+  function derivedMissing(dkit) {
+    var out = [];
+    for (var k = 0; k < dkit.segments.length; k++) {
+      if (segQty(dkit, dkit.segments[k]) < 1) out.push(dkit.segments[k].slot);
+    }
+    return out;
+  }
+
+  function qtyText(q) { return (Math.round(q * 10) / 10).toFixed(1); }
+
+  function partQtyView(dkit, p) {
+    if (!tradeReady) return p.qty;
+    var blank = (p.qty === null || p.qty === undefined || p.qty === '');
+    var base = blank ? 0 : Number(p.qty);
+    if (!isFinite(base)) { base = 0; blank = true; }
+    var q = deriveQty(base, countFor(tradePickups(), dkit.item, p.name),
+      countFor(tradeSales(), dkit.item, p.name));
+    if (blank && q === 0) return null;
+    return qtyText(q);
+  }
+
+  function tradeTodayCount() {
+    if (!trade) return 0;
+    var today = todayLocal();
+    var c = 0;
+    for (var k = 0; k < trade.sales.length; k++) {
+      if (trade.sales[k].date === today) c++;
+    }
+    return c;
+  }
+
+  function renderHeaderTrade() {
+    var tag = document.getElementById('tradesToday');
+    var note = document.getElementById('tradeNote');
+    if (!HTTP) {
+      tag.classList.add('hidden');
+      note.textContent = 'LOGGING NEEDS THE CG WINDOW — run: node CG/console-server.js';
+      note.classList.remove('hidden');
+      return;
+    }
+    if (!tradeTried) return;   // still loading — never a flash
+    if (!tradeReady) {
+      tag.classList.add('hidden');
+      note.textContent = 'TRADE LOG UNAVAILABLE — the console did not answer.';
+      note.classList.remove('hidden');
+      return;
+    }
+    note.classList.add('hidden');
+    tag.textContent = tradeTodayCount() + ' / 11 today';
+    tag.classList.remove('hidden');
+  }
+
+  // CG-001 file:// law: fetch never runs from a file:// page. Every fetch in
+  // this page flows through here, behind exactly this guard.
+  function tradeFetch(url, opts, cb) {
+    if (location.protocol === 'file:') { cb(false, null); return; }
+    fetch(url, opts || {}).then(function (r) {
+      r.json().then(function (j) { cb(r.ok, j); }, function () { cb(false, null); });
+    }, function () { cb(false, null); });
+  }
+
+  function failText(data) {
+    if (data && data.error) return String(data.error);
+    return 'The console refused that entry.';
+  }
+
+  function feedRowByName(want) {
+    var prices = D.prices || [];
+    for (var k = 0; k < prices.length; k++) {
+      if (String(prices[k].name || '').trim() === want) return prices[k];
+    }
+    return null;
+  }
+
+  // Off-dock views get the same field names the render functions already read
+  // (declared in FIELDS.json), flagged by the OFF-DOCK chip, never merged into
+  // the 35. Values not Drew-owned render '—' / null, never invented.
+  function buildOffDock(tio) {
+    var segs = [];
+    var parts = [];
+    var value = 0; var priced = 0;
+    var setRow = feedRowByName(tio.item + ' Set');
+    tio.partNames.forEach(function (nm) {
+      var full = tio.item + ' ' + nm;
+      var row = feedRowByName(full);
+      if (row) { value += Number(row.custom_avg) || 0; priced++; }
+      segs.push({
+        slot: nm, qty: 0,
+        feedAvg: row ? row.custom_avg : null,
+        feedVolToday: row ? row.today_vol : null,
+        feedVolYest: row ? row.yesterday_vol : null,
+        drewValue: null, matchShape: null, matchedName: row ? full : null
+      });
+      parts.push({ slot: segs.length, name: nm, qty: 0, have: false });
+    });
+    var view = {
+      ordinal: 1000 + offDockRaw.length, xlsxRow: null,
+      item: tio.item, category: null, velocityTier: null, bpMainQty: null,
+      estValueRaw: '—', vaulted: null, jujuRsv: null, liveActionPlan: null,
+      marketRead: null, flags: [], estValueBasis: null,
+      segments: segs, parts: parts, setPrice: null
+    };
+    view.missing = derivedMissing(view);
+    view.partsSum = {
+      value: priced ? (Math.round(value * 100) / 100) : null,
+      pricedSegments: priced, totalSegments: segs.length,
+      complete: priced === segs.length && segs.length > 0
+    };
+    if (setRow) {
+      view.setPrice = {
+        custom_avg: setRow.custom_avg,
+        today_vol: setRow.today_vol,
+        yesterday_vol: setRow.yesterday_vol,
+        matchedName: tio.item + ' Set'
+      };
+    }
+    return view;
+  }
+
+  function rebuildIndex() {
+    itemsByName = {};
+    index = [];
+    D.items.forEach(function (it) { itemsByName[it.item.toLowerCase()] = it; });
+    D.items.forEach(function (it) {
+      index.push({ label: it.item, kind: 'DOCK ITEM', itemName: it.item, slot: null });
+      it.segments.forEach(function (s) {
+        if (s.matchedName) {
+          index.push({ label: s.matchedName, kind: 'SEGMENT', itemName: it.item, slot: s.slot });
+        }
+      });
+    });
+    (D.prices || []).forEach(function (p) {
+      var n = (p.name || '').trim();
+      if (!n) return;
+      if (index.some(function (e) { return e.label === n; })) return;
+      index.push({ label: n, kind: 'FEED ROW', itemName: null, slot: null });
+    });
+    offDockRaw = [];
+    offDockByName = {};
+    offSegByName = {};
+    (trade && trade.items ? trade.items : []).forEach(function (tio) {
+      var key = tio.item.toLowerCase();
+      if (itemsByName[key]) return;   // a docked name gets no off-dock row
+      var view = buildOffDock(tio);
+      offDockRaw.push(tio);
+      offDockByName[key] = true;
+      itemsByName[key] = view;
+      index.push({ label: tio.item, kind: 'OFF-DOCK', itemName: tio.item, slot: null });
+      view.segments.forEach(function (sg) {
+        var full = tio.item + ' ' + sg.slot;
+        index.push({ label: full, kind: 'OFF-DOCK', itemName: tio.item, slot: sg.slot });
+        offSegByName[full.toLowerCase()] = tio.item;
+      });
+    });
+    indexLower = index.map(function (e) { return e.label.toLowerCase(); });
+  }
+
+  function renderQuery(q) {
+    renderSuggest(q);
+    if (!q) { document.getElementById('verdict').innerHTML = ''; return; }
+    var it = itemsByName[q.toLowerCase()];
+    if (it) { renderVerdict(q, it.item, null); return; }
+    var segHit = null;
+    D.items.forEach(function (i) {
+      i.segments.forEach(function (s) {
+        if (s.matchedName === q) segHit = { item: i.item, slot: s.slot };
+      });
+    });
+    if (!segHit) {
+      var okey = offSegByName[q.toLowerCase()];
+      if (okey) segHit = { item: okey, slot: null };
+    }
+    renderVerdict(q, segHit ? segHit.item : null, segHit ? segHit.slot : null);
+  }
+
+  // ---- the search index: all 758 feed rows AND all 35 dock rows + OFF-DOCK --
+  var itemsByName = {};
+  var index = [];   // {label, kind, itemName, slot}
+  var indexLower = [];
+  rebuildIndex();
+
+  function tradeBtnHtml(itemName, partName, have) {
+    if (!tradeReady) return '';
+    return '<button type="button" class="tbtn" data-t="' + (have ? 'sell' : 'drop') +
+      '" data-item="' + esc(itemName) + '" data-part="' + esc(partName) + '">' +
+      (have ? 'SELL' : 'DROP IN') + '</button>';
+  }
+
+  function loadTrade() {
+    tradeTried = true;
+    tradeFetch('/api/trade', {}, function (ok, data) {
+      if (!ok) { renderHeaderTrade(); return; }
+      trade = data;
+      tradeReady = true;
+      rebuildIndex();
+      rebrandTradeUi();
+    });
+  }
+
+  function rebrandTradeUi() {
+    renderHeaderTrade();
+    var add = document.getElementById('addDrop');
+    if (add && tradeReady) add.classList.remove('hidden');
+    if (document.getElementById('modeTag').textContent === 'DEEP') buildDeep();
+  }
+
+  // ---- SEGMENTS block (ruling N) -------------------------------------------
+  /**
+   * One line per segment. HAVE / MISSING only. An unpriced segment renders
+   * [INACCESSIBLE] with its reason — never 0 — and the line still renders so the
+   * segment is known to exist.
+   */
+  function segmentLines(it, compact) {
+    var out = [];
+    var conflict = null;
+    (D.conflicts.entries || []).forEach(function (c) {
+      if (c.id === 'PART_LIST_CONFLICT' && c.item === it.item) conflict = c;
+    });
+
+    it.segments.forEach(function (s) {
+      var have = segHave(it, s);   // CG-002-B: live over the ledger in console mode
+      var bits = [];
+      bits.push('<b>' + esc(s.slot) + '</b>');
+      bits.push('<span class="' + (have ? 'have' : 'miss') + '">' +
+        (have ? 'HAVE' : 'MISSING') + '</span>');
+      if (s.feedAvg === null || s.feedAvg === undefined) {
+        bits.push('<span class="inacc">' + INACC + '</span>');
+        bits.push('<span class="dim" style="font-size:11px">(no feed row for this slot)</span>');
+      } else {
+        bits.push('<span class="dim" style="font-size:11px">AVG (UNDOC)</span> ' +
+          '<b>' + esc(fmt(s.feedAvg)) + '</b>');
+        if (compact) {
+          bits.push('<span class="dim" style="font-size:11px">VOL</span> ' +
+            '<b>' + esc(s.feedVolToday) + '</b>');
+        } else {
+          bits.push('<span class="dim" style="font-size:11px">VOL TODAY</span> ' +
+            '<b>' + esc(s.feedVolToday) + '</b>');
+          bits.push('<span class="dim" style="font-size:11px">VOL YEST</span> ' +
+            '<b>' + esc(s.feedVolYest) + '</b>');
+        }
+      }
+      // YOUR VALUE renders only when Drew has stated one. It is null everywhere in CG-001.
+      if (!compact) {
+        bits.push('<span class="dim" style="font-size:11px">YOUR VALUE</span> ' +
+          (s.drewValue ? '<b>' + esc(s.drewValue) + '</b>' : '<span class="dim">—</span>'));
+      }
+      if (s.matchShape) {
+        bits.push('<span class="dim" style="font-size:11px">' + esc(s.matchShape) + '</span>');
+      }
+      // The blueprint line carries his plan warning adjacent, so a valuable
+      // blueprint is never presented as a clean flip.
+      if (s.slot === 'BP/Main' && it.liveActionPlan && !compact) {
+        bits.push('<span class="planadj">' + esc(it.liveActionPlan) + '</span>');
+      }
+      if (tradeReady) {
+        bits.push(tradeBtnHtml(it.item, s.slot, have));
+      }
+      out.push('<div class="planadj" style="margin:3px 0">· ' + bits.join(' · ') + '</div>');
+    });
+
+    // A part the feed carries but the dock does not: shown beside the dock's own
+    // slot, never replacing it, and never counted in the sum. CRAFT RULING
+    // 2026-10-06 (Corufell 4+1 BP): once Drew resolved the conflict, Stock became
+    // a real dock slot, so a RESOLVED conflict renders no feed-only line — it
+    // would print the same part twice and label a dock slot feed-only.
+    if (conflict && conflict.measuredFeedOnly &&
+        String(conflict.status || '').indexOf('RESOLVED') !== 0) {
+      var f = conflict.measuredFeedOnly;
+      out.push('<div class="planadj" style="margin:3px 0">· <b>' + esc(f.name.replace(/^.* /, '')) +
+        '</b> · <span class="dim" style="font-size:11px">FEED-ONLY PART</span>' +
+        ' · <span class="dim" style="font-size:11px">AVG (UNDOC)</span> <b>' + esc(fmt(f.custom_avg)) + '</b>' +
+        ' · <span class="dim" style="font-size:11px">VOL</span> <b>' + esc(f.today_vol) + '</b>' +
+        ' · <span class="flag">PART LIST CONFLICT</span></div>');
+    }
+    return out.join('');
+  }
+
+  /**
+   * PARTS SUM always declares its denominator, so a partial can never read as a total.
+   * Any incomplete sum renders greyed + struck + INCOMPLETE. When nothing at all is
+   * priced there is no sum to show, so the value renders [INACCESSIBLE] — never a
+   * bare 0, which would be a fabricated value.
+   */
+  function partsSumLine(it) {
+    var ps = it.partsSum;
+    var head = '<div class="sum-row"><span class="lbl">PARTS SUM</span> ';
+    var den = ' · ' + ps.pricedSegments + ' of ' + ps.totalSegments + ' SEGMENTS';
+    if (ps.complete) {
+      return head + '<span class="sum">' + esc(fmt(ps.value)) + den + '</span></div>';
+    }
+    var val = (ps.value === null || ps.value === undefined) ? INACC : esc(fmt(ps.value));
+    return head + '<span class="sum partial">' + val + den + ' · INCOMPLETE</span></div>';
+  }
+
+  // ---- GLANCE verdict block, in the fixed order ----------------------------
+  function renderVerdict(label, itemName, slot) {
+    var box = document.getElementById('verdict');
+    box.innerHTML = '';
+    var it = itemName ? itemsByName[String(itemName).toLowerCase()] : null;
+
+    var card = el('div', 'card');
+    card.appendChild(el('div', 'lbl', label));
+    var offDock = !!it && !!offDockByName[String(itemName).toLowerCase()];
+    if (offDock) {
+      card.appendChild(el('span', 'flag offdock', 'OFF-DOCK'));
+      card.appendChild(el('div', 'dim', 'Not one of the 35 dock rows — tracked in the trade log.'));
+    }
+
+    if (!it) {
+      // Not on the dock: say so plainly, then still show the feed's numbers.
+      card.appendChild(el('div', 'big notdock', 'Not on your dock.'));
+      card.appendChild(el('div', 'dim', 'Feed rows for ' + label + ':'));
+      var row = null;
+      (D.prices || []).forEach(function (p) { if ((p.name || '').trim() === label) row = p; });
+      if (row) {
+        var l2 = el('div');
+        l2.innerHTML = 'AVG (UNDOC) <b>' + esc(fmt(row.custom_avg)) + '</b> · ' +
+          'VOL TODAY <b>' + esc(row.today_vol) + '</b> · VOL YEST <b>' + esc(row.yesterday_vol) + '</b>';
+        card.appendChild(l2);
+      } else {
+        card.appendChild(el('div', 'inacc', INACC + ' — no feed row carries this name.'));
+      }
+      card.appendChild(el('div', 'dim', snapAge()));
+      box.appendChild(card);
+      return;
+    }
+
+    // 1. YOUR PLAN — his words, first and largest.
+    if (it.liveActionPlan) {
+      card.appendChild(el('span', 'lbl', 'YOUR PLAN'));
+      card.appendChild(el('p', 'plan', it.liveActionPlan));
+    } else {
+      card.appendChild(el('span', 'lbl', 'YOUR PLAN'));
+      card.appendChild(el('p', 'plan dim', 'NO PLAN — the numbers below carry no instruction.'));
+    }
+
+    // 2. YOUR MARKET READ — verbatim, or omitted entirely when null.
+    if (it.marketRead) {
+      card.appendChild(el('span', 'lbl', 'YOUR MARKET READ'));
+      card.appendChild(el('p', 'read', it.marketRead));
+    }
+
+    // 3. YOUR EST — his exact string.
+    card.appendChild(el('span', 'lbl', 'YOUR EST'));
+    card.appendChild(el('div', 'big', it.estValueRaw));
+
+    // 4. The feed's numbers, visibly smaller and honestly labelled.
+    var feedLine = el('div');
+    if (it.setPrice) {
+      feedLine.innerHTML = '<span class="lbl">AVG (UNDOC) · VOL TODAY</span>' +
+        '<span style="font-size:15px">' + esc(fmt(it.setPrice.custom_avg)) +
+        ' · ' + esc(it.setPrice.today_vol) + '</span>';
+    } else {
+      feedLine.innerHTML = '<span class="lbl">AVG (UNDOC) · VOL TODAY</span>' +
+        '<span class="inacc">' + INACC +
+        ' — no public Set row for this item. That is a missing feed row, not a value of zero,' +
+        ' and not a statement about worth.</span>';
+    }
+    card.appendChild(feedLine);
+
+    // 5. EST vs AVG — a reading aid, never a signal.
+    var est = parseEst(it.estValueRaw);
+    var avg = it.setPrice ? num(it.setPrice.custom_avg) : null;
+    var d = el('div', 'delta');
+    if (est && avg !== null) {
+      var delta = Math.round((est.value - avg) * 100) / 100;
+      d.innerHTML = '<span class="lbl">EST vs AVG</span>' +
+        (delta >= 0 ? '+' : '') + esc(fmt(delta)) +
+        '<span class="qual">' + (est.qualifier || '') + ' · COMPARISON, NOT A SIGNAL</span>';
+    } else {
+      d.innerHTML = '<span class="lbl">EST vs AVG</span>' +
+        '<span class="dim">no comparison for this Est Value shape.</span>';
+    }
+    card.appendChild(d);
+
+    // 6. SNAPSHOT age. Always.
+    card.appendChild(el('div', 'dim', snapAge()));
+
+    // 7. Flags.
+    var fl = el('div');
+    it.flags.forEach(function (f) {
+      if (!SHOW_FLAGS[f]) return;
+      var s = el('span', 'flag' + (f === 'JUJU_RESERVED' ? ' juju' : ''), SHOW_FLAGS[f]);
+      fl.appendChild(s);
+    });
+    card.appendChild(fl);
+
+    // 8. The bits his own sheet marks 0 (live-derived for off-dock rows).
+    var mb = el('div');
+    var missList = offDock ? derivedMissing(it) : it.missing;
+    mb.innerHTML = '<span class="lbl">' +
+      (offDock ? 'PARTS NOT HELD YET' : 'YOUR BITS SHOW MISSING') + '</span>' +
+      (missList.length
+        ? '<span class="miss">' + missList.map(esc).join(' · ') + '</span>'
+        : '<span class="dim">' +
+          (offDock ? 'none — every listed part is held' : 'none marked in your sheet') + '</span>');
+    card.appendChild(mb);
+
+    // SEGMENTS — the per-segment block.
+    var segCard = el('div', 'card');
+    segCard.appendChild(el('span', 'lbl', 'SEGMENTS'));
+    segCard.appendChild(el('div', 'dim', 'YOUR VALUE renders only when you state one. None are stated yet.'));
+    segCard.insertAdjacentHTML('beforeend', segmentLines(it, false));
+    segCard.insertAdjacentHTML('beforeend', partsSumLine(it));
+    if (slot) {
+      segCard.appendChild(el('div', 'dim', 'matched segment: ' + slot));
+    }
+    box.appendChild(card);
+    box.appendChild(segCard);
+  }
+
+  // ---- suggestions ----------------------------------------------------------
+  function renderSuggest(q) {
+    var box = document.getElementById('suggest');
+    box.innerHTML = '';
+    if (!q || q.length < 2) return;
+    var ql = q.toLowerCase();
+    var hits = [];
+    for (var i = 0; i < index.length && hits.length < 12; i++) {
+      if (indexLower[i].indexOf(ql) >= 0) hits.push(index[i]);
+    }
+    if (!hits.length) return;
+    var card = el('div', 'card');
+    card.appendChild(el('span', 'lbl', 'MATCHES (' + D.items.length + ' dock rows · ' +
+      (D.prices || []).length + ' feed rows)'));
+    hits.forEach(function (h) {
+      var b = el('button', null, h.label + '  ·  ' + h.kind);
+      b.style.margin = '3px 4px 3px 0';
+      b.onclick = function () {
+        document.getElementById('drop').value = h.label;
+        renderVerdict(h.label, h.itemName, h.slot);
+      };
+      card.appendChild(b);
+    });
+    box.appendChild(card);
+  }
+
+  var drop = document.getElementById('drop');
+  drop.addEventListener('input', function () {
+    renderQuery(drop.value.trim());
+  });
+  drop.focus();
+
+  // ---- DEEP: the full dock, his 14 columns, plus his market read ------------
+  // CG-002-A: the PART columns are built from the page's own data — every row
+  // renders ALL of its parts (name + qty). Corufell Prime carries 4 (Drew's 4+1
+  // BP ruling, 2026-10-06); the other 34 sets keep their 3. Column count follows
+  // the widest row; a shorter row leaves its extra part cells blank. Part columns
+  // are display + filter only — sorting keeps the static keys, so the third
+  // element of each column tuple is its sortable bit.
+  var MAX_PARTS = 0;
+  var COLS = [];
+  var sortKey = 'ordinal', sortDir = 1;
+  // CG-002-B: off-dock items may carry more parts than the widest dock row, so
+  // the column count is derived per-render from dock + off-dock rows together.
+  function rebuildCols() {
+    MAX_PARTS = 0;
+    [].concat(D.items, offDockRaw).forEach(function (it) {
+      if (it.parts && it.parts.length > MAX_PARTS) MAX_PARTS = it.parts.length;
+    });
+    COLS = [
+      ['item', 'ITEM NAME', 1], ['category', 'CATEGORY', 1], ['velocityTier', 'VELOCITY TIER', 1],
+      ['bpMainQty', 'BP/MAIN QTY', 1]
+    ];
+    for (var pi = 1; pi <= MAX_PARTS; pi++) {
+      COLS.push(['p' + pi, 'PART ' + pi + ' NAME', 0]);
+      COLS.push(['q' + pi, 'PART ' + pi + ' QTY', 0]);
+    }
+    COLS.push(['estValueRaw', 'EST VALUE', 1], ['vaulted', 'VAULTED', 1],
+      ['jujuRsv', 'JUJU RSV', 1], ['liveActionPlan', 'LIVE ACTION PLAN', 1]);
+  }
+
+  function rowVals(it) {
+    var r = {
+      ordinal: it.ordinal, xlsxRow: it.xlsxRow, item: it.item, category: it.category,
+      velocityTier: it.velocityTier,
+      bpMainQty: tradeReady ? segQtyBySlot(it, 'BP/Main') : it.bpMainQty,
+      estValueRaw: it.estValueRaw, vaulted: it.vaulted, jujuRsv: it.jujuRsv,
+      liveActionPlan: it.liveActionPlan
+    };
+    if (offDockByName[String(it.item).toLowerCase()]) r.offDock = true;
+    it.parts.forEach(function (p, i) {
+      r['p' + (i + 1)] = p.name;
+      r['q' + (i + 1)] = partQtyView(it, p);
+    });
+    return r;
+  }
+
+  function buildDeep() {
+    rebuildCols();
+    var thead = document.querySelector('#deepTable thead');
+    var tbody = document.querySelector('#deepTable tbody');
+    thead.innerHTML = '';
+    var tr = document.createElement('tr');
+    COLS.forEach(function (c) {
+      var sortable = c[2] === 1;
+      var th = el('th', sortable ? null : 'static', c[1]);
+      if (sortable) {
+        th.onclick = function () {
+          if (sortKey === c[0]) sortDir = -sortDir; else { sortKey = c[0]; sortDir = 1; }
+          buildDeep();
+        };
+      }
+      tr.appendChild(th);
+    });
+    // Trailing column (the 15th at the 3-part baseline; it follows the part
+    // columns): chat-sourced, visibly marked, never a filter or sort key.
+    var th15 = el('th', 'static', 'YOUR MARKET READ · CHAT-SOURCED — NOT IN XLSX');
+    tr.appendChild(th15);
+    thead.appendChild(tr);
+
+    var f = document.getElementById('deepFilter').value.trim().toLowerCase();
+    var rows = D.items.map(rowVals);
+    offDockRaw.forEach(function (tio) {
+      var v = itemsByName[tio.item.toLowerCase()];
+      if (v) rows.push(rowVals(v));
+    });
+    if (f) {
+      rows = rows.filter(function (r) {
+        return COLS.some(function (c) {
+          return String(r[c[0]] === null || r[c[0]] === undefined ? '' : r[c[0]]).toLowerCase().indexOf(f) >= 0;
+        });
+      });
+    }
+    rows.sort(function (a, b) {
+      var x = a[sortKey], y = b[sortKey];
+      if (typeof x === 'number' && typeof y === 'number') return (x - y) * sortDir;
+      return String(x).localeCompare(String(y)) * sortDir;
+    });
+    var offN = offDockRaw.length;
+    document.getElementById('deepCount').textContent =
+      rows.length + ' of ' + (D.items.length + offN) + ' rows' +
+      (offN ? ' · ' + offN + ' OFF-DOCK (tracked in the trade log)' : '') +
+      ' · sorted by ' + sortKey + ' · ESC returns to GLANCE';
+
+    tbody.innerHTML = '';
+    rows.forEach(function (r) {
+      var it = itemsByName[r.item.toLowerCase()];
+      var row = document.createElement('tr');
+      COLS.forEach(function (c) {
+        var td = el('td');
+        var v = r[c[0]];
+        if (c[0] === 'item' && r.offDock) {
+          td.appendChild(document.createTextNode((v === null || v === undefined) ? '' : String(v)));
+          td.appendChild(el('span', 'flag offdock', 'OFF-DOCK'));
+          td.title = 'Tracked in the trade log';
+        } else {
+          td.textContent = (v === null || v === undefined) ? '' : String(v);
+        }
+        row.appendChild(td);
+      });
+      var td15 = el('td');
+      td15.textContent = it.marketRead || '';
+      td15.title = it.marketRead || '';       // full text on hover, never truncated away
+      td15.style.whiteSpace = 'normal';
+      row.appendChild(td15);
+
+      var exp = document.createElement('tr');
+      var tdE = el('td');
+      tdE.colSpan = COLS.length + 1;
+      var d = el('details');
+      var missLen = tradeReady ? derivedMissing(it).length : it.missing.length;
+      var sum = el('summary', null, 'SEGMENTS · ' + it.partsSum.pricedSegments + ' of ' +
+        it.partsSum.totalSegments + ' priced · ' + (missLen ? missLen + ' marked missing' : 'none marked missing'));
+      d.appendChild(sum);
+      var box = el('div');
+      box.innerHTML = '<table><thead><tr><th>SLOT</th><th>HAVE/MISSING</th>' +
+        '<th>AVG (UNDOC)</th><th>VOL TODAY</th><th>VOL YEST</th><th>YOUR VALUE</th>' +
+        '<th>MATCH SHAPE</th>' + (tradeReady ? '<th>LOG</th>' : '') + '</tr></thead><tbody>' +
+        it.segments.map(function (s) {
+          var hs = segHave(it, s);
+          return '<tr><td>' + esc(s.slot) + '</td><td class="' + (hs ? 'have' : 'miss') + '">' +
+            (hs ? 'HAVE' : 'MISSING') + '</td><td>' +
+            (s.feedAvg === null || s.feedAvg === undefined
+              ? '<span class="inacc">' + INACC + '</span>' : esc(fmt(s.feedAvg))) +
+            '</td><td>' + esc(s.feedVolToday) + '</td><td>' + esc(s.feedVolYest) +
+            '</td><td>' + (s.drewValue ? esc(s.drewValue) : '<span class="dim">—</span>') +
+            '</td><td>' + esc(s.matchShape) + '</td>' +
+            (tradeReady ? '<td>' + tradeBtnHtml(it.item, s.slot, hs) + '</td>' : '') +
+            '</tr>';
+        }).join('') + '</tbody></table>';
+      box.insertAdjacentHTML('beforeend', partsSumLine(it));
+      d.appendChild(box);
+      tdE.appendChild(d);
+      exp.appendChild(tdE);
+      tbody.appendChild(row);
+      tbody.appendChild(exp);
+    });
+  }
+  document.getElementById('deepFilter').addEventListener('input', buildDeep);
+
+  // ---- scratchpad: session only, in memory, never claimed saved -------------
+  function buildPad() {
+    var thead = document.querySelector('#padTable thead');
+    var tbody = document.querySelector('#padTable tbody');
+    thead.innerHTML = '';
+    var tr = document.createElement('tr');
+    D.scratchpad.headers.forEach(function (h) { tr.appendChild(el('th', 'static', h)); });
+    thead.appendChild(tr);
+    tbody.innerHTML = '';
+    D.scratchpad.rows.forEach(function (r, i) {
+      var row = document.createElement('tr');
+      [r.unknownDropCheck, r.ducatTier, r.currentPlatFloor, r.verdict].forEach(function (v) {
+        var td = document.createElement('td');
+        var inp = el('input', 'cell');
+        inp.value = v || '';
+        inp.title = 'SESSION ONLY — NOT SAVED';
+        td.appendChild(inp);
+        row.appendChild(td);
+      });
+      tbody.appendChild(row);
+    });
+  }
+
+  // ---- relic panel ----------------------------------------------------------
+  function buildRelics() {
+    var errBox = document.getElementById('relicErrors');
+    errBox.innerHTML = '';
+    if (!RELICS) {
+      errBox.innerHTML = '<div class="err">relics.data.js did not load.</div>';
+      return;
+    }
+    (RELICS.errors || []).forEach(function (e) {
+      var d = el('div', 'err');
+      d.innerHTML = '<b>SNAPSHOT WARNING</b> · ' + esc(e);
+      errBox.appendChild(d);
+    });
+    var box = document.getElementById('relicTables');
+    box.innerHTML = '';
+    box.appendChild(el('span', 'lbl', 'RELIC REWARD TABLES · ' + (RELICS.tiers || []).join(' · ')));
+    (RELICS.tiers || []).forEach(function (tier) {
+      var rows = RELICS.relics[tier] || {};
+      var t = el('div', 'tier');
+      t.appendChild(el('h3', null, tier + '  (' + Object.keys(rows).length + ' codes)'));
+      var tbl = el('table', 'relic');
+      var head = el('tr');
+      ['CODE', 'RARE', 'UNCOMMON', 'COMMON', 'VAULTED'].forEach(function (h) {
+        head.appendChild(el('th', 'static', h));
+      });
+      tbl.appendChild(head);
+      Object.keys(rows).sort().forEach(function (code) {
+        var r = rows[code];
+        var tr2 = document.createElement('tr');
+        [code, r.rare1, r.uncommon1, r.common1, String(!!r.vaulted)].forEach(function (v) {
+          tr2.appendChild(el('td', null, v || '—'));
+        });
+        // A code the snapshot flags as missing drops says so where it is read.
+        var flagged = (RELICS.errors || []).some(function (e) {
+          return String(e).toUpperCase().indexOf(String(tier).toUpperCase() + ' ' +
+            String(code).toUpperCase()) >= 0;
+        });
+        if (flagged) {
+          var c = el('td', null, '⚠ MISSING DROPS');
+          tr2.appendChild(c);
+        }
+        tbl.appendChild(tr2);
+      });
+      t.appendChild(tbl);
+      box.appendChild(t);
+    });
+  }
+
+  // ---- mode switching -------------------------------------------------------
+  var mode = 'glance';
+  function setMode(m) {
+    mode = m;
+    document.getElementById('glance').classList.toggle('hidden', m !== 'glance');
+    document.getElementById('deep').classList.toggle('hidden', m !== 'deep');
+    document.getElementById('relics').classList.toggle('hidden', m !== 'relics');
+    document.getElementById('modeTag').textContent = m.toUpperCase();
+    document.getElementById('toDeep').textContent = (m === 'deep' ? 'GLANCE' : 'DEEP') + ' (G)';
+    if (m === 'deep') { buildDeep(); buildPad(); }
+    if (m === 'relics') buildRelics();
+    if (m === 'glance') document.getElementById('drop').focus();
+  }
+  document.getElementById('toDeep').onclick = function () {
+    setMode(mode === 'deep' ? 'glance' : 'deep');
+  };
+  document.getElementById('toRelics').onclick = function () {
+    setMode(mode === 'relics' ? 'glance' : 'relics');
+  };
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'g' || e.key === 'G') {
+      if (document.activeElement === document.getElementById('drop') &&
+        document.getElementById('drop').value) return;
+      setMode(mode === 'deep' ? 'glance' : 'deep');
+    }
+    if (e.key === 'Escape') setMode('glance');
+  });
+
+  // ---- CG-002-B trade console actions (live ledger entries) ------------------
+  function tradeFlash(msg) {
+    var tag = document.getElementById('tradeNote');
+    if (!tag) return;
+    tag.textContent = msg;
+    tag.classList.remove('hidden');
+    window.setTimeout(function () {
+      if (tag.textContent === msg) { tag.classList.add('hidden'); tag.textContent = ''; }
+    }, 4000);
+  }
+
+  function openSellForm(itemName, partName) {
+    var wrap = el('div', 'card');
+    wrap.id = 'sellForm';
+    wrap.setAttribute('data-item', itemName);
+    wrap.setAttribute('data-part', partName);
+    wrap.appendChild(el('div', 'lbl', 'LOG SALE — ' + itemName + ' · ' + partName));
+    wrap.appendChild(el('div', 'dim', 'Date is today (' + todayLocal() +
+      '). Buyer class is your label, recorded verbatim.'));
+    var pf = el('div');
+    pf.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0';
+    var plat = el('input', 'tinput');
+    plat.type = 'number'; plat.min = '0'; plat.step = '1'; plat.value = '0';
+    plat.setAttribute('aria-label', 'Platinum received');
+    pf.appendChild(plat);
+    var bc = el('select', 'tinput');
+    ['NOOB', 'MID', 'HIGH'].forEach(function (c) {
+      var o = document.createElement('option');
+      o.value = c; o.textContent = c;
+      bc.appendChild(o);
+    });
+    bc.setAttribute('aria-label', 'Buyer class');
+    pf.appendChild(bc);
+    var note = el('input', 'tinput');
+    note.type = 'text'; note.maxLength = 500;
+    note.placeholder = 'Notes (optional)';
+    note.setAttribute('aria-label', 'Sale notes');
+    pf.appendChild(note);
+    var ok = document.createElement('button');
+    ok.type = 'button'; ok.setAttribute('data-t', 'sellsave'); ok.textContent = 'LOG SALE';
+    pf.appendChild(ok);
+    var cx = document.createElement('button');
+    cx.type = 'button'; cx.setAttribute('data-t', 'sellcancel'); cx.textContent = 'CANCEL';
+    pf.appendChild(cx);
+    wrap.appendChild(pf);
+    var box = document.getElementById('suggest');
+    box.innerHTML = '';
+    box.appendChild(wrap);
+    box.scrollIntoView({ block: 'nearest' });
+  }
+
+  function closeSellForm() {
+    var f = document.getElementById('sellForm');
+    if (f) f.remove();
+  }
+
+  document.addEventListener('click', function (ev) {
+    var b = ev.target.closest ? ev.target.closest('[data-t]') : null;
+    if (!b) return;
+    var kind = b.getAttribute('data-t');
+    var itemName = b.getAttribute('data-item');
+    var partName = b.getAttribute('data-part');
+    if (kind === 'drop') {
+      if (!tradeReady) return;
+      tradeFetch('/api/trade', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ op: 'addPickup', id: todayLocal() + '-' + Date.now(),
+          date: todayLocal(), item: itemName, part: partName })
+      }, function (ok, data) {
+        if (!ok) { tradeFlash(failText(data)); return; }
+        trade = data;
+        rebuildIndex();
+        renderQuery(document.getElementById('drop').value.trim());
+        rebrandTradeUi();
+      });
+      return;
+    }
+    if (kind === 'sell') {
+      if (tradeReady) openSellForm(itemName, partName);
+      return;
+    }
+    if (kind === 'sellsave') {
+      var f = document.getElementById('sellForm');
+      if (!f) return;
+      var plat = Number(f.querySelector('input[type=number]').value);
+      var bc = f.querySelector('select').value;
+      var noteVal = f.querySelector('input[type=text]').value.trim() || null;
+      tradeFetch('/api/trade', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          op: 'addSale', id: todayLocal() + '-' + Date.now(), date: todayLocal(),
+          item: f.getAttribute('data-item'), part: f.getAttribute('data-part'),
+          plat: plat, buyerClass: bc, notes: noteVal
+        })
+      }, function (ok, data) {
+        if (!ok) { tradeFlash(failText(data)); return; }
+        trade = data;
+        closeSellForm();
+        rebuildIndex();
+        renderQuery(document.getElementById('drop').value.trim());
+        rebrandTradeUi();
+      });
+      return;
+    }
+    if (kind === 'sellcancel') { closeSellForm(); return; }
+  });
+
+  // ADD DROP — a new OFF-DOCK item with 1..8 part names; an optional first part
+  // logs today's pickup in the same breath, so a fresh drop never reads as held.
+  document.getElementById('adGo').onclick = function () {
+    var msg = document.getElementById('adMsg');
+    var itemName = document.getElementById('adItem').value.trim();
+    var parts = document.getElementById('adParts').value.split(',').map(function (s) {
+      return s.trim();
+    }).filter(function (s) { return s.length > 0; });
+    var first = document.getElementById('adFirst').value.trim();
+    if (!itemName) { msg.textContent = 'Item name is empty.'; return; }
+    if (itemName.length > 120) { msg.textContent = 'Item name is over 120 characters.'; return; }
+    if (parts.length < 1) { msg.textContent = 'List at least one part (up to 8).'; return; }
+    if (parts.length > 8) { msg.textContent = 'More than 8 parts.'; return; }
+    if (parts.some(function (s) { return s.length > 120; })) {
+      msg.textContent = 'A part name is over 120 characters.'; return;
+    }
+    var dup = parts.filter(function (s, i) { return parts.indexOf(s) !== i; });
+    if (dup.length) { msg.textContent = 'Duplicate part name: ' + dup[0]; return; }
+    if (first && parts.indexOf(first) < 0) {
+      msg.textContent = 'The first part must be one of the listed parts.'; return;
+    }
+    tradeFetch('/api/trade', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ op: 'addItem', id: 'item-' + Date.now(), item: itemName, partNames: parts })
+    }, function (ok, data) {
+      if (!ok) { msg.textContent = failText(data); return; }
+      trade = data;
+      rebuildIndex();
+      renderQuery(itemName);
+      document.getElementById('adItem').value = '';
+      document.getElementById('adParts').value = '';
+      document.getElementById('adFirst').value = '';
+      if (first) {
+        tradeFetch('/api/trade', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ op: 'addPickup', id: todayLocal() + '-' + Date.now(),
+            date: todayLocal(), item: itemName, part: first })
+        }, function (ok2, data2) {
+          if (!ok2) { msg.textContent = failText(data2); return; }
+          trade = data2;
+          rebuildIndex();
+          renderQuery(itemName);
+          rebrandTradeUi();
+        });
+      } else {
+        msg.textContent = 'Tracked in the trade log.';
+        rebrandTradeUi();
+      }
+    });
+  };
+
+  // ---- boot: header state, then the live ledger when served over http -------
+  renderHeaderTrade();
+  if (HTTP) loadTrade();
+
+  // ---- footer ---------------------------------------------------------------
+  document.getElementById('footNote').innerHTML =
+    'Offline page · no server · no network · no CDN · snapshot of ' +
+    esc(D.snapshot.pricesFetchedAt) + ' · <b>no live reader</b> · AVG (UNDOC) is a ' +
+    'fair-value reference, never a price, floor, or market · your words are rendered ' +
+    'verbatim · session scratchpad is never saved.';
+  document.getElementById('relicErrors');
+})();
+</script>
+</body>
+</html>

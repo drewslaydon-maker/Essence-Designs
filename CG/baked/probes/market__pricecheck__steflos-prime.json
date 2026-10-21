@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/pricecheck/find/Steflos%20Prime",
+    "tag": "Steflos Prime",
+    "httpStatus": 200,
+    "ok": true,
+    "durationMs": 164,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:44.186Z",
+    "accountId": "11121350"
+  },
+  "data": []
+}

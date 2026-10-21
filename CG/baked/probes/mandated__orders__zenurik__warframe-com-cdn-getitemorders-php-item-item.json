@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Zenurik",
+    "tag": "Zenurik",
+    "httpStatus": 403,
+    "ok": false,
+    "durationMs": 51,
+    "contentType": "text/html",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:32.000Z",
+    "accountId": "11121350"
+  },
+  "data": null
+}

@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Ivara%20Prime",
+    "tag": "Ivara Prime",
+    "httpStatus": 403,
+    "ok": false,
+    "durationMs": 43,
+    "contentType": "text/html",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:17.861Z",
+    "accountId": "11121350"
+  },
+  "data": null
+}

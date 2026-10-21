@@ -1,0 +1,178 @@
+"""LAG ROOM 0 — Python Terminal Movement Sandbox
+
+Standalone, single-file. Uses ONLY native standard libraries (sys, os, time).
+Write-only operation: generates no output outside this terminal session.
+"""
+
+import sys
+import os
+import time
+import msvcrt  # Windows stdin — non-blocking key check
+
+
+# ---------------------------------------------------------------------------
+# NON-BLOCKING KEY READER
+# ---------------------------------------------------------------------------
+def _read_key(timeout: float = 0.1) -> str:
+    """Read a single keypress if available, else return "".
+
+    Uses msvcrt.kbhit() + msvcrt.getch() on Windows so the call never
+    blocks. Falls back to select on other platforms.
+    """
+    if msvcrt.kbhit():
+        ch = msvcrt.getch()
+        # Arrow keys on Windows are two bytes: 0x00 or 0xE0 + second byte
+        if ch[0] in (0x00, 0xE0):
+            msvcrt.getch()  # consume the second byte
+            return ""
+        return ch.decode("utf-8", errors="replace").lower()
+    return ""
+
+
+# ---------------------------------------------------------------------------
+# CONSTANTS
+# ---------------------------------------------------------------------------
+GRID_SIZE = 15
+
+# Player token
+PLAYER = "@"
+
+# Wall / floor symbols
+WALL = "#"
+FLOOR = "."
+
+# Movement vectors: key -> (drow, dcol, label)
+MOVEMENT = {
+    "w": (-1, 0, "up"),
+    "a": (0, -1, "left"),
+    "s": (1, 0, "down"),
+    "d": (0, 1, "right"),
+    "up": (-1, 0, "up"),
+    "down": (1, 0, "down"),
+    "left": (0, -1, "left"),
+    "right": (0, 1, "right"),
+}
+
+# Environmental triggers: coordinate -> poetic narrative
+TRIGGERS = {
+    (4, 7): (
+        "Cold iron exhalations, rust-veined breath in the stillness. "
+        "A ruined metal container, its lid long gone, ribs splayed like "
+        "a fossilized lung against the floor."
+    ),
+    (8, 3): (
+        "Fragmented vessel, water's memory etched in cracks. "
+        "A shattered ceramic basin, half-buried in dust, each shard "
+        "catching the light like a drowned star."
+    ),
+    (11, 11): (
+        "Smoldering tip, last sigh of unspent flame. "
+        "A forgotten torch remnant, charcoal tip still warm to the touch, "
+        "guarded by a ring of ash that spoke of a fire never fully lit."
+    ),
+}
+
+# ---------------------------------------------------------------------------
+# GRID GENERATION
+# ---------------------------------------------------------------------------
+def make_grid(size: int) -> list[list[str]]:
+    """Return a size×size grid with a border of WALL and interior FLOOR."""
+    grid = []
+    for r in range(size):
+        row = []
+        for c in range(size):
+            if r == 0 or r == size - 1 or c == 0 or c == size - 1:
+                row.append(WALL)
+            else:
+                row.append(FLOOR)
+        grid.append(row)
+    return grid
+
+
+# ---------------------------------------------------------------------------
+# RENDERING
+# ---------------------------------------------------------------------------
+def render_grid(grid: list[list[str]], player: tuple[int, int]) -> None:
+    """Clear screen and print the grid with player @ at current position."""
+    # Cross-platform terminal clear
+    os.system("cls" if os.name == "nt" else "clear")
+
+    size = len(grid)
+    for r in range(size):
+        line = ""
+        for c in range(size):
+            if (r, c) == player:
+                line += PLAYER
+            else:
+                line += grid[r][c]
+        print(line)
+    print(f"Coordinates: {player[0]}, {player[1]}")
+
+
+# ---------------------------------------------------------------------------
+# BOUNDARY / WALL CHECK
+# ---------------------------------------------------------------------------
+def is_valid_move(grid: list[list[str]], pos: tuple[int, int], drow: int, dcol: int) -> bool:
+    """Return True if moving from pos by (drow,dcol) stays in-bounds and avoids walls."""
+    r, c = pos
+    nr, nc = r + drow, c + dcol
+    if not (0 <= nr < len(grid) and 0 <= nc < len(grid)):
+        return False
+    if grid[nr][nc] == WALL:
+        return False
+    return True
+
+
+# ---------------------------------------------------------------------------
+# TRIGGER HANDLING
+# ---------------------------------------------------------------------------
+def check_trigger(pos: tuple[int, int]) -> str | None:
+    """Return the narrative string if pos has a trigger, else None."""
+    return TRIGGERS.get(pos)
+
+
+# ---------------------------------------------------------------------------
+# MAIN LOOP
+# ---------------------------------------------------------------------------
+def main() -> None:
+    grid = make_grid(GRID_SIZE)
+    player = (7, 7)  # start at center
+
+    while True:
+        render_grid(grid, player)
+
+        # Non-blocking key check — works in terminals with/without persistent stdin
+        key = _read_key(timeout=0.1)
+        key = key.strip().lower()
+
+        # Exit only on q/quit/exit; empty key continues loop (stdin-less env safe)
+        if key in ("q", "quit", "exit"):
+            print("\nGoodbye.")
+            break
+
+        if key not in MOVEMENT:
+            print("Unrecognized input. Use W/A/S/D or arrow-direction keys.")
+            time.sleep(0.8)
+            continue
+
+        drow, dcol, _ = MOVEMENT[key]
+
+        if not is_valid_move(grid, player, drow, dcol):
+            print("Wall in that direction. Stay inside the room.")
+            time.sleep(0.6)
+            continue
+
+        # Execute move
+        player = (player[0] + drow, player[1] + dcol)
+
+        # Check for environmental trigger
+        narrative = check_trigger(player)
+        if narrative:
+            print("\n" + narrative)
+
+        # Brief pause so the reader can see the trigger text before next refresh
+        time.sleep(0.7)
+
+
+if __name__ == "__main__":
+    main()

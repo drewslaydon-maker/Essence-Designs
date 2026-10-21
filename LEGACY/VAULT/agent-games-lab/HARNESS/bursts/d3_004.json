@@ -1,0 +1,7 @@
+{
+  "name": "d3_004",
+  "note": "Rooted tree: wait out lignification (30 waits). If goblin returns, combat messages will show; driver stops on game over.",
+  "plan": [
+    {"task": "key", "keys": "5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5", "budget": 30}
+  ]
+}

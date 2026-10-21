@@ -1,0 +1,19 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/items/Scattered%20Justice/orders",
+    "tag": "Scattered Justice",
+    "httpStatus": 404,
+    "ok": false,
+    "durationMs": 118,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:07.611Z",
+    "accountId": "11121350"
+  },
+  "data": {
+    "message": "Cannot GET /items/Scattered%20Justice/orders",
+    "error": "Not Found",
+    "statusCode": 404
+  }
+}

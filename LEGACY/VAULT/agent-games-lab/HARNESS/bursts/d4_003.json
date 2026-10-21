@@ -1,0 +1,8 @@
+{
+  "name": "d4_003",
+  "note": "Step onto the D:4 down-stairs (k then l) and press >. Hound is walled off north; we duck lower.",
+  "plan": [
+    {"task": "move", "keys": "k,l", "max_block": 2},
+    {"task": "key", "keys": "stairs", "budget": 1}
+  ]
+}

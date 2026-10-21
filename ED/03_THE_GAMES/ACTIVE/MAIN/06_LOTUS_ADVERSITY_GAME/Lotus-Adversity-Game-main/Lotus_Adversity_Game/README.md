@@ -1,20 +1,25 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Wheel of Adversity — The Apparatus
 
-# Run and deploy your AI Studio app
+A fully static, offline-capable dark-fantasy codex/artifact — **Pantheon · Spokes (RingWheel) · Heraldry · Codex · Pillars**. No backend, no network fonts.
 
-This contains everything you need to run your app locally.
+## Prerequisites
 
-View your app in AI Studio: https://ai.studio/apps/73e89395-1b79-46af-8220-82e037385c60
+- [`bun`](https://bun.sh) (or `npm` — npm also works)
 
-## Run Locally
+## Commands
 
-**Prerequisites:**  Node.js
+All commands run from this directory (`Lotus_Adversity_Game/`).
 
+| Command | What it does |
+|---------|-------------|
+| `bun install` | Install dependencies |
+| `bun run dev` | Vite dev server → http://localhost:5173 |
+| `bun run lint` | Type-check only (`tsc --noEmit`) |
+| `bun run lab:verify` | Executable canon gates (`tsx verify-lab.ts`) |
+| `bun run build` | Production build → `dist/` |
+| `bun run preview` | Preview the built `dist/` |
+| `bun run clean` | Remove `dist/` |
+| `bun run native` | Launch the native Electron window (static app — run `bun run build` first) |
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+Canonical docs live at the repo root: `AGENTS.md`, `ROADMAP.md`, `VISUAL_DESIGN_MASTER.md`.
+Native desktop (Electron) wrapper lives in `electron/` — loads the built `dist/` as a native window; no browser tab.

@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.warframestat.us/pricecheck/find/Braton%20Vandal",
+    "tag": "Braton Vandal",
+    "httpStatus": 200,
+    "ok": true,
+    "durationMs": 152,
+    "contentType": "application/json; charset=utf-8",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:35.743Z",
+    "accountId": "11121350"
+  },
+  "data": []
+}

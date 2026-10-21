@@ -1,0 +1,7 @@
+{
+  "name": "d3_007",
+  "note": "Test descent directly: press >; if not on stairs the game will say so for free.",
+  "plan": [
+    {"task": "key", "keys": "stairs", "budget": 4}
+  ]
+}

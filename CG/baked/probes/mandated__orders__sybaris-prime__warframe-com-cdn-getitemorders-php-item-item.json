@@ -1,0 +1,15 @@
+{
+  "_probe": {
+    "url": "https://api.warframe.com/cdn/getItemOrders.php?item=Sybaris%20Prime",
+    "tag": "Sybaris Prime",
+    "httpStatus": 403,
+    "ok": false,
+    "durationMs": 46,
+    "contentType": "text/html",
+    "transportError": null,
+    "bodyParseError": null,
+    "fetchedAt": "2026-10-05T22:28:11.540Z",
+    "accountId": "11121350"
+  },
+  "data": null
+}

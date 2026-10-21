@@ -1,0 +1,7 @@
+{
+  "name": "d3_005",
+  "note": "Descend D:3 -> D:4 via the fixed driver (candidate-key greedy + early give-up).",
+  "plan": [
+    {"task": "descend", "max_steps": 60}
+  ]
+}

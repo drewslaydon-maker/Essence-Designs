@@ -62,7 +62,7 @@ if (-not (Test-Path -LiteralPath $dir)) {
 try {
     Set-Content -LiteralPath $Path -Value ($lines -join "`r`n") -Encoding UTF8 -NoNewline
 } catch {
-    Write-Error "Could not write $Path — is the game holding the file?"
+    Write-Error "Could not write $Path - is the game holding the file?"
     exit 2
 }
 
